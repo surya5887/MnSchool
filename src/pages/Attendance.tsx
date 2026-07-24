@@ -1,14 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Save, Search, Download } from 'lucide-react';
-import { students } from '../data/mockData';
+import { getStudents, type StudentData } from '../services/studentService';
+import { getClasses, type ClassData } from '../services/classService';
 
 const Attendance: React.FC = () => {
-  const [selectedClass, setSelectedClass] = useState('10A');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedSection, setSelectedSection] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [searchQuery, setSearchQuery] = useState('');
   
+  const [students, setStudents] = useState<StudentData[]>([]);
+  const [classes, setClasses] = useState<ClassData[]>([]);
+  const [loading, setLoading] = useState(true);
+
   // By default, everyone is present. We only track absentees.
   const [absentees, setAbsentees] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [studentData, classData] = await Promise.all([
+          getStudents(),
+          getClasses()
+        ]);
+        setStudents(studentData);
+        setClasses(classData);
+        if (classData.length > 0) {
+          setSelectedClass(classData[0].className);
+          setSelectedSection(classData[0].sections[0] || '');
+        }
+      } catch (error) {
+        console.error("Error fetching data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedClass(val);
+    const matchedClass = classes.find(c => c.className === val);
+    setSelectedSection(matchedClass?.sections[0] || '');
+  };
 
   const toggleAttendance = (id: string) => {
     if (absentees.includes(id)) {
@@ -18,7 +54,15 @@ const Attendance: React.FC = () => {
     }
   };
 
-  const activeStudents = students.filter(s => s.status === 'Active');
+  const activeStudents = useMemo(() => {
+    return students.filter(s => {
+      const matchStatus = s.status === 'Active' || !s.status;
+      const matchClass = s.classId === selectedClass;
+      const matchSection = s.sectionId === selectedSection;
+      const matchSearch = `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchStatus && matchClass && matchSection && matchSearch;
+    });
+  }, [students, selectedClass, selectedSection, searchQuery]);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -34,11 +78,15 @@ const Attendance: React.FC = () => {
 
       <div className="glass-panel" style={{ padding: '20px 24px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'flex-end' }}>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class & Section</label>
-          <select className="glass-input" value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
-            <option value="10A">Class 10 - Section A</option>
-            <option value="10B">Class 10 - Section B</option>
-            <option value="9A">Class 9 - Section A</option>
+          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class</label>
+          <select className="glass-input" value={selectedClass} onChange={handleClassChange}>
+             {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+          </select>
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section</label>
+          <select className="glass-input" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
+             {classes.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
         <div style={{ flex: 1 }}>
@@ -47,7 +95,7 @@ const Attendance: React.FC = () => {
         </div>
         <div className="search-bar" style={{ margin: 0, flex: 2 }}>
           <Search size={18} style={{ color: 'var(--text-muted)' }} />
-          <input type="text" placeholder="Search student name..." style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%' }} />
+          <input type="text" placeholder="Search student name..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%' }} />
         </div>
       </div>
 
@@ -63,22 +111,22 @@ const Attendance: React.FC = () => {
             </thead>
             <tbody>
               {activeStudents.map(student => {
-                const isAbsent = absentees.includes(student.id);
+                const isAbsent = student.id ? absentees.includes(student.id) : false;
                 return (
                   <tr key={student.id} style={{ background: isAbsent ? 'rgba(239, 68, 68, 0.05)' : 'transparent', transition: '0.2s' }}>
-                    <td style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{student.roll}</td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{student.rollNumber}</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img src={`https://ui-avatars.com/api/?name=${student.name}&background=random&size=40`} alt={student.name} style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+                        <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random&size=40`} alt={student.firstName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
                         <div>
-                          <div style={{ fontWeight: 600 }}>{student.name}</div>
+                          <div style={{ fontWeight: 600 }}>{student.firstName} {student.lastName}</div>
                           <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Father: {student.parentPhone}</div>
                         </div>
                       </div>
                     </td>
                     <td>
                       <div 
-                        onClick={() => toggleAttendance(student.id)}
+                        onClick={() => student.id && toggleAttendance(student.id)}
                         style={{ 
                           display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '20px', 
                           background: isAbsent ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
@@ -94,6 +142,11 @@ const Attendance: React.FC = () => {
                   </tr>
                 );
               })}
+              {loading && (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: 'center', padding: '20px' }}>Loading students...</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

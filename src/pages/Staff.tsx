@@ -1,23 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, UserPlus } from 'lucide-react';
-import { teachers } from '../data/mockData';
 import Modal from '../components/Modal';
+import { getStaff, addStaff, updateStaffSalaryStatus, type StaffData } from '../services/staffService';
 
 const Staff: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
+  const [teachers, setTeachers] = useState<StaffData[]>([]);
+  const [selectedTeacher, setSelectedTeacher] = useState<StaffData | null>(null);
+  
+  const [newStaff, setNewStaff] = useState<Partial<StaffData>>({
+    name: '', subject: '', experience: '', department: 'Academic', role: 'Teacher', salary: 35000, joinDate: '', status: 'Active'
+  });
 
-  const handlePaySalary = (teacher: any) => {
+  const fetchStaff = async () => {
+    const data = await getStaff();
+    setTeachers(data);
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  const handlePaySalary = (teacher: StaffData) => {
     setSelectedTeacher(teacher);
     setModalOpen(true);
   };
 
-  const confirmPayment = () => {
-    setModalOpen(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const confirmPayment = async () => {
+    if (selectedTeacher && selectedTeacher.id) {
+      await updateStaffSalaryStatus(selectedTeacher.id, 'Paid');
+      setModalOpen(false);
+      setSaved(true);
+      fetchStaff();
+      setTimeout(() => setSaved(false), 3000);
+    }
+  };
+
+  const handleAddStaff = async () => {
+    await addStaff(newStaff as StaffData);
+    setAddModalOpen(false);
+    fetchStaff();
   };
 
   return (
@@ -27,7 +52,7 @@ const Staff: React.FC = () => {
           <h1 className="page-title">Staff & Payroll</h1>
           <p className="page-subtitle">Manage teaching staff and process salaries with one click.</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
           <UserPlus size={20} /> Add Staff
         </button>
       </div>
@@ -92,15 +117,11 @@ const Staff: React.FC = () => {
             <div style={{ background: 'rgba(99,102,241,0.1)', padding: '16px', borderRadius: '12px', margin: '20px 0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Base Salary</span>
-                <span style={{ fontWeight: 600 }}>₹35,000</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Deductions (Leaves)</span>
-                <span style={{ fontWeight: 600, color: 'var(--danger)' }}>- ₹1,500</span>
+                <span style={{ fontWeight: 600 }}>₹{selectedTeacher.salary || 35000}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--glass-border)', paddingTop: '8px', marginTop: '8px' }}>
                 <span style={{ fontWeight: 600 }}>Total Payable</span>
-                <span style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '1.2rem' }}>₹33,500</span>
+                <span style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '1.2rem' }}>₹{selectedTeacher.salary || 35000}</span>
               </div>
             </div>
             
@@ -110,6 +131,31 @@ const Staff: React.FC = () => {
             </div>
           </div>
         )}
+      </Modal>
+
+      <Modal isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} title="Add New Staff">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Name</label>
+            <input type="text" className="glass-input" value={newStaff.name} onChange={e => setNewStaff({...newStaff, name: e.target.value})} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Subject</label>
+            <input type="text" className="glass-input" value={newStaff.subject} onChange={e => setNewStaff({...newStaff, subject: e.target.value})} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Experience</label>
+            <input type="text" className="glass-input" value={newStaff.experience} onChange={e => setNewStaff({...newStaff, experience: e.target.value})} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Salary</label>
+            <input type="number" className="glass-input" value={newStaff.salary} onChange={e => setNewStaff({...newStaff, salary: Number(e.target.value)})} />
+          </div>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <button className="btn-secondary" onClick={() => setAddModalOpen(false)}>Cancel</button>
+            <button className="btn-primary" onClick={handleAddStaff}>Save Staff</button>
+          </div>
+        </div>
       </Modal>
 
       <AnimatePresence>

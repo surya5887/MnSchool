@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, Search, Filter, Clock } from 'lucide-react';
+import { getAuditLogs, type AuditLogData } from '../services/auditService';
 
 const AuditLogs: React.FC = () => {
-  const logs = [
-    { id: 1, user: 'Admin (Ramesh)', role: 'Super Admin', action: 'Modified Fee Structure (Added ₹500 Transport)', time: 'Today, 10:45 AM', ip: '192.168.1.5', status: 'Success' },
-    { id: 2, user: 'Accountant (Priya)', role: 'Accountant', action: 'Collected Fee ₹2500 from Priya (10th A)', time: 'Today, 09:12 AM', ip: '192.168.1.12', status: 'Success' },
-    { id: 3, user: 'Teacher (Aditi)', role: 'Teacher', action: 'Marked Class 1 Attendance', time: 'Yesterday, 08:30 AM', ip: '10.0.0.15', status: 'Success' },
-    { id: 4, user: 'Unknown', role: 'None', action: 'Failed Login Attempt', time: 'Yesterday, 11:45 PM', ip: '45.22.19.1', status: 'Failed' },
-    { id: 5, user: 'Admin (Ramesh)', role: 'Super Admin', action: 'Exported Master Ledger to Excel', time: '15 Oct, 04:20 PM', ip: '192.168.1.5', status: 'Success' },
-  ];
+  const [logs, setLogs] = useState<AuditLogData[]>([]);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const data = await getAuditLogs();
+        setLogs(data);
+      } catch (error) {
+        console.error("Error fetching logs", error);
+      }
+    };
+    fetchLogs();
+  }, []);
+
+  const filteredLogs = logs.filter(log => log.user.toLowerCase().includes(search.toLowerCase()) || log.action.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -25,7 +35,7 @@ const AuditLogs: React.FC = () => {
         <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', gap: '16px' }}>
           <div className="search-bar" style={{ margin: 0, width: '300px' }}>
             <Search size={18} style={{ color: 'var(--text-muted)' }} />
-            <input type="text" placeholder="Search logs..." style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%' }} />
+            <input type="text" placeholder="Search logs..." style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%' }} value={search} onChange={e => setSearch(e.target.value)} />
           </div>
         </div>
 
@@ -41,9 +51,9 @@ const AuditLogs: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {logs.map(log => (
+              {filteredLogs.map(log => (
                 <tr key={log.id}>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}><Clock size={12} style={{ display: 'inline', marginRight: '4px' }}/>{log.time}</td>
+                  <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}><Clock size={12} style={{ display: 'inline', marginRight: '4px' }}/>{new Date(log.time).toLocaleString()}</td>
                   <td style={{ fontWeight: 500 }}>
                     {log.user} <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>{log.role}</span>
                   </td>
@@ -56,6 +66,11 @@ const AuditLogs: React.FC = () => {
                   </td>
                 </tr>
               ))}
+              {filteredLogs.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No logs found.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

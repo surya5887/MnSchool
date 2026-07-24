@@ -16,6 +16,7 @@ import Examination from './pages/Examination';
 import Timetable from './pages/Timetable';
 import Transport from './pages/Transport';
 import Library from './pages/Library';
+import Classes from './pages/Classes';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="fees" element={<Fees />} />
           <Route path="ledger" element={<MasterLedger />} />
           <Route path="legacy" element={<LegacyData />} />
+          <Route path="classes" element={<Classes />} />
           <Route path="exam" element={<Examination />} />
           <Route path="timetable" element={<Timetable />} />
           <Route path="transport" element={<Transport />} />

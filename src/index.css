@@ -203,6 +203,11 @@ tr:hover {
     align-items: stretch !important;
   }
   
+  /* Wrap general inline flex containers like headers */
+  div[style*="display: flex"] {
+    flex-wrap: wrap !important;
+  }
+  
   /* Page Titles */
   .page-title {
     font-size: 1.5rem;
@@ -212,6 +217,23 @@ tr:hover {
   .glass-table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Responsive utilities */
+  .responsive-flex {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .responsive-flex-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  
+  .settings-sidebar {
+    width: 100% !important;
+    margin-bottom: 16px;
   }
 }
 

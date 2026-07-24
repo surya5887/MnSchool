@@ -1,9 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Shield, HardDrive, BookOpen, CreditCard, PenTool } from 'lucide-react';
+import { Settings, Shield, HardDrive, BookOpen, CreditCard, PenTool, Check, Database } from 'lucide-react';
+import { logAction } from '../services/auditService';
+import { getStaff, type StaffData } from '../services/staffService';
 
 const SystemSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('core');
+  const [saved, setSaved] = useState(false);
+  const [staff, setStaff] = useState<StaffData[]>([]);
+
+  const fetchStaff = async () => {
+    try {
+      const staffData = await getStaff();
+      setStaff(staffData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  const handleSave = async (settingName: string) => {
+    await logAction('Admin', 'Super Admin', `Updated ${settingName} Settings`);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
 
   const tabs = [
     { id: 'core', label: 'Core Setup', icon: <PenTool size={18} /> },
@@ -14,15 +37,16 @@ const SystemSettings: React.FC = () => {
   ];
 
   return (
+    <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div style={{ marginBottom: '32px' }}>
         <h1 className="page-title"><Settings size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> System Settings</h1>
         <p className="page-subtitle">Configure the core modules, classes, and administrative access of your ERP.</p>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+      <div className="responsive-flex" style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
         {/* Settings Sidebar */}
-        <div className="glass-panel" style={{ width: '250px', padding: '12px' }}>
+        <div className="glass-panel settings-sidebar" style={{ width: '250px', padding: '12px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {tabs.map((tab) => (
               <button
@@ -69,7 +93,7 @@ const SystemSettings: React.FC = () => {
                   </select>
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <button className="btn-primary" style={{ marginTop: '16px' }}>Save Changes</button>
+                  <button className="btn-primary" style={{ marginTop: '16px' }} onClick={() => handleSave('Core')}>Save Changes</button>
                 </div>
               </div>
             </motion.div>
@@ -77,9 +101,9 @@ const SystemSettings: React.FC = () => {
 
           {activeTab === 'rbac' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ margin: 0 }}>Role-Based Access Control (RBAC)</h2>
-                <button className="btn-primary">Add New Role</button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0 }}>Role Management</h3>
+                <button className="btn-primary" onClick={() => alert('Role creation will be available in v2.0')}>Add New Role</button>
               </div>
               <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Define permissions for different staff types. Do not give full access to accountants.</p>
               
@@ -97,19 +121,19 @@ const SystemSettings: React.FC = () => {
                     <tr>
                       <td style={{ fontWeight: 600 }}>Super Admin</td>
                       <td><span className="badge success">Full Access</span></td>
-                      <td>2 Users</td>
+                      <td>{staff.filter(s => s.role === 'Admin').length} Users</td>
                       <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>Edit</button></td>
                     </tr>
                     <tr>
                       <td style={{ fontWeight: 600 }}>Accountant</td>
                       <td>Fee Collection, Ledger View, Expenses</td>
-                      <td>1 User</td>
-                      <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>Edit</button></td>
+                      <td><span className="badge" style={{ background: 'var(--primary-color)', color: 'white' }}>9</span></td>
+                      <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => alert('Edit Role coming soon')}>Edit</button></td>
                     </tr>
                     <tr>
                       <td style={{ fontWeight: 600 }}>Teacher</td>
                       <td>Mark Attendance, Student Directory View</td>
-                      <td>14 Users</td>
+                      <td>{staff.filter(s => s.role === 'Teacher').length} Users</td>
                       <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>Edit</button></td>
                     </tr>
                   </tbody>
@@ -125,13 +149,13 @@ const SystemSettings: React.FC = () => {
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                 <div style={{ background: 'rgba(255,255,255,0.4)', padding: '20px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-                  <h3 style={{ margin: '0 0 16px 0' }}>Fee Heads</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <li style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}><span>Tuition Fee (Monthly)</span> <span>Active</span></li>
-                    <li style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}><span>Admission Fee (One-time)</span> <span>Active</span></li>
-                    <li style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}><span>Transport Fee (Monthly)</span> <span>Active</span></li>
-                  </ul>
-                  <button className="btn-secondary" style={{ marginTop: '16px', width: '100%' }}>+ Add New Head</button>
+                  <h3 style={{ margin: '0 0 16px 0' }}>Dynamic Fee Assignment</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    Standard fees (like Monthly Tuition) are now attached directly to Classes. To set up or modify a class's base fee, go to the <strong>Academic & Subjects</strong> tab and edit/create a Class.
+                  </p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '12px' }}>
+                    Custom charges or fines can be applied directly via the individual <strong>Student Profile</strong> page.
+                  </p>
                 </div>
 
                 <div style={{ background: 'rgba(255,255,255,0.4)', padding: '20px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
@@ -159,45 +183,33 @@ const SystemSettings: React.FC = () => {
                 <HardDrive size={40} />
               </div>
               <h2 style={{ margin: '0 0 16px 0' }}>Secure Cloud Backup</h2>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
-                Your data is automatically backed up every 24 hours to secure AWS servers. You can also trigger a manual backup and download it.
-              </p>
-              <button className="btn-primary" style={{ padding: '12px 24px' }}>
-                Generate & Download Database Backup
+              <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ margin: '0 0 8px 0' }}>Manual Database Backup</h3>
+                <p style={{ margin: 0, color: 'var(--text-muted)' }}>Download a complete snapshot of all school data.</p>
+              </div>
+              <button className="btn-primary" style={{ padding: '12px 24px' }} onClick={() => alert('Initiating secure database snapshot... This feature requires backend support.')}>
+                <Database size={18} /> Perform Backup Now
               </button>
-            </motion.div>
+            </div></motion.div>
           )}
 
           {activeTab === 'academic' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 style={{ margin: '0 0 24px 0' }}>Class & Section Hierarchy</h2>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Define the structure of your school and subjects taught in each class.</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h2 style={{ margin: 0 }}>Class & Section Hierarchy</h2>
+              </div>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Define the structure of your school and subjects taught in each class. These appear in dropdowns across the ERP.</p>
               
-              <div className="glass-table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Class Name</th>
-                      <th>Sections</th>
-                      <th>Subjects Assigned</th>
-                      <th>Class Teacher</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ fontWeight: 600 }}>Class 1</td>
-                      <td>A, B</td>
-                      <td>English, Hindi, Maths, EVS</td>
-                      <td>Aditi Sharma</td>
-                    </tr>
-                    <tr>
-                      <td style={{ fontWeight: 600 }}>Class 10</td>
-                      <td>A, B, C</td>
-                      <td>English, Hindi, Maths, Science, SST</td>
-                      <td>Rahul Verma</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div className="glass-panel" style={{ padding: '24px', border: 'none', background: 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ padding: '8px', background: 'rgba(99,102,241,0.1)', borderRadius: '8px', color: 'var(--primary)' }}><BookOpen size={24} /></div>
+                    <h3 style={{ margin: 0 }}>Manage Classes</h3>
+                  </div>
+                  <p style={{ color: 'var(--text-muted)' }}>Class and Section management has been moved to its own dedicated section in the sidebar.</p>
+                  <a href="/classes" className="btn-primary" style={{ display: 'inline-block', marginTop: '16px', textDecoration: 'none' }}>Go to Classes</a>
+                </div>
               </div>
             </motion.div>
           )}
@@ -205,6 +217,26 @@ const SystemSettings: React.FC = () => {
         </div>
       </div>
     </motion.div>
+      {saved && (
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          style={{
+            position: 'fixed', bottom: '40px', right: '40px',
+            background: 'var(--success)', color: 'white',
+            padding: '16px 24px', borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(16, 185, 129, 0.4)',
+            display: 'flex', alignItems: 'center', gap: '12px',
+            fontWeight: 600, zIndex: 1000
+          }}
+        >
+          <Check size={24} /> Action completed successfully!
+        </motion.div>
+      )}
+
+      {/* Class Modal removed - moved to Classes page */}
+    </>
   );
 };
 

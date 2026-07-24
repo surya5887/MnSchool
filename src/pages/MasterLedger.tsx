@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Filter, TrendingUp, TrendingDown, BookOpen } from 'lucide-react';
+import { getTransactions, type TransactionData } from '../services/financeService';
 
 const MasterLedger: React.FC = () => {
   const [session, setSession] = useState('2023-2024');
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
 
-  // Unified mock ledger data (Income and Expenses mixed for accounting view)
-  const ledgerData = [
-    { date: '12 Oct 2023', type: 'Income', category: 'Tuition Fee', details: 'Aarav Sharma (10th A)', amount: 2500, balance: 142500, ref: 'REC-23091' },
-    { date: '12 Oct 2023', type: 'Expense', category: 'Maintenance', details: 'School Bus Repair', amount: -25000, balance: 140000, ref: 'VOU-882' },
-    { date: '11 Oct 2023', type: 'Income', category: 'Tuition Fee', details: 'Kavya Reddy (7th A)', amount: 2000, balance: 165000, ref: 'REC-23090' },
-    { date: '10 Oct 2023', type: 'Income', category: 'Admission Fee', details: 'Karan Malhotra (6th A)', amount: 8500, balance: 163000, ref: 'REC-23089' },
-    { date: '05 Oct 2023', type: 'Expense', category: 'Utilities', details: 'Electricity Bill (Sep)', amount: -15000, balance: 154500, ref: 'VOU-881' },
-    { date: '04 Oct 2023', type: 'Expense', category: 'Supplies', details: 'Stationary & Chalks', amount: -4500, balance: 169500, ref: 'VOU-880' },
-    { date: '01 Oct 2023', type: 'Income', category: 'Opening Balance', details: 'Carried forward from Sep', amount: 174000, balance: 174000, ref: '-' },
-  ];
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const data = await getTransactions();
+        // For ledger, we want oldest first to calculate running balance
+        data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setTransactions(data);
+      } catch (error) {
+        console.error("Error fetching transactions", error);
+      }
+    };
+    fetchTransactions();
+  }, []);
+
+  let runningBalance = 0;
+  const ledgerData = transactions.map(t => {
+    const amt = t.type === 'Income' ? t.amount : -t.amount;
+    runningBalance += amt;
+    return {
+      date: new Date(t.date).toLocaleDateString(),
+      type: t.type,
+      category: t.category,
+      details: t.description,
+      amount: amt,
+      balance: runningBalance,
+      ref: t.id ? t.id.slice(0, 8).toUpperCase() : '-'
+    };
+  }).reverse(); // Reverse for display (newest first)
+
+  const totalCredit = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
+  const totalDebit = transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0);
+  const netBalance = totalCredit - totalDebit;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -30,7 +54,7 @@ const MasterLedger: React.FC = () => {
             <option value="2022-2023">Session: 2022-2023</option>
             <option value="2021-2022">Session: 2021-2022</option>
           </select>
-          <button className="btn-secondary">
+          <button className="btn-secondary" onClick={() => alert('Exporting ledger to PDF/Excel will be available soon.')}>
             <Download size={18} /> Export Excel
           </button>
         </div>
@@ -44,7 +68,7 @@ const MasterLedger: React.FC = () => {
           </div>
           <div>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Credit (Income)</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>₹14,50,000</div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>₹{totalCredit.toLocaleString()}</div>
           </div>
         </div>
         <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -53,13 +77,13 @@ const MasterLedger: React.FC = () => {
           </div>
           <div>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Debit (Expense)</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>₹8,45,000</div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>₹{totalDebit.toLocaleString()}</div>
           </div>
         </div>
         <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white' }}>
           <div>
             <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Net Bank/Cash Balance</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700 }}>₹6,05,000</div>
+            <div style={{ fontSize: '2rem', fontWeight: 700 }}>₹{netBalance.toLocaleString()}</div>
           </div>
         </div>
       </div>
@@ -69,7 +93,7 @@ const MasterLedger: React.FC = () => {
            <input type="date" className="glass-input" style={{ width: 'auto' }} />
            <span style={{ alignSelf: 'center', color: 'var(--text-muted)' }}>to</span>
            <input type="date" className="glass-input" style={{ width: 'auto' }} />
-           <button className="btn-secondary" style={{ marginLeft: 'auto' }}><Filter size={16}/> Filter Ledger</button>
+           <button className="btn-secondary" style={{ marginLeft: 'auto' }} onClick={() => alert('Advanced filtering coming soon!')}><Filter size={16}/> Filter Ledger</button>
         </div>
 
         <div className="glass-table-container">

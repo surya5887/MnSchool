@@ -44,9 +44,7 @@ const Layout: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '20px' }}>
-            MN
-          </div>
+          <img src="/images/logo.jpeg" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '12px', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
             <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Public School</h2>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ERP System</span>
@@ -65,6 +63,7 @@ const Layout: React.FC = () => {
           <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
           
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Academics & Operations</div>
+          <NavLink to="/classes" style={navLinkStyle}><BookOpen size={20} /> Classes & Sections</NavLink>
           <NavLink to="/exam" style={navLinkStyle}><FileText size={20} /> Exams & Results</NavLink>
           <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
           <NavLink to="/transport" style={navLinkStyle}><Bus size={20} /> Transport Fleet</NavLink>
