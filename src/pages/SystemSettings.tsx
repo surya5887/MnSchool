@@ -3,6 +3,13 @@ import { motion } from 'framer-motion';
 import { Settings, Shield, HardDrive, BookOpen, CreditCard, PenTool, Check, Database } from 'lucide-react';
 import { logAction } from '../services/auditService';
 import { getStaff, type StaffData } from '../services/staffService';
+import { getStudents } from '../services/studentService';
+import { getClasses } from '../services/classService';
+import { getFeeTypes, getFeeGroups } from '../services/feeService';
+import { getTransactions } from '../services/financeService';
+import { getBooks } from '../services/libraryService';
+import { getVehicles } from '../services/transportService';
+import { getAuditLogs } from '../services/auditService';
 
 const SystemSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('core');
@@ -26,6 +33,59 @@ const SystemSettings: React.FC = () => {
     await logAction('Admin', 'Super Admin', `Updated ${settingName} Settings`);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  };
+
+  const [isBackingUp, setIsBackingUp] = useState(false);
+
+  const handleBackup = async () => {
+    setIsBackingUp(true);
+    try {
+      const [students, classes, staffList, feeTypes, feeGroups, transactions, books, vehicles, auditLogs] = await Promise.all([
+        getStudents(),
+        getClasses(),
+        getStaff(),
+        getFeeTypes(),
+        getFeeGroups(),
+        getTransactions(),
+        getBooks(),
+        getVehicles(),
+        getAuditLogs()
+      ]);
+
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        version: '1.0',
+        data: {
+          students,
+          classes,
+          staff: staffList,
+          feeTypes,
+          feeGroups,
+          transactions,
+          books,
+          vehicles,
+          auditLogs
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mn_school_backup_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) {
+      console.error("Backup failed", e);
+      alert("Failed to create backup.");
+    } finally {
+      setIsBackingUp(false);
+    }
   };
 
   const tabs = [
@@ -188,8 +248,8 @@ const SystemSettings: React.FC = () => {
                 <h3 style={{ margin: '0 0 8px 0' }}>Manual Database Backup</h3>
                 <p style={{ margin: 0, color: 'var(--text-muted)' }}>Download a complete snapshot of all school data.</p>
               </div>
-              <button className="btn-primary" style={{ padding: '12px 24px' }} onClick={() => alert('Initiating secure database snapshot... This feature requires backend support.')}>
-                <Database size={18} /> Perform Backup Now
+              <button className="btn-primary" style={{ padding: '12px 24px' }} onClick={handleBackup} disabled={isBackingUp}>
+                <Database size={18} /> {isBackingUp ? 'Generating JSON...' : 'Perform Backup Now'}
               </button>
             </div></motion.div>
           )}
