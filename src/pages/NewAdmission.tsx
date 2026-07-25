@@ -7,6 +7,40 @@ import { getVehicles } from '../services/transportService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import { useNavigate } from 'react-router-dom';
+import Cropper from 'react-easy-crop';
+
+const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.src = imageSrc;
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = pixelCrop.width;
+      canvas.height = pixelCrop.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject('No 2d context');
+
+      ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) return reject('Canvas is empty');
+        const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+        resolve(file);
+      }, 'image/jpeg');
+    };
+    image.onerror = (e) => reject(e);
+  });
+};
 
 const NewAdmission: React.FC = () => {
   const navigate = useNavigate();
@@ -45,6 +79,13 @@ const NewAdmission: React.FC = () => {
   const [showNewDocInput, setShowNewDocInput] = useState(false);
   const [activeCustomDocId, setActiveCustomDocId] = useState<string | null>(null);
   const customDocInputRef = useRef<HTMLInputElement>(null);
+
+  // Cropper state
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [rawImage, setRawImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -115,13 +156,44 @@ const NewAdmission: React.FC = () => {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setPhotoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
+        setRawImage(reader.result as string);
+        setShowCropper(true);
       };
       reader.readAsDataURL(file);
     }
+    // reset input value so selecting the same file again triggers change
+    if(fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const onCropComplete = (_: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleSaveCrop = async () => {
+    if (rawImage && croppedAreaPixels) {
+      try {
+        const croppedImageFile = await getCroppedImg(rawImage, croppedAreaPixels);
+        setPhotoFile(croppedImageFile);
+        setPhotoPreview(URL.createObjectURL(croppedImageFile));
+        setShowCropper(false);
+        setRawImage(null);
+      } catch (e) {
+        console.error("Error cropping image", e);
+      }
+    }
+  };
+
+  const handleCancelCrop = () => {
+    setShowCropper(false);
+    setRawImage(null);
+  };
+
+  const handleRemovePhoto = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPhotoFile(null);
+    setPhotoPreview(null);
   };
 
   const handleCustomDocChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -341,6 +413,7 @@ const NewAdmission: React.FC = () => {
             <div 
               onClick={handlePhotoClick}
               style={{ 
+                position: 'relative',
                 width: '150px', height: '150px', borderRadius: '12px', border: '2px dashed var(--glass-border)', 
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
                 color: 'var(--text-muted)', marginBottom: '16px', background: 'rgba(255,255,255,0.3)', 
@@ -348,7 +421,16 @@ const NewAdmission: React.FC = () => {
               }}
             >
               {photoPreview ? (
-                <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <>
+                  <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button 
+                    onClick={handleRemovePhoto}
+                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                    title="Remove Photo"
+                  >
+                    <X size={16} />
+                  </button>
+                </>
               ) : (
                 <>
                   <Camera size={32} style={{ marginBottom: '8px' }} />
@@ -432,6 +514,51 @@ const NewAdmission: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cropper Modal */}
+      {showCropper && rawImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{ width: '90%', maxWidth: '500px', background: 'white', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ padding: '16px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0 }}>Crop Photo</h3>
+              <button onClick={handleCancelCrop} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><X size={20} /></button>
+            </div>
+            
+            <div style={{ position: 'relative', width: '100%', height: '350px', background: '#333' }}>
+              <Cropper
+                image={rawImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={4 / 5}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            
+            <div style={{ padding: '16px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '8px', color: '#555' }}>Zoom</label>
+              <input 
+                type="range" 
+                value={zoom} 
+                min={1} 
+                max={3} 
+                step={0.1}
+                aria-labelledby="Zoom"
+                onChange={(e) => setZoom(Number(e.target.value))} 
+                style={{ width: '100%', marginBottom: '16px' }} 
+              />
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button className="btn-secondary" onClick={handleCancelCrop}>Cancel</button>
+                <button className="btn-primary" onClick={handleSaveCrop}>Save Crop</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

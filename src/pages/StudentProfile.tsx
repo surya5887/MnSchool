@@ -1,9 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Phone, Mail, IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft } from 'lucide-react';
-import { getStudentById, type StudentData } from '../services/studentService';
+import { User, Phone, Mail, IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save } from 'lucide-react';
+import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
+import { uploadImageToCloudinary } from '../lib/cloudinary';
+import Cropper from 'react-easy-crop';
+
+const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.src = imageSrc;
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = pixelCrop.width;
+      canvas.height = pixelCrop.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject('No 2d context');
+
+      ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) return reject('Canvas is empty');
+        const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+        resolve(file);
+      }, 'image/jpeg');
+    };
+    image.onerror = (e) => reject(e);
+  });
+};
 import { getTransactions, addTransaction, type TransactionData } from '../services/financeService';
 import Modal from '../components/Modal';
 
@@ -15,6 +50,19 @@ const StudentProfile: React.FC = () => {
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<Partial<StudentData>>({});
+  const [saving, setSaving] = useState(false);
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [rawImage, setRawImage] = useState<string | null>(null);
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
+  const [newPhotoPreview, setNewPhotoPreview] = useState<string | null>(null);
+
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
   const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine' });
 
@@ -25,6 +73,7 @@ const StudentProfile: React.FC = () => {
         const studentData = await getStudentById(id);
         if (studentData) {
           setStudent(studentData);
+          setEditData(studentData);
           
           // Fetch class for fee structure
           const classes = await getClasses();
@@ -68,6 +117,80 @@ const StudentProfile: React.FC = () => {
     }
   };
 
+  const handleEditToggle = () => {
+    if (isEditing) {
+      setEditData(student || {});
+      setNewPhotoFile(null);
+      setNewPhotoPreview(null);
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!id || !student) return;
+    setSaving(true);
+    try {
+      let finalPhotoUrl = editData.photoUrl;
+      
+      if (newPhotoFile) {
+        finalPhotoUrl = await uploadImageToCloudinary(newPhotoFile);
+      } 
+      else if (editData.photoUrl === '') {
+         finalPhotoUrl = '';
+      }
+
+      const updatedData = { ...editData, photoUrl: finalPhotoUrl };
+
+      await updateStudent(id, updatedData);
+      setStudent(updatedData as StudentData);
+      setIsEditing(false);
+      setNewPhotoFile(null);
+      setNewPhotoPreview(null);
+    } catch (e) {
+      console.error("Error updating profile", e);
+      alert("Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRawImage(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const onCropComplete = (_: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleSaveCrop = async () => {
+    if (rawImage && croppedAreaPixels) {
+      try {
+        const croppedImageFile = await getCroppedImg(rawImage, croppedAreaPixels);
+        setNewPhotoFile(croppedImageFile);
+        setNewPhotoPreview(URL.createObjectURL(croppedImageFile));
+        setShowCropper(false);
+        setRawImage(null);
+      } catch (e) {
+        console.error("Error cropping image", e);
+      }
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setNewPhotoFile(null);
+    setNewPhotoPreview(null);
+    setEditData({ ...editData, photoUrl: '' });
+  };
+
   if (loading) return <div>Loading Profile...</div>;
   if (!student) return <div>Student not found.</div>;
 
@@ -91,42 +214,106 @@ const StudentProfile: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <button onClick={() => navigate(-1)} className="btn-secondary" style={{ marginBottom: '24px', background: 'transparent', border: 'none', padding: 0 }}>
-        <ArrowLeft size={20} /> Back to Directory
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <button onClick={() => navigate(-1)} className="btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+          <ArrowLeft size={20} /> Back to Directory
+        </button>
+        {isEditing ? (
+          <div style={{ display: 'flex', gap: '12px' }}>
+             <button className="btn-secondary" onClick={handleEditToggle}>Cancel</button>
+             <button className="btn-primary" onClick={handleSaveProfile} disabled={saving}>
+               {saving ? 'Saving...' : <><Save size={16}/> Save Changes</>}
+             </button>
+          </div>
+        ) : (
+          <button className="btn-primary" onClick={handleEditToggle}>
+            <Edit size={16} /> Edit Profile
+          </button>
+        )}
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
         
         {/* Left Column - Profile Card */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ textAlign: 'center' }}>
+          <div className="glass-panel" style={{ textAlign: 'center', position: 'relative' }}>
+            
+            <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handlePhotoChange} />
+            
             <div style={{ 
               width: '120px', height: '120px', borderRadius: '50%', background: 'var(--primary)', 
               margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
-              fontSize: '3rem', fontWeight: 600, overflow: 'hidden'
-            }}>
-              {student.photoUrl ? <img src={student.photoUrl} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : student.firstName[0]}
+              fontSize: '3rem', fontWeight: 600, overflow: 'hidden', position: 'relative',
+              cursor: isEditing ? 'pointer' : 'default', border: isEditing ? '2px dashed var(--glass-border)' : 'none'
+            }} onClick={() => isEditing && fileInputRef.current?.click()}>
+              {newPhotoPreview || (editData.photoUrl && editData.photoUrl !== '') ? (
+                <>
+                  <img src={newPhotoPreview || editData.photoUrl} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {isEditing && (
+                    <div style={{ position: 'absolute', bottom: 0, width: '100%', background: 'rgba(0,0,0,0.5)', padding: '4px', fontSize: '0.7rem' }}>
+                       <Camera size={14} /> Change
+                    </div>
+                  )}
+                </>
+              ) : (
+                isEditing ? <Camera size={32} /> : (student.firstName?.[0] || 'U')
+              )}
             </div>
-            <h2 style={{ margin: '0 0 8px 0' }}>{student.firstName} {student.lastName}</h2>
-            <p style={{ color: 'var(--text-muted)', margin: '0 0 16px 0' }}>{studentClass?.className} - {student.sectionId} | Roll: {student.rollNumber}</p>
             
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>{student.status}</span>
-              {student.transportRoute && <span className="badge warning">Bus: {student.transportRoute}</span>}
-            </div>
+            {isEditing && (newPhotoPreview || (editData.photoUrl && editData.photoUrl !== '')) && (
+              <button 
+                onClick={handleRemovePhoto}
+                style={{ margin: '-10px auto 16px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '4px', padding: '4px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+              >
+                <X size={14} /> Remove Photo
+              </button>
+            )}
+
+            {isEditing ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+                <input className="glass-input" value={editData.firstName} onChange={e => setEditData({...editData, firstName: e.target.value})} placeholder="First Name" />
+                <input className="glass-input" value={editData.lastName} onChange={e => setEditData({...editData, lastName: e.target.value})} placeholder="Last Name" />
+                <select className="glass-input" value={editData.status} onChange={e => setEditData({...editData, status: e.target.value as 'Active' | 'Inactive'})}>
+                   <option value="Active">Active</option>
+                   <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            ) : (
+              <>
+                <h2 style={{ margin: '0 0 8px 0' }}>{student.firstName} {student.lastName}</h2>
+                <p style={{ color: 'var(--text-muted)', margin: '0 0 16px 0' }}>{studentClass?.className} - {student.sectionId} | Roll: {student.rollNumber}</p>
+                
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>{student.status}</span>
+                  {student.transportRoute && <span className="badge warning">Bus: {student.transportRoute}</span>}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="glass-panel">
             <h3 style={{ margin: '0 0 16px 0' }}>Contact Info</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
-                <User size={18} /> <span>Parent: {student.parentName || 'N/A'}</span>
+                <User size={18} /> 
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} placeholder="Parent Name" /> 
+                  : <span>Parent: {student.parentName || 'N/A'}</span>
+                }
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
-                <Phone size={18} /> <span>{student.parentPhone || 'N/A'}</span>
+                <Phone size={18} /> 
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} placeholder="Parent Phone" /> 
+                  : <span>{student.parentPhone || 'N/A'}</span>
+                }
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
-                <Mail size={18} /> <span>{student.email || 'N/A'}</span>
+                <Mail size={18} /> 
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email Address" /> 
+                  : <span>{student.email || 'N/A'}</span>
+                }
               </div>
             </div>
           </div>
@@ -241,6 +428,50 @@ const StudentProfile: React.FC = () => {
           </div>
         </form>
       </Modal>
+
+      {/* Cropper Modal */}
+      {showCropper && rawImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{ width: '90%', maxWidth: '500px', background: 'white', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ padding: '16px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0 }}>Crop Photo</h3>
+              <button onClick={() => { setShowCropper(false); setRawImage(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><X size={20} /></button>
+            </div>
+            
+            <div style={{ position: 'relative', width: '100%', height: '350px', background: '#333' }}>
+              <Cropper
+                image={rawImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={4 / 5}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            
+            <div style={{ padding: '16px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '8px', color: '#555' }}>Zoom</label>
+              <input 
+                type="range" 
+                value={zoom} 
+                min={1} 
+                max={3} 
+                step={0.1}
+                onChange={(e) => setZoom(Number(e.target.value))} 
+                style={{ width: '100%', marginBottom: '16px' }} 
+              />
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button className="btn-secondary" onClick={() => { setShowCropper(false); setRawImage(null); }}>Cancel</button>
+                <button className="btn-primary" onClick={handleSaveCrop}>Save Crop</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </motion.div>
   );
