@@ -31,6 +31,9 @@ export interface StudentData {
   feeGroup?: string;
   transportRoute?: string;
   admissionDate?: string;
+  address?: string;
+  motherName?: string;
+  emergencyContact?: string;
 }
 
 export const addStudent = async (studentData: StudentData) => {

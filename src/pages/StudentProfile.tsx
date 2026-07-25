@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Phone, Mail, IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
@@ -282,7 +282,10 @@ const StudentProfile: React.FC = () => {
             ) : (
               <>
                 <h2 style={{ margin: '0 0 8px 0' }}>{student.firstName} {student.lastName}</h2>
-                <p style={{ color: 'var(--text-muted)', margin: '0 0 16px 0' }}>{studentClass?.className} - {student.sectionId} | Roll: {student.rollNumber}</p>
+                <p style={{ color: 'var(--text-muted)', margin: '0 0 16px 0' }}>
+                  {studentClass?.className} - {student.sectionId} | Roll: {student.rollNumber} 
+                  {student.admissionNo ? ` | Adm No: ${student.admissionNo}` : ''}
+                </p>
                 
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>{student.status}</span>
@@ -293,27 +296,67 @@ const StudentProfile: React.FC = () => {
           </div>
 
           <div className="glass-panel">
-            <h3 style={{ margin: '0 0 16px 0' }}>Contact Info</h3>
+            <h3 style={{ margin: '0 0 16px 0' }}>Detailed Information</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
-                <User size={18} /> 
+                <span style={{ width: '120px', fontWeight: 500 }}>Admission No</span>
                 {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} placeholder="Parent Name" /> 
-                  : <span>Parent: {student.parentName || 'N/A'}</span>
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.admissionNo || ''} onChange={e => setEditData({...editData, admissionNo: e.target.value})} placeholder="Admission No" /> 
+                  : <span>{student.admissionNo || 'N/A'}</span>
                 }
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
-                <Phone size={18} /> 
+                <span style={{ width: '120px', fontWeight: 500 }}>Father Name</span>
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} placeholder="Father's Name" /> 
+                  : <span>{student.parentName || 'N/A'}</span>
+                }
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+                <span style={{ width: '120px', fontWeight: 500 }}>Mother Name</span>
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.motherName || ''} onChange={e => setEditData({...editData, motherName: e.target.value})} placeholder="Mother's Name" /> 
+                  : <span>{student.motherName || 'N/A'}</span>
+                }
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+                <span style={{ width: '120px', fontWeight: 500 }}>Primary Phone</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} placeholder="Parent Phone" /> 
                   : <span>{student.parentPhone || 'N/A'}</span>
                 }
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
-                <Mail size={18} /> 
+                <span style={{ width: '120px', fontWeight: 500 }}>Emergency Contact</span>
                 {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email Address" /> 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.emergencyContact || ''} onChange={e => setEditData({...editData, emergencyContact: e.target.value})} placeholder="Emergency Contact" /> 
+                  : <span>{student.emergencyContact || 'N/A'}</span>
+                }
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+                <span style={{ width: '120px', fontWeight: 500 }}>Email Address</span>
+                {isEditing ? 
+                  <input type="email" className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email Address" /> 
                   : <span>{student.email || 'N/A'}</span>
+                }
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+                <span style={{ width: '120px', fontWeight: 500 }}>Address</span>
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.address || ''} onChange={e => setEditData({...editData, address: e.target.value})} placeholder="Address" /> 
+                  : <span>{student.address || 'N/A'}</span>
+                }
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+                <span style={{ width: '120px', fontWeight: 500 }}>Aadhar Number</span>
+                {isEditing ? 
+                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.aadharNumber || ''} onChange={e => {
+                    let val = e.target.value.replace(/\D/g, '');
+                    if (val.length > 12) val = val.substring(0, 12);
+                    val = val.match(/.{1,4}/g)?.join(' ') || val;
+                    setEditData({...editData, aadharNumber: val});
+                  }} placeholder="Aadhar Number" /> 
+                  : <span>{student.aadharNumber || 'N/A'}</span>
                 }
               </div>
             </div>

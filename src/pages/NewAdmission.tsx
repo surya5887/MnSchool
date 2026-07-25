@@ -61,7 +61,12 @@ const NewAdmission: React.FC = () => {
     parentName: '',
     parentPhone: '',
     email: '',
-    status: 'Active'
+    status: 'Active',
+    admissionNo: '',
+    rollNumber: '' as any,
+    address: '',
+    motherName: '',
+    emergencyContact: ''
   });
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -265,7 +270,7 @@ const NewAdmission: React.FC = () => {
         }
       }
 
-      const rollNumber = Math.floor(Math.random() * 100) + 1;
+      const rollNumber = parseInt(formData.rollNumber as any) || 0;
 
       const newStudent: Omit<StudentData, 'id'> = {
         ...formData as Omit<StudentData, 'id'>,
@@ -326,12 +331,28 @@ const NewAdmission: React.FC = () => {
                   <option>Other</option>
                 </select>
               </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Email ID</label>
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="glass-input" placeholder="student@example.com" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Address</label>
+                <input type="text" name="address" value={formData.address} onChange={handleInputChange} className="glass-input" placeholder="Complete residential address" />
+              </div>
             </div>
           </div>
 
           <div className="glass-panel">
             <h3 style={{ margin: '0 0 20px 0' }}>Academic & Fee Details</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admission No. (Optional)</label>
+                <input type="text" name="admissionNo" value={formData.admissionNo} onChange={handleInputChange} className="glass-input" placeholder="e.g. ADM-2023-001" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Roll Number (Optional)</label>
+                <input type="number" name="rollNumber" value={formData.rollNumber} onChange={handleInputChange} className="glass-input" placeholder="e.g. 45" />
+              </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admission to Class *</label>
                 <select name="classId" value={formData.classId} onChange={handleClassChange} className="glass-input">
@@ -368,12 +389,20 @@ const NewAdmission: React.FC = () => {
             <h3 style={{ margin: '0 0 20px 0' }}>Parent & Custom Details</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Parent Name</label>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Father / Guardian Name</label>
                 <input type="text" name="parentName" value={formData.parentName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ramesh Kumar" />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Parent Phone</label>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Mother's Name</label>
+                <input type="text" name="motherName" value={formData.motherName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Sunita Devi" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Primary Phone</label>
                 <input type="text" name="parentPhone" value={formData.parentPhone} onChange={handleInputChange} className="glass-input" placeholder="+91 9876543210" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>
+                <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} className="glass-input" placeholder="+91 8765432109" />
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Aadhar Number</label>
