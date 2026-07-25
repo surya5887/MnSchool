@@ -14,6 +14,7 @@ export interface SchoolSettingsData {
   faviconUrl?: string;
   signatureUrl?: string;
   twoFactorAuth?: boolean;
+  admissionDocuments?: string[];
 }
 
 export const getSchoolSettings = async () => {

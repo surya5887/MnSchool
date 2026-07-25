@@ -4,6 +4,7 @@ import { UserPlus, Upload, Save, FileText, Camera, Check, Plus, Trash2, X } from
 import { addStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { getVehicles } from '../services/transportService';
+import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import { useNavigate } from 'react-router-dom';
 
@@ -69,9 +70,20 @@ const NewAdmission: React.FC = () => {
       } catch (error) {
         console.error("Error fetching routes", error);
       }
-    }
+    };
+    const fetchSettings = async () => {
+      try {
+        const settings = await getSchoolSettings();
+        if (settings?.admissionDocuments) {
+          setCustomDocs(settings.admissionDocuments.map(name => ({ id: Date.now().toString() + Math.random(), name, file: null })));
+        }
+      } catch(error) {
+        console.error("Error fetching settings", error);
+      }
+    };
     fetchClasses();
     fetchRoutes();
+    fetchSettings();
   }, []);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -121,11 +133,32 @@ const NewAdmission: React.FC = () => {
     if(customDocInputRef.current) customDocInputRef.current.value = '';
   };
 
-  const handleAddCustomDoc = () => {
+  const handleAddCustomDoc = async () => {
     if(newDocName.trim()){
-      setCustomDocs([...customDocs, {id: Date.now().toString(), name: newDocName, file: null}]);
+      const newDocs = [...customDocs, {id: Date.now().toString(), name: newDocName, file: null}];
+      setCustomDocs(newDocs);
       setNewDocName('');
       setShowNewDocInput(false);
+      
+      try {
+        let settings = await getSchoolSettings();
+        if (!settings) settings = { schoolName: 'Public School', shortName: 'School', email: '', phone: '', address: '' };
+        await saveSchoolSettings({ ...settings, admissionDocuments: newDocs.map(d => d.name) });
+      } catch (e) {
+        console.error("Error saving global document setting", e);
+      }
+    }
+  };
+
+  const handleDeleteCustomDoc = async (id: string) => {
+    const newDocs = customDocs.filter(d => d.id !== id);
+    setCustomDocs(newDocs);
+    try {
+      let settings = await getSchoolSettings();
+      if (!settings) settings = { schoolName: 'Public School', shortName: 'School', email: '', phone: '', address: '' };
+      await saveSchoolSettings({ ...settings, admissionDocuments: newDocs.map(d => d.name) });
+    } catch (e) {
+      console.error("Error deleting global document setting", e);
     }
   };
 
@@ -351,7 +384,7 @@ const NewAdmission: React.FC = () => {
                   {doc.file ? <Check size={16} /> : <Upload size={16} />} 
                   {doc.name}
                 </button>
-                <button className="btn-secondary" style={{ padding: '0 12px', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setCustomDocs(customDocs.filter(d => d.id !== doc.id))}>
+                <button className="btn-secondary" style={{ padding: '0 12px', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => handleDeleteCustomDoc(doc.id)}>
                   <Trash2 size={16} />
                 </button>
               </div>
