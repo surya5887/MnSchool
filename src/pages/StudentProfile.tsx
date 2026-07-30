@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Edit2, Trash2 } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import Cropper from 'react-easy-crop';
+import { getTransactions, addTransaction, updateTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
+import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
+import Modal from '../components/Modal';
 
 const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
   return new Promise((resolve, reject) => {
@@ -39,8 +42,6 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
     image.onerror = (e) => reject(e);
   });
 };
-import { getTransactions, addTransaction, type TransactionData } from '../services/financeService';
-import Modal from '../components/Modal';
 
 const StudentProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -54,7 +55,7 @@ const StudentProfile: React.FC = () => {
   const [editData, setEditData] = useState<Partial<StudentData>>({});
   const [saving, setSaving] = useState(false);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [aspect, setAspect] = useState(4 / 5);
@@ -64,8 +65,28 @@ const StudentProfile: React.FC = () => {
   const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
   const [newPhotoPreview, setNewPhotoPreview] = useState<string | null>(null);
 
+  // Payment modal
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [newPayment, setNewPayment] = useState({ amount: '', description: '', paymentMethod: 'Cash' as 'Cash' | 'Bank Transfer' | 'UPI', date: new Date().toISOString().split('T')[0] });
+
+  // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
   const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine' });
+
+  // Edit transaction
+  const [editingTxn, setEditingTxn] = useState<TransactionData | null>(null);
+  const [isEditTxnModalOpen, setIsEditTxnModalOpen] = useState(false);
+
+  // Delete transaction
+  const [deleteTxnId, setDeleteTxnId] = useState<string | null>(null);
+  const [isDeleteTxnModalOpen, setIsDeleteTxnModalOpen] = useState(false);
+  const [deleteTxnPassword, setDeleteTxnPassword] = useState('');
+  const [deleteTxnError, setDeleteTxnError] = useState('');
+
+  // Custom charge types
+  const [customChargeTypes, setCustomChargeTypes] = useState<string[]>([]);
+  const [showNewChargeTypeInput, setShowNewChargeTypeInput] = useState(false);
+  const [newChargeTypeName, setNewChargeTypeName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,14 +97,15 @@ const StudentProfile: React.FC = () => {
           setStudent(studentData);
           setEditData(studentData);
           
-          // Fetch class for fee structure
           const classes = await getClasses();
           const cls = classes.find(c => c.id === studentData.classId);
           if (cls) setStudentClass(cls);
 
-          // Fetch student specific transactions (both payments and fines)
           const txns = await getTransactions({ studentId: id });
           setTransactions(txns);
+          
+          const settings = await getSchoolSettings();
+          if (settings?.customChargeTypes) setCustomChargeTypes(settings.customChargeTypes);
         }
       } catch (error) {
         console.error("Error fetching student details", error);
@@ -94,6 +116,44 @@ const StudentProfile: React.FC = () => {
     fetchData();
   }, [id]);
 
+  const handleRecordPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id || !newPayment.amount) return;
+    try {
+      await addTransaction({
+        type: 'Income',
+        category: 'Fee Collection',
+        amount: Math.abs(Number(newPayment.amount)),
+        date: newPayment.date,
+        description: newPayment.description || 'Fee Payment',
+        paymentMethod: newPayment.paymentMethod,
+        studentId: id
+      });
+      setIsPaymentModalOpen(false);
+      setNewPayment({ amount: '', description: '', paymentMethod: 'Cash', date: new Date().toISOString().split('T')[0] });
+      const txns = await getTransactions({ studentId: id });
+      setTransactions(txns);
+    } catch (error) {
+      console.error("Error recording payment", error);
+    }
+  };
+
+  const handleAddChargeType = async () => {
+    if (newChargeTypeName.trim()) {
+      const updated = [...customChargeTypes, newChargeTypeName.trim()];
+      setCustomChargeTypes(updated);
+      setNewChargeTypeName('');
+      setShowNewChargeTypeInput(false);
+      try {
+        let settings = await getSchoolSettings();
+        if (!settings) settings = { schoolName: 'Public School', shortName: 'School', email: '', phone: '', address: '' };
+        await saveSchoolSettings({ ...settings, customChargeTypes: updated });
+      } catch (e) {
+        console.error("Error saving charge type", e);
+      }
+    }
+  };
+
   const handleAddFine = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || !newFine.amount) return;
@@ -102,19 +162,56 @@ const StudentProfile: React.FC = () => {
       await addTransaction({
         type: 'Income',
         category: 'Custom Fine / Charge',
-        amount: -Math.abs(Number(newFine.amount)), // Negative income represents a charge due
+        amount: -Math.abs(Number(newFine.amount)),
         date: new Date().toISOString().split('T')[0],
         description: `[${newFine.type}] ${newFine.description}`,
-        paymentMethod: 'Cash', // N/A
+        paymentMethod: 'Cash',
         studentId: id
       });
       setIsFineModalOpen(false);
       setNewFine({ amount: '', description: '', type: 'Late Fine' });
-      // Refresh txns
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
       console.error("Error adding fine", error);
+    }
+  };
+
+  const handleEditTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTxn?.id) return;
+    try {
+      await updateTransaction(editingTxn.id, {
+        amount: editingTxn.amount,
+        description: editingTxn.description,
+        date: editingTxn.date,
+        paymentMethod: editingTxn.paymentMethod
+      });
+      setIsEditTxnModalOpen(false);
+      setEditingTxn(null);
+      const txns = await getTransactions({ studentId: id! });
+      setTransactions(txns);
+    } catch (error) {
+      console.error("Error editing transaction", error);
+    }
+  };
+
+  const handleDeleteTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (deleteTxnPassword !== 'admin123') {
+      setDeleteTxnError('Incorrect admin password.');
+      return;
+    }
+    if (!deleteTxnId) return;
+    try {
+      await deleteTransaction(deleteTxnId);
+      setIsDeleteTxnModalOpen(false);
+      setDeleteTxnId(null);
+      setDeleteTxnPassword('');
+      const txns = await getTransactions({ studentId: id! });
+      setTransactions(txns);
+    } catch (error) {
+      console.error("Error deleting transaction", error);
     }
   };
 
@@ -195,23 +292,23 @@ const StudentProfile: React.FC = () => {
   if (loading) return <div>Loading Profile...</div>;
   if (!student) return <div>Student not found.</div>;
 
-  // Calculate Due logic:
-  // Base fee from class
   let baseFeeTotal = 0;
   if (studentClass && studentClass.fees) {
     baseFeeTotal = studentClass.fees.reduce((sum, f) => sum + f.amount, 0);
   }
 
-  // Fees paid (+ amount in Income), Fines charged (- amount in Income)
+  const previousDues = student.previousDues || 0;
+  const previousPaidAmount = student.previousPaidAmount || 0;
+
   const totalPaid = transactions
     .filter(t => t.type === 'Income' && t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + t.amount, 0) + previousPaidAmount;
   
   const customCharges = transactions
     .filter(t => t.type === 'Income' && t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
-  const pendingDues = (baseFeeTotal + customCharges) - totalPaid;
+  const pendingDues = (baseFeeTotal + previousDues + customCharges) - totalPaid;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -272,8 +369,8 @@ const StudentProfile: React.FC = () => {
 
             {isEditing ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
-                <input className="glass-input" value={editData.firstName} onChange={e => setEditData({...editData, firstName: e.target.value})} placeholder="First Name" />
-                <input className="glass-input" value={editData.lastName} onChange={e => setEditData({...editData, lastName: e.target.value})} placeholder="Last Name" />
+                <input className="glass-input" value={editData.firstName || ''} onChange={e => setEditData({...editData, firstName: e.target.value})} placeholder="First Name" />
+                <input className="glass-input" value={editData.lastName || ''} onChange={e => setEditData({...editData, lastName: e.target.value})} placeholder="Last Name" />
                 <select className="glass-input" value={editData.status} onChange={e => setEditData({...editData, status: e.target.value as 'Active' | 'Inactive'})}>
                    <option value="Active">Active</option>
                    <option value="Inactive">Inactive</option>
@@ -290,6 +387,11 @@ const StudentProfile: React.FC = () => {
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>{student.status}</span>
                   {student.transportRoute && <span className="badge warning">Bus: {student.transportRoute}</span>}
+                  {student.admissionType && (
+                    <span className={`badge ${student.admissionType === 'New' ? 'warning' : 'success'}`}>
+                      {student.admissionType === 'New' ? '🆕 New' : '🔄 Old'}
+                    </span>
+                  )}
                 </div>
               </>
             )}
@@ -366,28 +468,54 @@ const StudentProfile: React.FC = () => {
         {/* Right Column - Ledgers and Details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
+          {student.admissionType === 'Old' && (
+            <div className="glass-panel" style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)' }}>
+              <h4 style={{ margin: '0 0 12px 0', color: 'var(--primary-color)' }}>📋 Previous Session History</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Session</span><br/><strong>{student.previousSession || 'N/A'}</strong></div>
+                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Dues</span><br/><strong style={{ color: 'var(--danger)' }}>₹{student.previousDues || 0}</strong></div>
+                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Paid</span><br/><strong style={{ color: 'var(--success)' }}>₹{student.previousPaidAmount || 0}</strong></div>
+              </div>
+            </div>
+          )}
+
           {/* Fee Overview */}
           <div className="glass-panel">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <IndianRupee size={20} className="text-primary" /> Financial Ledger
               </h3>
-              <button className="btn-secondary" onClick={() => setIsFineModalOpen(true)}>
-                <Plus size={16} /> Add Fine/Charge
-              </button>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
+                  <Plus size={16} /> Record Payment
+                </button>
+                <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsFineModalOpen(true)}>
+                  <Plus size={16} /> Add Charge
+                </button>
+              </div>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(99,102,241,0.1)' }}>
                  <div style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>Base Class Fee</div>
                  <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{baseFeeTotal}</div>
+               </div>
+               {student.admissionType === 'Old' && student.previousDues ? (
+                 <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(245,158,11,0.1)' }}>
+                   <div style={{ fontSize: '0.85rem', color: 'var(--warning)' }}>Previous Dues</div>
+                   <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{previousDues}</div>
+                 </div>
+               ) : null}
+               <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)' }}>
+                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Custom Charges</div>
+                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{customCharges}</div>
                </div>
                <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)' }}>
                  <div style={{ fontSize: '0.85rem', color: 'var(--success)' }}>Total Paid</div>
                  <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalPaid}</div>
                </div>
                <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)' }}>
-                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Pending Dues</div>
+                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Net Pending</div>
                  <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{pendingDues}</div>
                </div>
             </div>
@@ -404,6 +532,7 @@ const StudentProfile: React.FC = () => {
                       <th>Description</th>
                       <th>Method</th>
                       <th style={{ textAlign: 'right' }}>Amount</th>
+                      <th style={{ textAlign: 'center' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -414,6 +543,16 @@ const StudentProfile: React.FC = () => {
                         <td>{t.amount > 0 ? t.paymentMethod : 'Charge'}</td>
                         <td style={{ textAlign: 'right', fontWeight: 600, color: t.amount > 0 ? 'var(--success)' : 'var(--danger)' }}>
                           {t.amount > 0 ? `+ ₹${t.amount}` : `- ₹${Math.abs(t.amount)}`}
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button className="icon-btn" onClick={() => { setEditingTxn(t); setIsEditTxnModalOpen(true); }} style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                              <Edit2 size={16} />
+                            </button>
+                            <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -444,20 +583,68 @@ const StudentProfile: React.FC = () => {
         </div>
       </div>
 
+      {/* Payment Modal */}
+      <Modal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} title="Record Payment">
+        <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
+            <input required type="number" className="glass-input" value={newPayment.amount} onChange={e => setNewPayment({...newPayment, amount: e.target.value})} placeholder="e.g. 1500" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
+            <input type="text" className="glass-input" value={newPayment.description} onChange={e => setNewPayment({...newPayment, description: e.target.value})} placeholder="e.g. Term 1 Fee" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Payment Method</label>
+            <select className="glass-input" value={newPayment.paymentMethod} onChange={e => setNewPayment({...newPayment, paymentMethod: e.target.value as any})}>
+              <option value="Cash">Cash</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="UPI">UPI</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
+            <input required type="date" className="glass-input" value={newPayment.date} onChange={e => setNewPayment({...newPayment, date: e.target.value})} />
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+            <button type="button" className="btn-secondary" onClick={() => setIsPaymentModalOpen(false)}>Cancel</button>
+            <button type="submit" className="btn-primary" style={{ background: 'var(--success)' }}>Record Payment</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Charge / Fine Modal */}
       <Modal isOpen={isFineModalOpen} onClose={() => setIsFineModalOpen(false)} title="Add Custom Charge / Fine">
         <form onSubmit={handleAddFine} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="alert-warning" style={{ background: 'rgba(245,158,11,0.1)', color: 'var(--warning)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', gap: '8px' }}>
             <AlertTriangle size={18} /> This will add to the student's pending dues.
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Charge Type</label>
-            <select className="glass-input" value={newFine.type} onChange={e => setNewFine({...newFine, type: e.target.value})}>
-              <option>Late Fine</option>
-              <option>Damage Fine</option>
-              <option>Library Fine</option>
-              <option>Custom Charge</option>
-            </select>
-          </div>
+          
+          {!showNewChargeTypeInput ? (
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Charge Type</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <select className="glass-input" style={{ flex: 1 }} value={newFine.type} onChange={e => setNewFine({...newFine, type: e.target.value})}>
+                  <option>Late Fine</option>
+                  <option>Damage Fine</option>
+                  <option>Library Fine</option>
+                  <option>Custom Charge</option>
+                  {customChargeTypes.map(c => <option key={c}>{c}</option>)}
+                </select>
+                <button type="button" className="btn-secondary" onClick={() => setShowNewChargeTypeInput(true)}>+</button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>New Charge Type</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input type="text" className="glass-input" style={{ flex: 1 }} value={newChargeTypeName} onChange={e => setNewChargeTypeName(e.target.value)} placeholder="e.g. Bus Fee" />
+                <button type="button" className="btn-primary" onClick={handleAddChargeType}>Add</button>
+                <button type="button" className="btn-secondary" onClick={() => setShowNewChargeTypeInput(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
             <input required type="text" className="glass-input" value={newFine.description} onChange={e => setNewFine({...newFine, description: e.target.value})} placeholder="e.g. Broken lab equipment" />
@@ -473,6 +660,58 @@ const StudentProfile: React.FC = () => {
         </form>
       </Modal>
 
+      {/* Edit Transaction Modal */}
+      <Modal isOpen={isEditTxnModalOpen} onClose={() => { setIsEditTxnModalOpen(false); setEditingTxn(null); }} title="Edit Transaction">
+        {editingTxn && (
+          <form onSubmit={handleEditTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
+              <input required type="number" className="glass-input" value={Math.abs(editingTxn.amount)} onChange={e => setEditingTxn({...editingTxn, amount: editingTxn.amount > 0 ? Number(e.target.value) : -Number(e.target.value)})} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
+              <input required type="text" className="glass-input" value={editingTxn.description} onChange={e => setEditingTxn({...editingTxn, description: e.target.value})} />
+            </div>
+            {editingTxn.amount > 0 && (
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px' }}>Payment Method</label>
+                <select className="glass-input" value={editingTxn.paymentMethod} onChange={e => setEditingTxn({...editingTxn, paymentMethod: e.target.value as any})}>
+                  <option value="Cash">Cash</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="UPI">UPI</option>
+                </select>
+              </div>
+            )}
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
+              <input required type="date" className="glass-input" value={editingTxn.date.split('T')[0]} onChange={e => setEditingTxn({...editingTxn, date: e.target.value})} />
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button type="button" className="btn-secondary" onClick={() => setIsEditTxnModalOpen(false)}>Cancel</button>
+              <button type="submit" className="btn-primary">Save Changes</button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      {/* Delete Transaction Modal */}
+      <Modal isOpen={isDeleteTxnModalOpen} onClose={() => { setIsDeleteTxnModalOpen(false); setDeleteTxnId(null); setDeleteTxnError(''); }} title="Delete Transaction">
+        <form onSubmit={handleDeleteTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="alert-warning" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem' }}>
+            Warning: This action cannot be undone and will affect financial reports.
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password</label>
+            <input required type="password" className="glass-input" value={deleteTxnPassword} onChange={e => setDeleteTxnPassword(e.target.value)} placeholder="Enter admin password" />
+            {deleteTxnError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '4px' }}>{deleteTxnError}</p>}
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+            <button type="button" className="btn-secondary" onClick={() => setIsDeleteTxnModalOpen(false)}>Cancel</button>
+            <button type="submit" className="btn-primary" style={{ background: 'var(--danger)' }}>Delete Transaction</button>
+          </div>
+        </form>
+      </Modal>
+
       {/* Cropper Modal */}
       {showCropper && rawImage && (
         <div style={{
@@ -481,7 +720,7 @@ const StudentProfile: React.FC = () => {
         }}>
           <div style={{ width: '90%', maxWidth: '500px', background: 'white', borderRadius: '12px', overflow: 'hidden' }}>
             <div style={{ padding: '16px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0 }}>Crop Photo</h3>
+              <h3 style={{ margin: 0, color: '#333' }}>Crop Photo</h3>
               <button onClick={() => { setShowCropper(false); setRawImage(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><X size={20} /></button>
             </div>
             
@@ -499,11 +738,11 @@ const StudentProfile: React.FC = () => {
             
             <div style={{ padding: '16px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', overflowX: 'auto', paddingBottom: '4px' }}>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 1 ? 'var(--primary-color)' : '', color: aspect === 1 ? 'white' : '' }} onClick={() => setAspect(1)}>1:1</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 3/4 ? 'var(--primary-color)' : '', color: aspect === 3/4 ? 'white' : '' }} onClick={() => setAspect(3/4)}>3:4</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4/3 ? 'var(--primary-color)' : '', color: aspect === 4/3 ? 'white' : '' }} onClick={() => setAspect(4/3)}>4:3</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4/5 ? 'var(--primary-color)' : '', color: aspect === 4/5 ? 'white' : '' }} onClick={() => setAspect(4/5)}>4:5</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 16/9 ? 'var(--primary-color)' : '', color: aspect === 16/9 ? 'white' : '' }} onClick={() => setAspect(16/9)}>16:9</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 1 ? 'var(--primary)' : '', color: aspect === 1 ? 'white' : '' }} onClick={() => setAspect(1)}>1:1</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 3/4 ? 'var(--primary)' : '', color: aspect === 3/4 ? 'white' : '' }} onClick={() => setAspect(3/4)}>3:4</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4/3 ? 'var(--primary)' : '', color: aspect === 4/3 ? 'white' : '' }} onClick={() => setAspect(4/3)}>4:3</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4/5 ? 'var(--primary)' : '', color: aspect === 4/5 ? 'white' : '' }} onClick={() => setAspect(4/5)}>4:5</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 16/9 ? 'var(--primary)' : '', color: aspect === 16/9 ? 'white' : '' }} onClick={() => setAspect(16/9)}>16:9</button>
               </div>
 
               <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '8px', color: '#555' }}>Zoom</label>

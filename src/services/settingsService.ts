@@ -15,6 +15,7 @@ export interface SchoolSettingsData {
   signatureUrl?: string;
   twoFactorAuth?: boolean;
   admissionDocuments?: string[];
+  customChargeTypes?: string[];
 }
 
 export const getSchoolSettings = async () => {

@@ -1,15 +1,38 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Plus, Filter, Trash2, Eye } from 'lucide-react';
+import { Search, Plus, Trash2, Eye } from 'lucide-react';
 import { getStudents, deleteStudent, type StudentData } from '../services/studentService';
 import { getClasses, addClass, type ClassData } from '../services/classService';
 import Modal from '../components/Modal';
+
+const getStudentDisplayType = (student: StudentData): 'New' | 'Old' => {
+  if (student.admissionType === 'Old') return 'Old';
+  if (student.admissionType === 'New') {
+    // Auto-transition: if 1 year has passed since admission, show as Old
+    const admDate = student.originalAdmissionDate || student.admissionDate || student.createdAt;
+    if (admDate) {
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+      if (new Date(admDate) < oneYearAgo) return 'Old';
+    }
+    return 'New';
+  }
+  // Legacy students without admissionType â€” check date
+  const admDate = student.admissionDate || student.createdAt;
+  if (admDate) {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    if (new Date(admDate) < oneYearAgo) return 'Old';
+  }
+  return 'New';
+};
 
 const Students: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState('All');
   const [selectedSection, setSelectedSection] = useState('All');
+  const [selectedType, setSelectedType] = useState('All');
   const [students, setStudents] = useState<StudentData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,13 +92,27 @@ const Students: React.FC = () => {
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      const matchSearch = `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          s.admissionNo?.toLowerCase().includes(searchTerm.toLowerCase());
+      const displayType = getStudentDisplayType(s);
+      const fullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+      const searchLower = searchTerm.toLowerCase().trim();
+      
+      // Check if search term is "new" or "old" for type matching
+      let matchSearch = false;
+      if (searchLower === 'new' || searchLower === 'old') {
+        matchSearch = displayType.toLowerCase() === searchLower || 
+                      fullName.includes(searchLower) || 
+                      (s.admissionNo?.toLowerCase().includes(searchLower) || false);
+      } else {
+        matchSearch = fullName.includes(searchLower) || 
+                      (s.admissionNo?.toLowerCase().includes(searchLower) || false);
+      }
+      
       const matchClass = selectedClass === 'All' || s.classId === selectedClass;
       const matchSection = selectedSection === 'All' || s.sectionId === selectedSection;
-      return matchSearch && matchClass && matchSection;
+      const matchType = selectedType === 'All' || displayType === selectedType;
+      return matchSearch && matchClass && matchSection && matchType;
     });
-  }, [students, searchTerm, selectedClass, selectedSection]);
+  }, [students, searchTerm, selectedClass, selectedSection, selectedType]);
 
   const activeClassObj = classes.find(c => c.className === selectedClass);
   const activeSections = activeClassObj ? activeClassObj.sections : [];
@@ -123,19 +160,30 @@ const Students: React.FC = () => {
 
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
         {/* Toolbar */}
-        <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+        <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: '200px', maxWidth: '400px' }}>
             <Search size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
               type="text" 
-              placeholder="Search by name or admission no..." 
+              placeholder="Search by name, admission no, or type (new/old)..." 
               className="glass-input" 
               style={{ paddingLeft: '48px' }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <select 
+              className="glass-input" 
+              value={selectedType} 
+              onChange={e => setSelectedType(e.target.value)} 
+              style={{ width: '110px' }}
+            >
+              <option value="All">All Types</option>
+              <option value="New">ðŸ†• New</option>
+              <option value="Old">ðŸ”„ Old</option>
+            </select>
+
             <select 
               className="glass-input" 
               value={selectedClass} 
@@ -162,9 +210,6 @@ const Students: React.FC = () => {
               <Plus size={18} />
             </button>
           </div>
-          <button className="btn-secondary" onClick={() => alert('Advanced filtering coming soon!')}>
-            <Filter size={18} /> Filters
-          </button>
         </div>
 
         {/* Table */}
@@ -172,12 +217,12 @@ const Students: React.FC = () => {
           <table>
             <thead>
               <tr>
-                <th>Admission No</th>
+                <th>Adm No</th>
                 <th>Full Name</th>
                 <th>Class / Sec</th>
                 <th>Roll No.</th>
+                <th>Type</th>
                 <th>Status</th>
-                <th>Fee Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -186,7 +231,9 @@ const Students: React.FC = () => {
                  <tr>
                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
                  </tr>
-              ) : filteredStudents.map((student, idx) => (
+              ) : filteredStudents.map((student, idx) => {
+                const displayType = getStudentDisplayType(student);
+                return (
                 <motion.tr 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -205,14 +252,13 @@ const Students: React.FC = () => {
                   <td>{student.classId} {student.sectionId}</td>
                   <td>{student.rollNumber}</td>
                   <td>
-                    <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>
-                      {student.status || 'Active'}
+                    <span className={`badge ${displayType === 'New' ? 'warning' : 'success'}`}>
+                      {displayType === 'New' ? 'ðŸ†• New' : 'ðŸ”„ Old'}
                     </span>
                   </td>
                   <td>
-                    {/* Placeholder for fee status until transactions are linked */}
-                    <span className={`badge success`}>
-                      Paid
+                    <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>
+                      {student.status || 'Active'}
                     </span>
                   </td>
                   <td>
@@ -226,7 +272,7 @@ const Students: React.FC = () => {
                     </div>
                   </td>
                 </motion.tr>
-              ))}
+              )})}
               
               {!loading && filteredStudents.length === 0 && (
                 <tr>
@@ -290,7 +336,7 @@ const Students: React.FC = () => {
               <input required type="text" className="glass-input" value={newClassData.feeName} onChange={e => setNewClassData({...newClassData, feeName: e.target.value})} placeholder="e.g. Monthly Tuition" />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (â‚¹)</label>
               <input required type="number" className="glass-input" value={newClassData.feeAmount} onChange={e => setNewClassData({...newClassData, feeAmount: e.target.value})} placeholder="e.g. 2500" />
             </div>
           </div>
@@ -305,3 +351,4 @@ const Students: React.FC = () => {
 };
 
 export default Students;
+

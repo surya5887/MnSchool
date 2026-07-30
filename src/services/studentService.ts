@@ -34,6 +34,11 @@ export interface StudentData {
   address?: string;
   motherName?: string;
   emergencyContact?: string;
+  admissionType?: 'New' | 'Old';
+  originalAdmissionDate?: string;
+  previousDues?: number;
+  previousPaidAmount?: number;
+  previousSession?: string;
 }
 
 export const addStudent = async (studentData: StudentData) => {

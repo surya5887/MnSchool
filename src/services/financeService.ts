@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const TRANSACTIONS_COLLECTION = 'transactions';
@@ -13,7 +13,9 @@ export interface TransactionData {
   paymentMethod: 'Cash' | 'Bank Transfer' | 'UPI';
   referenceId?: string; // Student ID or Staff ID if applicable
   studentId?: string; // Explicitly link to a student
+  chargeType?: string; // Custom charge type name e.g. "Exam Fee", "Lab Fee"
   createdAt?: string;
+  editedAt?: string;
 }
 
 export const addTransaction = async (data: TransactionData) => {
@@ -23,6 +25,27 @@ export const addTransaction = async (data: TransactionData) => {
     return docRef.id;
   } catch (error) {
     console.error("Error adding transaction: ", error);
+    throw error;
+  }
+};
+
+export const updateTransaction = async (id: string, updateData: Partial<TransactionData>) => {
+  try {
+    const docRef = doc(db, TRANSACTIONS_COLLECTION, id);
+    updateData.editedAt = new Date().toISOString();
+    await updateDoc(docRef, updateData as any);
+  } catch (error) {
+    console.error("Error updating transaction: ", error);
+    throw error;
+  }
+};
+
+export const deleteTransaction = async (id: string) => {
+  try {
+    const docRef = doc(db, TRANSACTIONS_COLLECTION, id);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error("Error deleting transaction: ", error);
     throw error;
   }
 };

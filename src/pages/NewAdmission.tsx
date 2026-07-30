@@ -47,7 +47,13 @@ const NewAdmission: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const birthCertInputRef = useRef<HTMLInputElement>(null);
   const tcInputRef = useRef<HTMLInputElement>(null);
+  const [admissionType, setAdmissionType] = useState<'New' | 'Old'>('New');
   const [formData, setFormData] = useState<Partial<StudentData>>({
+    admissionType: 'New' as 'New' | 'Old',
+    originalAdmissionDate: '',
+    previousDues: 0,
+    previousPaidAmount: 0,
+    previousSession: '',
     firstName: '',
     lastName: '',
     dob: '',
@@ -277,7 +283,12 @@ const NewAdmission: React.FC = () => {
         photoUrl,
         documents,
         rollNumber,
-        admissionDate: new Date().toISOString(),
+        admissionDate: admissionType === 'Old' && formData.originalAdmissionDate ? formData.originalAdmissionDate : new Date().toISOString(),
+        admissionType: admissionType,
+        originalAdmissionDate: admissionType === 'Old' ? formData.originalAdmissionDate : new Date().toISOString().split('T')[0],
+        previousDues: admissionType === 'Old' ? (formData.previousDues || 0) : 0,
+        previousPaidAmount: admissionType === 'Old' ? (formData.previousPaidAmount || 0) : 0,
+        previousSession: admissionType === 'Old' ? (formData.previousSession || '') : '',
       };
 
       await addStudent(newStudent);
@@ -301,6 +312,29 @@ const NewAdmission: React.FC = () => {
       <div style={{ marginBottom: '32px' }}>
         <h1 className="page-title"><UserPlus size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> New Admission</h1>
         <p className="page-subtitle">Enroll a new student into the system with full digital records.</p>
+      </div>
+
+      {/* Student Type Toggle */}
+      <div className="glass-panel" style={{ marginBottom: '24px', padding: '20px' }}>
+        <h3 style={{ margin: '0 0 16px 0' }}>Student Type</h3>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <button
+            type="button"
+            className={admissionType === 'New' ? 'btn-primary' : 'btn-secondary'}
+            style={{ flex: 1, padding: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            onClick={() => { setAdmissionType('New'); setFormData(prev => ({...prev, admissionType: 'New', previousDues: 0, previousPaidAmount: 0, previousSession: '', originalAdmissionDate: ''})); }}
+          >
+            🆕 New Admission
+          </button>
+          <button
+            type="button"
+            className={admissionType === 'Old' ? 'btn-primary' : 'btn-secondary'}
+            style={{ flex: 1, padding: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            onClick={() => { setAdmissionType('Old'); setFormData(prev => ({...prev, admissionType: 'Old'})); }}
+          >
+            🔄 Old / Continuing Student
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
@@ -381,6 +415,31 @@ const NewAdmission: React.FC = () => {
                     {routes.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
+              )}
+              {admissionType === 'Old' && (
+                <>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
+                      <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>📋 Previous Session Details</h4>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Original Admission Date *</label>
+                    <input type="date" name="originalAdmissionDate" value={formData.originalAdmissionDate} onChange={handleInputChange} className="glass-input" />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Previous Session</label>
+                    <input type="text" name="previousSession" value={formData.previousSession} onChange={handleInputChange} className="glass-input" placeholder="e.g. 2022-2023" />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Previous Dues (₹)</label>
+                    <input type="number" name="previousDues" value={formData.previousDues || ''} onChange={e => setFormData(prev => ({...prev, previousDues: Number(e.target.value)}))} className="glass-input" placeholder="e.g. 5000" />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Previous Amount Paid (₹)</label>
+                    <input type="number" name="previousPaidAmount" value={formData.previousPaidAmount || ''} onChange={e => setFormData(prev => ({...prev, previousPaidAmount: Number(e.target.value)}))} className="glass-input" placeholder="e.g. 10000" />
+                  </div>
+                </>
               )}
             </div>
           </div>
