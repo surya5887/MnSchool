@@ -52,7 +52,14 @@ const Classes: React.FC = () => {
   }, []);
 
   const sortedClasses = useMemo(() => {
-    return [...classes].sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+    return [...classes].sort((a, b) => {
+      const classDiff = getSequenceIndex(a.className) - getSequenceIndex(b.className);
+      if (classDiff !== 0) return classDiff;
+      // If class names are the same, sort by the first section name
+      const sectionA = a.sections && a.sections.length > 0 ? a.sections[0] : '';
+      const sectionB = b.sections && b.sections.length > 0 ? b.sections[0] : '';
+      return sectionA.localeCompare(sectionB);
+    });
   }, [classes]);
 
   const handleOpenEdit = (e: React.MouseEvent, c: ClassData) => {

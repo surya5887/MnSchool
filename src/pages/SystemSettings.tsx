@@ -10,23 +10,36 @@ import { getTransactions } from '../services/financeService';
 import { getBooks } from '../services/libraryService';
 import { getVehicles } from '../services/transportService';
 import { getAuditLogs } from '../services/auditService';
+import { getSchoolSettings, saveSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 
 const SystemSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('core');
   const [saved, setSaved] = useState(false);
   const [staff, setStaff] = useState<StaffData[]>([]);
+  const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
+  const [newSessionInput, setNewSessionInput] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const fetchStaff = async () => {
+  const fetchData = async () => {
     try {
       const staffData = await getStaff();
       setStaff(staffData);
+      const settingsData = await getSchoolSettings();
+      if (settingsData) {
+        setSettings(settingsData);
+      } else {
+        setSettings({
+          schoolName: "MN Public School", shortName: "MNPS", email: "info@mnpublicschool.com", phone: "+91 98765 43210", address: "",
+          academicSessions: ["2023-2024", "2024-2025"], activeSession: "2023-2024"
+        });
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    fetchStaff();
+    fetchData();
   }, []);
 
   const handleSave = async (settingName: string) => {
@@ -129,31 +142,64 @@ const SystemSettings: React.FC = () => {
         {/* Settings Content Area */}
         <div className="glass-panel" style={{ flex: 1, minHeight: '500px' }}>
           
-          {activeTab === 'core' && (
+          {activeTab === 'core' && settings && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <h2 style={{ margin: '0 0 24px 0' }}>Core School Details</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', maxWidth: '600px' }}>
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>School Name (Appears on Receipts)</label>
-                  <input type="text" className="glass-input" defaultValue="MN Public School" />
+                  <input type="text" className="glass-input" value={settings.schoolName} onChange={e => setSettings({...settings, schoolName: e.target.value})} />
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number</label>
-                  <input type="text" className="glass-input" defaultValue="+91 98765 43210" />
+                  <input type="text" className="glass-input" value={settings.phone} onChange={e => setSettings({...settings, phone: e.target.value})} />
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Email Address</label>
-                  <input type="text" className="glass-input" defaultValue="info@mnpublicschool.com" />
+                  <input type="text" className="glass-input" value={settings.email} onChange={e => setSettings({...settings, email: e.target.value})} />
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Current Academic Session</label>
-                  <select className="glass-input">
-                    <option>2023-2024 (Active)</option>
-                    <option>2024-2025</option>
+                  <select 
+                    className="glass-input" 
+                    value={settings.activeSession || ''} 
+                    onChange={e => setSettings({...settings, activeSession: e.target.value})}
+                  >
+                    {(settings.academicSessions || []).map(session => (
+                      <option key={session} value={session}>{session} {settings.activeSession === session ? '(Active)' : ''}</option>
+                    ))}
                   </select>
                 </div>
+                <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '12px' }}>
+                  <input 
+                    type="text" 
+                    className="glass-input" 
+                    style={{ flex: 1 }}
+                    placeholder="e.g. 2025-2026" 
+                    value={newSessionInput} 
+                    onChange={e => setNewSessionInput(e.target.value)} 
+                  />
+                  <button className="btn-secondary" onClick={() => {
+                    if (newSessionInput && !settings.academicSessions?.includes(newSessionInput)) {
+                      setSettings({
+                        ...settings,
+                        academicSessions: [...(settings.academicSessions || []), newSessionInput]
+                      });
+                      setNewSessionInput('');
+                    }
+                  }}>
+                    Add New Session
+                  </button>
+                </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <button className="btn-primary" style={{ marginTop: '16px' }} onClick={() => handleSave('Core')}>Save Changes</button>
+                  <button className="btn-primary" style={{ marginTop: '16px' }} disabled={isSaving} onClick={async () => {
+                    setIsSaving(true);
+                    await saveSchoolSettings(settings);
+                    await handleSave('Core');
+                    setIsSaving(false);
+                  }}>
+                    {isSaving ? 'Saving...' : 'Save Changes'}
+                  </button>
                 </div>
               </div>
             </motion.div>
