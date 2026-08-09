@@ -7,7 +7,7 @@ import { getSchoolSettings } from '../services/settingsService';
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSession, setActiveSession] = useState('2023-2024');
+  const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -15,6 +15,7 @@ const Layout: React.FC = () => {
         const settings = await getSchoolSettings();
         if (settings && settings.activeSession) {
           setActiveSession(settings.activeSession);
+          localStorage.setItem('activeSession', settings.activeSession);
         }
       } catch (error) {
         console.error("Error fetching session:", error);

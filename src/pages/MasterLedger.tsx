@@ -5,8 +5,8 @@ import { getTransactions, type TransactionData } from '../services/financeServic
 import { getSchoolSettings } from '../services/settingsService';
 
 const MasterLedger: React.FC = () => {
-  const [session, setSession] = useState('2023-2024');
-  const [academicSessions, setAcademicSessions] = useState<string[]>(['2023-2024']);
+  const [session, setSession] = useState(localStorage.getItem('activeSession') || '2023-2024');
+  const [academicSessions, setAcademicSessions] = useState<string[]>([localStorage.getItem('activeSession') || '2023-2024']);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
 
   useEffect(() => {
