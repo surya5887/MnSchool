@@ -18,7 +18,7 @@ const getStudentDisplayType = (student: StudentData): 'New' | 'Old' => {
     }
     return 'New';
   }
-  // Legacy students without admissionType â€” check date
+  // Legacy students without admissionType — check date
   const admDate = student.admissionDate || student.createdAt;
   if (admDate) {
     const oneYearAgo = new Date();
@@ -180,8 +180,8 @@ const Students: React.FC = () => {
               style={{ width: '110px' }}
             >
               <option value="All">All Types</option>
-              <option value="New">ðŸ†• New</option>
-              <option value="Old">ðŸ”„ Old</option>
+              <option value="New">🆕 New</option>
+              <option value="Old">🔄 Old</option>
             </select>
 
             <select 
@@ -253,7 +253,7 @@ const Students: React.FC = () => {
                   <td>{student.rollNumber}</td>
                   <td>
                     <span className={`badge ${displayType === 'New' ? 'warning' : 'success'}`}>
-                      {displayType === 'New' ? 'ðŸ†• New' : 'ðŸ”„ Old'}
+                      {displayType === 'New' ? '🆕 New' : '🔄 Old'}
                     </span>
                   </td>
                   <td>
@@ -336,7 +336,7 @@ const Students: React.FC = () => {
               <input required type="text" className="glass-input" value={newClassData.feeName} onChange={e => setNewClassData({...newClassData, feeName: e.target.value})} placeholder="e.g. Monthly Tuition" />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (â‚¹)</label>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
               <input required type="number" className="glass-input" value={newClassData.feeAmount} onChange={e => setNewClassData({...newClassData, feeAmount: e.target.value})} placeholder="e.g. 2500" />
             </div>
           </div>
