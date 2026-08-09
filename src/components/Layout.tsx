@@ -21,6 +21,13 @@ const Layout: React.FC = () => {
       }
     };
     fetchSession();
+
+    const handleSettingsUpdate = () => {
+      fetchSession();
+    };
+    
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    return () => window.removeEventListener('settingsUpdated', handleSettingsUpdate);
   }, []);
 
   const handleLogout = () => {

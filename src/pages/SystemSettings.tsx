@@ -195,6 +195,7 @@ const SystemSettings: React.FC = () => {
                   <button className="btn-primary" style={{ marginTop: '16px' }} disabled={isSaving} onClick={async () => {
                     setIsSaving(true);
                     await saveSchoolSettings(settings);
+                    window.dispatchEvent(new Event('settingsUpdated'));
                     await handleSave('Core');
                     setIsSaving(false);
                   }}>
