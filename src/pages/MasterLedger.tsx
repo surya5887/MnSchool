@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Filter, TrendingUp, TrendingDown, BookOpen } from 'lucide-react';
 import { getTransactions, type TransactionData } from '../services/financeService';
+import { getSchoolSettings } from '../services/settingsService';
 
 const MasterLedger: React.FC = () => {
   const [session, setSession] = useState('2023-2024');
+  const [academicSessions, setAcademicSessions] = useState<string[]>(['2023-2024']);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const fetchData = async () => {
       try {
+        const settings = await getSchoolSettings();
+        if (settings && settings.academicSessions) {
+          setAcademicSessions(settings.academicSessions);
+          setSession(settings.academicSessions[0] || '2023-2024');
+        }
+        
         const data = await getTransactions();
         // For ledger, we want oldest first to calculate running balance
         data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -18,7 +26,7 @@ const MasterLedger: React.FC = () => {
         console.error("Error fetching transactions", error);
       }
     };
-    fetchTransactions();
+    fetchData();
   }, []);
 
   let runningBalance = 0;
@@ -50,9 +58,9 @@ const MasterLedger: React.FC = () => {
         
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <select className="glass-input" value={session} onChange={(e) => setSession(e.target.value)} style={{ width: 'auto', minWidth: '150px' }}>
-            <option value="2023-2024">Session: 2023-2024</option>
-            <option value="2022-2023">Session: 2022-2023</option>
-            <option value="2021-2022">Session: 2021-2022</option>
+            {academicSessions.map(s => (
+              <option key={s} value={s}>Session: {s}</option>
+            ))}
           </select>
           <button className="btn-secondary" onClick={() => alert('Exporting ledger to PDF/Excel will be available soon.')}>
             <Download size={18} /> Export Excel
