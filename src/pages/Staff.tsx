@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, UserPlus } from 'lucide-react';
+import { Check, UserPlus, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Modal from '../components/Modal';
 import { getStaff, addStaff, updateStaffSalaryStatus, type StaffData } from '../services/staffService';
 
@@ -80,10 +81,12 @@ const Staff: React.FC = () => {
                 >
                   <td style={{ fontWeight: 600 }}>{teacher.id}</td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <img src={`https://ui-avatars.com/api/?name=${teacher.name}&background=random`} alt={teacher.name} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
-                      <span style={{ fontWeight: 500 }}>{teacher.name}</span>
-                    </div>
+                    <Link to={`/staff/${teacher.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <img src={`https://ui-avatars.com/api/?name=${teacher.name}&background=random`} alt={teacher.name} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                        <span style={{ fontWeight: 500, color: 'var(--primary)' }}>{teacher.name}</span>
+                      </div>
+                    </Link>
                   </td>
                   <td>{teacher.subject}</td>
                   <td>{teacher.experience}</td>
@@ -93,15 +96,20 @@ const Staff: React.FC = () => {
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    {teacher.salaryStatus === 'Pending' ? (
-                      <button onClick={() => handlePaySalary(teacher)} className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
-                        Mark Paid
-                      </button>
-                    ) : (
-                      <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', opacity: 0.5 }} disabled>
-                        Done
-                      </button>
-                    )}
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      {teacher.salaryStatus === 'Pending' ? (
+                        <button onClick={() => handlePaySalary(teacher)} className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
+                          Mark Paid
+                        </button>
+                      ) : (
+                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', opacity: 0.5 }} disabled>
+                          Done
+                        </button>
+                      )}
+                      <Link to={`/staff/${teacher.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }} title="View Profile">
+                        <Eye size={18} />
+                      </Link>
+                    </div>
                   </td>
                 </motion.tr>
               ))}
@@ -145,7 +153,7 @@ const Staff: React.FC = () => {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Experience</label>
-            <input type="text" className="glass-input" value={newStaff.experience} onChange={e => setNewStaff({...newStaff, experience: e.target.value})} />
+            <input type="text" className="glass-input" value={newStaff.experience} onChange={e => setNewStaff({...newStaff, experience: e.target.value})} placeholder="e.g. 5 Years" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Salary</label>

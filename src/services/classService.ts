@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, query, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const CLASSES_COLLECTION = 'school_classes';
@@ -38,6 +38,30 @@ export const deleteClass = async (docId: string) => {
     await deleteDoc(doc(db, CLASSES_COLLECTION, docId));
   } catch (error) {
     console.error("Error deleting class: ", error);
+    throw error;
+  }
+};
+
+export const updateClass = async (id: string, data: Partial<ClassData>) => {
+  try {
+    const docRef = doc(db, CLASSES_COLLECTION, id);
+    await updateDoc(docRef, data);
+  } catch (error) {
+    console.error("Error updating class: ", error);
+    throw error;
+  }
+};
+
+export const getClassById = async (id: string): Promise<ClassData | null> => {
+  try {
+    const docRef = doc(db, CLASSES_COLLECTION, id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...(docSnap.data() as object) } as unknown as ClassData;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching class: ", error);
     throw error;
   }
 };

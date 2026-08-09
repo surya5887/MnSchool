@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const STAFF_COLLECTION = 'staff';
@@ -59,6 +59,40 @@ export const updateStaffSalaryStatus = async (id: string, salaryStatus: 'Paid' |
     await updateDoc(docRef, { salaryStatus });
   } catch (error) {
     console.error("Error updating staff salary status: ", error);
+    throw error;
+  }
+};
+
+export const updateStaff = async (id: string, staffData: Partial<StaffData>) => {
+  try {
+    const docRef = doc(db, STAFF_COLLECTION, id);
+    await updateDoc(docRef, staffData);
+  } catch (error) {
+    console.error("Error updating staff: ", error);
+    throw error;
+  }
+};
+
+export const getStaffById = async (id: string): Promise<StaffData | null> => {
+  try {
+    const docRef = doc(db, STAFF_COLLECTION, id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...(docSnap.data() as object) } as unknown as StaffData;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching staff by id: ", error);
+    throw error;
+  }
+};
+
+export const deleteStaff = async (id: string) => {
+  try {
+    const docRef = doc(db, STAFF_COLLECTION, id);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error("Error deleting staff: ", error);
     throw error;
   }
 };
