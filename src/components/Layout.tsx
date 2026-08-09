@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, CreditCard, LogOut, Bell, GraduationCap, Settings, BookOpen, Database, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getSchoolSettings } from '../services/settingsService';
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSession, setActiveSession] = useState('2023-2024');
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const settings = await getSchoolSettings();
+        if (settings && settings.activeSession) {
+          setActiveSession(settings.activeSession);
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      }
+    };
+    fetchSession();
+  }, []);
 
   const handleLogout = () => {
     navigate('/login');
@@ -95,7 +111,7 @@ const Layout: React.FC = () => {
             </button>
             <div className="glass-panel" style={{ display: 'inline-flex', padding: '8px 16px', borderRadius: '20px', alignItems: 'center', gap: '8px', border: 'none', background: 'rgba(255,255,255,0.4)' }}>
                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></div>
-               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Session: 2023-2024</span>
+               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Session: {activeSession}</span>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
