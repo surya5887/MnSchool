@@ -154,18 +154,17 @@ const StudentProfile: React.FC = () => {
     }
   };
 
-  const handleAddFine = async (e: React.FormEvent) => {
+  const handleAddCharge = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || !newFine.amount) return;
 
     try {
       await addTransaction({
-        type: 'Income',
-        category: 'Custom Fine / Charge',
-        amount: -Math.abs(Number(newFine.amount)),
+        type: newFine.type === 'Discount' ? 'Discount' : 'Charge',
+        category: newFine.type === 'Discount' ? 'Discount' : 'Custom Fine / Charge',
+        amount: Math.abs(Number(newFine.amount)),
         date: new Date().toISOString().split('T')[0],
         description: `[${newFine.type}] ${newFine.description}`,
-        paymentMethod: 'Cash',
         studentId: id
       });
       setIsFineModalOpen(false);
@@ -173,7 +172,7 @@ const StudentProfile: React.FC = () => {
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
-      console.error("Error adding fine", error);
+      console.error("Error adding charge", error);
     }
   };
 
@@ -292,23 +291,43 @@ const StudentProfile: React.FC = () => {
   if (loading) return <div>Loading Profile...</div>;
   if (!student) return <div>Student not found.</div>;
 
-  let baseFeeTotal = 0;
-  if (studentClass && studentClass.fees) {
-    baseFeeTotal = studentClass.fees.reduce((sum, f) => sum + f.amount, 0);
-  }
-
   const previousDues = student.previousDues || 0;
   const previousPaidAmount = student.previousPaidAmount || 0;
+  const previousPending = previousDues - previousPaidAmount;
+
+  // Filter out any transaction that has 'Previous' in it if we want, but since they are added manually,
+  // we just use the transactions array.
+  
+  // Calculate running balances
+  const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  let runningBalance = previousPending; // Start with previous pending
+  const ledgerRows = sortedTransactions.map(t => {
+    if (t.type === 'Charge') {
+      runningBalance += t.amount;
+    } else if (t.type === 'Income' || t.type === 'Discount') {
+      runningBalance -= t.amount;
+    } else if (t.type === 'Expense') {
+      // Technically expenses shouldn't be here, but just in case
+      runningBalance -= t.amount; 
+    }
+    return { ...t, runningBalance };
+  });
+
+  const totalCharges = transactions
+    .filter(t => t.type === 'Charge')
+    .reduce((sum, t) => sum + t.amount, 0) + previousDues;
 
   const totalPaid = transactions
-    .filter(t => t.type === 'Income' && t.amount > 0)
+    .filter(t => t.type === 'Income')
     .reduce((sum, t) => sum + t.amount, 0) + previousPaidAmount;
-  
-  const customCharges = transactions
-    .filter(t => t.type === 'Income' && t.amount < 0)
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    
+  const totalDiscount = transactions
+    .filter(t => t.type === 'Discount')
+    .reduce((sum, t) => sum + t.amount, 0);
 
-  const pendingDues = (baseFeeTotal + previousDues + customCharges) - totalPaid;
+  const netPending = totalCharges - totalPaid - totalDiscount;
+  const isAdvance = netPending < 0;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -468,13 +487,16 @@ const StudentProfile: React.FC = () => {
         {/* Right Column - Ledgers and Details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          {student.admissionType === 'Old' && (
+          {(student.admissionType === 'Old' || previousDues > 0 || previousPaidAmount > 0) && (
             <div className="glass-panel" style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)' }}>
               <h4 style={{ margin: '0 0 12px 0', color: 'var(--primary-color)' }}>📋 Previous Session History</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Session</span><br/><strong>{student.previousSession || 'N/A'}</strong></div>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Dues</span><br/><strong style={{ color: 'var(--danger)' }}>₹{student.previousDues || 0}</strong></div>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Paid</span><br/><strong style={{ color: 'var(--success)' }}>₹{student.previousPaidAmount || 0}</strong></div>
+                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Dues</span><br/><strong style={{ color: 'var(--danger)' }}>₹{previousDues}</strong></div>
+                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Paid</span><br/><strong style={{ color: 'var(--success)' }}>₹{previousPaidAmount}</strong></div>
+                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Net Old Pending</span><br/><strong style={{ color: previousPending > 0 ? 'var(--danger)' : (previousPending < 0 ? 'var(--success)' : 'inherit') }}>
+                  {previousPending > 0 ? `₹${previousPending}` : (previousPending < 0 ? `Advance: ₹${Math.abs(previousPending)}` : '₹0')}
+                </strong></div>
               </div>
             </div>
           )}
@@ -496,32 +518,28 @@ const StudentProfile: React.FC = () => {
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-               <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(99,102,241,0.1)' }}>
-                 <div style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>Base Class Fee</div>
-                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{baseFeeTotal}</div>
-               </div>
-               {student.admissionType === 'Old' && student.previousDues ? (
-                 <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(245,158,11,0.1)' }}>
-                   <div style={{ fontSize: '0.85rem', color: 'var(--warning)' }}>Previous Dues</div>
-                   <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{previousDues}</div>
-                 </div>
-               ) : null}
                <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)' }}>
-                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Custom Charges</div>
-                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{customCharges}</div>
+                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Total Charges</div>
+                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalCharges}</div>
                </div>
                <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)' }}>
                  <div style={{ fontSize: '0.85rem', color: 'var(--success)' }}>Total Paid</div>
                  <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalPaid}</div>
                </div>
-               <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)' }}>
-                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Net Pending</div>
-                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{pendingDues}</div>
+               {totalDiscount > 0 && (
+                 <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(139,92,246,0.1)' }}>
+                   <div style={{ fontSize: '0.85rem', color: '#8b5cf6' }}>Discounts</div>
+                   <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalDiscount}</div>
+                 </div>
+               )}
+               <div style={{ padding: '16px', borderRadius: '12px', background: isAdvance ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${isAdvance ? 'var(--success)' : 'var(--danger)'}` }}>
+                 <div style={{ fontSize: '0.85rem', color: isAdvance ? 'var(--success)' : 'var(--danger)' }}>{isAdvance ? 'Net Advance' : 'Net Pending'}</div>
+                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{Math.abs(netPending)}</div>
                </div>
             </div>
 
-            <h4 style={{ margin: '0 0 12px 0' }}>Recent Transactions</h4>
-            {transactions.length === 0 ? (
+            <h4 style={{ margin: '0 0 12px 0' }}>Ledger Transactions</h4>
+            {ledgerRows.length === 0 ? (
               <p style={{ color: 'var(--text-muted)' }}>No transactions or charges recorded.</p>
             ) : (
               <div className="glass-table-container">
@@ -530,19 +548,28 @@ const StudentProfile: React.FC = () => {
                     <tr>
                       <th>Date</th>
                       <th>Description</th>
-                      <th>Method</th>
-                      <th style={{ textAlign: 'right' }}>Amount</th>
+                      <th>Debit (Charge)</th>
+                      <th>Credit (Paid)</th>
+                      <th>Running Balance</th>
                       <th style={{ textAlign: 'center' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {transactions.map(t => (
+                    {ledgerRows.slice().reverse().map(t => (
                       <tr key={t.id}>
                         <td>{new Date(t.date).toLocaleDateString()}</td>
-                        <td>{t.description}</td>
-                        <td>{t.amount > 0 ? t.paymentMethod : 'Charge'}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 600, color: t.amount > 0 ? 'var(--success)' : 'var(--danger)' }}>
-                          {t.amount > 0 ? `+ ₹${t.amount}` : `- ₹${Math.abs(t.amount)}`}
+                        <td>
+                          {t.description}
+                          {t.type === 'Discount' && <span className="badge success" style={{marginLeft: '8px', fontSize: '0.7rem'}}>Discount</span>}
+                        </td>
+                        <td style={{ color: 'var(--danger)', fontWeight: 500 }}>
+                          {t.type === 'Charge' ? `₹${t.amount}` : '-'}
+                        </td>
+                        <td style={{ color: 'var(--success)', fontWeight: 500 }}>
+                          {t.type === 'Income' || t.type === 'Discount' ? `₹${t.amount}` : '-'}
+                        </td>
+                        <td style={{ fontWeight: 700, color: t.runningBalance > 0 ? 'var(--danger)' : (t.runningBalance < 0 ? 'var(--success)' : 'inherit') }}>
+                          {t.runningBalance > 0 ? `₹${t.runningBalance}` : (t.runningBalance < 0 ? `Adv: ₹${Math.abs(t.runningBalance)}` : '₹0')}
                         </td>
                         <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
@@ -613,22 +640,24 @@ const StudentProfile: React.FC = () => {
         </form>
       </Modal>
 
-      {/* Charge / Fine Modal */}
-      <Modal isOpen={isFineModalOpen} onClose={() => setIsFineModalOpen(false)} title="Add Custom Charge / Fine">
-        <form onSubmit={handleAddFine} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Charge / Fine / Discount Modal */}
+      <Modal isOpen={isFineModalOpen} onClose={() => setIsFineModalOpen(false)} title="Add Charge or Discount">
+        <form onSubmit={handleAddCharge} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="alert-warning" style={{ background: 'rgba(245,158,11,0.1)', color: 'var(--warning)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', gap: '8px' }}>
-            <AlertTriangle size={18} /> This will add to the student's pending dues.
+            <AlertTriangle size={18} /> Charges increase pending dues. Discounts decrease pending dues.
           </div>
           
           {!showNewChargeTypeInput ? (
             <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Charge Type</label>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Type</label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <select className="glass-input" style={{ flex: 1 }} value={newFine.type} onChange={e => setNewFine({...newFine, type: e.target.value})}>
+                  <option>Base Class Fee</option>
+                  <option>Previous Dues</option>
                   <option>Late Fine</option>
                   <option>Damage Fine</option>
                   <option>Library Fine</option>
-                  <option>Custom Charge</option>
+                  <option>Discount</option>
                   {customChargeTypes.map(c => <option key={c}>{c}</option>)}
                 </select>
                 <button type="button" className="btn-secondary" onClick={() => setShowNewChargeTypeInput(true)}>+</button>
@@ -636,7 +665,7 @@ const StudentProfile: React.FC = () => {
             </div>
           ) : (
             <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>New Charge Type</label>
+              <label style={{ display: 'block', marginBottom: '8px' }}>New Custom Type</label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <input type="text" className="glass-input" style={{ flex: 1 }} value={newChargeTypeName} onChange={e => setNewChargeTypeName(e.target.value)} placeholder="e.g. Bus Fee" />
                 <button type="button" className="btn-primary" onClick={handleAddChargeType}>Add</button>
@@ -647,7 +676,7 @@ const StudentProfile: React.FC = () => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
-            <input required type="text" className="glass-input" value={newFine.description} onChange={e => setNewFine({...newFine, description: e.target.value})} placeholder="e.g. Broken lab equipment" />
+            <input required type="text" className="glass-input" value={newFine.description} onChange={e => setNewFine({...newFine, description: e.target.value})} placeholder="e.g. September Fee / Books" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
@@ -655,7 +684,7 @@ const StudentProfile: React.FC = () => {
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsFineModalOpen(false)}>Cancel</button>
-            <button type="submit" className="btn-primary" style={{ background: 'var(--danger)' }}>Add Charge</button>
+            <button type="submit" className="btn-primary" style={{ background: 'var(--danger)' }}>Record Entry</button>
           </div>
         </form>
       </Modal>
@@ -666,13 +695,13 @@ const StudentProfile: React.FC = () => {
           <form onSubmit={handleEditTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
-              <input required type="number" className="glass-input" value={Math.abs(editingTxn.amount)} onChange={e => setEditingTxn({...editingTxn, amount: editingTxn.amount > 0 ? Number(e.target.value) : -Number(e.target.value)})} />
+              <input required type="number" className="glass-input" value={Math.abs(editingTxn.amount)} onChange={e => setEditingTxn({...editingTxn, amount: Number(e.target.value)})} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
               <input required type="text" className="glass-input" value={editingTxn.description} onChange={e => setEditingTxn({...editingTxn, description: e.target.value})} />
             </div>
-            {editingTxn.amount > 0 && (
+            {editingTxn.type === 'Income' && (
               <div>
                 <label style={{ display: 'block', marginBottom: '8px' }}>Payment Method</label>
                 <select className="glass-input" value={editingTxn.paymentMethod} onChange={e => setEditingTxn({...editingTxn, paymentMethod: e.target.value as any})}>

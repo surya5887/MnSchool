@@ -6,9 +6,11 @@ const CLASSES_COLLECTION = 'school_classes';
 export interface ClassData {
   id?: string;
   className: string;       // e.g. "Class 1", "Class 10"
-  sections: string[];       // e.g. ["A", "B"]
+  order: number;
+  sections: string[];
   subjects: string[];       // e.g. ["English", "Hindi", "Maths"]
   classTeacher: string;     // e.g. "Aditi Sharma"
+  monthlyBaseFee?: number;
   fees?: { feeName: string; amount: number }[]; // Dynamic fee structure
 }
 

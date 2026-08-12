@@ -39,6 +39,7 @@ export interface StudentData {
   previousDues?: number;
   previousPaidAmount?: number;
   previousSession?: string;
+  billedMonths?: string[];
 }
 
 export const addStudent = async (studentData: StudentData) => {

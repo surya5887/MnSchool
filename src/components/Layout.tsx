@@ -1,30 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, CreditCard, LogOut, Bell, GraduationCap, Settings, BookOpen, Database, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
+import { runAutomatedBilling } from '../services/billingService';
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
+  const [billingNotification, setBillingNotification] = useState('');
 
   useEffect(() => {
-    const fetchSession = async () => {
+    const fetchSessionAndRunBilling = async () => {
       try {
         const settings = await getSchoolSettings();
         if (settings && settings.activeSession) {
           setActiveSession(settings.activeSession);
           localStorage.setItem('activeSession', settings.activeSession);
         }
+        
+        // Run automated billing in background
+        setTimeout(async () => {
+          const generatedCount = await runAutomatedBilling();
+          if (generatedCount > 0) {
+            setBillingNotification(`Generated monthly fees for ${generatedCount} student(s)`);
+            setTimeout(() => setBillingNotification(''), 5000);
+          }
+        }, 2000);
+
       } catch (error) {
         console.error("Error fetching session:", error);
       }
     };
-    fetchSession();
+    fetchSessionAndRunBilling();
 
     const handleSettingsUpdate = () => {
-      fetchSession();
+      fetchSessionAndRunBilling();
     };
     
     window.addEventListener('settingsUpdated', handleSettingsUpdate);
@@ -146,6 +158,22 @@ const Layout: React.FC = () => {
           <Outlet />
         </motion.div>
       </main>
+
+      <AnimatePresence>
+        {billingNotification && (
+          <motion.div 
+            initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }}
+            style={{
+              position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', background: 'var(--success)', color: 'white',
+              padding: '12px 24px', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '8px',
+              fontWeight: 600, zIndex: 9999, boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}
+          >
+            <Bell size={18} /> {billingNotification}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };

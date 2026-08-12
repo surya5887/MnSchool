@@ -77,9 +77,11 @@ const Students: React.FC = () => {
     try {
       await addClass({
         className: newClassData.className,
+        order: classes.length + 1,
         sections: newClassData.sections.split(',').map(s => s.trim()).filter(s => s),
         subjects: [], // Can be configured later in settings
         classTeacher: '',
+        monthlyBaseFee: 1000,
         fees: newClassData.feeAmount ? [{ feeName: newClassData.feeName, amount: Number(newClassData.feeAmount) }] : []
       });
       setClassModalOpen(false);

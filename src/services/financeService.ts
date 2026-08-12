@@ -5,12 +5,12 @@ const TRANSACTIONS_COLLECTION = 'transactions';
 
 export interface TransactionData {
   id?: string;
-  type: 'Income' | 'Expense';
+  type: 'Income' | 'Expense' | 'Charge' | 'Discount';
   category: string; // 'Fee Collection', 'Salary', 'Maintenance', etc.
   amount: number;
   date: string;
   description: string;
-  paymentMethod: 'Cash' | 'Bank Transfer' | 'UPI';
+  paymentMethod?: 'Cash' | 'Bank Transfer' | 'UPI' | string;
   referenceId?: string; // Student ID or Staff ID if applicable
   studentId?: string; // Explicitly link to a student
   chargeType?: string; // Custom charge type name e.g. "Exam Fee", "Lab Fee"

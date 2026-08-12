@@ -31,7 +31,8 @@ const Classes: React.FC = () => {
     subjects: '',
     classTeacher: '',
     feeName: 'Monthly Tuition',
-    feeAmount: ''
+    feeAmount: '',
+    monthlyBaseFee: 1000
   });
 
   const navigate = useNavigate();
@@ -71,7 +72,8 @@ const Classes: React.FC = () => {
       subjects: c.subjects.join(', '),
       classTeacher: c.classTeacher,
       feeName: c.fees && c.fees.length > 0 ? c.fees[0].feeName : 'Monthly Tuition',
-      feeAmount: c.fees && c.fees.length > 0 ? c.fees[0].amount.toString() : ''
+      feeAmount: c.fees && c.fees.length > 0 ? c.fees[0].amount.toString() : '',
+      monthlyBaseFee: c.monthlyBaseFee || 1000
     });
     setClassModalOpen(true);
   };
@@ -104,9 +106,11 @@ const Classes: React.FC = () => {
     try {
       const classDataToSave = {
         className: newClassData.className,
+        order: classes.length + 1,
         sections: newClassData.sections.split(',').map(s => s.trim()).filter(s => s),
         subjects: newClassData.subjects.split(',').map(s => s.trim()).filter(s => s),
         classTeacher: newClassData.classTeacher,
+        monthlyBaseFee: Number(newClassData.monthlyBaseFee),
         fees: newClassData.feeAmount ? [{ feeName: newClassData.feeName, amount: Number(newClassData.feeAmount) }] : []
       };
 
@@ -122,7 +126,7 @@ const Classes: React.FC = () => {
       }
 
       setClassModalOpen(false);
-      setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '' });
+      setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
       setEditingClassId(null);
       setSaved(true);
       fetchClasses();
@@ -153,7 +157,7 @@ const Classes: React.FC = () => {
         </div>
         <button className="btn-primary" onClick={() => {
           setEditingClassId(null);
-          setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '' });
+          setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
           setClassModalOpen(true);
         }}>
           <Plus size={20} /> Add New Class
@@ -217,6 +221,10 @@ const Classes: React.FC = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Class Name</label>
             <input required type="text" className="glass-input" value={newClassData.className} onChange={e => setNewClassData({...newClassData, className: e.target.value})} placeholder="e.g. 10th" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Monthly Base Fee (₹)</label>
+            <input required type="number" className="glass-input" value={newClassData.monthlyBaseFee} onChange={e => setNewClassData({...newClassData, monthlyBaseFee: Number(e.target.value)})} placeholder="e.g. 1500" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Sections (comma-separated)</label>
