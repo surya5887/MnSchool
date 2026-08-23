@@ -21,6 +21,11 @@ const MasterLedger: React.FC = () => {
   const [academicSessions, setAcademicSessions] = useState<string[]>([localStorage.getItem('activeSession') || '2023-2024']);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [filterMonth, setFilterMonth] = useState('All');
+  
+  // Date and Stats State
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [statsPeriod, setStatsPeriod] = useState('30'); // '30', '60', '90', '180', '365'
 
   // Add Entry State
   const [isAddEntryOpen, setIsAddEntryOpen] = useState(false);
@@ -99,33 +104,45 @@ const MasterLedger: React.FC = () => {
     }
   };
 
-  // Calculate Running Balances
-  let runningBalance = 0;
+  // Process data for rendering
   const processedData = transactions.map(t => {
     const amt = t.type === 'Income' || t.type === 'Discount' ? t.amount : -t.amount;
-    runningBalance += amt;
     return {
       ...t,
       amtValue: amt,
-      balance: runningBalance,
-      ref: t.id ? t.id.slice(0, 8).toUpperCase() : '-'
     };
   });
 
   const availableMonths = Array.from(new Set(processedData.map(t => t.date.substring(0, 7)))).sort().reverse();
-  const displayedRows = filterMonth === 'All' 
-    ? processedData.slice().reverse() 
-    : processedData.filter(t => t.date.startsWith(filterMonth)).reverse();
+  
+  let displayedRows = processedData.slice().reverse();
 
-  // 30-Day Calculations
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const thirtyDaysAgoTime = thirtyDaysAgo.getTime();
+  if (startDate && endDate) {
+    const startT = new Date(startDate).getTime();
+    const endT = new Date(endDate).getTime() + 86400000; // include full end date
+    displayedRows = displayedRows.filter(t => {
+      const dt = new Date(t.date).getTime();
+      return dt >= startT && dt < endT;
+    });
+  } else if (filterMonth !== 'All') {
+    displayedRows = displayedRows.filter(t => t.date.startsWith(filterMonth));
+  }
 
-  const recentTransactions = transactions.filter(t => new Date(t.date).getTime() >= thirtyDaysAgoTime);
+  // Stats Calculations
+  const periodDays = parseInt(statsPeriod, 10);
+  const thresholdDate = new Date();
+  thresholdDate.setDate(thresholdDate.getDate() - periodDays);
+  const thresholdTime = thresholdDate.getTime();
+
+  const recentTransactions = transactions.filter(t => new Date(t.date).getTime() >= thresholdTime);
   const totalCredit = recentTransactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
   const totalDebit = recentTransactions.filter(t => t.type === 'Expense' || t.type === 'Charge').reduce((sum, t) => sum + t.amount, 0);
   const netBalance = totalCredit - totalDebit;
+
+  const periodLabel = statsPeriod === '30' ? 'Last 30 Days' : 
+                      statsPeriod === '60' ? 'Last 2 Months' :
+                      statsPeriod === '90' ? 'Last 3 Months' :
+                      statsPeriod === '180' ? 'Last 6 Months' : 'Last 1 Year';
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -147,6 +164,18 @@ const MasterLedger: React.FC = () => {
         </div>
       </div>
 
+      {/* Stats Dropdown */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px', alignItems: 'center', gap: '12px' }}>
+        <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Stats Period:</span>
+        <select className="glass-input" style={{ width: 'auto', padding: '6px 12px' }} value={statsPeriod} onChange={(e) => setStatsPeriod(e.target.value)}>
+          <option value="30">Last 30 Days</option>
+          <option value="60">Last 2 Months</option>
+          <option value="90">Last 3 Months</option>
+          <option value="180">Last 6 Months</option>
+          <option value="365">Last 1 Year</option>
+        </select>
+      </div>
+
       {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '32px' }}>
         <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -154,7 +183,7 @@ const MasterLedger: React.FC = () => {
             <TrendingUp size={28} />
           </div>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Credit (Last 30 Days)</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Credit ({periodLabel})</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>₹{totalCredit.toLocaleString()}</div>
           </div>
         </div>
@@ -163,13 +192,13 @@ const MasterLedger: React.FC = () => {
             <TrendingDown size={28} />
           </div>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Debit (Last 30 Days)</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Debit ({periodLabel})</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>₹{totalDebit.toLocaleString()}</div>
           </div>
         </div>
         <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white' }}>
           <div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Net Balance (Last 30 Days)</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Net Balance ({periodLabel})</div>
             <div style={{ fontSize: '2rem', fontWeight: 700 }}>₹{netBalance.toLocaleString()}</div>
           </div>
         </div>
@@ -183,7 +212,11 @@ const MasterLedger: React.FC = () => {
                   className="glass-input" 
                   style={{ width: 'auto', padding: '6px 12px', margin: 0 }}
                   value={filterMonth}
-                  onChange={e => setFilterMonth(e.target.value)}
+                  onChange={e => {
+                    setFilterMonth(e.target.value);
+                    setStartDate('');
+                    setEndDate('');
+                  }}
                 >
                   <option value="All">All Months</option>
                   {availableMonths.map(m => (
@@ -195,52 +228,57 @@ const MasterLedger: React.FC = () => {
               )}
            </div>
            
-           <button className="btn-primary" onClick={() => setIsAddEntryOpen(true)}>
-             <Plus size={16}/> Add Entry
-           </button>
+           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginLeft: 'auto', flexWrap: 'wrap' }}>
+             <input 
+               type="date" 
+               className="glass-input" 
+               style={{ width: 'auto', padding: '6px 12px', margin: 0 }} 
+               value={startDate} 
+               onChange={e => { setStartDate(e.target.value); setFilterMonth('All'); }} 
+             />
+             <span style={{ color: 'var(--text-muted)' }}>to</span>
+             <input 
+               type="date" 
+               className="glass-input" 
+               style={{ width: 'auto', padding: '6px 12px', margin: 0 }} 
+               value={endDate} 
+               onChange={e => { setEndDate(e.target.value); setFilterMonth('All'); }} 
+             />
+             <button className="btn-primary" onClick={() => setIsAddEntryOpen(true)}>
+               <Plus size={16}/> Add Entry
+             </button>
+           </div>
         </div>
 
         <div className="glass-table-container">
-          <table style={{ width: '100%', minWidth: '800px' }}>
+          <table style={{ width: '100%', minWidth: '600px' }}>
             <thead>
               <tr>
                 <th style={{ whiteSpace: 'nowrap' }}>Date</th>
-                <th>Ref No.</th>
-                <th>Particulars / Details</th>
-                <th>Category</th>
+                <th>Description</th>
                 <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Credit (In)</th>
                 <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Debit (Out)</th>
-                <th style={{ textAlign: 'right', background: 'rgba(99,102,241,0.05)', whiteSpace: 'nowrap' }}>Running Balance</th>
                 <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {displayedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No records found.</td>
+                  <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No records found.</td>
                 </tr>
               ) : displayedRows.map((row) => (
                 <tr key={row.id}>
                   <td style={{ fontSize: '0.9rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                     {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
-                  <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{row.ref}</td>
                   <td style={{ fontWeight: 500 }}>
-                    {row.studentId ? `[${row.studentId}] ${row.description}` : row.description}
-                  </td>
-                  <td>
-                    <span className="badge" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', fontWeight: 500 }}>
-                      {row.category || row.type}
-                    </span>
+                    {row.description}
                   </td>
                   <td style={{ textAlign: 'right', color: 'var(--success)', fontWeight: 600 }}>
                     {row.amtValue > 0 ? `₹${row.amtValue}` : '-'}
                   </td>
                   <td style={{ textAlign: 'right', color: 'var(--danger)', fontWeight: 600 }}>
                     {row.amtValue < 0 ? `₹${Math.abs(row.amtValue)}` : '-'}
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 700, background: 'rgba(99,102,241,0.02)' }}>
-                    ₹{row.balance}
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <button className="icon-btn" onClick={() => { setDeleteTxnId(row.id || null); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
@@ -271,7 +309,7 @@ const MasterLedger: React.FC = () => {
             </div>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Particulars / Details</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
             <input required type="text" className="glass-input" value={newEntry.description} onChange={e => setNewEntry({...newEntry, description: e.target.value})} placeholder="e.g. Purchased supplies" />
           </div>
           <div>
