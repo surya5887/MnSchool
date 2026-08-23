@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Edit2, Trash2 } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2 } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import Cropper from 'react-easy-crop';
-import { getTransactions, addTransaction, updateTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
+import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import Modal from '../components/Modal';
 
@@ -67,15 +67,15 @@ const StudentProfile: React.FC = () => {
 
   // Payment modal
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [newPayment, setNewPayment] = useState({ amount: '', description: '', paymentMethod: 'Cash' as 'Cash' | 'Bank Transfer' | 'UPI', date: new Date().toISOString().split('T')[0] });
+  const [newPayment, setNewPayment] = useState({ amount: '', description: '', paymentMethod: 'Cash' as 'Cash' | 'Bank Transfer' | 'UPI', date: new Date().toISOString().slice(0, 16) });
 
   // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
-  const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().split('T')[0] });
+  const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().slice(0, 16) });
 
-  // Edit transaction
-  const [editingTxn, setEditingTxn] = useState<TransactionData | null>(null);
-  const [isEditTxnModalOpen, setIsEditTxnModalOpen] = useState(false);
+
+  // Month Filter
+  const [filterMonth, setFilterMonth] = useState('All');
 
   // Delete transaction
   const [deleteTxnId, setDeleteTxnId] = useState<string | null>(null);
@@ -130,7 +130,7 @@ const StudentProfile: React.FC = () => {
         studentId: id
       });
       setIsPaymentModalOpen(false);
-      setNewPayment({ amount: '', description: '', paymentMethod: 'Cash', date: new Date().toISOString().split('T')[0] });
+      setNewPayment({ amount: '', description: '', paymentMethod: 'Cash', date: new Date().toISOString().slice(0, 16) });
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
@@ -168,7 +168,7 @@ const StudentProfile: React.FC = () => {
         studentId: id
       });
       setIsFineModalOpen(false);
-      setNewFine({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().split('T')[0] });
+      setNewFine({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().slice(0, 16) });
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
@@ -176,24 +176,6 @@ const StudentProfile: React.FC = () => {
     }
   };
 
-  const handleEditTransaction = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingTxn?.id) return;
-    try {
-      await updateTransaction(editingTxn.id, {
-        amount: editingTxn.amount,
-        description: editingTxn.description,
-        date: editingTxn.date,
-        paymentMethod: editingTxn.paymentMethod
-      });
-      setIsEditTxnModalOpen(false);
-      setEditingTxn(null);
-      const txns = await getTransactions({ studentId: id! });
-      setTransactions(txns);
-    } catch (error) {
-      console.error("Error editing transaction", error);
-    }
-  };
 
   const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -298,21 +280,11 @@ const StudentProfile: React.FC = () => {
   // Filter out any transaction that has 'Previous' in it if we want, but since they are added manually,
   // we just use the transactions array.
   
-  // Calculate running balances
   const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
-  let runningBalance = previousPending; // Start with previous pending
-  const ledgerRows = sortedTransactions.map(t => {
-    if (t.type === 'Charge') {
-      runningBalance += t.amount;
-    } else if (t.type === 'Income' || t.type === 'Discount') {
-      runningBalance -= t.amount;
-    } else if (t.type === 'Expense') {
-      // Technically expenses shouldn't be here, but just in case
-      runningBalance -= t.amount; 
-    }
-    return { ...t, runningBalance };
-  });
+  const ledgerRows = sortedTransactions;
+  
+  const availableMonths = Array.from(new Set(ledgerRows.map(t => t.date.substring(0, 7)))).sort().reverse();
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -502,26 +474,50 @@ const StudentProfile: React.FC = () => {
               </div>
             </div>
 
-            <h4 style={{ margin: '0 0 12px 0' }}>Ledger Transactions</h4>
-            {ledgerRows.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)' }}>No transactions or charges recorded.</p>
-            ) : (
-              <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Description</th>
-                      <th>Debit (Charge)</th>
-                      <th>Credit (Paid)</th>
-                      <th>Running Balance</th>
-                      <th style={{ textAlign: 'center' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ledgerRows.slice().reverse().map(t => (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h4 style={{ margin: 0 }}>Ledger Transactions</h4>
+              {availableMonths.length > 0 && (
+                <select 
+                  className="glass-input" 
+                  style={{ width: 'auto', padding: '6px 12px' }}
+                  value={filterMonth}
+                  onChange={e => setFilterMonth(e.target.value)}
+                >
+                  <option value="All">All Months</option>
+                  {availableMonths.map(m => (
+                    <option key={m} value={m}>
+                      {new Date(m + "-01").toLocaleDateString('default', { month: 'long', year: 'numeric' })}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+            
+            {(() => {
+              const displayedRows = filterMonth === 'All' 
+                ? ledgerRows.slice().reverse() 
+                : ledgerRows.slice().reverse().filter(t => t.date.startsWith(filterMonth));
+
+              if (displayedRows.length === 0) {
+                return <p style={{ color: 'var(--text-muted)' }}>No transactions or charges found for this period.</p>;
+              }
+
+              return (
+                <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Debit (Charge)</th>
+                        <th>Credit (Paid)</th>
+                        <th style={{ textAlign: 'center' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedRows.map(t => (
                       <tr key={t.id}>
-                        <td>{new Date(t.date).toLocaleDateString()}</td>
+                        <td>{new Date(t.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                         <td>
                           {t.description}
                           {t.type === 'Discount' && <span className="badge success" style={{marginLeft: '8px', fontSize: '0.7rem'}}>Discount</span>}
@@ -532,14 +528,8 @@ const StudentProfile: React.FC = () => {
                         <td style={{ color: 'var(--success)', fontWeight: 500 }}>
                           {t.type === 'Income' || t.type === 'Discount' ? `₹${t.amount}` : '-'}
                         </td>
-                        <td style={{ fontWeight: 700, color: t.runningBalance > 0 ? 'var(--danger)' : (t.runningBalance < 0 ? 'var(--success)' : 'inherit') }}>
-                          {t.runningBalance > 0 ? `₹${t.runningBalance}` : (t.runningBalance < 0 ? `Adv: ₹${Math.abs(t.runningBalance)}` : '₹0')}
-                        </td>
                         <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button className="icon-btn" onClick={() => { setEditingTxn(t); setIsEditTxnModalOpen(true); }} style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                              <Edit2 size={16} />
-                            </button>
                             <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                               <Trash2 size={16} />
                             </button>
@@ -550,7 +540,8 @@ const StudentProfile: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Documents */}
@@ -595,7 +586,7 @@ const StudentProfile: React.FC = () => {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
-            <input required type="date" className="glass-input" value={newPayment.date} onChange={e => setNewPayment({...newPayment, date: e.target.value})} />
+            <input required type="datetime-local" className="glass-input" value={newPayment.date} onChange={e => setNewPayment({...newPayment, date: e.target.value})} />
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsPaymentModalOpen(false)}>Cancel</button>
@@ -648,7 +639,7 @@ const StudentProfile: React.FC = () => {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
-            <input required type="date" className="glass-input" value={newFine.date} onChange={e => setNewFine({...newFine, date: e.target.value})} />
+            <input required type="datetime-local" className="glass-input" value={newFine.date} onChange={e => setNewFine({...newFine, date: e.target.value})} />
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsFineModalOpen(false)}>Cancel</button>
@@ -657,39 +648,6 @@ const StudentProfile: React.FC = () => {
         </form>
       </Modal>
 
-      {/* Edit Transaction Modal */}
-      <Modal isOpen={isEditTxnModalOpen} onClose={() => { setIsEditTxnModalOpen(false); setEditingTxn(null); }} title="Edit Transaction">
-        {editingTxn && (
-          <form onSubmit={handleEditTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
-              <input required type="number" className="glass-input" value={Math.abs(editingTxn.amount)} onChange={e => setEditingTxn({...editingTxn, amount: Number(e.target.value)})} />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
-              <input required type="text" className="glass-input" value={editingTxn.description} onChange={e => setEditingTxn({...editingTxn, description: e.target.value})} />
-            </div>
-            {editingTxn.type === 'Income' && (
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px' }}>Payment Method</label>
-                <select className="glass-input" value={editingTxn.paymentMethod} onChange={e => setEditingTxn({...editingTxn, paymentMethod: e.target.value as any})}>
-                  <option value="Cash">Cash</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                  <option value="UPI">UPI</option>
-                </select>
-              </div>
-            )}
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
-              <input required type="date" className="glass-input" value={editingTxn.date.split('T')[0]} onChange={e => setEditingTxn({...editingTxn, date: e.target.value})} />
-            </div>
-            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-              <button type="button" className="btn-secondary" onClick={() => setIsEditTxnModalOpen(false)}>Cancel</button>
-              <button type="submit" className="btn-primary">Save Changes</button>
-            </div>
-          </form>
-        )}
-      </Modal>
 
       {/* Delete Transaction Modal */}
       <Modal isOpen={isDeleteTxnModalOpen} onClose={() => { setIsDeleteTxnModalOpen(false); setDeleteTxnId(null); setDeleteTxnError(''); }} title="Delete Transaction">
