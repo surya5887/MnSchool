@@ -471,11 +471,26 @@ const StudentProfile: React.FC = () => {
 
           {/* Fee Overview */}
           <div className="glass-panel">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <IndianRupee size={20} className="text-primary" /> Financial Ledger
               </h3>
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {availableMonths.length > 0 && (
+                  <select 
+                    className="glass-input" 
+                    style={{ width: 'auto', padding: '6px 12px', margin: 0 }}
+                    value={filterMonth}
+                    onChange={e => setFilterMonth(e.target.value)}
+                  >
+                    <option value="All">All Months</option>
+                    {availableMonths.map(m => (
+                      <option key={m} value={m}>
+                        {new Date(m + "-01").toLocaleDateString('default', { month: 'short', year: 'numeric' })}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
                   <Plus size={16} /> Record Payment
                 </button>
@@ -483,25 +498,6 @@ const StudentProfile: React.FC = () => {
                   <Plus size={16} /> Add Charge
                 </button>
               </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h4 style={{ margin: 0 }}>Ledger Transactions</h4>
-              {availableMonths.length > 0 && (
-                <select 
-                  className="glass-input" 
-                  style={{ width: 'auto', padding: '6px 12px' }}
-                  value={filterMonth}
-                  onChange={e => setFilterMonth(e.target.value)}
-                >
-                  <option value="All">All Months</option>
-                  {availableMonths.map(m => (
-                    <option key={m} value={m}>
-                      {new Date(m + "-01").toLocaleDateString('default', { month: 'long', year: 'numeric' })}
-                    </option>
-                  ))}
-                </select>
-              )}
             </div>
             
             {(() => {
@@ -515,20 +511,20 @@ const StudentProfile: React.FC = () => {
 
               return (
                 <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  <table>
+                  <table style={{ width: '100%', minWidth: '600px' }}>
                     <thead>
                       <tr>
-                        <th>Date</th>
+                        <th style={{ whiteSpace: 'nowrap' }}>Date</th>
                         <th>Description</th>
-                        <th>Debit (Charge)</th>
-                        <th>Credit (Paid)</th>
-                        <th style={{ textAlign: 'center' }}>Actions</th>
+                        <th style={{ whiteSpace: 'nowrap' }}>Charge</th>
+                        <th style={{ whiteSpace: 'nowrap' }}>Paid</th>
+                        <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {displayedRows.map(t => (
                       <tr key={t.id}>
-                        <td>{new Date(t.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                        <td style={{ whiteSpace: 'nowrap' }}>{new Date(t.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                         <td>
                           {t.description}
                           {t.type === 'Discount' && <span className="badge success" style={{marginLeft: '8px', fontSize: '0.7rem'}}>Discount</span>}
