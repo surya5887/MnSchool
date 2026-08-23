@@ -71,7 +71,7 @@ const StudentProfile: React.FC = () => {
 
   // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
-  const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine' });
+  const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().split('T')[0] });
 
   // Edit transaction
   const [editingTxn, setEditingTxn] = useState<TransactionData | null>(null);
@@ -163,12 +163,12 @@ const StudentProfile: React.FC = () => {
         type: newFine.type === 'Discount' ? 'Discount' : 'Charge',
         category: newFine.type === 'Discount' ? 'Discount' : 'Custom Fine / Charge',
         amount: Math.abs(Number(newFine.amount)),
-        date: new Date().toISOString().split('T')[0],
+        date: newFine.date,
         description: `[${newFine.type}] ${newFine.description}`,
         studentId: id
       });
       setIsFineModalOpen(false);
-      setNewFine({ amount: '', description: '', type: 'Late Fine' });
+      setNewFine({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().split('T')[0] });
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
@@ -313,21 +313,6 @@ const StudentProfile: React.FC = () => {
     }
     return { ...t, runningBalance };
   });
-
-  const totalCharges = transactions
-    .filter(t => t.type === 'Charge')
-    .reduce((sum, t) => sum + t.amount, 0) + previousDues;
-
-  const totalPaid = transactions
-    .filter(t => t.type === 'Income')
-    .reduce((sum, t) => sum + t.amount, 0) + previousPaidAmount;
-    
-  const totalDiscount = transactions
-    .filter(t => t.type === 'Discount')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const netPending = totalCharges - totalPaid - totalDiscount;
-  const isAdvance = netPending < 0;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -516,33 +501,12 @@ const StudentProfile: React.FC = () => {
                 </button>
               </div>
             </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-               <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)' }}>
-                 <div style={{ fontSize: '0.85rem', color: 'var(--danger)' }}>Total Charges</div>
-                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalCharges}</div>
-               </div>
-               <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)' }}>
-                 <div style={{ fontSize: '0.85rem', color: 'var(--success)' }}>Total Paid</div>
-                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalPaid}</div>
-               </div>
-               {totalDiscount > 0 && (
-                 <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(139,92,246,0.1)' }}>
-                   <div style={{ fontSize: '0.85rem', color: '#8b5cf6' }}>Discounts</div>
-                   <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{totalDiscount}</div>
-                 </div>
-               )}
-               <div style={{ padding: '16px', borderRadius: '12px', background: isAdvance ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${isAdvance ? 'var(--success)' : 'var(--danger)'}` }}>
-                 <div style={{ fontSize: '0.85rem', color: isAdvance ? 'var(--success)' : 'var(--danger)' }}>{isAdvance ? 'Net Advance' : 'Net Pending'}</div>
-                 <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>₹{Math.abs(netPending)}</div>
-               </div>
-            </div>
 
             <h4 style={{ margin: '0 0 12px 0' }}>Ledger Transactions</h4>
             {ledgerRows.length === 0 ? (
               <p style={{ color: 'var(--text-muted)' }}>No transactions or charges recorded.</p>
             ) : (
-              <div className="glass-table-container">
+              <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 <table>
                   <thead>
                     <tr>
@@ -681,6 +645,10 @@ const StudentProfile: React.FC = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
             <input required type="number" className="glass-input" value={newFine.amount} onChange={e => setNewFine({...newFine, amount: e.target.value})} placeholder="e.g. 500" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
+            <input required type="date" className="glass-input" value={newFine.date} onChange={e => setNewFine({...newFine, date: e.target.value})} />
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsFineModalOpen(false)}>Cancel</button>
