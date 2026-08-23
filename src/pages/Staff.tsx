@@ -3,15 +3,21 @@ import { motion } from 'framer-motion';
 import { UserPlus, Eye, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getStaff, addStaff, deleteStaff, type StaffData } from '../services/staffService';
+import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
 import Modal from '../components/Modal';
 
 const Staff: React.FC = () => {
   const [teachers, setTeachers] = useState<StaffData[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const [newStaff, setNewStaff] = useState<Partial<StaffData>>({
     name: '', subject: '', experience: '', salary: 0, status: 'Active',
     customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: ''
   });
+  
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [docFiles, setDocFiles] = useState<File[]>([]);
 
   const [deleteTxnId, setDeleteTxnId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -33,13 +39,38 @@ const Staff: React.FC = () => {
 
   const handleAddStaff = async () => {
     if (!newStaff.name) return;
+    setIsSaving(true);
     try {
-      await addStaff({ ...newStaff, role: 'Teacher', department: 'Academic', joinDate: new Date().toISOString().split('T')[0] } as StaffData);
+      let photoUrl = '';
+      if (photoFile) {
+        photoUrl = await uploadImageToCloudinary(photoFile);
+      }
+      
+      let documents = [];
+      for (const file of docFiles) {
+        const url = await uploadFileToCloudinary(file);
+        documents.push({ name: file.name, url });
+      }
+
+      await addStaff({ 
+        ...newStaff, 
+        photoUrl,
+        documents,
+        role: 'Teacher', 
+        department: 'Academic', 
+        joinDate: new Date().toISOString().split('T')[0] 
+      } as StaffData);
+      
       setAddModalOpen(false);
       setNewStaff({ name: '', subject: '', experience: '', salary: 0, status: 'Active', customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: '' });
+      setPhotoFile(null);
+      setDocFiles([]);
       fetchStaff();
     } catch (err) {
       console.error('Error adding staff', err);
+      alert('Failed to add staff. Check network/cloudinary settings.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -208,21 +239,31 @@ const Staff: React.FC = () => {
           
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Photo Upload</label>
-            <input type="file" className="glass-input" accept="image/*" onChange={() => {
-              alert('File selected! (Real upload will be handled by backend)');
+            <input type="file" className="glass-input" accept="image/*" onChange={e => {
+              if (e.target.files && e.target.files[0]) {
+                setPhotoFile(e.target.files[0]);
+              } else {
+                setPhotoFile(null);
+              }
             }} />
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Documents Upload</label>
-            <input type="file" className="glass-input" multiple accept=".pdf,.doc,.docx,.jpg,.png" onChange={() => {
-              alert('Documents selected! (Real upload will be handled by backend)');
+            <input type="file" className="glass-input" multiple accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => {
+              if (e.target.files) {
+                setDocFiles(Array.from(e.target.files));
+              } else {
+                setDocFiles([]);
+              }
             }} />
           </div>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px', borderTop: '1px solid var(--glass-border)', paddingTop: '16px' }}>
             <button className="btn-secondary" onClick={() => setAddModalOpen(false)}>Cancel</button>
-            <button className="btn-primary" onClick={handleAddStaff}>Save Staff</button>
+            <button className="btn-primary" onClick={handleAddStaff} disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save Staff'}
+            </button>
           </div>
         </div>
       </Modal>

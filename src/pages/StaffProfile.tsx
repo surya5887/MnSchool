@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { IndianRupee, ArrowLeft, Trash2, Edit, Save, Plus } from 'lucide-react';
 import { getStaffById, updateStaff, deleteStaff, type StaffData } from '../services/staffService';
 import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
+import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
 import Modal from '../components/Modal';
 
 const getISTDateTimeLocalString = () => {
@@ -27,6 +28,9 @@ const StaffProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<StaffData>>({});
   const [saving, setSaving] = useState(false);
+  
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
+  const [newDocFiles, setNewDocFiles] = useState<File[]>([]);
 
   // Delete State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -88,9 +92,24 @@ const StaffProfile: React.FC = () => {
     if (!id || !staff) return;
     setSaving(true);
     try {
-      await updateStaff(id, editData);
-      setStaff(editData as StaffData);
+      let photoUrl = editData.photoUrl;
+      if (newPhotoFile) {
+        photoUrl = await uploadImageToCloudinary(newPhotoFile);
+      }
+      
+      let newDocs = [...(editData.documents || [])];
+      for (const file of newDocFiles) {
+        const url = await uploadFileToCloudinary(file);
+        newDocs.push({ name: file.name, url });
+      }
+
+      const updatedData = { ...editData, photoUrl, documents: newDocs };
+
+      await updateStaff(id, updatedData);
+      setStaff(updatedData as StaffData);
       setIsEditing(false);
+      setNewPhotoFile(null);
+      setNewDocFiles([]);
     } catch (e) {
       console.error('Error updating profile', e);
       alert('Failed to update profile');
@@ -190,7 +209,7 @@ const StaffProfile: React.FC = () => {
             </button>
           ) : (
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="btn-secondary" onClick={() => { setIsEditing(false); setEditData(staff); }}>
+              <button className="btn-secondary" onClick={() => { setIsEditing(false); setEditData(staff); setNewPhotoFile(null); setNewDocFiles([]); }}>
                 Cancel
               </button>
               <button className="btn-primary" onClick={handleSaveProfile} disabled={saving}>
@@ -247,6 +266,21 @@ const StaffProfile: React.FC = () => {
                 <div><label className="form-label">Subject</label><input type="text" className="glass-input" value={editData.subject || ''} onChange={e => setEditData({...editData, subject: e.target.value})} /></div>
                 <div><label className="form-label">Experience</label><input type="text" className="glass-input" value={editData.experience || ''} onChange={e => setEditData({...editData, experience: e.target.value})} /></div>
                 <div><label className="form-label">Base Salary (₹)</label><input type="number" className="glass-input" value={editData.salary || 0} onChange={e => setEditData({...editData, salary: Number(e.target.value)})} /></div>
+                
+                <div>
+                  <label className="form-label">Update Photo</label>
+                  <input type="file" className="glass-input" accept="image/*" onChange={e => {
+                    if (e.target.files && e.target.files[0]) setNewPhotoFile(e.target.files[0]);
+                    else setNewPhotoFile(null);
+                  }} />
+                </div>
+                <div>
+                  <label className="form-label">Upload Additional Docs</label>
+                  <input type="file" className="glass-input" multiple accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => {
+                    if (e.target.files) setNewDocFiles(Array.from(e.target.files));
+                    else setNewDocFiles([]);
+                  }} />
+                </div>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
@@ -260,6 +294,19 @@ const StaffProfile: React.FC = () => {
                 <div><div className="detail-label">Subject</div><div className="detail-value">{staff.subject || 'N/A'}</div></div>
                 <div><div className="detail-label">Experience</div><div className="detail-value">{staff.experience || 'N/A'}</div></div>
                 <div><div className="detail-label">Base Salary</div><div className="detail-value">₹{staff.salary || 0}</div></div>
+                
+                {staff.documents && staff.documents.length > 0 && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div className="detail-label">Documents</div>
+                    <div className="detail-value" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px' }}>
+                      {staff.documents.map((doc, idx) => (
+                        <a key={idx} href={doc.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '6px 12px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', color: 'var(--primary)' }}>
+                          {doc.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
