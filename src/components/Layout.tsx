@@ -11,7 +11,9 @@ const Layout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
   const [billingNotification, setBillingNotification] = useState('');
-  const [authUser] = useState<any>(JSON.parse(localStorage.getItem('authUser') || '{}'));
+  const [authUser] = useState<any>(
+    JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}')
+  );
 
   useEffect(() => {
     if (!authUser || !authUser.role) {
@@ -55,6 +57,7 @@ const Layout: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('authUser');
+    sessionStorage.removeItem('authUser');
     navigate('/login');
   };
 
