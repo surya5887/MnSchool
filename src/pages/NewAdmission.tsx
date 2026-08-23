@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Upload, Save, FileText, Camera, Check, Plus, Trash2, X } from 'lucide-react';
 import { addStudent, type StudentData } from '../services/studentService';
@@ -93,6 +93,22 @@ const NewAdmission: React.FC = () => {
   const [saved, setSaved] = useState(false);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [routes, setRoutes] = useState<string[]>([]);
+  
+  // Aggregate sections for classes with the same name
+  const uniqueClasses = useMemo(() => {
+    const list: { className: string; sections: string[] }[] = [];
+    classes.forEach(c => {
+      let existing = list.find(x => x.className === c.className);
+      if (!existing) {
+        existing = { className: c.className, sections: [] };
+        list.push(existing);
+      }
+      c.sections.forEach(s => {
+        if (!existing?.sections.includes(s)) existing?.sections.push(s);
+      });
+    });
+    return list;
+  }, [classes]);
   
   // Custom Docs State
   const [customDocs, setCustomDocs] = useState<{id: string, name: string, file: File | null}[]>([]);
@@ -209,7 +225,7 @@ const NewAdmission: React.FC = () => {
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedClassName = e.target.value;
-    const selectedClass = classes.find(c => c.className === selectedClassName);
+    const selectedClass = uniqueClasses.find(c => c.className === selectedClassName);
     setFormData(prev => ({
       ...prev,
       classId: selectedClassName,
@@ -507,13 +523,13 @@ const NewAdmission: React.FC = () => {
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admission to Class *</label>
                 <select name="classId" value={formData.classId} onChange={handleClassChange} className="glass-input">
-                  {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+                  {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
                 </select>
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section *</label>
                 <select name="sectionId" value={formData.sectionId} onChange={handleInputChange} className="glass-input">
-                  {classes.find(c => c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                  {uniqueClasses.find(c => c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div>
