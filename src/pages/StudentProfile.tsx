@@ -232,6 +232,9 @@ const StudentProfile: React.FC = () => {
       }
 
       const updatedData = { ...editData, photoUrl: finalPhotoUrl };
+      if (!updatedData.password || updatedData.password.startsWith('$2a$') || updatedData.password.startsWith('$2b$')) {
+        delete updatedData.password;
+      }
 
       await updateStudent(id, updatedData);
       setStudent(updatedData as StudentData);
@@ -466,9 +469,9 @@ const StudentProfile: React.FC = () => {
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                       <span style={{ width: '120px', fontWeight: 500, color: 'var(--text-muted)' }}>Password</span>
                       {isEditing ? (
-                        <input type="text" className="glass-input" style={{ flex: 1, padding: '4px 8px' }} value={editData.password || ''} onChange={e => setEditData({...editData, password: e.target.value})} placeholder="Password" />
+                        <input type="text" className="glass-input" style={{ flex: 1, padding: '4px 8px' }} placeholder="******** (Type to change)" value={editData.password && !editData.password.startsWith('$2a$') && !editData.password.startsWith('$2b$') ? editData.password : ''} onChange={e => setEditData({...editData, password: e.target.value})} />
                       ) : (
-                        <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{student.password || 'N/A'}</span>
+                        <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>********</span>
                       )}
                     </div>
                   </div>

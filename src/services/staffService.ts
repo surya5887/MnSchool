@@ -1,5 +1,6 @@
 import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import bcrypt from 'bcryptjs';
 
 const STAFF_COLLECTION = 'staff';
 
@@ -47,6 +48,9 @@ export const addStaff = async (staffData: StaffData) => {
       const last4 = phoneStr.length >= 4 ? phoneStr.slice(-4) : '0000';
       staffData.password = `${firstName}${last4}`;
     }
+
+    // Hash the password securely
+    staffData.password = bcrypt.hashSync(staffData.password, 10);
     
     const docRef = await addDoc(collection(db, STAFF_COLLECTION), staffData as any);
     return docRef.id;
@@ -89,6 +93,9 @@ export const updateStaffSalaryStatus = async (id: string, salaryStatus: 'Paid' |
 
 export const updateStaff = async (id: string, staffData: Partial<StaffData>) => {
   try {
+    if (staffData.password && !staffData.password.startsWith('$2a$') && !staffData.password.startsWith('$2b$')) {
+      staffData.password = bcrypt.hashSync(staffData.password, 10);
+    }
     const docRef = doc(db, STAFF_COLLECTION, id);
     await updateDoc(docRef, staffData);
   } catch (error) {

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getDocs, collection, query, where } from 'firebase/firestore';
+import { getDocs, collection, query, where, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import bcrypt from 'bcryptjs';
+import { createDefaultAdminIfNeeded } from '../services/adminService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +13,11 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    // Ensure default admin exists
+    createDefaultAdminIfNeeded();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,45 +29,69 @@ const Login: React.FC = () => {
       storage.setItem('authUser', JSON.stringify(data));
     };
 
+    const verifyPassword = async (inputPass: string, storedPass: string, docRef: any) => {
+      // If it's already a bcrypt hash
+      if (storedPass.startsWith('$2a$') || storedPass.startsWith('$2b$')) {
+        return bcrypt.compareSync(inputPass, storedPass);
+      } 
+      // Legacy Plaintext: migrate it seamlessly
+      else if (inputPass === storedPass) {
+        const newHash = bcrypt.hashSync(inputPass, 10);
+        await updateDoc(docRef, { password: newHash });
+        return true;
+      }
+      return false;
+    };
+
     try {
-      // 1. Check if Admin
-      if (username.toLowerCase() === 'mnpsharsoli@gmail.com' && password === 'admin@8393') {
-        saveSession({ role: 'Principal', id: 'admin', name: 'Principal / Admin' });
-        navigate('/dashboard');
-        return;
+      const normalizedEmail = username.toLowerCase().trim();
+
+      // 1. Check Admin
+      const adminQ = query(collection(db, 'admins'), where('email', '==', normalizedEmail));
+      const adminSnap = await getDocs(adminQ);
+      if (!adminSnap.empty) {
+        const adminDoc = adminSnap.docs[0];
+        const isValid = await verifyPassword(password, adminDoc.data().password, adminDoc.ref);
+        if (isValid) {
+          saveSession({ role: 'Principal', id: adminDoc.id, name: adminDoc.data().name });
+          navigate('/dashboard');
+          return;
+        }
       }
 
       // 2. Check Staff (Teacher)
-      const staffRef = collection(db, 'staff');
-      const staffQ = query(staffRef, where('email', '==', username), where('password', '==', password));
+      const staffQ = query(collection(db, 'staff'), where('email', '==', normalizedEmail));
       const staffSnap = await getDocs(staffQ);
-      
       if (!staffSnap.empty) {
-        const docData = staffSnap.docs[0].data();
-        saveSession({ 
-          role: 'Teacher', 
-          id: staffSnap.docs[0].id, 
-          name: docData.name,
-          assignedClass: docData.assignedClass || '' 
-        });
-        navigate('/dashboard');
-        return;
+        const staffDoc = staffSnap.docs[0];
+        const isValid = await verifyPassword(password, staffDoc.data().password, staffDoc.ref);
+        if (isValid) {
+          saveSession({ 
+            role: 'Teacher', 
+            id: staffDoc.id, 
+            name: staffDoc.data().name,
+            assignedClass: staffDoc.data().assignedClass || '' 
+          });
+          navigate('/dashboard');
+          return;
+        }
       }
 
       // 3. Check Student
-      const studentRef = collection(db, 'students');
-      const studentQ = query(studentRef, where('email', '==', username), where('password', '==', password));
+      const studentQ = query(collection(db, 'students'), where('email', '==', normalizedEmail));
       const studentSnap = await getDocs(studentQ);
-      
       if (!studentSnap.empty) {
-        const docData = studentSnap.docs[0].data();
-        saveSession({ 
-          role: 'Student', 
-          id: studentSnap.docs[0].id, 
-          name: `${docData.firstName} ${docData.lastName}`
-        });
-        navigate(`/student/${studentSnap.docs[0].id}`);
-        return;
+        const studentDoc = studentSnap.docs[0];
+        const isValid = await verifyPassword(password, studentDoc.data().password, studentDoc.ref);
+        if (isValid) {
+          saveSession({ 
+            role: 'Student', 
+            id: studentDoc.id, 
+            name: `${studentDoc.data().firstName} ${studentDoc.data().lastName}`
+          });
+          navigate(`/student/${studentDoc.id}`);
+          return;
+        }
       }
 
       // Not found

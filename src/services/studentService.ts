@@ -1,5 +1,6 @@
 import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import bcrypt from 'bcryptjs';
 
 const STUDENTS_COLLECTION = 'students';
 
@@ -71,6 +72,9 @@ export const addStudent = async (studentData: StudentData) => {
       studentData.password = `${firstName}${year}`;
     }
     
+    // Hash the password securely
+    studentData.password = bcrypt.hashSync(studentData.password, 10);
+    
     const activeSession = localStorage.getItem('activeSession');
     if (activeSession && !studentData.session) {
       studentData.session = activeSession;
@@ -126,6 +130,9 @@ export const getStudentById = async (id: string) => {
 
 export const updateStudent = async (id: string, updateData: Partial<StudentData>) => {
   try {
+    if (updateData.password && !updateData.password.startsWith('$2a$') && !updateData.password.startsWith('$2b$')) {
+      updateData.password = bcrypt.hashSync(updateData.password, 10);
+    }
     const docRef = doc(db, STUDENTS_COLLECTION, id);
     await updateDoc(docRef, updateData as any);
   } catch (error) {

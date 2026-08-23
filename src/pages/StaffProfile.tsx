@@ -106,6 +106,9 @@ const StaffProfile: React.FC = () => {
       }
 
       const updatedData = { ...editData, photoUrl, documents: newDocs };
+      if (!updatedData.password || updatedData.password.startsWith('$2a$') || updatedData.password.startsWith('$2b$')) {
+        delete updatedData.password;
+      }
 
       await updateStaff(id, updatedData);
       setStaff(updatedData as StaffData);
@@ -317,9 +320,9 @@ const StaffProfile: React.FC = () => {
                       <div>
                         <div className="detail-label">Password</div>
                         {isEditing ? (
-                          <input type="text" className="glass-input" style={{ width: '100%' }} value={editData.password || ''} onChange={e => setEditData({...editData, password: e.target.value})} />
+                          <input type="text" className="glass-input" style={{ width: '100%' }} placeholder="******** (Type to change)" value={editData.password && !editData.password.startsWith('$2a$') && !editData.password.startsWith('$2b$') ? editData.password : ''} onChange={e => setEditData({...editData, password: e.target.value})} />
                         ) : (
-                          <div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.password || 'N/A'}</div>
+                          <div className="detail-value" style={{ fontFamily: 'monospace' }}>********</div>
                         )}
                       </div>
                     </div>
