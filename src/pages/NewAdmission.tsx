@@ -99,6 +99,64 @@ const NewAdmission: React.FC = () => {
   const [showCropper, setShowCropper] = useState(false);
   const [rawImage, setRawImage] = useState<string | null>(null);
 
+  // Drafts state
+  const [draftId, setDraftId] = useState<string>(Date.now().toString());
+  const [showDraftsModal, setShowDraftsModal] = useState(false);
+  const [savedDrafts, setSavedDrafts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const hasData = formData.firstName || formData.lastName || formData.parentName || formData.parentPhone;
+      if (hasData) {
+        const existingStr = localStorage.getItem('admission_drafts');
+        let drafts = existingStr ? JSON.parse(existingStr) : {};
+        drafts[draftId] = {
+          timestamp: Date.now(),
+          data: formData
+        };
+        localStorage.setItem('admission_drafts', JSON.stringify(drafts));
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [formData, draftId]);
+
+  const loadDrafts = () => {
+    const existingStr = localStorage.getItem('admission_drafts');
+    if (existingStr) {
+      const draftsObj = JSON.parse(existingStr);
+      const draftsArray = Object.keys(draftsObj).map(key => ({
+        id: key,
+        ...draftsObj[key]
+      })).sort((a, b) => b.timestamp - a.timestamp);
+      setSavedDrafts(draftsArray);
+    } else {
+      setSavedDrafts([]);
+    }
+  };
+
+  useEffect(() => {
+    if (showDraftsModal) {
+      loadDrafts();
+    }
+  }, [showDraftsModal]);
+
+  const applyDraft = (draft: any) => {
+    setFormData(draft.data);
+    setDraftId(draft.id);
+    if (draft.data.admissionType) setAdmissionType(draft.data.admissionType);
+    setShowDraftsModal(false);
+  };
+
+  const deleteDraft = (id: string) => {
+    const existingStr = localStorage.getItem('admission_drafts');
+    if (existingStr) {
+      const draftsObj = JSON.parse(existingStr);
+      delete draftsObj[id];
+      localStorage.setItem('admission_drafts', JSON.stringify(draftsObj));
+      loadDrafts();
+    }
+  };
+
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -289,6 +347,15 @@ const NewAdmission: React.FC = () => {
 
       await addStudent(newStudent);
       
+      // Clear draft on success
+      const existingStr = localStorage.getItem('admission_drafts');
+      if (existingStr) {
+        const draftsObj = JSON.parse(existingStr);
+        delete draftsObj[draftId];
+        localStorage.setItem('admission_drafts', JSON.stringify(draftsObj));
+      }
+      setDraftId(Date.now().toString());
+
       setSaved(true);
       setTimeout(() => {
         setSaved(false);
@@ -305,9 +372,14 @@ const NewAdmission: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-      <div style={{ marginBottom: '32px' }}>
-        <h1 className="page-title"><UserPlus size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> New Admission</h1>
-        <p className="page-subtitle">Enroll a new student into the system with full digital records.</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+        <div>
+          <h1 className="page-title"><UserPlus size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> New Admission</h1>
+          <p className="page-subtitle">Enroll a new student into the system with full digital records.</p>
+        </div>
+        <button className="btn-secondary" onClick={() => setShowDraftsModal(true)} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FileText size={18} /> Saved Drafts
+        </button>
       </div>
 
       {/* Student Type Toggle */}
@@ -652,6 +724,52 @@ const NewAdmission: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Drafts Modal */}
+      {showDraftsModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="glass-panel" style={{ width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
+            <button 
+              onClick={() => setShowDraftsModal(false)}
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-main)' }}
+            >
+              <X size={24} />
+            </button>
+            <h2 style={{ marginTop: 0, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FileText size={24} color="var(--primary-color)" /> Saved Drafts
+            </h2>
+            {savedDrafts.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)' }}>No saved drafts available.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {savedDrafts.map(draft => (
+                  <div key={draft.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}>
+                    <div 
+                      style={{ flex: 1, cursor: 'pointer' }} 
+                      onClick={() => applyDraft(draft)}
+                    >
+                      <div style={{ fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>
+                        {draft.data.firstName || 'Unknown'} {draft.data.lastName || ''}
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        Saved: {new Date(draft.timestamp).toLocaleString()}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => deleteDraft(draft.id)}
+                      style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '8px' }}
+                      title="Delete Draft"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
     </motion.div>
   );
 };
