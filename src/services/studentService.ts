@@ -41,6 +41,14 @@ export interface StudentData {
   previousSession?: string;
   billedMonths?: string[];
   session?: string;
+  caste?: string;
+  fatherAadhar?: string;
+  fatherQualification?: string;
+  fatherOccupation?: string;
+  motherAadhar?: string;
+  motherQualification?: string;
+  motherOccupation?: string;
+  motherPhone?: string;
 }
 
 export const addStudent = async (studentData: StudentData) => {

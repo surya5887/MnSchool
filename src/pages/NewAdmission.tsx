@@ -72,7 +72,16 @@ const NewAdmission: React.FC = () => {
     rollNumber: '' as any,
     address: '',
     motherName: '',
-    emergencyContact: ''
+    emergencyContact: '',
+    caste: '',
+    religion: '',
+    fatherAadhar: '',
+    fatherQualification: '',
+    fatherOccupation: '',
+    motherAadhar: '',
+    motherQualification: '',
+    motherOccupation: '',
+    motherPhone: ''
   });
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -214,7 +223,7 @@ const NewAdmission: React.FC = () => {
       value = value.toUpperCase();
     }
     
-    if (name === 'aadharNumber') {
+    if (['aadharNumber', 'fatherAadhar', 'motherAadhar'].includes(name)) {
       let val = value.replace(/\D/g, '');
       if (val.length > 12) val = val.substring(0, 12);
       value = val.match(/.{1,4}/g)?.join(' ') || val;
@@ -447,6 +456,14 @@ const NewAdmission: React.FC = () => {
                 </select>
               </div>
               <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Religion</label>
+                <input type="text" name="religion" value={formData.religion} onChange={handleInputChange} className="glass-input" placeholder="e.g. Hindu, Muslim, Sikh" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Caste / Category</label>
+                <input type="text" name="caste" value={formData.caste} onChange={handleInputChange} className="glass-input" placeholder="e.g. General, OBC, SC, ST" />
+              </div>
+              <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Email ID</label>
                 <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="glass-input" placeholder="student@example.com" />
               </div>
@@ -544,23 +561,69 @@ const NewAdmission: React.FC = () => {
           </div>
 
           <div className="glass-panel">
-            <h3 style={{ margin: '0 0 20px 0' }}>Parent & Custom Details</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <h3 style={{ margin: '0 0 20px 0' }}>Parents / Guardian Details</h3>
+            
+            {/* Father Details */}
+            <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
+              <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>👨 Father's Details</h4>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Father / Guardian Name</label>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Father's Name</label>
                 <input type="text" name="parentName" value={formData.parentName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ramesh Kumar" />
               </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Aadhar Number</label>
+                <input type="text" name="fatherAadhar" value={formData.fatherAadhar} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Qualification</label>
+                <input type="text" name="fatherQualification" value={formData.fatherQualification} onChange={handleInputChange} className="glass-input" placeholder="e.g. B.Tech, 12th Pass" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Occupation</label>
+                <input type="text" name="fatherOccupation" value={formData.fatherOccupation} onChange={handleInputChange} className="glass-input" placeholder="e.g. Business, Service" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number</label>
+                <input type="text" name="parentPhone" value={formData.parentPhone} onChange={handleInputChange} className="glass-input" placeholder="+91 9876543210" />
+              </div>
+            </div>
+
+            {/* Mother Details */}
+            <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
+              <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>👩 Mother's Details</h4>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Mother's Name</label>
                 <input type="text" name="motherName" value={formData.motherName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Sunita Devi" />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Primary Phone</label>
-                <input type="text" name="parentPhone" value={formData.parentPhone} onChange={handleInputChange} className="glass-input" placeholder="+91 9876543210" />
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Aadhar Number</label>
+                <input type="text" name="motherAadhar" value={formData.motherAadhar} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>
-                <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} className="glass-input" placeholder="+91 8765432109" />
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Qualification</label>
+                <input type="text" name="motherQualification" value={formData.motherQualification} onChange={handleInputChange} className="glass-input" placeholder="e.g. B.A., 10th Pass" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Occupation</label>
+                <input type="text" name="motherOccupation" value={formData.motherOccupation} onChange={handleInputChange} className="glass-input" placeholder="e.g. Homemaker, Teacher" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number</label>
+                <input type="text" name="motherPhone" value={formData.motherPhone} onChange={handleInputChange} className="glass-input" placeholder="+91 9876543211" />
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>
+                  <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} className="glass-input" placeholder="+91 8765432109" />
+                </div>
               </div>
             </div>
           </div>
