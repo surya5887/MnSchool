@@ -36,7 +36,13 @@ export const runAutomatedBilling = async () => {
 
       if (!billedMonths.includes(currentMonthKey)) {
         // Need to bill for this month
-        const baseFee = classMap.get(student.classId) || 0;
+        let baseFee = classMap.get(student.classId) || 0;
+        
+        // Apply discount if any
+        if (baseFee > 0 && student.discountPercent && student.discountPercent > 0) {
+          const discount = (baseFee * student.discountPercent) / 100;
+          baseFee = Math.max(0, baseFee - discount);
+        }
         
         if (baseFee > 0) {
           // Add transaction

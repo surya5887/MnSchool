@@ -81,7 +81,8 @@ const NewAdmission: React.FC = () => {
     motherAadhar: '',
     motherQualification: '',
     motherOccupation: '',
-    motherPhone: ''
+    motherPhone: '',
+    discountPercent: 0
   });
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -448,12 +449,8 @@ const NewAdmission: React.FC = () => {
                 <input type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="glass-input" />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Gender</label>
-                <select name="gender" value={formData.gender} onChange={handleInputChange} className="glass-input">
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
-                </select>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Aadhar Number</label>
+                <input type="text" name="aadharNumber" value={formData.aadharNumber} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Religion</label>
@@ -472,8 +469,12 @@ const NewAdmission: React.FC = () => {
                 <input type="text" name="address" value={formData.address} onChange={handleInputChange} className="glass-input" placeholder="Complete residential address" />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Aadhar Number</label>
-                <input type="text" name="aadharNumber" value={formData.aadharNumber} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Gender</label>
+                <select name="gender" value={formData.gender} onChange={handleInputChange} className="glass-input">
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Blood Group</label>
@@ -516,12 +517,23 @@ const NewAdmission: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Fee Group Assignment</label>
-                <select name="feeGroup" value={formData.feeGroup} onChange={handleInputChange} className="glass-input">
-                  <option>General Fee Category</option>
-                  <option>RTE Quota (Free)</option>
-                  <option>Staff Child (50% Off)</option>
-                </select>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Fee Group & Discount (%)</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '8px' }}>
+                  <select name="feeGroup" value={formData.feeGroup} onChange={handleInputChange} className="glass-input">
+                    <option>General Fee Category</option>
+                    <option>RTE Quota (Free)</option>
+                    <option>Staff Child</option>
+                  </select>
+                  <input 
+                    type="number" 
+                    name="discountPercent" 
+                    value={formData.discountPercent === 0 ? '' : formData.discountPercent} 
+                    onChange={(e) => setFormData(prev => ({...prev, discountPercent: Math.min(100, Math.max(0, Number(e.target.value))) }))} 
+                    className="glass-input" 
+                    placeholder="%" 
+                    min="0" max="100"
+                  />
+                </div>
               </div>
               {routes.length > 0 && (
                 <div>
@@ -618,7 +630,7 @@ const NewAdmission: React.FC = () => {
             </div>
 
             {/* Emergency Contact */}
-            <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
+            <div style={{ borderTop: '2px dashed var(--text-muted)', margin: '16px 0 16px', paddingTop: '24px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>

@@ -49,6 +49,7 @@ export interface StudentData {
   motherQualification?: string;
   motherOccupation?: string;
   motherPhone?: string;
+  discountPercent?: number;
 }
 
 export const addStudent = async (studentData: StudentData) => {
