@@ -73,169 +73,214 @@ const Login: React.FC = () => {
         {`
           .login-wrapper {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.2fr;
             min-height: 100vh;
-            background: var(--background);
+            background: #f8fafc;
           }
           .login-left {
             position: relative;
-            overflow: hidden;
             background: url('/images/front_view.png') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
           }
           .login-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            padding: 40px;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.2) 100%);
+          }
+          .login-left-content {
+            position: relative;
+            z-index: 10;
+            padding: 60px 40px;
+            color: #ffffff;
             text-align: center;
+            width: 100%;
           }
           .login-right {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            background: #f8fafc;
+            padding: 40px;
+            background: #ffffff;
           }
           .login-card {
             width: 100%;
-            max-width: 440px;
-            padding: 48px 40px;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
           }
+          .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            color: #0f172a;
+            transition: all 0.2s;
+            margin-top: 8px;
+            outline: none;
+          }
+          .login-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          }
+          .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb; /* Professional solid blue */
+            color: white;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+          }
+          .login-btn:hover:not(:disabled) {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+          }
+          .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+          }
+          
           @media (max-width: 900px) {
             .login-wrapper {
               grid-template-columns: 1fr;
             }
             .login-left {
-              display: none; /* Hide image section on small screens to save space */
+              display: none;
             }
             .login-right {
-              padding: 16px;
-              background: url('/images/front_view.png') center/cover no-repeat;
-              position: relative;
-            }
-            .login-right::before {
-              content: '';
-              position: absolute;
-              inset: 0;
-              background: rgba(15, 23, 42, 0.75);
-              backdrop-filter: blur(8px);
+              padding: 24px;
+              background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             }
             .login-card {
-              position: relative;
-              z-index: 10;
-              padding: 32px 24px;
+              background: #ffffff;
+              padding: 40px 32px;
+              border-radius: 24px;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
             }
           }
         `}
       </style>
 
       <div className="login-wrapper">
-        {/* Left Side - Showcasing the School (Hidden on Mobile) */}
+        {/* Left Side - School Image (Hidden on Mobile) */}
         <div className="login-left">
-          <div className="login-overlay">
+          <div className="login-overlay"></div>
+          <div className="login-left-content">
             <motion.div 
-              initial={{ y: 30, opacity: 0 }} 
+              initial={{ y: 20, opacity: 0 }} 
               animate={{ y: 0, opacity: 1 }} 
-              transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+              transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
             >
-              <img src="/images/logo.jpeg" alt="Logo" style={{ width: '100px', height: '100px', borderRadius: '50%', marginBottom: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', border: '4px solid rgba(255,255,255,0.2)' }} />
-              <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '16px', letterSpacing: '-1px', textShadow: '0 4px 12px rgba(0,0,0,0.4)' }}>
-                M.N. Public School
-              </h1>
-              <p style={{ fontSize: '1.15rem', maxWidth: '420px', margin: '0 auto', opacity: 0.9, lineHeight: 1.6, textShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
-                Empowering students to achieve excellence. Welcome to the official ERP portal.
+              <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.5px' }}>
+                Welcome to MN Public School
+              </h2>
+              <p style={{ fontSize: '1.1rem', opacity: 0.9, lineHeight: 1.6, maxWidth: '400px', margin: '0 auto' }}>
+                Official ERP portal for students, staff, and administration.
               </p>
             </motion.div>
           </div>
         </div>
 
-        {/* Right Side - Login Form */}
+        {/* Right Side - Clean Login Form */}
         <div className="login-right">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="login-card"
           >
-            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-              <div style={{ display: 'inline-block', padding: '12px', background: 'var(--primary-color)', borderRadius: '20px', marginBottom: '20px', boxShadow: '0 10px 25px rgba(99, 102, 241, 0.3)' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-              </div>
-              <h1 style={{ fontSize: '26px', fontWeight: 700, marginBottom: '8px', color: '#0f172a' }}>Welcome Back</h1>
-              <p style={{ color: '#64748b', fontSize: '15px' }}>Sign in to continue to your dashboard</p>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <img 
+                src="/images/logo.jpeg" 
+                alt="School Logo" 
+                style={{ 
+                  width: '90px', 
+                  height: '90px', 
+                  borderRadius: '50%', 
+                  marginBottom: '24px', 
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                  border: '4px solid #ffffff'
+                }} 
+              />
+              <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
+                Account Login
+              </h1>
+              <p style={{ color: '#64748b', fontSize: '15px' }}>
+                Sign in to access your dashboard
+              </p>
             </div>
 
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               {error && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '14px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center', fontWeight: 500 }}>
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ padding: '14px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center', fontWeight: 500 }}>
                   {error}
                 </motion.div>
               )}
               
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>Username / ID</label>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>
+                  Username / ID
+                </label>
                 <input 
                   type="text" 
-                  className="glass-input" 
-                  placeholder="admin, Custom ID, or SR No" 
+                  className="login-input"
+                  placeholder="e.g. admin, Custom ID, or SR No" 
                   required 
-                  style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '14px 16px', borderRadius: '12px', width: '100%', fontSize: '15px', color: '#0f172a', transition: 'all 0.2s' }}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  onFocus={(e) => e.target.style.border = '1px solid var(--primary-color)'}
-                  onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                 />
               </div>
               
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>Password</label>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>
+                  Password
+                </label>
                 <input 
                   type="password" 
-                  className="glass-input" 
+                  className="login-input"
                   placeholder="Enter your password" 
                   required 
-                  style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '14px 16px', borderRadius: '12px', width: '100%', fontSize: '15px', color: '#0f172a', transition: 'all 0.2s' }} 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={(e) => e.target.style.border = '1px solid var(--primary-color)'}
-                  onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                 />
               </div>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginTop: '4px', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginTop: '-4px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#64748b', fontWeight: 500 }}>
-                  <input type="checkbox" style={{ accentColor: 'var(--primary-color)', width: '16px', height: '16px' }} /> Remember me
+                  <input type="checkbox" style={{ accentColor: '#2563eb', width: '16px', height: '16px' }} /> Remember me
                 </label>
-                <span style={{ color: 'var(--primary-color)', fontWeight: 600, cursor: 'pointer' }}>Forgot Password?</span>
+                <span style={{ color: '#2563eb', fontWeight: 600, cursor: 'pointer' }}>Forgot Password?</span>
               </div>
 
               <motion.button 
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit" 
-                className="btn-primary" 
-                style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '1.05rem', fontWeight: 600, borderRadius: '12px', boxShadow: '0 8px 20px rgba(99, 102, 241, 0.25)' }} 
+                className="login-btn"
                 disabled={isLoading}
+                style={{ marginTop: '8px' }}
               >
                 {isLoading ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
                       <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
                     </svg>
                     Signing in...
+                    <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
                   </span>
-                ) : 'Sign In to ERP'}
+                ) : 'Secure Login'}
               </motion.button>
             </form>
           </motion.div>
