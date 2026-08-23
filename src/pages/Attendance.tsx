@@ -6,7 +6,7 @@ import { getClasses, type ClassData, getSequenceIndex } from '../services/classS
 import { getAttendance, saveAttendance, type AttendanceStatus } from '../services/attendanceService';
 
 const Attendance: React.FC = () => {
-  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
   const role = authUser.role || '';
   
   const [selectedClass, setSelectedClass] = useState(role === 'Teacher' ? (authUser.assignedClass || '') : '');

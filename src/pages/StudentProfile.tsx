@@ -57,7 +57,7 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
 const StudentProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
   const role = authUser.role || '';
   const [student, setStudent] = useState<StudentData | null>(null);
   const [studentClass, setStudentClass] = useState<ClassData | null>(null);

@@ -15,7 +15,7 @@ const Students: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
-  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
   const role = authUser.role || '';
 
   // Add Class State

@@ -7,7 +7,7 @@ import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudina
 import Modal from '../components/Modal';
 
 const Staff: React.FC = () => {
-  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
   const role = authUser.role || '';
   const [teachers, setTeachers] = useState<StaffData[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
