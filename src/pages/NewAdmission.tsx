@@ -247,10 +247,6 @@ const NewAdmission: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.firstName || !formData.lastName || !formData.classId || !formData.sectionId) {
-      alert("Please fill in the required fields (First Name, Last Name, Class, Section)");
-      return;
-    }
 
     setLoading(true);
     try {
