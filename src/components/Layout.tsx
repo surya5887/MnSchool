@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, CreditCard, LogOut, Bell, GraduationCap, Settings, BookOpen, Database, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
@@ -116,7 +116,6 @@ const Layout: React.FC = () => {
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
           <NavLink to="/fees" style={navLinkStyle}><CreditCard size={20} /> Fee Collection</NavLink>
           <NavLink to="/ledger" style={navLinkStyle}><BookOpen size={20} /> Master Ledger</NavLink>
-          <NavLink to="/legacy" style={navLinkStyle}><Database size={20} /> Legacy Data Entry</NavLink>
           <NavLink to="/staff" style={navLinkStyle}><GraduationCap size={20} /> Staff & Payroll</NavLink>
           
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>

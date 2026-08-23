@@ -7,7 +7,6 @@ import Login from './pages/Login';
 import Staff from './pages/Staff';
 import StudentProfile from './pages/StudentProfile';
 import MasterLedger from './pages/MasterLedger';
-import LegacyData from './pages/LegacyData';
 import NewAdmission from './pages/NewAdmission';
 import Attendance from './pages/Attendance';
 import AuditLogs from './pages/AuditLogs';
@@ -36,7 +35,6 @@ function App() {
           <Route path="staff/:id" element={<StaffProfile />} />
           <Route path="fees" element={<Fees />} />
           <Route path="ledger" element={<MasterLedger />} />
-          <Route path="legacy" element={<LegacyData />} />
           <Route path="classes" element={<Classes />} />
           <Route path="classes/:id" element={<ClassDetails />} />
           <Route path="exam" element={<Examination />} />
