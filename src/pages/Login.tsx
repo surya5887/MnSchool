@@ -69,222 +69,284 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <style>
-        {`
-          .login-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            min-height: 100vh;
-            background: #f8fafc;
-          }
-          .login-left {
-            position: relative;
-            background: url('/images/front_view.png') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-          }
-          .login-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.2) 100%);
-          }
-          .login-left-content {
-            position: relative;
-            z-index: 10;
-            padding: 60px 40px;
-            color: #ffffff;
-            text-align: center;
-            width: 100%;
-          }
-          .login-right {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            background: #ffffff;
-          }
-          .login-card {
-            width: 100%;
-            max-width: 420px;
-          }
-          .login-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 15px;
-            color: #0f172a;
-            transition: all 0.2s;
-            margin-top: 8px;
-            outline: none;
-          }
-          .login-input:focus {
-            background: #ffffff;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-          }
-          .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: #2563eb; /* Professional solid blue */
-            color: white;
-            font-weight: 600;
-            font-size: 1.05rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-          }
-          .login-btn:hover:not(:disabled) {
-            background: #1d4ed8;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-          }
-          .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-          }
-          
-          @media (max-width: 900px) {
-            .login-wrapper {
-              grid-template-columns: 1fr;
-            }
-            .login-left {
-              display: none;
-            }
-            .login-right {
-              padding: 24px;
-              background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            }
-            .login-card {
-              background: #ffffff;
-              padding: 40px 32px;
-              border-radius: 24px;
-              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-            }
-          }
-        `}
-      </style>
+      <style>{`
+        .login-container {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+          padding: 20px;
+          background: #0f172a;
+        }
+        .bg-image {
+          position: absolute;
+          inset: -20px; /* Slight bleed for zoom */
+          background: url('/images/front_view.png') center/cover no-repeat;
+          animation: slowPan 30s infinite alternate ease-in-out;
+          z-index: 0;
+        }
+        .bg-overlay {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at center, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.85) 100%);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          z-index: 1;
+        }
+        .glass-card {
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          max-width: 440px;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 28px;
+          padding: 48px 40px;
+          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255,255,255,0.05);
+          color: white;
+          overflow: hidden;
+        }
+        .glass-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: -100%; width: 50%; height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+          transform: skewX(-20deg);
+          animation: shine 8s infinite;
+        }
+        .school-logo-container {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          margin: 0 auto 24px auto;
+        }
+        .floating-logo {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 3px solid rgba(255, 255, 255, 0.4);
+          padding: 4px;
+          background: rgba(255, 255, 255, 0.1);
+          box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+          animation: float 6s ease-in-out infinite;
+        }
+        .input-group {
+          margin-bottom: 24px;
+          position: relative;
+        }
+        .input-label {
+          display: block;
+          margin-bottom: 8px;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: rgba(255,255,255,0.9);
+          letter-spacing: 0.5px;
+        }
+        .premium-input {
+          width: 100%;
+          background: rgba(0, 0, 0, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 16px 20px;
+          border-radius: 16px;
+          color: white;
+          font-size: 16px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          outline: none;
+        }
+        .premium-input::placeholder {
+          color: rgba(255,255,255,0.4);
+        }
+        .premium-input:focus {
+          background: rgba(0, 0, 0, 0.4);
+          border-color: rgba(255, 255, 255, 0.4);
+          box-shadow: 0 0 20px rgba(255,255,255,0.1);
+          transform: translateY(-2px);
+        }
+        .premium-btn {
+          width: 100%;
+          padding: 16px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          color: white;
+          font-weight: 600;
+          font-size: 1.05rem;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          margin-top: 10px;
+        }
+        .premium-btn:hover:not(:disabled) {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 15px 30px rgba(37, 99, 235, 0.6);
+          background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+        .premium-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        .forgot-link {
+          color: #93c5fd;
+          font-weight: 500;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        .forgot-link:hover {
+          color: #ffffff;
+          text-decoration: underline;
+        }
+        
+        @keyframes slowPan {
+          0% { transform: scale(1) translate(0, 0); }
+          50% { transform: scale(1.08) translate(-1%, 2%); }
+          100% { transform: scale(1) translate(1%, -1%); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes shine {
+          0% { left: -100%; }
+          20% { left: 200%; }
+          100% { left: 200%; }
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+      `}</style>
 
-      <div className="login-wrapper">
-        {/* Left Side - School Image (Hidden on Mobile) */}
-        <div className="login-left">
-          <div className="login-overlay"></div>
-          <div className="login-left-content">
+      <div className="login-container">
+        {/* Animated Background */}
+        <div className="bg-image"></div>
+        <div className="bg-overlay"></div>
+
+        {/* Floating Glass Card */}
+        <motion.div 
+          className="glass-card"
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.7, type: "spring", bounce: 0.4 }}
+        >
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <motion.div 
-              initial={{ y: 20, opacity: 0 }} 
-              animate={{ y: 0, opacity: 1 }} 
-              transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
+              className="school-logo-container"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 15 }}
             >
-              <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.5px' }}>
-                Welcome to MN Public School
-              </h2>
-              <p style={{ fontSize: '1.1rem', opacity: 0.9, lineHeight: 1.6, maxWidth: '400px', margin: '0 auto' }}>
-                Official ERP portal for students, staff, and administration.
-              </p>
+              <img src="/images/logo.jpeg" alt="School Logo" className="floating-logo" />
             </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px', letterSpacing: '-0.5px', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+            >
+              MN Public School
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px' }}
+            >
+              Secure ERP Access Portal
+            </motion.p>
           </div>
-        </div>
 
-        {/* Right Side - Clean Login Form */}
-        <div className="login-right">
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="login-card"
-          >
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <img 
-                src="/images/logo.jpeg" 
-                alt="School Logo" 
-                style={{ 
-                  width: '90px', 
-                  height: '90px', 
-                  borderRadius: '50%', 
-                  marginBottom: '24px', 
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                  border: '4px solid #ffffff'
-                }} 
-              />
-              <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
-                Account Login
-              </h1>
-              <p style={{ color: '#64748b', fontSize: '15px' }}>
-                Sign in to access your dashboard
-              </p>
-            </div>
-
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {error && (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ padding: '14px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center', fontWeight: 500 }}>
-                  {error}
-                </motion.div>
-              )}
-              
-              <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>
-                  Username / ID
-                </label>
-                <input 
-                  type="text" 
-                  className="login-input"
-                  placeholder="e.g. admin, Custom ID, or SR No" 
-                  required 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              
-              <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>
-                  Password
-                </label>
-                <input 
-                  type="password" 
-                  className="login-input"
-                  placeholder="Enter your password" 
-                  required 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginTop: '-4px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#64748b', fontWeight: 500 }}>
-                  <input type="checkbox" style={{ accentColor: '#2563eb', width: '16px', height: '16px' }} /> Remember me
-                </label>
-                <span style={{ color: '#2563eb', fontWeight: 600, cursor: 'pointer' }}>Forgot Password?</span>
-              </div>
-
-              <motion.button 
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit" 
-                className="login-btn"
-                disabled={isLoading}
-                style={{ marginTop: '8px' }}
+          <form onSubmit={handleLogin}>
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }} 
+                style={{ padding: '14px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center', marginBottom: '24px' }}
               >
-                {isLoading ? (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-                    </svg>
-                    Signing in...
-                    <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                  </span>
-                ) : 'Secure Login'}
-              </motion.button>
-            </form>
-          </motion.div>
-        </div>
+                {error}
+              </motion.div>
+            )}
+            
+            <motion.div 
+              className="input-group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <label className="input-label">Username / ID</label>
+              <input 
+                type="text" 
+                className="premium-input"
+                placeholder="Admin, Custom ID, or SR No" 
+                required 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </motion.div>
+            
+            <motion.div 
+              className="input-group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <label className="input-label">Password</label>
+              <input 
+                type="password" 
+                className="premium-input"
+                placeholder="Enter your password" 
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </motion.div>
+            
+            <motion.div 
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', marginBottom: '16px' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>
+                <input type="checkbox" style={{ accentColor: '#3b82f6', width: '16px', height: '16px', cursor: 'pointer' }} /> 
+                Remember session
+              </label>
+              <span className="forgot-link">Forgot Password?</span>
+            </motion.div>
+
+            <motion.button 
+              type="submit" 
+              className="premium-btn"
+              disabled={isLoading}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, type: "spring" }}
+            >
+              {isLoading ? (
+                <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                  </svg>
+                  Authenticating...
+                </>
+              ) : (
+                <>
+                  Sign In 
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </>
+              )}
+            </motion.button>
+          </form>
+        </motion.div>
       </div>
     </>
   );
