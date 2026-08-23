@@ -76,14 +76,18 @@ const Login: React.FC = () => {
   return (
     <>
       <style>{`
+        * {
+          box-sizing: border-box;
+        }
         .login-container {
-          min-height: 100vh;
+          height: 100vh;
+          width: 100vw;
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
           overflow: hidden;
-          padding: 20px;
+          padding: 15px;
           background: #0f172a;
         }
         .bg-image {
@@ -105,13 +109,13 @@ const Login: React.FC = () => {
           position: relative;
           z-index: 2;
           width: 100%;
-          max-width: 440px;
+          max-width: 400px;
           background: rgba(255, 255, 255, 0.15);
           backdrop-filter: blur(30px);
           -webkit-backdrop-filter: blur(30px);
           border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 28px;
-          padding: 48px 40px;
+          border-radius: 24px;
+          padding: 32px 32px;
           box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255,255,255,0.1);
           color: white;
           overflow: hidden;
@@ -126,29 +130,29 @@ const Login: React.FC = () => {
         }
         .school-logo-container {
           position: relative;
-          width: 110px;
-          height: 110px;
-          margin: 0 auto 24px auto;
+          width: 85px;
+          height: 85px;
+          margin: 0 auto 16px auto;
         }
         .floating-logo {
           width: 100%;
           height: 100%;
           border-radius: 50%;
           object-fit: cover;
-          border: 4px solid rgba(255, 255, 255, 0.8);
+          border: 3px solid rgba(255, 255, 255, 0.8);
           padding: 4px;
           background: rgba(255, 255, 255, 0.2);
-          box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
           animation: float 5s ease-in-out infinite;
         }
         .input-group {
-          margin-bottom: 24px;
+          margin-bottom: 16px;
           position: relative;
         }
         .input-label {
           display: block;
-          margin-bottom: 8px;
-          font-size: 0.95rem;
+          margin-bottom: 6px;
+          font-size: 0.9rem;
           font-weight: 600;
           color: #ffffff;
           letter-spacing: 0.5px;
@@ -158,10 +162,10 @@ const Login: React.FC = () => {
           width: 100%;
           background: rgba(255, 255, 255, 0.9);
           border: 2px solid transparent;
-          padding: 16px 20px;
-          border-radius: 16px;
+          padding: 12px 16px;
+          border-radius: 12px;
           color: #0f172a;
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 500;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           outline: none;
@@ -178,12 +182,12 @@ const Login: React.FC = () => {
         }
         .premium-btn {
           width: 100%;
-          padding: 16px;
-          border-radius: 16px;
+          padding: 14px;
+          border-radius: 12px;
           background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
           font-weight: 700;
-          font-size: 1.1rem;
+          font-size: 1.05rem;
           border: none;
           cursor: pointer;
           box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
@@ -192,10 +196,10 @@ const Login: React.FC = () => {
           justify-content: center;
           align-items: center;
           gap: 10px;
-          margin-top: 15px;
+          margin-top: 10px;
         }
         .premium-btn:hover:not(:disabled) {
-          transform: translateY(-3px) scale(1.02);
+          transform: translateY(-2px) scale(1.02);
           box-shadow: 0 15px 30px rgba(16, 185, 129, 0.6);
           background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
         }
@@ -211,7 +215,7 @@ const Login: React.FC = () => {
         }
         @keyframes float {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-6px); }
         }
         @keyframes shine {
           0% { left: -100%; }
@@ -233,7 +237,7 @@ const Login: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.7, type: "spring", bounce: 0.4 }}
         >
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <motion.div 
               className="school-logo-container"
               initial={{ scale: 0 }}
@@ -247,7 +251,7 @@ const Login: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              style={{ fontSize: '30px', fontWeight: 800, marginBottom: '8px', letterSpacing: '-0.5px', textShadow: '0 2px 15px rgba(0,0,0,0.4)' }}
+              style={{ fontSize: '24px', fontWeight: 800, marginBottom: '4px', letterSpacing: '-0.5px', textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}
             >
               MN Public School
             </motion.h1>
@@ -255,7 +259,7 @@ const Login: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              style={{ color: '#ffffff', fontSize: '16px', fontWeight: 500, textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}
+              style={{ color: '#ffffff', fontSize: '14px', fontWeight: 500, textShadow: '0 1px 3px rgba(0,0,0,0.3)', margin: 0 }}
             >
               Secure ERP Access Portal
             </motion.p>
@@ -266,7 +270,7 @@ const Login: React.FC = () => {
               <motion.div 
                 initial={{ opacity: 0, height: 0 }} 
                 animate={{ opacity: 1, height: 'auto' }} 
-                style={{ padding: '14px', background: 'rgba(254, 226, 226, 0.9)', border: '1px solid #f87171', color: '#b91c1c', borderRadius: '12px', fontSize: '0.95rem', textAlign: 'center', marginBottom: '24px', fontWeight: 600 }}
+                style={{ padding: '12px', background: 'rgba(254, 226, 226, 0.9)', border: '1px solid #f87171', color: '#b91c1c', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center', marginBottom: '16px', fontWeight: 600 }}
               >
                 {error}
               </motion.div>
@@ -307,7 +311,7 @@ const Login: React.FC = () => {
             </motion.div>
             
             <motion.div 
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.95rem', marginBottom: '20px' }}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.9rem', marginBottom: '16px' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
@@ -317,7 +321,7 @@ const Login: React.FC = () => {
                   type="checkbox" 
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  style={{ accentColor: '#10b981', width: '18px', height: '18px', cursor: 'pointer' }} 
+                  style={{ accentColor: '#10b981', width: '16px', height: '16px', cursor: 'pointer', margin: 0 }} 
                 /> 
                 Keep me logged in
               </label>
@@ -333,7 +337,7 @@ const Login: React.FC = () => {
             >
               {isLoading ? (
                 <>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
                     <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
                   </svg>
                   Authenticating...
@@ -341,7 +345,7 @@ const Login: React.FC = () => {
               ) : (
                 <>
                   Sign In 
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
                   </svg>
