@@ -6,33 +6,10 @@ import { getStudents, deleteStudent, type StudentData } from '../services/studen
 import { getClasses, addClass, type ClassData } from '../services/classService';
 import Modal from '../components/Modal';
 
-const getStudentDisplayType = (student: StudentData): 'New' | 'Old' => {
-  if (student.admissionType === 'Old') return 'Old';
-  if (student.admissionType === 'New') {
-    // Auto-transition: if 1 year has passed since admission, show as Old
-    const admDate = student.originalAdmissionDate || student.admissionDate || student.createdAt;
-    if (admDate) {
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-      if (new Date(admDate) < oneYearAgo) return 'Old';
-    }
-    return 'New';
-  }
-  // Legacy students without admissionType — check date
-  const admDate = student.admissionDate || student.createdAt;
-  if (admDate) {
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    if (new Date(admDate) < oneYearAgo) return 'Old';
-  }
-  return 'New';
-};
-
 const Students: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState('All');
   const [selectedSection, setSelectedSection] = useState('All');
-  const [selectedType, setSelectedType] = useState('All');
   const [students, setStudents] = useState<StudentData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,27 +71,17 @@ const Students: React.FC = () => {
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      const displayType = getStudentDisplayType(s);
       const fullName = `${s.firstName} ${s.lastName}`.toLowerCase();
       const searchLower = searchTerm.toLowerCase().trim();
       
-      // Check if search term is "new" or "old" for type matching
-      let matchSearch = false;
-      if (searchLower === 'new' || searchLower === 'old') {
-        matchSearch = displayType.toLowerCase() === searchLower || 
-                      fullName.includes(searchLower) || 
-                      (s.admissionNo?.toLowerCase().includes(searchLower) || false);
-      } else {
-        matchSearch = fullName.includes(searchLower) || 
-                      (s.admissionNo?.toLowerCase().includes(searchLower) || false);
-      }
+      const matchSearch = fullName.includes(searchLower) || 
+                          (s.admissionNo?.toLowerCase().includes(searchLower) || false);
       
       const matchClass = selectedClass === 'All' || s.classId === selectedClass;
       const matchSection = selectedSection === 'All' || s.sectionId === selectedSection;
-      const matchType = selectedType === 'All' || displayType === selectedType;
-      return matchSearch && matchClass && matchSection && matchType;
+      return matchSearch && matchClass && matchSection;
     });
-  }, [students, searchTerm, selectedClass, selectedSection, selectedType]);
+  }, [students, searchTerm, selectedClass, selectedSection]);
 
   const activeClassObj = classes.find(c => c.className === selectedClass);
   const activeSections = activeClassObj ? activeClassObj.sections : [];
@@ -167,7 +134,7 @@ const Students: React.FC = () => {
             <Search size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
               type="text" 
-              placeholder="Search by name, admission no, or type (new/old)..." 
+              placeholder="Search by name or admission no..." 
               className="glass-input" 
               style={{ paddingLeft: '48px' }}
               value={searchTerm}
@@ -175,17 +142,6 @@ const Students: React.FC = () => {
             />
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <select 
-              className="glass-input" 
-              value={selectedType} 
-              onChange={e => setSelectedType(e.target.value)} 
-              style={{ width: '110px' }}
-            >
-              <option value="All">All Types</option>
-              <option value="New">🆕 New</option>
-              <option value="Old">🔄 Old</option>
-            </select>
-
             <select 
               className="glass-input" 
               value={selectedClass} 
@@ -223,7 +179,6 @@ const Students: React.FC = () => {
                 <th>Full Name</th>
                 <th>Class / Sec</th>
                 <th>Roll No.</th>
-                <th>Type</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -231,10 +186,9 @@ const Students: React.FC = () => {
             <tbody>
               {loading ? (
                  <tr>
-                   <td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
+                   <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
                  </tr>
               ) : filteredStudents.map((student, idx) => {
-                const displayType = getStudentDisplayType(student);
                 return (
                 <motion.tr 
                   initial={{ opacity: 0, x: -10 }}
@@ -253,11 +207,6 @@ const Students: React.FC = () => {
                   </td>
                   <td>{student.classId} {student.sectionId}</td>
                   <td>{student.rollNumber}</td>
-                  <td>
-                    <span className={`badge ${displayType === 'New' ? 'warning' : 'success'}`}>
-                      {displayType === 'New' ? '🆕 New' : '🔄 Old'}
-                    </span>
-                  </td>
                   <td>
                     <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>
                       {student.status || 'Active'}
@@ -278,7 +227,7 @@ const Students: React.FC = () => {
               
               {!loading && filteredStudents.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                     No students found matching your search.
                   </td>
                 </tr>
