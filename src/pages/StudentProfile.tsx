@@ -57,6 +57,8 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
 const StudentProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
   const [student, setStudent] = useState<StudentData | null>(null);
   const [studentClass, setStudentClass] = useState<ClassData | null>(null);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
@@ -310,7 +312,7 @@ const StudentProfile: React.FC = () => {
                {saving ? 'Saving...' : <><Save size={16}/> Save Changes</>}
              </button>
           </div>
-        ) : (
+        ) : role === 'Principal' && (
           <button className="btn-primary" onClick={handleEditToggle}>
             <Edit size={16} /> Edit Profile
           </button>
@@ -491,12 +493,16 @@ const StudentProfile: React.FC = () => {
                     ))}
                   </select>
                 )}
-                <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
-                  <Plus size={16} /> Record Payment
-                </button>
-                <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsFineModalOpen(true)}>
-                  <Plus size={16} /> Add Charge
-                </button>
+                {role === 'Principal' && (
+                  <>
+                    <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
+                      <Plus size={16} /> Record Payment
+                    </button>
+                    <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsFineModalOpen(true)}>
+                      <Plus size={16} /> Add Charge
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             
@@ -518,7 +524,7 @@ const StudentProfile: React.FC = () => {
                         <th>Description</th>
                         <th style={{ whiteSpace: 'nowrap' }}>Charge</th>
                         <th style={{ whiteSpace: 'nowrap' }}>Paid</th>
-                        <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>
+                        {role === 'Principal' && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -537,9 +543,11 @@ const StudentProfile: React.FC = () => {
                         </td>
                         <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                              <Trash2 size={16} />
-                            </button>
+                            {role === 'Principal' && (
+                              <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

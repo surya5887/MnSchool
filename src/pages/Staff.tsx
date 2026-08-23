@@ -7,12 +7,14 @@ import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudina
 import Modal from '../components/Modal';
 
 const Staff: React.FC = () => {
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
   const [teachers, setTeachers] = useState<StaffData[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
   const [newStaff, setNewStaff] = useState<Partial<StaffData>>({
-    name: '', subject: '', experience: '', salary: 0, status: 'Active',
+    name: '', subject: '', assignedClass: '', experience: '', salary: 0, status: 'Active',
     customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: ''
   });
   
@@ -62,7 +64,7 @@ const Staff: React.FC = () => {
       } as StaffData);
       
       setAddModalOpen(false);
-      setNewStaff({ name: '', subject: '', experience: '', salary: 0, status: 'Active', customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: '' });
+      setNewStaff({ name: '', subject: '', assignedClass: '', experience: '', salary: 0, status: 'Active', customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: '' });
       setPhotoFile(null);
       setDocFiles([]);
       fetchStaff();
@@ -101,9 +103,11 @@ const Staff: React.FC = () => {
           <h1 className="page-title">Staff & Payroll</h1>
           <p className="page-subtitle">Manage teaching staff and process salaries with one click.</p>
         </div>
-        <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
-          <UserPlus size={20} /> Add Staff
-        </button>
+        {role === 'Principal' && (
+          <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
+            <UserPlus size={20} /> Add Staff
+          </button>
+        )}
       </div>
 
       <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
@@ -116,7 +120,7 @@ const Staff: React.FC = () => {
                 <th>Subject</th>
                 <th>Experience</th>
                 <th>Status</th>
-                <th style={{ textAlign: 'center' }}>Action</th>
+                {role === 'Principal' && <th style={{ textAlign: 'center' }}>Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -129,12 +133,19 @@ const Staff: React.FC = () => {
                 >
                   <td style={{ fontWeight: 600 }}>{teacher.customId || '-'}</td>
                   <td>
-                    <Link to={`/staff/${teacher.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    {role === 'Principal' ? (
+                      <Link to={`/staff/${teacher.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img src={teacher.photoUrl || `https://ui-avatars.com/api/?name=${teacher.name}&background=random`} alt={teacher.name} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+                          <span style={{ fontWeight: 500, color: 'var(--primary)' }}>{teacher.name}</span>
+                        </div>
+                      </Link>
+                    ) : (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <img src={teacher.photoUrl || `https://ui-avatars.com/api/?name=${teacher.name}&background=random`} alt={teacher.name} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                        <span style={{ fontWeight: 500, color: 'var(--primary)' }}>{teacher.name}</span>
+                        <span style={{ fontWeight: 500 }}>{teacher.name}</span>
                       </div>
-                    </Link>
+                    )}
                   </td>
                   <td>{teacher.subject || '-'}</td>
                   <td>{teacher.experience || '-'}</td>
@@ -143,16 +154,18 @@ const Staff: React.FC = () => {
                       {teacher.status || 'Active'}
                     </span>
                   </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', alignItems: 'center' }}>
-                      <Link to={`/staff/${teacher.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }} title="View Profile">
-                        <Eye size={18} />
-                      </Link>
-                      <button className="icon-btn" onClick={() => { setDeleteTxnId(teacher.id || null); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }} title="Delete Staff">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
+                  {role === 'Principal' && (
+                    <td style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', alignItems: 'center' }}>
+                        <Link to={`/staff/${teacher.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                          <Eye size={18} />
+                        </Link>
+                        <button className="icon-btn" onClick={() => { setDeleteTxnId(teacher.id || null); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </motion.tr>
               ))}
             </tbody>
@@ -217,6 +230,13 @@ const Staff: React.FC = () => {
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Subject</label>
               <input type="text" className="glass-input" value={newStaff.subject} onChange={e => setNewStaff({...newStaff, subject: e.target.value})} />
             </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Assigned Class</label>
+              <input type="text" className="glass-input" value={newStaff.assignedClass} onChange={e => setNewStaff({...newStaff, assignedClass: e.target.value})} placeholder="e.g. 10th" />
+            </div>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Experience</label>
               <input type="text" className="glass-input" value={newStaff.experience} onChange={e => setNewStaff({...newStaff, experience: e.target.value})} placeholder="e.g. 5 Years" />

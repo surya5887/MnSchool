@@ -19,6 +19,7 @@ export interface StudentData {
   nationalIdNumber?: string;
   phone?: string;
   email?: string;
+  password?: string;
   parentAccountId?: string;
   parentName?: string;
   parentPhone?: string;
@@ -56,6 +57,11 @@ export const addStudent = async (studentData: StudentData) => {
   try {
     studentData.createdAt = new Date().toISOString();
     studentData.status = studentData.status || 'Active';
+    
+    // Auto-generate 6-digit pin if password not provided
+    if (!studentData.password) {
+      studentData.password = Math.floor(100000 + Math.random() * 900000).toString();
+    }
     
     const activeSession = localStorage.getItem('activeSession');
     if (activeSession && !studentData.session) {

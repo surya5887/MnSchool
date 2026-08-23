@@ -1,13 +1,70 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { getDocs, collection, query, where } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      // 1. Check if Admin
+      if (username === 'admin' && password === 'admin123') {
+        localStorage.setItem('authUser', JSON.stringify({ role: 'Principal', id: 'admin', name: 'Principal / Admin' }));
+        navigate('/dashboard');
+        return;
+      }
+
+      // 2. Check Staff (Teacher)
+      const staffRef = collection(db, 'staff');
+      const staffQ = query(staffRef, where('customId', '==', username), where('password', '==', password));
+      const staffSnap = await getDocs(staffQ);
+      
+      if (!staffSnap.empty) {
+        const docData = staffSnap.docs[0].data();
+        localStorage.setItem('authUser', JSON.stringify({ 
+          role: 'Teacher', 
+          id: staffSnap.docs[0].id, 
+          name: docData.name,
+          assignedClass: docData.assignedClass || '' 
+        }));
+        navigate('/dashboard'); // Will be redirected/handled by Layout or Dashboard
+        return;
+      }
+
+      // 3. Check Student
+      const studentRef = collection(db, 'students');
+      const studentQ = query(studentRef, where('admissionNo', '==', username), where('password', '==', password));
+      const studentSnap = await getDocs(studentQ);
+      
+      if (!studentSnap.empty) {
+        const docData = studentSnap.docs[0].data();
+        localStorage.setItem('authUser', JSON.stringify({ 
+          role: 'Student', 
+          id: studentSnap.docs[0].id, 
+          name: `${docData.firstName} ${docData.lastName}`
+        }));
+        navigate(`/student/${studentSnap.docs[0].id}`); // direct to their profile
+        return;
+      }
+
+      // Not found
+      setError('Invalid username or password.');
+    } catch (err) {
+      console.error("Login error", err);
+      setError('An error occurred during login. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,28 +112,49 @@ const Login: React.FC = () => {
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <img src="/images/logo.jpeg" alt="School Logo" style={{ width: '80px', height: '80px', borderRadius: '20px', objectFit: 'cover', margin: '0 auto 24px auto', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} />
             <h1 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--text-main)' }}>Welcome Back</h1>
-            <p style={{ color: 'var(--text-muted)' }}>Sign in to MN Public School Admin</p>
+            <p style={{ color: 'var(--text-muted)' }}>Sign in to MN Public School ERP</p>
           </div>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {error && (
+              <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', borderRadius: '8px', fontSize: '0.9rem', textAlign: 'center' }}>
+                {error}
+              </div>
+            )}
+            
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-main)' }}>Email or Username</label>
-              <input type="text" className="glass-input" placeholder="admin@mnschool.com" required style={{ background: 'white' }} />
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-main)' }}>Username / ID</label>
+              <input 
+                type="text" 
+                className="glass-input" 
+                placeholder="'admin', Custom ID, or SR No" 
+                required 
+                style={{ background: 'white' }}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-main)' }}>Password</label>
-              <input type="password" className="glass-input" placeholder="••••••••" required style={{ background: 'white' }} />
+              <input 
+                type="password" 
+                className="glass-input" 
+                placeholder="Enter password" 
+                required 
+                style={{ background: 'white' }} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--text-main)' }}>
                 <input type="checkbox" /> Remember me
               </label>
-              <a href="#" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 500 }}>Forgot password?</a>
             </div>
 
-            <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '10px', padding: '14px', fontSize: '1rem', fontWeight: 600 }}>
-              Sign In
+            <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '10px', padding: '14px', fontSize: '1rem', fontWeight: 600 }} disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
         </motion.div>

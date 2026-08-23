@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X } from 'lucide-react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
@@ -11,6 +11,13 @@ const Layout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
   const [billingNotification, setBillingNotification] = useState('');
+  const [authUser] = useState<any>(JSON.parse(localStorage.getItem('authUser') || '{}'));
+
+  useEffect(() => {
+    if (!authUser || !authUser.role) {
+      navigate('/login');
+    }
+  }, [authUser, navigate]);
 
   useEffect(() => {
     const fetchSessionAndRunBilling = async () => {
@@ -20,39 +27,34 @@ const Layout: React.FC = () => {
           setActiveSession(settings.activeSession);
           localStorage.setItem('activeSession', settings.activeSession);
           
-          // Run migration to attach session tags
-          const migratedCount = await migrateMissingSessions();
-          if (migratedCount > 0) {
-            console.log(`Migrated ${migratedCount} legacy records to session ${settings.activeSession}`);
-            // Fire event so lists refresh
-            window.dispatchEvent(new Event('settingsUpdated'));
+          if (authUser.role === 'Principal') {
+            const migratedCount = await migrateMissingSessions();
+            if (migratedCount > 0) {
+              console.log(`Migrated ${migratedCount} entities to active session.`);
+            }
+            const count = await runAutomatedBilling();
+            if (count > 0) {
+              setBillingNotification(`Auto-Billing: ${count} invoices generated.`);
+              setTimeout(() => setBillingNotification(''), 5000);
+            }
           }
         }
-        
-        // Run automated billing in background
-        setTimeout(async () => {
-          const generatedCount = await runAutomatedBilling();
-          if (generatedCount > 0) {
-            setBillingNotification(`Generated monthly fees for ${generatedCount} student(s)`);
-            setTimeout(() => setBillingNotification(''), 5000);
-          }
-        }, 2000);
-
-      } catch (error) {
-        console.error("Error fetching session:", error);
+      } catch (err) {
+        console.error("Error setting up session", err);
       }
     };
-    fetchSessionAndRunBilling();
 
     const handleSettingsUpdate = () => {
       fetchSessionAndRunBilling();
     };
     
     window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    fetchSessionAndRunBilling();
     return () => window.removeEventListener('settingsUpdated', handleSettingsUpdate);
-  }, []);
+  }, [authUser.role]);
 
   const handleLogout = () => {
+    localStorage.removeItem('authUser');
     navigate('/login');
   };
 
@@ -63,6 +65,8 @@ const Layout: React.FC = () => {
     fontWeight: isActive ? 600 : 500,
     transition: 'var(--transition)'
   });
+
+  const role = authUser.role || '';
 
   return (
     <div className="app-container">
@@ -99,30 +103,58 @@ const Layout: React.FC = () => {
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto' }} onClick={() => setMobileMenuOpen(false)}>
-          <NavLink to="/dashboard" style={navLinkStyle}><LayoutDashboard size={20} /> Dashboard</NavLink>
           
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
-          <NavLink to="/admission" style={navLinkStyle}><UserPlus size={20} /> New Admission</NavLink>
-          <NavLink to="/students" style={navLinkStyle}><Users size={20} /> Students Directory</NavLink>
-          <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
+          {(role === 'Principal' || role === 'Teacher') && (
+            <NavLink to="/dashboard" style={navLinkStyle}><LayoutDashboard size={20} /> Dashboard</NavLink>
+          )}
           
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Academics & Operations</div>
-          <NavLink to="/classes" style={navLinkStyle}><BookOpen size={20} /> Classes & Sections</NavLink>
-          <NavLink to="/exam" style={navLinkStyle}><FileText size={20} /> Exams & Results</NavLink>
-          <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
-          <NavLink to="/transport" style={navLinkStyle}><Bus size={20} /> Transport Fleet</NavLink>
-          <NavLink to="/library" style={navLinkStyle}><LibraryIcon size={20} /> Library Management</NavLink>
+          {role === 'Principal' && (
+            <>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
+              <NavLink to="/admission" style={navLinkStyle}><UserPlus size={20} /> New Admission</NavLink>
+              <NavLink to="/students" style={navLinkStyle}><Users size={20} /> Students Directory</NavLink>
+              <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
+              
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Academics & Operations</div>
+              <NavLink to="/classes" style={navLinkStyle}><BookOpen size={20} /> Classes & Sections</NavLink>
+              <NavLink to="/exam" style={navLinkStyle}><FileText size={20} /> Exams & Results</NavLink>
+              <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
+              <NavLink to="/transport" style={navLinkStyle}><Bus size={20} /> Transport Fleet</NavLink>
+              <NavLink to="/library" style={navLinkStyle}><LibraryIcon size={20} /> Library Management</NavLink>
 
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
-          <NavLink to="/ledger" style={navLinkStyle}><BookOpen size={20} /> Master Ledger</NavLink>
-          <NavLink to="/staff" style={navLinkStyle}><GraduationCap size={20} /> Staff & Payroll</NavLink>
-          
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>
-          <NavLink to="/audit" style={navLinkStyle}><ShieldAlert size={20} /> Audit Logs</NavLink>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
+              <NavLink to="/ledger" style={navLinkStyle}><BookOpen size={20} /> Master Ledger</NavLink>
+              <NavLink to="/staff" style={navLinkStyle}><GraduationCap size={20} /> Staff & Payroll</NavLink>
+              
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>
+              <NavLink to="/audit" style={navLinkStyle}><ShieldAlert size={20} /> Audit Logs</NavLink>
+            </>
+          )}
+
+          {role === 'Teacher' && (
+            <>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>My Work</div>
+              <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
+              <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
+              <NavLink to="/students" style={navLinkStyle}><Users size={20} /> Students Directory</NavLink>
+              <NavLink to={`/staff/${authUser.id}`} style={navLinkStyle}><User size={20} /> My Profile & Ledger</NavLink>
+            </>
+          )}
+
+          {role === 'Student' && (
+            <>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>My Dashboard</div>
+              <NavLink to={`/student/${authUser.id}`} style={navLinkStyle}><User size={20} /> My Profile & Ledger</NavLink>
+              <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> My Attendance</NavLink>
+              <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
+            </>
+          )}
         </nav>
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <NavLink to="/settings" style={navLinkStyle}><Settings size={20} /> System Settings</NavLink>
+          {role === 'Principal' && (
+            <NavLink to="/settings" style={navLinkStyle}><Settings size={20} /> System Settings</NavLink>
+          )}
           <button onClick={handleLogout} className="btn-secondary" style={{ width: '100%', justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--danger)' }}>
             <LogOut size={18} /> Logout
           </button>
@@ -147,10 +179,10 @@ const Layout: React.FC = () => {
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Admin User</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Principal</div>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{authUser.name || 'User'}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{authUser.role || 'Role'}</div>
               </div>
-              <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+              <img src={`https://ui-avatars.com/api/?name=${authUser.name || 'U'}&background=6366f1&color=fff`} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
             </div>
           </div>
         </header>

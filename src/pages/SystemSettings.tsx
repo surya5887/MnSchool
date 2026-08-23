@@ -149,38 +149,33 @@ const SystemSettings: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ margin: 0 }}>Role Management</h3>
-                <button className="btn-primary" onClick={() => alert('Role creation will be available in v2.0')}>Add New Role</button>
               </div>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Define permissions for different staff types. Do not give full access to accountants.</p>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>System uses 3 fixed roles. Permissions are strictly enforced across the ERP.</p>
               
               <div className="glass-table-container">
                 <table>
                   <thead>
                     <tr>
                       <th>Role Name</th>
-                      <th>Permissions</th>
+                      <th>Description & Permissions</th>
                       <th>Users Assigned</th>
-                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ fontWeight: 600 }}>Super Admin</td>
-                      <td><span className="badge success">Full Access</span></td>
-                      <td>{staff.filter(s => s.role === 'Admin').length} Users</td>
-                      <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>Edit</button></td>
-                    </tr>
-                    <tr>
-                      <td style={{ fontWeight: 600 }}>Accountant</td>
-                      <td>Fee Collection, Ledger View, Expenses</td>
-                      <td><span className="badge" style={{ background: 'var(--primary-color)', color: 'white' }}>9</span></td>
-                      <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => alert('Edit Role coming soon')}>Edit</button></td>
+                      <td style={{ fontWeight: 600 }}>Principal (Admin)</td>
+                      <td><span className="badge success">Full System Access</span></td>
+                      <td>1 User</td>
                     </tr>
                     <tr>
                       <td style={{ fontWeight: 600 }}>Teacher</td>
-                      <td>Mark Attendance, Student Directory View</td>
-                      <td>{staff.filter(s => s.role === 'Teacher').length} Users</td>
-                      <td><button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>Edit</button></td>
+                      <td>Dashboard, Class Timetable, Own Class Students, Own Attendance, Salary Ledger</td>
+                      <td>{staff.filter(s => s.role === 'Teacher' || !s.role).length} Users</td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>Student</td>
+                      <td>Class Timetable, Own Profile, Own Ledger, Own Attendance History</td>
+                      <td>All Student Users</td>
                     </tr>
                   </tbody>
                 </table>

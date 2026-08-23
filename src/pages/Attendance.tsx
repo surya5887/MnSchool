@@ -6,7 +6,10 @@ import { getClasses, type ClassData, getSequenceIndex } from '../services/classS
 import { getAttendance, saveAttendance, type AttendanceStatus } from '../services/attendanceService';
 
 const Attendance: React.FC = () => {
-  const [selectedClass, setSelectedClass] = useState('');
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
+  
+  const [selectedClass, setSelectedClass] = useState(role === 'Teacher' ? (authUser.assignedClass || '') : '');
   const [selectedSection, setSelectedSection] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -131,6 +134,22 @@ const Attendance: React.FC = () => {
   const presentCount = activeStudents.filter(s => s.id && attendance[s.id] === 'Present').length;
   const absentCount = activeStudents.filter(s => s.id && attendance[s.id] === 'Absent').length;
   const unmarkedCount = activeStudents.length - presentCount - absentCount;
+
+  if (role === 'Student') {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+          <div>
+            <h1 className="page-title"><CalendarCheck size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> My Attendance</h1>
+            <p className="page-subtitle">View your daily attendance history.</p>
+          </div>
+        </div>
+        <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          Attendance history is currently being compiled. Please contact your class teacher for detailed reports.
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

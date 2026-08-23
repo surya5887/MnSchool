@@ -21,6 +21,8 @@ const getISTDateTimeLocalString = () => {
 const StaffProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
   const [staff, setStaff] = useState<StaffData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -200,13 +202,17 @@ const StaffProfile: React.FC = () => {
           <ArrowLeft size={18} /> Back to Staff
         </button>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsDeleteModalOpen(true)}>
-            <Trash2 size={16} /> Delete Staff
-          </button>
-          {!isEditing ? (
-            <button className="btn-primary" onClick={() => setIsEditing(true)}>
-              <Edit size={16} /> Edit Profile
+          {role === 'Principal' && (
+            <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsDeleteModalOpen(true)}>
+              <Trash2 size={16} /> Delete Staff
             </button>
+          )}
+          {!isEditing ? (
+            role === 'Principal' && (
+              <button className="btn-primary" onClick={() => setIsEditing(true)}>
+                <Edit size={16} /> Edit Profile
+              </button>
+            )
           ) : (
             <div style={{ display: 'flex', gap: '8px' }}>
               <button className="btn-secondary" onClick={() => { setIsEditing(false); setEditData(staff); setNewPhotoFile(null); setNewDocFiles([]); }}>
@@ -264,6 +270,7 @@ const StaffProfile: React.FC = () => {
                 <div><label className="form-label">Religion</label><input type="text" className="glass-input" value={editData.religion || ''} onChange={e => setEditData({...editData, religion: e.target.value})} /></div>
                 <div><label className="form-label">Qualification</label><input type="text" className="glass-input" value={editData.qualification || ''} onChange={e => setEditData({...editData, qualification: e.target.value})} /></div>
                 <div><label className="form-label">Subject</label><input type="text" className="glass-input" value={editData.subject || ''} onChange={e => setEditData({...editData, subject: e.target.value})} /></div>
+                <div><label className="form-label">Assigned Class</label><input type="text" className="glass-input" value={editData.assignedClass || ''} onChange={e => setEditData({...editData, assignedClass: e.target.value})} placeholder="e.g. 10th" /></div>
                 <div><label className="form-label">Experience</label><input type="text" className="glass-input" value={editData.experience || ''} onChange={e => setEditData({...editData, experience: e.target.value})} /></div>
                 <div><label className="form-label">Base Salary (₹)</label><input type="number" className="glass-input" value={editData.salary || 0} onChange={e => setEditData({...editData, salary: Number(e.target.value)})} /></div>
                 
@@ -275,10 +282,9 @@ const StaffProfile: React.FC = () => {
                   }} />
                 </div>
                 <div>
-                  <label className="form-label">Upload Additional Docs</label>
-                  <input type="file" className="glass-input" multiple accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => {
+                  <label className="form-label">Upload New Documents</label>
+                  <input type="file" className="glass-input" multiple onChange={e => {
                     if (e.target.files) setNewDocFiles(Array.from(e.target.files));
-                    else setNewDocFiles([]);
                   }} />
                 </div>
               </div>
@@ -292,8 +298,19 @@ const StaffProfile: React.FC = () => {
                 <div><div className="detail-label">Religion</div><div className="detail-value">{staff.religion || 'N/A'}</div></div>
                 <div><div className="detail-label">Qualification</div><div className="detail-value">{staff.qualification || 'N/A'}</div></div>
                 <div><div className="detail-label">Subject</div><div className="detail-value">{staff.subject || 'N/A'}</div></div>
+                <div><div className="detail-label">Assigned Class</div><div className="detail-value">{staff.assignedClass || 'N/A'}</div></div>
                 <div><div className="detail-label">Experience</div><div className="detail-value">{staff.experience || 'N/A'}</div></div>
                 <div><div className="detail-label">Base Salary</div><div className="detail-value">₹{staff.salary || 0}</div></div>
+                
+                {role === 'Principal' && (
+                  <div style={{ gridColumn: '1 / -1', background: 'rgba(99, 102, 241, 0.05)', padding: '16px', borderRadius: '12px', marginTop: '12px' }}>
+                    <div className="detail-label" style={{ color: 'var(--primary-color)' }}>System Credentials (Admin Only)</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '8px' }}>
+                      <div><div className="detail-label">Login ID</div><div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.customId || 'N/A'}</div></div>
+                      <div><div className="detail-label">Password</div><div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.password || 'N/A'}</div></div>
+                    </div>
+                  </div>
+                )}
                 
                 {staff.documents && staff.documents.length > 0 && (
                   <div style={{ gridColumn: '1 / -1' }}>
@@ -332,9 +349,11 @@ const StaffProfile: React.FC = () => {
                     ))}
                   </select>
                 )}
-                <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
-                  <Plus size={16} /> Record Transaction
-                </button>
+                {role === 'Principal' && (
+                  <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
+                    <Plus size={16} /> Record Transaction
+                  </button>
+                )}
               </div>
             </div>
 
@@ -346,7 +365,7 @@ const StaffProfile: React.FC = () => {
                     <th>Description</th>
                     <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Credit (In)</th>
                     <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Debit (Out)</th>
-                    <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>
+                    {role === 'Principal' && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -368,11 +387,13 @@ const StaffProfile: React.FC = () => {
                       <td style={{ textAlign: 'right', color: 'var(--danger)', fontWeight: 600 }}>
                         {t.type === 'Expense' || t.type === 'Charge' ? `₹${t.amount}` : '-'}
                       </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
+                      {role === 'Principal' && (
+                        <td style={{ textAlign: 'center' }}>
+                          <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

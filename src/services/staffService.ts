@@ -23,6 +23,8 @@ export interface StaffData {
   cast?: string;
   religion?: string;
   qualification?: string;
+  password?: string;
+  assignedClass?: string;
   
   documents?: {name: string, url: string}[];
   
@@ -37,6 +39,12 @@ export const addStaff = async (staffData: StaffData) => {
   try {
     staffData.createdAt = new Date().toISOString();
     staffData.salaryStatus = staffData.salaryStatus || 'Pending';
+    
+    // Auto-generate 6-digit pin if password not provided
+    if (!staffData.password) {
+      staffData.password = Math.floor(100000 + Math.random() * 900000).toString();
+    }
+    
     const docRef = await addDoc(collection(db, STAFF_COLLECTION), staffData as any);
     return docRef.id;
   } catch (error) {
