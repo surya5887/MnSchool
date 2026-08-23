@@ -71,7 +71,7 @@ const Students: React.FC = () => {
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      const fullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+      const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
       const searchLower = searchTerm.toLowerCase().trim();
       
       const matchSearch = fullName.includes(searchLower) || 

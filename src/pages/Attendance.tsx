@@ -78,7 +78,8 @@ const Attendance: React.FC = () => {
       const matchStatus = s.status === 'Active' || !s.status;
       const matchClass = s.classId === selectedClass;
       const matchSection = s.sectionId === selectedSection;
-      const matchSearch = `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchQuery.toLowerCase());
+      const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
+      const matchSearch = fullName.includes(searchQuery.toLowerCase().trim());
       return matchStatus && matchClass && matchSection && matchSearch;
     });
   }, [students, selectedClass, selectedSection, searchQuery]);
@@ -112,9 +113,17 @@ const Attendance: React.FC = () => {
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Date</label>
           <input type="date" className="glass-input" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
-        <div className="search-bar" style={{ margin: 0, flex: 2 }}>
-          <Search size={18} style={{ color: 'var(--text-muted)' }} />
-          <input type="text" placeholder="Search student name..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%' }} />
+        <div style={{ position: 'relative', flex: 2 }}>
+          <label style={{ display: 'block', marginBottom: '8px', color: 'transparent' }}>Search</label>
+          <Search size={18} style={{ position: 'absolute', left: '16px', top: '44px', color: 'var(--text-muted)' }} />
+          <input 
+            type="text" 
+            placeholder="Search student name..." 
+            value={searchQuery} 
+            onChange={e => setSearchQuery(e.target.value)} 
+            className="glass-input"
+            style={{ paddingLeft: '48px', width: '100%' }} 
+          />
         </div>
       </div>
 
