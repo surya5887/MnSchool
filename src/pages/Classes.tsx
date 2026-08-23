@@ -12,7 +12,8 @@ const Classes: React.FC = () => {
   const [isClassModalOpen, setClassModalOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
-  
+  const [staffList, setStaffList] = useState<{ id: string, name: string }[]>([]);
+
   const [newClassData, setNewClassData] = useState({
     className: '',
     sections: '',
@@ -25,19 +26,23 @@ const Classes: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const fetchClasses = async () => {
+  const fetchData = async () => {
     try {
-      const data = await getClasses();
-      setClasses(data);
+      const [classData, staffData] = await Promise.all([
+        getClasses(),
+        getStaff()
+      ]);
+      setClasses(classData);
+      setStaffList(staffData);
     } catch (error) {
-      console.error("Error fetching classes:", error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchClasses();
+    fetchData();
   }, []);
 
   const sortedClasses = useMemo(() => {
@@ -66,58 +71,30 @@ const Classes: React.FC = () => {
     setClassModalOpen(true);
   };
 
-  const syncTeacherToStaff = async (teacherName: string, subject: string) => {
-    if (!teacherName) return;
-    try {
-      const allStaff = await getStaff();
-      const exists = allStaff.some(s => s.name.toLowerCase() === teacherName.toLowerCase());
-      if (!exists) {
-        await addStaff({
-          name: teacherName,
-          role: 'Teacher',
-          department: 'Academic',
-          joinDate: new Date().toISOString(),
-          salary: 35000,
-          status: 'Active',
-          subject: subject || 'General',
-          experience: '0 years',
-          salaryStatus: 'Pending'
-        });
-      }
-    } catch (error) {
-      console.error("Error syncing teacher to staff", error);
-    }
-  };
-
   const handleSaveClass = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const classDataToSave = {
+      const dataToSave = {
         className: newClassData.className,
         order: classes.length + 1,
         sections: newClassData.sections.split(',').map(s => s.trim()).filter(s => s),
         subjects: newClassData.subjects.split(',').map(s => s.trim()).filter(s => s),
         classTeacher: newClassData.classTeacher,
-        monthlyBaseFee: Number(newClassData.monthlyBaseFee),
+        monthlyBaseFee: Number(newClassData.monthlyBaseFee) || 1000,
         fees: newClassData.feeAmount ? [{ feeName: newClassData.feeName, amount: Number(newClassData.feeAmount) }] : []
       };
 
       if (editingClassId) {
-        await updateClass(editingClassId, classDataToSave);
+        await updateClass(editingClassId, dataToSave);
       } else {
-        await addClass(classDataToSave);
+        await addClass(dataToSave);
       }
       
-      // Auto-sync teacher to staff
-      if (newClassData.classTeacher) {
-        await syncTeacherToStaff(newClassData.classTeacher, newClassData.subjects.split(',')[0] || 'General');
-      }
-
       setClassModalOpen(false);
       setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
       setEditingClassId(null);
       setSaved(true);
-      fetchClasses();
+      fetchData();
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
       console.error("Error saving class", error);
@@ -129,7 +106,7 @@ const Classes: React.FC = () => {
     if (window.confirm("Are you sure you want to delete this class? This will not automatically delete its students.")) {
       try {
         await deleteClass(id);
-        fetchClasses();
+        fetchData();
       } catch (error) {
         console.error("Error deleting class", error);
       }
@@ -224,8 +201,16 @@ const Classes: React.FC = () => {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Class Teacher</label>
-            <input type="text" className="glass-input" value={newClassData.classTeacher} onChange={e => setNewClassData({...newClassData, classTeacher: e.target.value})} placeholder="e.g. Mr. Sharma" />
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>* Adding a teacher here will auto-sync them to the Staff directory.</span>
+            <select 
+              className="glass-input" 
+              value={newClassData.classTeacher} 
+              onChange={e => setNewClassData({...newClassData, classTeacher: e.target.value})}
+            >
+              <option value="">Select a Teacher</option>
+              {staffList.map(staff => (
+                <option key={staff.id} value={staff.name}>{staff.name}</option>
+              ))}
+            </select>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
