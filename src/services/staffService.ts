@@ -40,9 +40,12 @@ export const addStaff = async (staffData: StaffData) => {
     staffData.createdAt = new Date().toISOString();
     staffData.salaryStatus = staffData.salaryStatus || 'Pending';
     
-    // Auto-generate 6-digit pin if password not provided
+    // Auto-generate password: FirstName + Last 4 of Contact
     if (!staffData.password) {
-      staffData.password = Math.floor(100000 + Math.random() * 900000).toString();
+      const firstName = staffData.name ? staffData.name.split(' ')[0].trim() : 'Staff';
+      const phoneStr = (staffData.phone || '').replace(/\D/g, ''); // strip non-digits just in case
+      const last4 = phoneStr.length >= 4 ? phoneStr.slice(-4) : '0000';
+      staffData.password = `${firstName}${last4}`;
     }
     
     const docRef = await addDoc(collection(db, STAFF_COLLECTION), staffData as any);
@@ -117,3 +120,5 @@ export const deleteStaff = async (id: string) => {
     throw error;
   }
 };
+
+export const updateStaffPassword = async (id: string, password: string) => { const docRef = doc(db, STAFF_COLLECTION, id); await updateDoc(docRef, { password }); };

@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
     try {
       // 1. Check if Admin
-      if (username === 'admin' && password === 'admin123') {
+      if (username.toLowerCase() === 'mnpsharsoli@gmail.com' && password === 'admin@8393') {
         saveSession({ role: 'Principal', id: 'admin', name: 'Principal / Admin' });
         navigate('/dashboard');
         return;
@@ -32,7 +32,7 @@ const Login: React.FC = () => {
 
       // 2. Check Staff (Teacher)
       const staffRef = collection(db, 'staff');
-      const staffQ = query(staffRef, where('customId', '==', username), where('password', '==', password));
+      const staffQ = query(staffRef, where('email', '==', username), where('password', '==', password));
       const staffSnap = await getDocs(staffQ);
       
       if (!staffSnap.empty) {
@@ -49,7 +49,7 @@ const Login: React.FC = () => {
 
       // 3. Check Student
       const studentRef = collection(db, 'students');
-      const studentQ = query(studentRef, where('admissionNo', '==', username), where('password', '==', password));
+      const studentQ = query(studentRef, where('email', '==', username), where('password', '==', password));
       const studentSnap = await getDocs(studentQ);
       
       if (!studentSnap.empty) {
@@ -282,11 +282,11 @@ const Login: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <label className="input-label">Username / ID</label>
+              <label className="input-label">Email ID</label>
               <input 
-                type="text" 
+                type="email" 
                 className="premium-input"
-                placeholder="Admin, Custom ID, or SR No" 
+                placeholder="Enter your Email ID" 
                 required 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

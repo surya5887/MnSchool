@@ -122,7 +122,7 @@ const StaffProfile: React.FC = () => {
 
   const handleDeleteStaff = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deletePassword !== 'admin123') {
+    if (deletePassword !== 'admin@8393') {
       setDeleteError('Incorrect admin password.');
       return;
     }
@@ -157,7 +157,7 @@ const StaffProfile: React.FC = () => {
 
   const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deleteTxnPassword !== 'admin123') {
+    if (deleteTxnPassword !== 'admin@8393') {
       setDeleteTxnError('Incorrect admin password.');
       return;
     }
@@ -239,7 +239,7 @@ const StaffProfile: React.FC = () => {
               )}
             </div>
             <h2 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', color: 'var(--text-color)' }}>{staff.name}</h2>
-            <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)' }}>{staff.customId ? `${staff.customId} • ` : ''}{staff.role} - {staff.department}</p>
+            <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)' }}>{staff.email ? `${staff.email} • ` : ''}{staff.role} - {staff.department}</p>
             
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
               <span className={`badge ${staff.status === 'Active' ? 'success' : 'danger'}`}>
@@ -306,8 +306,22 @@ const StaffProfile: React.FC = () => {
                   <div style={{ gridColumn: '1 / -1', background: 'rgba(99, 102, 241, 0.05)', padding: '16px', borderRadius: '12px', marginTop: '12px' }}>
                     <div className="detail-label" style={{ color: 'var(--primary-color)' }}>System Credentials (Admin Only)</div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '8px' }}>
-                      <div><div className="detail-label">Login ID</div><div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.customId || 'N/A'}</div></div>
-                      <div><div className="detail-label">Password</div><div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.password || 'N/A'}</div></div>
+                      <div>
+                        <div className="detail-label">Login ID (Email)</div>
+                        {isEditing ? (
+                          <input type="email" className="glass-input" style={{ width: '100%' }} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} />
+                        ) : (
+                          <div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.email || 'N/A'}</div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="detail-label">Password</div>
+                        {isEditing ? (
+                          <input type="text" className="glass-input" style={{ width: '100%' }} value={editData.password || ''} onChange={e => setEditData({...editData, password: e.target.value})} />
+                        ) : (
+                          <div className="detail-value" style={{ fontFamily: 'monospace' }}>{staff.password || 'N/A'}</div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}

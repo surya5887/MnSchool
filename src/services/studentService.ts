@@ -58,9 +58,17 @@ export const addStudent = async (studentData: StudentData) => {
     studentData.createdAt = new Date().toISOString();
     studentData.status = studentData.status || 'Active';
     
-    // Auto-generate 6-digit pin if password not provided
+    // Auto-generate password: NAMEYYYY (First Name + Birth Year)
     if (!studentData.password) {
-      studentData.password = Math.floor(100000 + Math.random() * 900000).toString();
+      const firstName = studentData.firstName ? studentData.firstName.trim().toUpperCase() : 'STUDENT';
+      let year = '0000';
+      if (studentData.dob) {
+        const d = new Date(studentData.dob);
+        if (!isNaN(d.getFullYear())) {
+          year = d.getFullYear().toString();
+        }
+      }
+      studentData.password = `${firstName}${year}`;
     }
     
     const activeSession = localStorage.getItem('activeSession');
@@ -135,3 +143,5 @@ export const deleteStudent = async (id: string) => {
     throw error;
   }
 };
+
+export const updateStudentPassword = async (id: string, password: string) => { const docRef = doc(db, STUDENTS_COLLECTION, id); await updateDoc(docRef, { password }); };

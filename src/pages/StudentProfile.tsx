@@ -192,7 +192,7 @@ const StudentProfile: React.FC = () => {
 
   const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deleteTxnPassword !== 'admin123') {
+    if (deleteTxnPassword !== 'admin@8393') {
       setDeleteTxnError('Incorrect admin password.');
       return;
     }
@@ -450,6 +450,30 @@ const StudentProfile: React.FC = () => {
                   : <span>{student.aadharNumber || 'N/A'}</span>
                 }
               </div>
+              
+              {role === 'Principal' && (
+                <div style={{ background: 'rgba(99, 102, 241, 0.05)', padding: '16px', borderRadius: '12px', marginTop: '16px' }}>
+                  <div style={{ color: 'var(--primary-color)', fontWeight: 600, marginBottom: '12px' }}>System Credentials (Admin Only)</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <span style={{ width: '120px', fontWeight: 500, color: 'var(--text-muted)' }}>Login ID (Email)</span>
+                      {isEditing ? (
+                        <input type="email" className="glass-input" style={{ flex: 1, padding: '4px 8px' }} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email ID" />
+                      ) : (
+                        <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{student.email || 'N/A'}</span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <span style={{ width: '120px', fontWeight: 500, color: 'var(--text-muted)' }}>Password</span>
+                      {isEditing ? (
+                        <input type="text" className="glass-input" style={{ flex: 1, padding: '4px 8px' }} value={editData.password || ''} onChange={e => setEditData({...editData, password: e.target.value})} placeholder="Password" />
+                      ) : (
+                        <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{student.password || 'N/A'}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
