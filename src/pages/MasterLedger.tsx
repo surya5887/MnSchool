@@ -43,6 +43,12 @@ const MasterLedger: React.FC = () => {
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
 
+  // Export State
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportOption, setExportOption] = useState('30');
+  const [exportStartDate, setExportStartDate] = useState('');
+  const [exportEndDate, setExportEndDate] = useState('');
+
   const fetchData = async () => {
     try {
       const settings = await getSchoolSettings();
@@ -104,6 +110,59 @@ const MasterLedger: React.FC = () => {
     }
   };
 
+  const handleExportData = () => {
+    let filtered = transactions;
+    
+    if (exportOption === 'custom') {
+      if (exportStartDate && exportEndDate) {
+        const start = new Date(exportStartDate).getTime();
+        const end = new Date(exportEndDate).getTime() + 86400000;
+        filtered = filtered.filter(t => {
+          const dt = new Date(t.date).getTime();
+          return dt >= start && dt < end;
+        });
+      }
+    } else {
+      const days = parseInt(exportOption, 10);
+      const threshold = new Date();
+      threshold.setDate(threshold.getDate() - days);
+      const thresholdTime = threshold.getTime();
+      filtered = filtered.filter(t => new Date(t.date).getTime() >= thresholdTime);
+    }
+
+    if (filtered.length === 0) {
+      alert("No data found for the selected date range.");
+      return;
+    }
+
+    // Generate CSV
+    const headers = ["Date", "Time", "Type", "Category", "Description", "Credit (In)", "Debit (Out)"];
+    const rows = filtered.map(t => {
+      const dateObj = new Date(t.date);
+      const dateStr = dateObj.toLocaleDateString('en-GB');
+      const timeStr = dateObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+      const credit = t.type === 'Income' || t.type === 'Discount' ? t.amount : 0;
+      const debit = t.type === 'Expense' || t.type === 'Charge' ? t.amount : 0;
+      
+      const desc = t.description ? `"${t.description.replace(/"/g, '""')}"` : "";
+      const cat = t.category ? `"${t.category.replace(/"/g, '""')}"` : "";
+      
+      return [dateStr, timeStr, t.type, cat, desc, credit, debit].join(",");
+    });
+    
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Master_Ledger_${exportOption === 'custom' ? 'Custom' : `Last_${exportOption}_Days`}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsExportModalOpen(false);
+  };
+
   // Process data for rendering
   const processedData = transactions.map(t => {
     const amt = t.type === 'Income' || t.type === 'Discount' ? t.amount : -t.amount;
@@ -158,7 +217,7 @@ const MasterLedger: React.FC = () => {
               <option key={s} value={s}>Session: {s}</option>
             ))}
           </select>
-          <button className="btn-secondary" onClick={() => alert('Exporting ledger to PDF/Excel will be available soon.')}>
+          <button className="btn-secondary" onClick={() => setIsExportModalOpen(true)}>
             <Download size={18} /> Export Excel
           </button>
         </div>
@@ -291,6 +350,41 @@ const MasterLedger: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Export Modal */}
+      <Modal isOpen={isExportModalOpen} onClose={() => setIsExportModalOpen(false)} title="Export Master Ledger">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Select Date Range</label>
+            <select className="glass-input" value={exportOption} onChange={e => setExportOption(e.target.value)}>
+              <option value="30">Last 30 Days</option>
+              <option value="60">Last 2 Months</option>
+              <option value="90">Last 3 Months</option>
+              <option value="180">Last 6 Months</option>
+              <option value="365">Last 1 Year</option>
+              <option value="custom">Custom Date Range</option>
+            </select>
+          </div>
+          
+          {exportOption === 'custom' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px' }}>Start Date</label>
+                <input type="date" className="glass-input" value={exportStartDate} onChange={e => setExportStartDate(e.target.value)} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px' }}>End Date</label>
+                <input type="date" className="glass-input" value={exportEndDate} onChange={e => setExportEndDate(e.target.value)} />
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'flex-end' }}>
+            <button type="button" className="btn-secondary" onClick={() => setIsExportModalOpen(false)}>Cancel</button>
+            <button type="button" className="btn-primary" onClick={handleExportData}>Download Excel (CSV)</button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Add Entry Modal */}
       <Modal isOpen={isAddEntryOpen} onClose={() => setIsAddEntryOpen(false)} title="Add New Entry (Credit/Debit)">
