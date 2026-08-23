@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Upload, Save, FileText, Camera, Check, Plus, Trash2, X } from 'lucide-react';
 import { addStudent, type StudentData } from '../services/studentService';
-import { getClasses, type ClassData } from '../services/classService';
+import { getClasses, type ClassData, getSequenceIndex } from '../services/classService';
 import { getVehicles } from '../services/transportService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
@@ -107,7 +107,7 @@ const NewAdmission: React.FC = () => {
         if (!existing?.sections.includes(s)) existing?.sections.push(s);
       });
     });
-    return list;
+    return list.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
   }, [classes]);
   
   // Custom Docs State

@@ -2,21 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check, Trash2, Edit2, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getClasses, addClass, updateClass, deleteClass, type ClassData } from '../services/classService';
+import { getClasses, addClass, updateClass, deleteClass, type ClassData, getSequenceIndex } from '../services/classService';
 import { addStaff, getStaff } from '../services/staffService';
 import Modal from '../components/Modal';
-
-// Logical ordering for classes
-const CLASS_ORDER = [
-  "Play", "Nursery", "L.K.G.", "U.K.G.", 
-  "1st", "2nd", "3rd", "4th", "5th", "6th", 
-  "7th", "8th", "9th", "10th", "11th", "12th"
-];
-
-const getSequenceIndex = (className: string) => {
-  const index = CLASS_ORDER.indexOf(className);
-  return index === -1 ? 999 : index; // Unknown classes go to the bottom
-};
 
 const Classes: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);

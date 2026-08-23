@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Plus, Trash2, Eye } from 'lucide-react';
 import { getStudents, deleteStudent, type StudentData } from '../services/studentService';
-import { getClasses, addClass, type ClassData } from '../services/classService';
+import { getClasses, addClass, type ClassData, getSequenceIndex } from '../services/classService';
 import Modal from '../components/Modal';
 
 const Students: React.FC = () => {
@@ -83,7 +83,22 @@ const Students: React.FC = () => {
     });
   }, [students, searchTerm, selectedClass, selectedSection]);
 
-  const activeClassObj = classes.find(c => c.className === selectedClass);
+  const uniqueClasses = useMemo(() => {
+    const list: { className: string; sections: string[] }[] = [];
+    classes.forEach(c => {
+      let existing = list.find(x => x.className === c.className);
+      if (!existing) {
+        existing = { className: c.className, sections: [] };
+        list.push(existing);
+      }
+      c.sections.forEach(s => {
+        if (!existing?.sections.includes(s)) existing?.sections.push(s);
+      });
+    });
+    return list.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+  }, [classes]);
+
+  const activeClassObj = uniqueClasses.find(c => c.className === selectedClass);
   const activeSections = activeClassObj ? activeClassObj.sections : [];
 
   const handleDeleteRequest = (id: string) => {
@@ -149,7 +164,7 @@ const Students: React.FC = () => {
               style={{ width: '130px' }}
             >
               <option value="All">All Classes</option>
-              {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+              {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
             </select>
 
             {selectedClass !== 'All' && activeSections.length > 0 && (

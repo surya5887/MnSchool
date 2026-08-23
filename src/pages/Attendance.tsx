@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Save, Search, Download } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
-import { getClasses, type ClassData } from '../services/classService';
+import { getClasses, type ClassData, getSequenceIndex } from '../services/classService';
 
 const Attendance: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState('');
@@ -17,6 +17,21 @@ const Attendance: React.FC = () => {
   // By default, everyone is present. We only track absentees.
   const [absentees, setAbsentees] = useState<string[]>([]);
 
+  const uniqueClasses = useMemo(() => {
+    const list: { className: string; sections: string[] }[] = [];
+    classes.forEach(c => {
+      let existing = list.find(x => x.className === c.className);
+      if (!existing) {
+        existing = { className: c.className, sections: [] };
+        list.push(existing);
+      }
+      c.sections.forEach(s => {
+        if (!existing?.sections.includes(s)) existing?.sections.push(s);
+      });
+    });
+    return list.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+  }, [classes]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,10 +41,6 @@ const Attendance: React.FC = () => {
         ]);
         setStudents(studentData);
         setClasses(classData);
-        if (classData.length > 0) {
-          setSelectedClass(classData[0].className);
-          setSelectedSection(classData[0].sections[0] || '');
-        }
       } catch (error) {
         console.error("Error fetching data", error);
       } finally {
@@ -39,10 +50,18 @@ const Attendance: React.FC = () => {
     fetchData();
   }, []);
 
+  // Update initial selected class/section when uniqueClasses changes
+  useEffect(() => {
+    if (uniqueClasses.length > 0 && !selectedClass) {
+      setSelectedClass(uniqueClasses[0].className);
+      setSelectedSection(uniqueClasses[0].sections[0] || '');
+    }
+  }, [uniqueClasses, selectedClass]);
+
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setSelectedClass(val);
-    const matchedClass = classes.find(c => c.className === val);
+    const matchedClass = uniqueClasses.find(c => c.className === val);
     setSelectedSection(matchedClass?.sections[0] || '');
   };
 
@@ -80,13 +99,13 @@ const Attendance: React.FC = () => {
         <div style={{ flex: 1 }}>
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class</label>
           <select className="glass-input" value={selectedClass} onChange={handleClassChange}>
-             {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+             {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
           </select>
         </div>
         <div style={{ flex: 1 }}>
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section</label>
           <select className="glass-input" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
-             {classes.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+             {uniqueClasses.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
         <div style={{ flex: 1 }}>

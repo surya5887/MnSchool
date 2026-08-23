@@ -15,6 +15,18 @@ export interface ClassData {
   session?: string;
 }
 
+// Logical ordering for classes
+export const CLASS_ORDER = [
+  "Play", "Nursery", "L.K.G.", "U.K.G.", 
+  "1st", "2nd", "3rd", "4th", "5th", "6th", 
+  "7th", "8th", "9th", "10th", "11th", "12th"
+];
+
+export const getSequenceIndex = (className: string) => {
+  const index = CLASS_ORDER.indexOf(className);
+  return index === -1 ? 999 : index; // Unknown classes go to the bottom
+};
+
 export const addClass = async (data: Omit<ClassData, 'id'>) => {
   try {
     const activeSession = localStorage.getItem('activeSession');
