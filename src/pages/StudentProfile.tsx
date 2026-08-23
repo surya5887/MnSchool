@@ -10,6 +10,17 @@ import { getTransactions, addTransaction, deleteTransaction, type TransactionDat
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import Modal from '../components/Modal';
 
+const getISTDateTimeLocalString = () => {
+  const now = new Date();
+  const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+  const yyyy = istTime.getFullYear();
+  const mm = String(istTime.getMonth() + 1).padStart(2, '0');
+  const dd = String(istTime.getDate()).padStart(2, '0');
+  const hh = String(istTime.getHours()).padStart(2, '0');
+  const min = String(istTime.getMinutes()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+};
+
 const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -67,11 +78,11 @@ const StudentProfile: React.FC = () => {
 
   // Payment modal
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [newPayment, setNewPayment] = useState({ amount: '', description: '', paymentMethod: 'Cash' as 'Cash' | 'Bank Transfer' | 'UPI', date: new Date().toISOString().slice(0, 16) });
+  const [newPayment, setNewPayment] = useState({ amount: '', description: '', paymentMethod: 'Cash' as 'Cash' | 'Bank Transfer' | 'UPI', date: getISTDateTimeLocalString() });
 
   // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
-  const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().slice(0, 16) });
+  const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: getISTDateTimeLocalString() });
 
 
   // Month Filter
@@ -130,7 +141,7 @@ const StudentProfile: React.FC = () => {
         studentId: id
       });
       setIsPaymentModalOpen(false);
-      setNewPayment({ amount: '', description: '', paymentMethod: 'Cash', date: new Date().toISOString().slice(0, 16) });
+      setNewPayment({ amount: '', description: '', paymentMethod: 'Cash', date: getISTDateTimeLocalString() });
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
@@ -168,7 +179,7 @@ const StudentProfile: React.FC = () => {
         studentId: id
       });
       setIsFineModalOpen(false);
-      setNewFine({ amount: '', description: '', type: 'Late Fine', date: new Date().toISOString().slice(0, 16) });
+      setNewFine({ amount: '', description: '', type: 'Late Fine', date: getISTDateTimeLocalString() });
       const txns = await getTransactions({ studentId: id });
       setTransactions(txns);
     } catch (error) {
