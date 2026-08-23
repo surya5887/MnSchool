@@ -5,16 +5,29 @@ const STAFF_COLLECTION = 'staff';
 
 export interface StaffData {
   id?: string;
+  customId?: string;
   name: string;
   role: string;
   department: string;
   joinDate: string;
   salary: number;
   salaryStatus?: 'Paid' | 'Pending';
-  status: 'Active' | 'On Leave' | 'Resigned';
+  status: 'Active' | 'Inactive' | 'On Leave' | 'Resigned';
+  
+  
   email?: string;
   phone?: string;
   photoUrl?: string;
+  address?: string;
+  aadharNumber?: string;
+  cast?: string;
+  religion?: string;
+  qualification?: string;
+  
+  documents?: {name: string, url: string}[];
+  
+  
+  
   createdAt?: string;
   experience?: string;
   subject?: string;

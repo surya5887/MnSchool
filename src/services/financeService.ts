@@ -13,6 +13,7 @@ export interface TransactionData {
   paymentMethod?: 'Cash' | 'Bank Transfer' | 'UPI' | string;
   referenceId?: string; // Student ID or Staff ID if applicable
   studentId?: string; // Explicitly link to a student
+  staffId?: string; // Explicitly link to a staff member
   chargeType?: string; // Custom charge type name e.g. "Exam Fee", "Lab Fee"
   createdAt?: string;
   editedAt?: string;
@@ -55,7 +56,7 @@ export const deleteTransaction = async (id: string) => {
   }
 };
 
-export const getTransactions = async (filters?: { type?: 'Income' | 'Expense', studentId?: string, session?: string }) => {
+export const getTransactions = async (filters?: { type?: 'Income' | 'Expense', studentId?: string, staffId?: string, session?: string }) => {
   try {
     let q = collection(db, TRANSACTIONS_COLLECTION);
     const conditions = [];
@@ -70,6 +71,9 @@ export const getTransactions = async (filters?: { type?: 'Income' | 'Expense', s
     }
     if (filters?.studentId) {
       conditions.push(where("studentId", "==", filters.studentId));
+    }
+    if (filters?.staffId) {
+      conditions.push(where("staffId", "==", filters.staffId));
     }
     
     if (conditions.length > 0) {
