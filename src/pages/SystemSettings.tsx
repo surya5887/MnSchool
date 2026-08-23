@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Shield, HardDrive, BookOpen, CreditCard, PenTool, Check, Database } from 'lucide-react';
+import { Settings, Shield, PenTool, Check } from 'lucide-react';
 import { logAction } from '../services/auditService';
 import { getStaff, type StaffData } from '../services/staffService';
-import { getStudents } from '../services/studentService';
-import { getClasses } from '../services/classService';
-import { getFeeTypes, getFeeGroups } from '../services/feeService';
-import { getTransactions } from '../services/financeService';
-import { getBooks } from '../services/libraryService';
-import { getVehicles } from '../services/transportService';
-import { getAuditLogs } from '../services/auditService';
 import { getSchoolSettings, saveSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 
 const SystemSettings: React.FC = () => {
@@ -48,65 +41,11 @@ const SystemSettings: React.FC = () => {
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const [isBackingUp, setIsBackingUp] = useState(false);
-
-  const handleBackup = async () => {
-    setIsBackingUp(true);
-    try {
-      const [students, classes, staffList, feeTypes, feeGroups, transactions, books, vehicles, auditLogs] = await Promise.all([
-        getStudents(),
-        getClasses(),
-        getStaff(),
-        getFeeTypes(),
-        getFeeGroups(),
-        getTransactions(),
-        getBooks(),
-        getVehicles(),
-        getAuditLogs()
-      ]);
-
-      const backupData = {
-        timestamp: new Date().toISOString(),
-        version: '1.0',
-        data: {
-          students,
-          classes,
-          staff: staffList,
-          feeTypes,
-          feeGroups,
-          transactions,
-          books,
-          vehicles,
-          auditLogs
-        }
-      };
-
-      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `mn_school_backup_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch (e) {
-      console.error("Backup failed", e);
-      alert("Failed to create backup.");
-    } finally {
-      setIsBackingUp(false);
-    }
-  };
+  
 
   const tabs = [
     { id: 'core', label: 'Core Setup', icon: <PenTool size={18} /> },
-    { id: 'academic', label: 'Academic & Subjects', icon: <BookOpen size={18} /> },
-    { id: 'finance', label: 'Finance & Fees', icon: <CreditCard size={18} /> },
     { id: 'rbac', label: 'Roles & Permissions', icon: <Shield size={18} /> },
-    { id: 'backup', label: 'Data Backup', icon: <HardDrive size={18} /> },
   ];
 
   return (
@@ -248,79 +187,6 @@ const SystemSettings: React.FC = () => {
               </div>
             </motion.div>
           )}
-
-          {activeTab === 'finance' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 style={{ margin: '0 0 24px 0' }}>Fee Types & Discounts</h2>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Manage all fee heads, late fines, and dynamic discounts (e.g. Sibling discount).</p>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.4)', padding: '20px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-                  <h3 style={{ margin: '0 0 16px 0' }}>Dynamic Fee Assignment</h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    Standard fees (like Monthly Tuition) are now attached directly to Classes. To set up or modify a class's base fee, go to the <strong>Academic & Subjects</strong> tab and edit/create a Class.
-                  </p>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '12px' }}>
-                    Custom charges or fines can be applied directly via the individual <strong>Student Profile</strong> page.
-                  </p>
-                </div>
-
-                <div style={{ background: 'rgba(255,255,255,0.4)', padding: '20px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-                  <h3 style={{ margin: '0 0 16px 0' }}>Automation</h3>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <span>Auto-Apply Late Fine (₹50/day after 10th)</span>
-                    <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <span>Auto-Apply Sibling Discount (25%)</span>
-                    <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Enable Online Payment Gateway (Razorpay)</span>
-                    <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-          
-          {activeTab === 'backup' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '40px 20px' }}>
-              <div style={{ width: '80px', height: '80px', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                <HardDrive size={40} />
-              </div>
-              <h2 style={{ margin: '0 0 16px 0' }}>Secure Cloud Backup</h2>
-              <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <h3 style={{ margin: '0 0 8px 0' }}>Manual Database Backup</h3>
-                <p style={{ margin: 0, color: 'var(--text-muted)' }}>Download a complete snapshot of all school data.</p>
-              </div>
-              <button className="btn-primary" style={{ padding: '12px 24px' }} onClick={handleBackup} disabled={isBackingUp}>
-                <Database size={18} /> {isBackingUp ? 'Generating JSON...' : 'Perform Backup Now'}
-              </button>
-            </div></motion.div>
-          )}
-
-          {activeTab === 'academic' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ margin: 0 }}>Class & Section Hierarchy</h2>
-              </div>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Define the structure of your school and subjects taught in each class. These appear in dropdowns across the ERP.</p>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                <div className="glass-panel" style={{ padding: '24px', border: 'none', background: 'rgba(255,255,255,0.4)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ padding: '8px', background: 'rgba(99,102,241,0.1)', borderRadius: '8px', color: 'var(--primary)' }}><BookOpen size={24} /></div>
-                    <h3 style={{ margin: 0 }}>Manage Classes</h3>
-                  </div>
-                  <p style={{ color: 'var(--text-muted)' }}>Class and Section management has been moved to its own dedicated section in the sidebar.</p>
-                  <a href="/classes" className="btn-primary" style={{ display: 'inline-block', marginTop: '16px', textDecoration: 'none' }}>Go to Classes</a>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
         </div>
       </div>
     </motion.div>
