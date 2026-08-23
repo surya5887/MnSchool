@@ -210,6 +210,10 @@ const NewAdmission: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     let { name, value } = e.target;
     
+    if (['firstName', 'lastName', 'parentName', 'motherName'].includes(name)) {
+      value = value.toUpperCase();
+    }
+    
     if (name === 'aadharNumber') {
       let val = value.replace(/\D/g, '');
       if (val.length > 12) val = val.substring(0, 12);
@@ -308,6 +312,15 @@ const NewAdmission: React.FC = () => {
 
     setLoading(true);
     try {
+      // Force uppercase for names before submitting
+      const sanitizedFormData = {
+        ...formData,
+        firstName: formData.firstName?.toUpperCase() || '',
+        lastName: formData.lastName?.toUpperCase() || '',
+        parentName: formData.parentName?.toUpperCase() || '',
+        motherName: formData.motherName?.toUpperCase() || ''
+      };
+
       let photoUrl = '';
       if (photoFile) {
         photoUrl = await uploadImageToCloudinary(photoFile);
@@ -333,7 +346,7 @@ const NewAdmission: React.FC = () => {
       const rollNumber = parseInt(formData.rollNumber as any) || 0;
 
       const newStudent: Omit<StudentData, 'id'> = {
-        ...formData as Omit<StudentData, 'id'>,
+        ...sanitizedFormData as Omit<StudentData, 'id'>,
         photoUrl,
         documents,
         rollNumber,
@@ -411,7 +424,7 @@ const NewAdmission: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           <div className="glass-panel">
-            <h3 style={{ margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={18} /> Basic Details</h3>
+            <h3 style={{ margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={18} /> Student Details</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>First Name *</label>
@@ -440,6 +453,24 @@ const NewAdmission: React.FC = () => {
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Address</label>
                 <input type="text" name="address" value={formData.address} onChange={handleInputChange} className="glass-input" placeholder="Complete residential address" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Aadhar Number</label>
+                <input type="text" name="aadharNumber" value={formData.aadharNumber} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Blood Group</label>
+                <select name="bloodGroup" value={formData.bloodGroup} onChange={handleInputChange} className="glass-input">
+                  <option value="">Select Blood Group</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
               </div>
             </div>
           </div>
@@ -530,24 +561,6 @@ const NewAdmission: React.FC = () => {
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>
                 <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} className="glass-input" placeholder="+91 8765432109" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Aadhar Number</label>
-                <input type="text" name="aadharNumber" value={formData.aadharNumber} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Blood Group</label>
-                <select name="bloodGroup" value={formData.bloodGroup} onChange={handleInputChange} className="glass-input">
-                  <option value="">Select Blood Group</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
               </div>
             </div>
           </div>
