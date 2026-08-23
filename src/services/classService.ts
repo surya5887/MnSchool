@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, getDoc, query, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, query, deleteDoc, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const CLASSES_COLLECTION = 'school_classes';
@@ -12,10 +12,15 @@ export interface ClassData {
   classTeacher: string;     // e.g. "Aditi Sharma"
   monthlyBaseFee?: number;
   fees?: { feeName: string; amount: number }[]; // Dynamic fee structure
+  session?: string;
 }
 
 export const addClass = async (data: Omit<ClassData, 'id'>) => {
   try {
+    const activeSession = localStorage.getItem('activeSession');
+    if (activeSession && !data.session) {
+      data.session = activeSession;
+    }
     const docRef = await addDoc(collection(db, CLASSES_COLLECTION), data);
     return docRef.id;
   } catch (error) {
@@ -26,7 +31,11 @@ export const addClass = async (data: Omit<ClassData, 'id'>) => {
 
 export const getClasses = async (): Promise<ClassData[]> => {
   try {
-    const q = query(collection(db, CLASSES_COLLECTION));
+    let q = query(collection(db, CLASSES_COLLECTION));
+    const activeSession = localStorage.getItem('activeSession');
+    if (activeSession) {
+      q = query(collection(db, CLASSES_COLLECTION), where("session", "==", activeSession));
+    }
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ClassData));
   } catch (error) {

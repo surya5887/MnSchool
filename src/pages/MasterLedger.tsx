@@ -15,10 +15,10 @@ const MasterLedger: React.FC = () => {
         const settings = await getSchoolSettings();
         if (settings && settings.academicSessions) {
           setAcademicSessions(settings.academicSessions);
-          setSession(settings.academicSessions[0] || '2023-2024');
+          if (!session) setSession(settings.academicSessions[0] || '2023-2024');
         }
         
-        const data = await getTransactions();
+        const data = await getTransactions({ session });
         // For ledger, we want oldest first to calculate running balance
         data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         setTransactions(data);
@@ -27,7 +27,7 @@ const MasterLedger: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [session]);
 
   let runningBalance = 0;
   const ledgerData = transactions.map(t => {

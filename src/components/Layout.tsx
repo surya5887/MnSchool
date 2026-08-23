@@ -4,6 +4,7 @@ import { LayoutDashboard, Users, CreditCard, LogOut, Bell, GraduationCap, Settin
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
+import { migrateMissingSessions } from '../services/migrationService';
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +19,14 @@ const Layout: React.FC = () => {
         if (settings && settings.activeSession) {
           setActiveSession(settings.activeSession);
           localStorage.setItem('activeSession', settings.activeSession);
+          
+          // Run migration to attach session tags
+          const migratedCount = await migrateMissingSessions();
+          if (migratedCount > 0) {
+            console.log(`Migrated ${migratedCount} legacy records to session ${settings.activeSession}`);
+            // Fire event so lists refresh
+            window.dispatchEvent(new Event('settingsUpdated'));
+          }
         }
         
         // Run automated billing in background

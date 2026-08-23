@@ -16,11 +16,16 @@ export interface TransactionData {
   chargeType?: string; // Custom charge type name e.g. "Exam Fee", "Lab Fee"
   createdAt?: string;
   editedAt?: string;
+  session?: string;
 }
 
 export const addTransaction = async (data: TransactionData) => {
   try {
     data.createdAt = new Date().toISOString();
+    const activeSession = localStorage.getItem('activeSession');
+    if (activeSession && !data.session) {
+      data.session = activeSession;
+    }
     const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), data as any);
     return docRef.id;
   } catch (error) {
@@ -50,10 +55,15 @@ export const deleteTransaction = async (id: string) => {
   }
 };
 
-export const getTransactions = async (filters?: { type?: 'Income' | 'Expense', studentId?: string }) => {
+export const getTransactions = async (filters?: { type?: 'Income' | 'Expense', studentId?: string, session?: string }) => {
   try {
     let q = collection(db, TRANSACTIONS_COLLECTION);
     const conditions = [];
+    
+    const activeSession = filters?.session || localStorage.getItem('activeSession');
+    if (activeSession) {
+      conditions.push(where("session", "==", activeSession));
+    }
     
     if (filters?.type) {
       conditions.push(where("type", "==", filters.type));

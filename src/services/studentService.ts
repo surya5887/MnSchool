@@ -40,12 +40,19 @@ export interface StudentData {
   previousPaidAmount?: number;
   previousSession?: string;
   billedMonths?: string[];
+  session?: string;
 }
 
 export const addStudent = async (studentData: StudentData) => {
   try {
     studentData.createdAt = new Date().toISOString();
     studentData.status = studentData.status || 'Active';
+    
+    const activeSession = localStorage.getItem('activeSession');
+    if (activeSession && !studentData.session) {
+      studentData.session = activeSession;
+    }
+
     const docRef = await addDoc(collection(db, STUDENTS_COLLECTION), studentData as any);
     return docRef.id;
   } catch (error) {
@@ -58,6 +65,12 @@ export const getStudents = async (filters?: { classId?: string; sectionId?: stri
   try {
     let q = collection(db, STUDENTS_COLLECTION);
     const conditions = [];
+    
+    const activeSession = localStorage.getItem('activeSession');
+    if (activeSession) {
+      conditions.push(where("session", "==", activeSession));
+    }
+
     if (filters?.classId) conditions.push(where("classId", "==", filters.classId));
     if (filters?.sectionId) conditions.push(where("sectionId", "==", filters.sectionId));
     
