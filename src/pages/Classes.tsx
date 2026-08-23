@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check, Trash2, Edit2, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getClasses, addClass, updateClass, deleteClass, type ClassData, getSequenceIndex } from '../services/classService';
-import { addStaff, getStaff } from '../services/staffService';
+import { getClasses, type ClassData, getSequenceIndex, addClass, updateClass, deleteClass } from '../services/classService';
+import { getStaff, type StaffData } from '../services/staffService';
 import Modal from '../components/Modal';
 
 const Classes: React.FC = () => {
@@ -12,7 +12,7 @@ const Classes: React.FC = () => {
   const [isClassModalOpen, setClassModalOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
-  const [staffList, setStaffList] = useState<{ id: string, name: string }[]>([]);
+  const [staffList, setStaffList] = useState<StaffData[]>([]);
 
   const [newClassData, setNewClassData] = useState({
     className: '',
