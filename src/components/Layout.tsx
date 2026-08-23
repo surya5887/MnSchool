@@ -91,8 +91,7 @@ const Layout: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' }}>
           <img src="/images/logo.jpeg" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '12px', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
-            <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Public School</h2>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ERP System</span>
+            <h2 style={{ fontSize: '1.2rem', margin: 0 }}>MN Public School</h2>
           </div>
           <button className="mobile-menu-btn" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }} onClick={() => setMobileMenuOpen(false)}>
             <X size={24} />
