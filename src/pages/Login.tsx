@@ -54,7 +54,7 @@ const Login: React.FC = () => {
           const adminDoc = adminSnap.docs[0];
           const isValid = await verifyPassword(password, adminDoc.data().password, adminDoc.ref);
           if (isValid) {
-            saveSession({ role: 'Principal', id: adminDoc.id, name: adminDoc.data().name });
+            saveSession({ role: adminDoc.data().role || 'Principal', id: adminDoc.id, name: adminDoc.data().name });
             navigate('/dashboard');
             return;
           }

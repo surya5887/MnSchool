@@ -140,7 +140,7 @@ const Students: React.FC = () => {
           <p className="page-subtitle">View and manage all registered students across the school.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          {role === 'Principal' && (
+          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
             <>
               <button className="btn-secondary" onClick={() => setClassModalOpen(true)}>
                 <Plus size={20} /> Add Class
@@ -202,17 +202,17 @@ const Students: React.FC = () => {
                 <th>Class / Sec</th>
                 <th>Roll No.</th>
                 <th>Status</th>
-                {role === 'Principal' && <th>Action</th>}
+                {['Principal', 'Manager', 'Super Admin'].includes(role) && <th>Action</th>}
               </tr>
             </thead>
             <tbody>
               {loading ? (
                  <tr>
-                   <td colSpan={role === 'Principal' ? 6 : 5} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
+                   <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 6 : 5} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
                  </tr>
               ) : filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={role === 'Principal' ? 6 : 5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 6 : 5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                     No students found matching your criteria.
                   </td>
                 </tr>
@@ -225,7 +225,7 @@ const Students: React.FC = () => {
                 >
                   <td style={{ fontWeight: 600 }}>{student.admissionNo || '-'}</td>
                   <td>
-                    {role === 'Principal' ? (
+                    {['Principal', 'Manager', 'Super Admin'].includes(role) ? (
                       <Link to={`/student/${student.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
@@ -246,7 +246,7 @@ const Students: React.FC = () => {
                       {student.status || 'Active'}
                     </span>
                   </td>
-                  {role === 'Principal' && (
+                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
                     <td>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <Link to={`/student/${student.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>

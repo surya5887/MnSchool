@@ -103,7 +103,7 @@ const Staff: React.FC = () => {
           <h1 className="page-title">Teachers</h1>
           <p className="page-subtitle">Manage teaching staff across the school.</p>
         </div>
-        {role === 'Principal' && (
+        {['Principal', 'Manager', 'Super Admin'].includes(role) && (
           <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
             <UserPlus size={20} /> Add Staff
           </button>
@@ -120,7 +120,7 @@ const Staff: React.FC = () => {
                 <th>Subject</th>
                 <th>Experience</th>
                 <th>Status</th>
-                {role === 'Principal' && <th style={{ textAlign: 'center' }}>Action</th>}
+                {['Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center' }}>Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -133,7 +133,7 @@ const Staff: React.FC = () => {
                 >
                   <td style={{ fontWeight: 600 }}>{teacher.customId || '-'}</td>
                   <td>
-                    {role === 'Principal' ? (
+                    {['Principal', 'Manager', 'Super Admin'].includes(role) ? (
                       <Link to={`/staff/${teacher.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <img src={teacher.photoUrl || `https://ui-avatars.com/api/?name=${teacher.name}&background=random`} alt={teacher.name} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
@@ -154,7 +154,7 @@ const Staff: React.FC = () => {
                       {teacher.status || 'Active'}
                     </span>
                   </td>
-                  {role === 'Principal' && (
+                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
                     <td style={{ textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', alignItems: 'center' }}>
                         <Link to={`/staff/${teacher.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>

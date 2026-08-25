@@ -22,9 +22,33 @@ export const createDefaultAdminIfNeeded = async () => {
         role: 'Principal',
         name: 'Principal / Admin'
       });
-      console.log('Default admin created securely.');
+      console.log('Default Principal created securely.');
+    }
+
+    const manager = await getAdminByEmail('manager@mnps.in');
+    if (!manager) {
+      const hashedPassword = bcrypt.hashSync('manager@2026', 10);
+      await addDoc(collection(db, 'admins'), {
+        email: 'manager@mnps.in',
+        password: hashedPassword,
+        role: 'Manager',
+        name: 'Manager'
+      });
+      console.log('Default Manager created securely.');
+    }
+
+    const superAdmin = await getAdminByEmail('superadmin@mnps.in');
+    if (!superAdmin) {
+      const hashedPassword = bcrypt.hashSync('super@2026', 10);
+      await addDoc(collection(db, 'admins'), {
+        email: 'superadmin@mnps.in',
+        password: hashedPassword,
+        role: 'Super Admin',
+        name: 'Super Admin'
+      });
+      console.log('Default Super Admin created securely.');
     }
   } catch (error) {
-    console.error('Error creating default admin', error);
+    console.error('Error creating default admins', error);
   }
 };

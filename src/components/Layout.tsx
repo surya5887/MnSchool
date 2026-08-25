@@ -29,7 +29,7 @@ const Layout: React.FC = () => {
           setActiveSession(settings.activeSession);
           localStorage.setItem('activeSession', settings.activeSession);
           
-          if (authUser.role === 'Principal') {
+          if (['Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
             const migratedCount = await migrateMissingSessions();
             if (migratedCount > 0) {
               console.log(`Migrated ${migratedCount} entities to active session.`);
@@ -107,11 +107,11 @@ const Layout: React.FC = () => {
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto' }} onClick={() => setMobileMenuOpen(false)}>
           
-          {(role === 'Principal' || role === 'Teacher') && (
+          {['Principal', 'Manager', 'Super Admin', 'Teacher'].includes(role) && (
             <NavLink to="/dashboard" style={navLinkStyle}><LayoutDashboard size={20} /> Dashboard</NavLink>
           )}
           
-          {role === 'Principal' && (
+          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
             <>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
               <NavLink to="/admission" style={navLinkStyle}><UserPlus size={20} /> New Admission</NavLink>
@@ -129,8 +129,12 @@ const Layout: React.FC = () => {
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
               <NavLink to="/ledger" style={navLinkStyle}><BookOpen size={20} /> Master Ledger</NavLink>
               
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>
-              <NavLink to="/audit" style={navLinkStyle}><ShieldAlert size={20} /> Audit Logs</NavLink>
+              {role === 'Super Admin' && (
+                <>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>
+                  <NavLink to="/audit" style={navLinkStyle}><ShieldAlert size={20} /> Audit Logs</NavLink>
+                </>
+              )}
             </>
           )}
 
@@ -155,7 +159,7 @@ const Layout: React.FC = () => {
         </nav>
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {role === 'Principal' && (
+          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
             <NavLink to="/settings" style={navLinkStyle}><Settings size={20} /> System Settings</NavLink>
           )}
           <button onClick={handleLogout} className="btn-secondary" style={{ width: '100%', justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--danger)' }}>
