@@ -116,6 +116,7 @@ const Layout: React.FC = () => {
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
               <NavLink to="/admission" style={navLinkStyle}><UserPlus size={20} /> New Admission</NavLink>
               <NavLink to="/students" style={navLinkStyle}><Users size={20} /> Students Directory</NavLink>
+              <NavLink to="/staff" style={navLinkStyle}><GraduationCap size={20} /> Teachers</NavLink>
               <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
               
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Academics & Operations</div>
@@ -127,7 +128,6 @@ const Layout: React.FC = () => {
 
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
               <NavLink to="/ledger" style={navLinkStyle}><BookOpen size={20} /> Master Ledger</NavLink>
-              <NavLink to="/staff" style={navLinkStyle}><GraduationCap size={20} /> Staff & Payroll</NavLink>
               
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>
               <NavLink to="/audit" style={navLinkStyle}><ShieldAlert size={20} /> Audit Logs</NavLink>

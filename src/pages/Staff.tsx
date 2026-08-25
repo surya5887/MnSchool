@@ -100,8 +100,8 @@ const Staff: React.FC = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <h1 className="page-title">Staff & Payroll</h1>
-          <p className="page-subtitle">Manage teaching staff and process salaries with one click.</p>
+          <h1 className="page-title">Teachers</h1>
+          <p className="page-subtitle">Manage teaching staff across the school.</p>
         </div>
         {role === 'Principal' && (
           <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
