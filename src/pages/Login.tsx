@@ -129,13 +129,14 @@ const Login: React.FC = () => {
           background: url('/images/front_view_compressed.webp') center/cover no-repeat;
           animation: slowPan 30s infinite alternate ease-in-out;
           z-index: 0;
+          filter: blur(4px);
+          transform: translateZ(0);
+          will-change: transform;
         }
         .bg-overlay {
           position: absolute;
           inset: 0;
           background: linear-gradient(135deg, rgba(99, 102, 241, 0.45) 0%, rgba(168, 85, 247, 0.45) 50%, rgba(236, 72, 153, 0.45) 100%);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
           z-index: 1;
         }
         .glass-card {
@@ -152,6 +153,8 @@ const Login: React.FC = () => {
           box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255,255,255,0.1);
           color: white;
           overflow: hidden;
+          transform: translateZ(0);
+          backface-visibility: hidden;
         }
         .glass-card::before {
           content: '';
