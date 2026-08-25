@@ -13,6 +13,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'Admin' | 'Teacher' | 'Student'>('Admin');
 
   useEffect(() => {
     // Ensure default admin exists
@@ -46,56 +47,57 @@ const Login: React.FC = () => {
     try {
       const normalizedEmail = username.toLowerCase().trim();
 
-      // 1. Check Admin
-      const adminQ = query(collection(db, 'admins'), where('email', '==', normalizedEmail));
-      const adminSnap = await getDocs(adminQ);
-      if (!adminSnap.empty) {
-        const adminDoc = adminSnap.docs[0];
-        const isValid = await verifyPassword(password, adminDoc.data().password, adminDoc.ref);
-        if (isValid) {
-          saveSession({ role: 'Principal', id: adminDoc.id, name: adminDoc.data().name });
-          navigate('/dashboard');
-          return;
+      if (selectedRole === 'Admin') {
+        const adminQ = query(collection(db, 'admins'), where('email', '==', normalizedEmail));
+        const adminSnap = await getDocs(adminQ);
+        if (!adminSnap.empty) {
+          const adminDoc = adminSnap.docs[0];
+          const isValid = await verifyPassword(password, adminDoc.data().password, adminDoc.ref);
+          if (isValid) {
+            saveSession({ role: 'Principal', id: adminDoc.id, name: adminDoc.data().name });
+            navigate('/dashboard');
+            return;
+          }
+        }
+      } 
+      else if (selectedRole === 'Teacher') {
+        const staffQ = query(collection(db, 'staff'), where('email', '==', normalizedEmail));
+        const staffSnap = await getDocs(staffQ);
+        if (!staffSnap.empty) {
+          const staffDoc = staffSnap.docs[0];
+          const isValid = await verifyPassword(password, staffDoc.data().password, staffDoc.ref);
+          if (isValid) {
+            saveSession({ 
+              role: 'Teacher', 
+              id: staffDoc.id, 
+              name: staffDoc.data().name,
+              assignedClass: staffDoc.data().assignedClass || '' 
+            });
+            navigate('/dashboard');
+            return;
+          }
+        }
+      } 
+      else if (selectedRole === 'Student') {
+        const studentQ = query(collection(db, 'students'), where('email', '==', normalizedEmail));
+        const studentSnap = await getDocs(studentQ);
+        if (!studentSnap.empty) {
+          const studentDoc = studentSnap.docs[0];
+          const isValid = await verifyPassword(password, studentDoc.data().password, studentDoc.ref);
+          if (isValid) {
+            saveSession({ 
+              role: 'Student', 
+              id: studentDoc.id, 
+              name: `${studentDoc.data().firstName} ${studentDoc.data().lastName}`
+            });
+            navigate(`/student/${studentDoc.id}`);
+            return;
+          }
         }
       }
 
-      // 2. Check Staff (Teacher)
-      const staffQ = query(collection(db, 'staff'), where('email', '==', normalizedEmail));
-      const staffSnap = await getDocs(staffQ);
-      if (!staffSnap.empty) {
-        const staffDoc = staffSnap.docs[0];
-        const isValid = await verifyPassword(password, staffDoc.data().password, staffDoc.ref);
-        if (isValid) {
-          saveSession({ 
-            role: 'Teacher', 
-            id: staffDoc.id, 
-            name: staffDoc.data().name,
-            assignedClass: staffDoc.data().assignedClass || '' 
-          });
-          navigate('/dashboard');
-          return;
-        }
-      }
-
-      // 3. Check Student
-      const studentQ = query(collection(db, 'students'), where('email', '==', normalizedEmail));
-      const studentSnap = await getDocs(studentQ);
-      if (!studentSnap.empty) {
-        const studentDoc = studentSnap.docs[0];
-        const isValid = await verifyPassword(password, studentDoc.data().password, studentDoc.ref);
-        if (isValid) {
-          saveSession({ 
-            role: 'Student', 
-            id: studentDoc.id, 
-            name: `${studentDoc.data().firstName} ${studentDoc.data().lastName}`
-          });
-          navigate(`/student/${studentDoc.id}`);
-          return;
-        }
-      }
-
-      // Not found
-      setError('Invalid username or password.');
+      // Not found for selected role
+      setError(`Invalid Email or Password for ${selectedRole} account.`);
     } catch (err) {
       console.error("Login error", err);
       setError('An error occurred during login. Please try again.');
@@ -297,6 +299,36 @@ const Login: React.FC = () => {
           </div>
 
           <form onSubmit={handleLogin}>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 }}
+              style={{ display: 'flex', gap: '8px', marginBottom: '20px', background: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '12px' }}
+            >
+              {(['Admin', 'Teacher', 'Student'] as const).map(r => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => { setSelectedRole(r); setError(''); }}
+                  style={{
+                    flex: 1,
+                    padding: '8px 0',
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: selectedRole === r ? 'var(--primary, #6366f1)' : 'transparent',
+                    color: selectedRole === r ? 'white' : 'rgba(255,255,255,0.7)',
+                    fontWeight: selectedRole === r ? 600 : 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease-in-out',
+                    boxShadow: selectedRole === r ? '0 4px 10px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  {r}
+                </button>
+              ))}
+            </motion.div>
+
             {error && (
               <motion.div 
                 initial={{ opacity: 0, height: 0 }} 
