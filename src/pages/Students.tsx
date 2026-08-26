@@ -218,7 +218,7 @@ const Students: React.FC = () => {
                       checked={filteredStudents.length > 0 && selectedStudents.length === filteredStudents.length}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedStudents(filteredStudents.map(s => s.id));
+                          setSelectedStudents(filteredStudents.map(s => s.id as string));
                         } else {
                           setSelectedStudents([]);
                         }
@@ -257,10 +257,10 @@ const Students: React.FC = () => {
                     <td style={{ textAlign: 'center' }}>
                       <input 
                         type="checkbox" 
-                        checked={selectedStudents.includes(student.id)}
+                        checked={selectedStudents.includes(student.id as string)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSelectedStudents([...selectedStudents, student.id]);
+                            setSelectedStudents([...selectedStudents, student.id as string]);
                           } else {
                             setSelectedStudents(selectedStudents.filter(id => id !== student.id));
                           }

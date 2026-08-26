@@ -130,7 +130,7 @@ const Staff: React.FC = () => {
                       checked={teachers.length > 0 && selectedStaff.length === teachers.length}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedStaff(teachers.map(t => t.id));
+                          setSelectedStaff(teachers.map(t => t.id as string));
                         } else {
                           setSelectedStaff([]);
                         }
@@ -159,10 +159,10 @@ const Staff: React.FC = () => {
                     <td style={{ textAlign: 'center' }}>
                       <input 
                         type="checkbox" 
-                        checked={selectedStaff.includes(teacher.id)}
+                        checked={selectedStaff.includes(teacher.id as string)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSelectedStaff([...selectedStaff, teacher.id]);
+                            setSelectedStaff([...selectedStaff, teacher.id as string]);
                           } else {
                             setSelectedStaff(selectedStaff.filter(id => id !== teacher.id));
                           }
