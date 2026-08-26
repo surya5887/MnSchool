@@ -29,7 +29,8 @@ const Students: React.FC = () => {
 
   // Secure Delete State
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [studentToDelete, setStudentToDelete] = useState<string[]>([]);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
 
@@ -82,11 +83,12 @@ const Students: React.FC = () => {
       return;
     }
     
-    if (studentToDelete) {
+    if (studentToDelete.length > 0) {
       try {
-        await deleteStudent(studentToDelete);
+        await Promise.all(studentToDelete.map(id => deleteStudent(id)));
         setDeleteModalOpen(false);
-        setStudentToDelete(null);
+        setStudentToDelete([]);
+        setSelectedStudents([]);
         setDeletePassword('');
         setDeleteError('');
         fetchData();
@@ -155,6 +157,18 @@ const Students: React.FC = () => {
 
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
         <div style={{ display: 'flex', gap: '16px', padding: '24px', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap' }}>
+          {['Principal', 'Manager', 'Super Admin'].includes(role) && selectedStudents.length > 0 && (
+            <button 
+              className="btn-primary" 
+              style={{ background: 'var(--danger)', padding: '0 16px', height: '42px' }}
+              onClick={() => {
+                setStudentToDelete(selectedStudents);
+                setDeleteModalOpen(true);
+              }}
+            >
+              <Trash2 size={18} /> Delete Selected ({selectedStudents.length})
+            </button>
+          )}
           <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
             <Search size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
@@ -197,6 +211,22 @@ const Students: React.FC = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
+                {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                  <th style={{ width: '40px', textAlign: 'center' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={filteredStudents.length > 0 && selectedStudents.length === filteredStudents.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedStudents(filteredStudents.map(s => s.id));
+                        } else {
+                          setSelectedStudents([]);
+                        }
+                      }}
+                      style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
+                    />
+                  </th>
+                )}
                 <th>Adm No</th>
                 <th>Full Name</th>
                 <th>Class / Sec</th>
@@ -208,11 +238,11 @@ const Students: React.FC = () => {
             <tbody>
               {loading ? (
                  <tr>
-                   <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 6 : 5} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
+                   <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 7 : 6} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
                  </tr>
               ) : filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 6 : 5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 7 : 6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                     No students found matching your criteria.
                   </td>
                 </tr>
@@ -223,6 +253,22 @@ const Students: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
+                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                    <td style={{ textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedStudents.includes(student.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedStudents([...selectedStudents, student.id]);
+                          } else {
+                            setSelectedStudents(selectedStudents.filter(id => id !== student.id));
+                          }
+                        }}
+                        style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
+                      />
+                    </td>
+                  )}
                   <td style={{ fontWeight: 600 }}>{student.admissionNo || '-'}</td>
                   <td>
                     {['Principal', 'Manager', 'Super Admin'].includes(role) ? (
@@ -252,7 +298,7 @@ const Students: React.FC = () => {
                         <Link to={`/student/${student.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
                           <Eye size={18} />
                         </Link>
-                        <button className="icon-btn" onClick={() => { setStudentToDelete(student.id || null); setDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                        <button className="icon-btn" onClick={() => { if(student.id) { setStudentToDelete([student.id]); setDeleteModalOpen(true); } }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -300,7 +346,7 @@ const Students: React.FC = () => {
       <Modal isOpen={deleteModalOpen} onClose={() => { setDeleteModalOpen(false); setDeleteError(''); }} title="Delete Student Record">
         <form onSubmit={handleSecureDelete} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="alert-warning" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem' }}>
-            Warning: This action will permanently remove the student and all associated records (fees, attendance) from the system.
+            Warning: This action will permanently remove the {studentToDelete.length > 1 ? `${studentToDelete.length} selected students` : "student"} and all associated records (fees, attendance) from the system.
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password</label>

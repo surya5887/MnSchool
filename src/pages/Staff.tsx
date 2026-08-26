@@ -21,7 +21,8 @@ const Staff: React.FC = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [docFiles, setDocFiles] = useState<File[]>([]);
 
-  const [deleteTxnId, setDeleteTxnId] = useState<string | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<string[]>([]);
+  const [staffToDelete, setStaffToDelete] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
@@ -82,12 +83,12 @@ const Staff: React.FC = () => {
       setDeleteError('Incorrect admin password.');
       return;
     }
-    if (!deleteTxnId) return;
-    
+    if (staffToDelete.length === 0) return;
     try {
-      await deleteStaff(deleteTxnId);
+      await Promise.all(staffToDelete.map(id => deleteStaff(id)));
       setIsDeleteModalOpen(false);
-      setDeleteTxnId(null);
+      setStaffToDelete([]);
+      setSelectedStaff([]);
       setDeletePassword('');
       setDeleteError('');
       fetchStaff();
@@ -104,9 +105,16 @@ const Staff: React.FC = () => {
           <p className="page-subtitle">Manage teaching staff across the school.</p>
         </div>
         {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-          <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
-            <UserPlus size={20} /> Add Staff
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            {selectedStaff.length > 0 && (
+              <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => { setStaffToDelete(selectedStaff); setIsDeleteModalOpen(true); }}>
+                <Trash2 size={20} /> Delete Selected ({selectedStaff.length})
+              </button>
+            )}
+            <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
+              <UserPlus size={20} /> Add Staff
+            </button>
+          </div>
         )}
       </div>
 
@@ -115,6 +123,22 @@ const Staff: React.FC = () => {
           <table>
             <thead>
               <tr>
+                {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                  <th style={{ width: '40px', textAlign: 'center' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={teachers.length > 0 && selectedStaff.length === teachers.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedStaff(teachers.map(t => t.id));
+                        } else {
+                          setSelectedStaff([]);
+                        }
+                      }}
+                      style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
+                    />
+                  </th>
+                )}
                 <th>Custom ID</th>
                 <th>Staff Name</th>
                 <th>Subject</th>
@@ -131,6 +155,22 @@ const Staff: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                 >
+                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                    <td style={{ textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedStaff.includes(teacher.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedStaff([...selectedStaff, teacher.id]);
+                          } else {
+                            setSelectedStaff(selectedStaff.filter(id => id !== teacher.id));
+                          }
+                        }}
+                        style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
+                      />
+                    </td>
+                  )}
                   <td style={{ fontWeight: 600 }}>{teacher.customId || '-'}</td>
                   <td>
                     {['Principal', 'Manager', 'Super Admin'].includes(role) ? (
@@ -160,7 +200,7 @@ const Staff: React.FC = () => {
                         <Link to={`/staff/${teacher.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
                           <Eye size={18} />
                         </Link>
-                        <button className="icon-btn" onClick={() => { setDeleteTxnId(teacher.id || null); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                        <button className="icon-btn" onClick={() => { if(teacher.id) { setStaffToDelete([teacher.id]); setIsDeleteModalOpen(true); } }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -289,10 +329,10 @@ const Staff: React.FC = () => {
       </Modal>
 
       {/* Delete Transaction Modal */}
-      <Modal isOpen={isDeleteModalOpen} onClose={() => { setIsDeleteModalOpen(false); setDeleteTxnId(null); setDeleteError(''); }} title="Delete Staff">
+      <Modal isOpen={isDeleteModalOpen} onClose={() => { setIsDeleteModalOpen(false); setStaffToDelete([]); setDeleteError(''); }} title="Delete Staff">
         <form onSubmit={handleDelete} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="alert-warning" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem' }}>
-            Warning: This action cannot be undone and will permanently remove this staff member from the system.
+            Warning: This action cannot be undone and will permanently remove the {staffToDelete.length > 1 ? `${staffToDelete.length} selected staff members` : "staff member"} from the system.
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password</label>
