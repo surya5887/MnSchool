@@ -235,6 +235,21 @@ tr:hover {
 }
 
 @media (max-width: 768px) {
+
+    /* Ensure modal button groups wrap on very small screens */
+    .glass-panel form > div[style*="display: flex"],
+    .glass-panel > div > div[style*="display: flex"] {
+      flex-wrap: wrap !important;
+    }
+
+
+  /* Fix inline flex containers inside responsive headers (like button groups) to stack on mobile */
+  .flex-responsive > div[style*="display: flex"] {
+    flex-direction: column !important;
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+
   .top-header {
     padding: 12px 16px;
     margin: -16px -16px 16px -16px;
@@ -291,6 +306,7 @@ tr:hover {
 }
 
 /* Base Mobile Overrides */
+
 @media (max-width: 1024px) {
   .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
