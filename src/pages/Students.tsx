@@ -234,10 +234,10 @@ const Students: React.FC = () => {
                     />
                   </th>
                 )}
+                <th>Roll No.</th>
                 <th>Adm No</th>
                 <th>Full Name</th>
                 <th>Class / Sec</th>
-                <th>Roll No.</th>
                 <th>Status</th>
                 {['Principal', 'Manager', 'Super Admin'].includes(role) && <th>Action</th>}
               </tr>
