@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
+import InstallPrompt from './components/InstallPrompt';
 import Dashboard from './pages/Dashboard';
 import Students from './pages/Students';
 import Login from './pages/Login';
@@ -21,6 +22,7 @@ import StaffProfile from './pages/StaffProfile';
 function App() {
   return (
     <BrowserRouter>
+      <InstallPrompt />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>

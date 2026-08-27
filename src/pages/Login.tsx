@@ -280,7 +280,7 @@ const Login: React.FC = () => {
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 15 }}
             >
-              <img src="/images/logo.jpeg" alt="School Logo" className="floating-logo" />
+              <img src="/images/logo_circular.png" alt="School Logo" className="floating-logo" />
             </motion.div>
             
             <motion.h1 

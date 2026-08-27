@@ -62,7 +62,7 @@ const Layout: React.FC = () => {
   };
 
   const navLinkStyle = ({isActive}: {isActive: boolean}) => ({
-    padding: '12px 16px', borderRadius: '12px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px',
+    padding: '12px 16px', borderRadius: '50%', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px',
     color: isActive ? 'var(--primary-color)' : 'var(--text-main)',
     background: isActive ? 'rgba(255,255,255,0.8)' : 'transparent',
     fontWeight: isActive ? 600 : 500,
@@ -96,7 +96,7 @@ const Layout: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' }}>
-          <img src="/images/logo.jpeg" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '12px', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+          <img src="/images/logo_circular.png" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
             <h2 style={{ fontSize: '1.2rem', margin: 0 }}>MN Public School</h2>
           </div>
