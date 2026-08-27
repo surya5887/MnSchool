@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X, User } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X, User } from 'lucide-react'; 
+import { LiveClock } from './LiveClock';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
@@ -176,7 +177,8 @@ const Layout: React.FC = () => {
             <div className="glass-panel hide-on-mobile" style={{ display: "inline-flex", padding: "8px 16px", borderRadius: "20px", alignItems: "center", gap: "8px", border: "none", background: "rgba(255,255,255,0.4)" }}>
                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></div>
                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Session: {activeSession}</span>
-            </div>
+            </div> 
+              <LiveClock />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <button className="glass-panel" style={{ padding: '8px', borderRadius: '50%', display: 'flex', border: 'none', cursor: 'pointer', position: 'relative' }}>
