@@ -174,9 +174,9 @@ const Layout: React.FC = () => {
             <button className="mobile-menu-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', padding: '8px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.4)' }} onClick={() => setMobileMenuOpen(true)}>
               <Menu size={20} />
             </button>
-            <div className="glass-panel hide-on-mobile" style={{ display: "inline-flex", padding: "8px 16px", borderRadius: "20px", alignItems: "center", gap: "8px", border: "none", background: "rgba(255,255,255,0.4)" }}>
+            <div className="glass-panel session-pill" style={{ display: "inline-flex", padding: "8px 16px", borderRadius: "20px", alignItems: "center", gap: "8px", border: "none", background: "rgba(255,255,255,0.4)" }}>
                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></div>
-               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Session: {activeSession}</span>
+               <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-main)" }}>{activeSession}</span>
             </div> 
               <LiveClock />
           </div>

@@ -480,3 +480,32 @@ tr:hover {
   scrollbar-width: thin;
   scrollbar-color: rgba(99, 102, 241, 0.5) rgba(255, 255, 255, 0.1);
 }
+
+
+@media (max-width: 768px) {
+  .live-clock-panel {
+    padding: 6px 10px !important;
+    gap: 4px !important;
+  }
+  .live-clock-panel span {
+    font-size: 0.75rem !important;
+  }
+  .live-clock-panel svg {
+    width: 14px;
+    height: 14px;
+  }
+  .top-header > div {
+    gap: 8px !important;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .session-pill {
+    padding: 6px 10px !important;
+    gap: 4px !important;
+  }
+  .session-pill span {
+    font-size: 0.75rem !important;
+  }
+}

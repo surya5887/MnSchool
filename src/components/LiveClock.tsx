@@ -25,10 +25,10 @@ export const LiveClock: React.FC = () => {
   });
 
   return (
-    <div className="glass-panel hide-on-mobile" style={{ display: 'inline-flex', padding: '8px 16px', borderRadius: '20px', alignItems: 'center', gap: '8px', border: 'none', background: 'rgba(255,255,255,0.4)', boxShadow: 'none' }}>
+    <div className="glass-panel live-clock-panel" style={{ display: 'inline-flex', padding: '8px 16px', borderRadius: '20px', alignItems: 'center', gap: '8px', border: 'none', background: 'rgba(255,255,255,0.4)', boxShadow: 'none' }}>
       <Clock size={16} color="var(--primary-color)" />
       <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
-        {formattedDate} • {formattedTime.toUpperCase()}
+        {formattedDate} ï¿½ {formattedTime.toUpperCase()}
       </span>
     </div>
   );
