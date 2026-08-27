@@ -200,7 +200,7 @@ const StaffProfile: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div className="flex-responsive" style={{ marginBottom: "24px" }}>
         <button className="btn-secondary" onClick={() => navigate('/staff')} style={{ padding: '8px 16px' }}>
           <ArrowLeft size={18} /> Back to Staff
         </button>
@@ -229,7 +229,7 @@ const StaffProfile: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+      <div className="profile-layout">
         
         {/* Left Column - ID & Quick Info */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

@@ -334,6 +334,35 @@ tr:hover {
   }
 }
 
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .info-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .info-row > span:first-child {
+    width: 100% !important;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+  }
+  .info-row input {
+    width: 100% !important;
+  }
+}
+
 /* Base Mobile Overrides */
 
 @media (max-width: 1024px) {

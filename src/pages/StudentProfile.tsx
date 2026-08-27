@@ -304,7 +304,7 @@ const StudentProfile: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div className="flex-responsive" style={{ marginBottom: "24px" }}>
         <button onClick={() => navigate(-1)} className="btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0 }}>
           <ArrowLeft size={20} /> Back to Directory
         </button>
@@ -322,7 +322,7 @@ const StudentProfile: React.FC = () => {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+      <div className="profile-layout">
         
         {/* Left Column - Profile Card */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -392,56 +392,56 @@ const StudentProfile: React.FC = () => {
           <div className="glass-panel">
             <h3 style={{ margin: '0 0 16px 0' }}>Detailed Information</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Admission No</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.admissionNo || ''} onChange={e => setEditData({...editData, admissionNo: e.target.value})} placeholder="Admission No" /> 
                   : <span>{student.admissionNo || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Father Name</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} placeholder="Father's Name" /> 
                   : <span>{student.parentName || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Mother Name</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.motherName || ''} onChange={e => setEditData({...editData, motherName: e.target.value})} placeholder="Mother's Name" /> 
                   : <span>{student.motherName || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Primary Phone</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} placeholder="Parent Phone" /> 
                   : <span>{student.parentPhone || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Emergency Contact</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.emergencyContact || ''} onChange={e => setEditData({...editData, emergencyContact: e.target.value})} placeholder="Emergency Contact" /> 
                   : <span>{student.emergencyContact || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Email Address</span>
                 {isEditing ? 
                   <input type="email" className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email Address" /> 
                   : <span>{student.email || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Address</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.address || ''} onChange={e => setEditData({...editData, address: e.target.value})} placeholder="Address" /> 
                   : <span>{student.address || 'N/A'}</span>
                 }
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
                 <span style={{ width: '120px', fontWeight: 500 }}>Aadhar Number</span>
                 {isEditing ? 
                   <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.aadharNumber || ''} onChange={e => {
