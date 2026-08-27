@@ -62,10 +62,11 @@ const Layout: React.FC = () => {
   };
 
   const navLinkStyle = ({isActive}: {isActive: boolean}) => ({
-    padding: '12px 16px', borderRadius: '50%', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px',
-    color: isActive ? 'var(--primary-color)' : 'var(--text-main)',
-    background: isActive ? 'rgba(255,255,255,0.8)' : 'transparent',
+    padding: '12px 16px', borderRadius: '12px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px',
+    color: isActive ? 'white' : 'var(--text-main)',
+    background: isActive ? 'var(--primary-gradient)' : 'transparent',
     fontWeight: isActive ? 600 : 500,
+    boxShadow: isActive ? '0 4px 15px rgba(99, 102, 241, 0.3)' : 'none',
     transition: 'var(--transition)'
   });
 
