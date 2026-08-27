@@ -65,6 +65,8 @@ h1, h2, h3, h4, h5, h6 {
 .page-subtitle {
   color: var(--text-muted);
   font-size: 1rem;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 /* Buttons */
@@ -243,12 +245,34 @@ tr:hover {
     }
 
 
-  /* Fix inline flex containers inside responsive headers (like button groups) to stack on mobile */
-  .flex-responsive > div[style*="display: flex"] {
-    flex-direction: column !important;
-    width: 100% !important;
-    align-items: stretch !important;
-  }
+  /* Fix inline flex containers inside responsive headers (like button groups) to be side-by-side half width on mobile */
+    .flex-responsive > div[style*="display: flex"] {
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      width: 100% !important;
+      gap: 8px !important;
+    }
+    
+    .flex-responsive > div[style*="display: flex"] > button {
+      flex: 1;
+      padding: 10px 4px !important;
+      font-size: 0.85rem;
+      justify-content: center !important;
+    }
+    
+    .filter-bar {
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+    }
+    
+    .filter-bar > div[style*="minWidth"] {
+      min-width: 100% !important;
+      flex-basis: 100% !important;
+    }
+    
+    .filter-bar select {
+      flex: 1;
+    }
 
   .top-header {
     padding: 12px 16px;
@@ -367,7 +391,11 @@ tr:hover {
 }
 
 @media (max-width: 768px) {
-  .mobile-menu-btn { display: flex !important; }
+  .mobile-menu-btn { 
+      display: flex !important; 
+      background: transparent !important; 
+      padding: 4px !important;
+    }
   .hide-on-mobile {
     display: none !important;
   }
