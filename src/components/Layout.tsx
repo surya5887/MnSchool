@@ -176,7 +176,7 @@ const Layout: React.FC = () => {
             </button>
             <div className="glass-panel session-pill" style={{ display: "inline-flex", padding: "8px 16px", borderRadius: "20px", alignItems: "center", gap: "8px", border: "none", background: "rgba(255,255,255,0.4)" }}>
                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></div>
-               <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-main)" }}>{activeSession}</span>
+               <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-main)", whiteSpace: "nowrap" }}>{activeSession}</span>
             </div> 
               <LiveClock />
           </div>

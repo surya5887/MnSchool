@@ -27,8 +27,9 @@ export const LiveClock: React.FC = () => {
   return (
     <div className="glass-panel live-clock-panel" style={{ display: 'inline-flex', padding: '8px 16px', borderRadius: '20px', alignItems: 'center', gap: '8px', border: 'none', background: 'rgba(255,255,255,0.4)', boxShadow: 'none' }}>
       <Clock size={16} color="var(--primary-color)" />
-      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
-        {formattedDate} � {formattedTime.toUpperCase()}
+      <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-main)", whiteSpace: "nowrap" }}>
+        <span className="hide-on-mobile">{formattedDate} | </span>
+        <span>{formattedTime.toUpperCase()}</span>
       </span>
     </div>
   );
