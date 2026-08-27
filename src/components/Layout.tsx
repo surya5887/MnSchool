@@ -77,9 +77,7 @@ const Layout: React.FC = () => {
       <div className={`mobile-overlay ${mobileMenuOpen ? 'open' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
 
       {/* Sidebar */}
-      <motion.aside 
-        initial={{ x: -300 }}
-        animate={{ x: 0 }}
+      <aside
         className={`glass-panel sidebar-container ${mobileMenuOpen ? 'open' : ''}`}
         style={{ 
           width: '280px', 
@@ -166,7 +164,7 @@ const Layout: React.FC = () => {
             <LogOut size={18} /> Logout
           </button>
         </div>
-      </motion.aside>
+      </aside>
 
       <main className="main-content">
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '20px' }}>
@@ -174,7 +172,7 @@ const Layout: React.FC = () => {
             <button className="mobile-menu-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', padding: '8px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.4)' }} onClick={() => setMobileMenuOpen(true)}>
               <Menu size={20} />
             </button>
-            <div className="glass-panel" style={{ display: 'inline-flex', padding: '8px 16px', borderRadius: '20px', alignItems: 'center', gap: '8px', border: 'none', background: 'rgba(255,255,255,0.4)' }}>
+            <div className="glass-panel hide-on-mobile" style={{ display: "inline-flex", padding: "8px 16px", borderRadius: "20px", alignItems: "center", gap: "8px", border: "none", background: "rgba(255,255,255,0.4)" }}>
                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></div>
                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Session: {activeSession}</span>
             </div>
@@ -185,7 +183,7 @@ const Layout: React.FC = () => {
               <div style={{ position: 'absolute', top: '0', right: '0', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--danger)', border: '2px solid white' }}></div>
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ textAlign: 'right' }}>
+              <div className="hide-on-mobile" style={{ textAlign: "right" }}>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{authUser.name || 'User'}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{authUser.role || 'Role'}</div>
               </div>
