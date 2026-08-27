@@ -1,4 +1,4 @@
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
@@ -56,7 +56,27 @@ export const createDefaultAdminIfNeeded = async () => {
 
 export const getAllAdmins = async () => {
   const snap = await getDocs(collection(db, 'admins'));
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const admins = snap.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+  
+  const uniqueEmails = new Set();
+  const uniqueAdmins = [];
+  
+  for (const admin of admins) {
+    if (uniqueEmails.has(admin.email)) {
+      // Duplicate found in database! Let's delete it automatically to keep the DB clean.
+      try {
+        await deleteDoc(doc(db, 'admins', admin.id));
+        console.log(`Deleted duplicate admin for ${admin.email}`);
+      } catch(e) {
+        console.error("Could not delete duplicate", e);
+      }
+    } else {
+      uniqueEmails.add(admin.email);
+      uniqueAdmins.push(admin);
+    }
+  }
+  
+  return uniqueAdmins;
 };
 
 export const updateAdminCredentials = async (id: string, email: string, password?: string) => {
