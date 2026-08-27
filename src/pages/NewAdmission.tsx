@@ -424,7 +424,7 @@ const NewAdmission: React.FC = () => {
       {/* Student Type Toggle */}
       <div className="glass-panel" style={{ marginBottom: '24px', padding: '20px' }}>
         <h3 style={{ margin: '0 0 16px 0' }}>Student Type</h3>
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div className="filter-bar">
           <button
             type="button"
             className={admissionType === 'New' ? 'btn-primary' : 'btn-secondary'}
@@ -444,14 +444,14 @@ const NewAdmission: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
+      <div className="form-layout">
         
         {/* Left Column - Forms */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           <div className="glass-panel">
             <h3 style={{ margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={18} /> Student Details</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="form-grid">
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>First Name *</label>
                 <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Rahul" />
@@ -511,7 +511,7 @@ const NewAdmission: React.FC = () => {
 
           <div className="glass-panel">
             <h3 style={{ margin: '0 0 20px 0' }}>Academic & Fee Details</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="form-grid">
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admission No. (Optional)</label>
                 <input type="text" name="admissionNo" value={formData.admissionNo} onChange={handleInputChange} className="glass-input" placeholder="e.g. ADM-2023-001" />
@@ -534,7 +534,7 @@ const NewAdmission: React.FC = () => {
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Fee Group & Discount (%)</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '8px' }}>
+                <div className="fee-group-grid" style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: "8px" }}>
                   <select name="feeGroup" value={formData.feeGroup} onChange={handleInputChange} className="glass-input">
                     <option>General Fee Category</option>
                     <option>RTE Quota (Free)</option>
@@ -595,7 +595,7 @@ const NewAdmission: React.FC = () => {
             <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
               <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>👨 Father's Details</h4>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+            <div className="form-grid" style={{ marginBottom: "24px" }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Father's Name</label>
                 <input type="text" name="parentName" value={formData.parentName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ramesh Kumar" />
@@ -622,7 +622,7 @@ const NewAdmission: React.FC = () => {
             <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
               <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>👩 Mother's Details</h4>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+            <div className="form-grid" style={{ marginBottom: "24px" }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Mother's Name</label>
                 <input type="text" name="motherName" value={formData.motherName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Sunita Devi" />
@@ -647,7 +647,7 @@ const NewAdmission: React.FC = () => {
 
             {/* Emergency Contact */}
             <div style={{ borderTop: '2px dashed var(--text-muted)', margin: '16px 0 16px', paddingTop: '24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="form-grid">
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>
                   <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} className="glass-input" placeholder="+91 8765432109" />
