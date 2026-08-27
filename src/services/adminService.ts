@@ -1,3 +1,4 @@
+import { doc, updateDoc } from 'firebase/firestore';
 import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
@@ -51,4 +52,18 @@ export const createDefaultAdminIfNeeded = async () => {
   } catch (error) {
     console.error('Error creating default admins', error);
   }
+};
+
+export const getAllAdmins = async () => {
+  const snap = await getDocs(collection(db, 'admins'));
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const updateAdminCredentials = async (id: string, email: string, password?: string) => {
+  const adminRef = doc(db, 'admins', id);
+  const updateData: any = { email };
+  if (password) {
+    updateData.password = bcrypt.hashSync(password, 10);
+  }
+  await updateDoc(adminRef, updateData);
 };

@@ -1,6 +1,4 @@
-import { getAllAdmins, updateAdminCredentials } from '../services/adminService';
-import { Lock, Edit, Save, X as XIcon } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, Shield, PenTool, Check } from 'lucide-react';
 import { logAction } from '../services/auditService';
@@ -13,18 +11,6 @@ const SystemSettings: React.FC = () => {
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
   const [newSessionInput, setNewSessionInput] = useState('');
-  const [admins, setAdmins] = useState<any[]>([]);
-  const [editingAdmin, setEditingAdmin] = useState<string | null>(null);
-  const [editAdminData, setEditAdminData] = useState({ email: '', password: '' });
-  
-  const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
-  
-  useEffect(() => {
-    if (authUser.role === 'Super Admin') {
-      getAllAdmins().then(data => setAdmins(data));
-    }
-  }, []);
-
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchData = async () => {
@@ -60,7 +46,6 @@ const SystemSettings: React.FC = () => {
   const tabs = [
     { id: 'core', label: 'Core Setup', icon: <PenTool size={18} /> },
     { id: 'rbac', label: 'Roles & Permissions', icon: <Shield size={18} /> },
-    ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', icon: <Lock size={18} /> }] : [])
   ];
 
   return (
@@ -95,80 +80,6 @@ const SystemSettings: React.FC = () => {
 
         {/* Settings Content Area */}
         <div className="glass-panel" style={{ flex: 1, minHeight: '500px' }}>
-          {activeTab === 'credentials' && authUser.role === 'Super Admin' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0 }}>System Credentials</h3>
-              </div>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Manage secure access for top-level administrators. Passwords are securely hashed.</p>
-              
-              <div className="glass-table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Role</th>
-                      <th>Email Address</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {admins.map(admin => (
-                      <tr key={admin.id}>
-                        <td style={{ fontWeight: 600 }}>{admin.role}</td>
-                        <td>
-                          {editingAdmin === admin.id ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              <input 
-                                type="email" 
-                                className="glass-input" 
-                                value={editAdminData.email}
-                                onChange={e => setEditAdminData({...editAdminData, email: e.target.value})}
-                                placeholder="New Email"
-                              />
-                              <input 
-                                type="text" 
-                                className="glass-input" 
-                                value={editAdminData.password}
-                                onChange={e => setEditAdminData({...editAdminData, password: e.target.value})}
-                                placeholder="New Password (leave blank to keep current)"
-                              />
-                            </div>
-                          ) : (
-                            admin.email
-                          )}
-                        </td>
-                        <td>
-                          {editingAdmin === admin.id ? (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              <button className="btn-primary" style={{ padding: '6px 12px' }} onClick={async () => {
-                                await updateAdminCredentials(admin.id, editAdminData.email, editAdminData.password);
-                                setAdmins(await getAllAdmins());
-                                setEditingAdmin(null);
-                                handleSave('Credentials');
-                              }}>
-                                <Save size={16} /> Save
-                              </button>
-                              <button className="btn-secondary" style={{ padding: '6px 12px' }} onClick={() => setEditingAdmin(null)}>
-                                <XIcon size={16} /> Cancel
-                              </button>
-                            </div>
-                          ) : (
-                            <button className="icon-btn" onClick={() => {
-                              setEditingAdmin(admin.id);
-                              setEditAdminData({ email: admin.email, password: '' });
-                            }} style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                              <Edit size={18} /> Edit
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </motion.div>
-          )}
-
           
           {activeTab === 'core' && settings && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
