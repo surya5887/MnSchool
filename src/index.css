@@ -509,3 +509,13 @@ tr:hover {
     font-size: 0.75rem !important;
   }
 }
+
+
+/* Hide scrollbar for sidebar for a cleaner UI */
+.sidebar-container::-webkit-scrollbar {
+  display: none;
+}
+.sidebar-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

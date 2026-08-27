@@ -95,13 +95,13 @@ const Layout: React.FC = () => {
           zIndex: 100
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
           <img src="/images/logo_circular.png" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
-            <h2 style={{ fontSize: '1.2rem', margin: 0 }}>MN Public School</h2>
+            <h2 style={{ fontSize: "1.1rem", margin: 0, whiteSpace: "nowrap" }}>MN Public School</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)' }}></div>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Session {activeSession}</span>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>Session {activeSession}</span>
             </div>
           </div>
           <button className="mobile-menu-btn" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }} onClick={() => setMobileMenuOpen(false)}>
