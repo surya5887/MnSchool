@@ -131,6 +131,13 @@ const Students: React.FC = () => {
       const matchesSection = selectedSection === 'All' || student.sectionId === selectedSection;
       
       return matchesSearch && matchesClass && matchesSection;
+    }).sort((a, b) => {
+      const rollA = Number(a.rollNumber) || 0;
+      const rollB = Number(b.rollNumber) || 0;
+      if (rollA === 0 && rollB === 0) return 0;
+      if (rollA === 0) return 1;
+      if (rollB === 0) return -1;
+      return rollA - rollB;
     });
   }, [students, searchTerm, selectedClass, selectedSection, role, authUser.assignedClass]);
 
@@ -269,24 +276,9 @@ const Students: React.FC = () => {
                       />
                     </td>
                   )}
-                  <td style={{ fontWeight: 600 }}>{student.admissionNo || '-'}</td>
-                  <td>
-                    {['Principal', 'Manager', 'Super Admin'].includes(role) ? (
-                      <Link to={`/student/${student.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
-                          <span style={{ fontWeight: 500, color: 'var(--primary)' }}>{student.firstName} {student.lastName}</span>
-                        </div>
-                      </Link>
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
-                        <span style={{ fontWeight: 500 }}>{student.firstName} {student.lastName}</span>
-                      </div>
-                    )}
-                  </td>
-                  <td>{student.classId} - {student.sectionId}</td>
                   <td>{student.rollNumber || '-'}</td>
+                  <td style={{ fontWeight: 600 }}>{student.admissionNo || '-'}</td>
+                                    <td>                    {['Principal', 'Manager', 'Super Admin'].includes(role) ? (                      <Link to={`/student/${student.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>                          <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />                          <span style={{ fontWeight: 500, color: 'var(--primary)' }}>{student.firstName} {student.lastName}</span>                        </div>                      </Link>                    ) : (                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>                        <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />                        <span style={{ fontWeight: 500 }}>{student.firstName} {student.lastName}</span>                      </div>                    )}                  </td>                  <td>{student.classId} - {student.sectionId}</td>                  
                   <td>
                     <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>
                       {student.status || 'Active'}
