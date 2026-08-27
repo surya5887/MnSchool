@@ -49,7 +49,7 @@ const SystemSettings: React.FC = () => {
   const tabs = [
     { id: 'core', label: 'Core Setup', desc: 'School details & academic session', icon: <Building2 size={20} /> },
     { id: 'rbac', label: 'Roles & Permissions', desc: 'System access & restrictions', icon: <ShieldCheck size={20} /> },
-    ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', desc: 'Manage top-level passwords', icon: <Lock size={20} /> }] : [])
+    ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', desc: 'Manage email & passwords', icon: <Lock size={20} /> }] : [])
   ];
 
   return (
@@ -244,9 +244,9 @@ const SystemSettings: React.FC = () => {
                               }}>
                                 <Save size={16} /> Save
                               </button>
-                              <button className="btn-secondary" style={{ padding: '10px 20px', borderRadius: '12px' }} onClick={() => setEditingAdmin(null)}>
-                                <XIcon size={16} />
-                              </button>
+                              <button className="btn-secondary" style={{ padding: '10px 20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => setEditingAdmin(null)}>
+    <XIcon size={16} /> Cancel
+  </button>
                             </div>
                           </div>
                         ) : (
