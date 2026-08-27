@@ -168,7 +168,7 @@ const Layout: React.FC = () => {
       </aside>
 
       <main className="main-content">
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '20px' }}>
+        <header className="top-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
             <button className="mobile-menu-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', padding: '8px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.4)' }} onClick={() => setMobileMenuOpen(true)}>
               <Menu size={20} />
