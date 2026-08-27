@@ -45,13 +45,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
               padding: '0'
             }}
           >
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
               <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{title}</h2>
               <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
                 <X size={24} />
               </button>
             </div>
-            <div style={{ padding: '24px' }}>
+            <div style={{ padding: '24px', overflowY: 'auto' }}>
               {children}
             </div>
           </motion.div>

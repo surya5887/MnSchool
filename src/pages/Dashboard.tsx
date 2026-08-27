@@ -95,7 +95,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', marginBottom: '40px' }}>
+      <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
         <StatCard title="Total Students" value={loading ? "..." : students.length.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
         <StatCard title="Teachers" value={loading ? "..." : staff.length.toString()} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
         <StatCard title="Today's Collection" value={`₹${todaysCollection.toLocaleString()}`} icon={IndianRupee} color="16, 185, 129" delay={0.3} />
@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
           style={{ padding: '32px' }}
         >
           <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>Recent Activities</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+          <div className="dashboard-grid">
             {recentActivities.map((act, idx) => (
               <div key={idx} style={{ display: 'flex', gap: '16px', padding: '16px', background: 'rgba(255,255,255,0.4)', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
                 <div style={{ padding: '12px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', height: 'fit-content' }}>

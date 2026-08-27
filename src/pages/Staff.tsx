@@ -99,7 +99,7 @@ const Staff: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div className="flex-responsive" style={{ marginBottom: "32px" }}>
         <div>
           <h1 className="page-title">Teachers</h1>
           <p className="page-subtitle">Manage teaching staff across the school.</p>

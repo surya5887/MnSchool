@@ -149,7 +149,12 @@ const Login: React.FC = () => {
           -webkit-backdrop-filter: blur(30px);
           border: 1px solid rgba(255, 255, 255, 0.3);
           border-radius: 24px;
-          padding: 32px 32px;
+          padding: 32px;
+          }
+          @media (max-width: 480px) {
+            .glass-card {
+              padding: 24px 16px;
+            }
           box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255,255,255,0.1);
           color: white;
           overflow: hidden;

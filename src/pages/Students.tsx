@@ -136,7 +136,7 @@ const Students: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div className="flex-responsive" style={{ marginBottom: "32px" }}>
         <div>
           <h1 className="page-title">Students Directory</h1>
           <p className="page-subtitle">View and manage all registered students across the school.</p>
@@ -156,7 +156,7 @@ const Students: React.FC = () => {
       </div>
 
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', gap: '16px', padding: '24px', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap' }}>
+        <div className="filter-bar" style={{ padding: "24px", borderBottom: "1px solid var(--glass-border)" }}>
           {['Principal', 'Manager', 'Super Admin'].includes(role) && selectedStudents.length > 0 && (
             <button 
               className="btn-primary" 

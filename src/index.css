@@ -185,71 +185,109 @@ tr:hover {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-/* Mobile Responsiveness */
+/* Targeted Responsive Utilities */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.flex-responsive {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-content {
+  padding: 24px;
+  width: 90vw;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+}
+
+.modal-content-large {
+  max-width: 800px;
+}
+
+/* Base Mobile Overrides */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0 !important;
     padding: 16px !important;
-  }
-
-  /* Override all inline grids to stack vertically on mobile */
-  div[style*="display: grid"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Handle flex layouts that need stacking */
-  .glass-panel[style*="display: flex"] {
-    flex-direction: column !important;
-    align-items: stretch !important;
+    gap: 16px !important;
   }
   
-  /* Wrap general inline flex containers like headers */
-  div[style*="display: flex"] {
-    flex-wrap: wrap !important;
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-  
-  /* Page Titles */
+
+  .flex-responsive {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Make filter inputs stretch */
+  .filter-bar .glass-input, .filter-bar select {
+    width: 100% !important;
+  }
+
   .page-title {
     font-size: 1.5rem;
   }
-
-  /* Tables horizontal scroll */
+  
   .glass-table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-  }
-
-  /* Responsive utilities */
-  .responsive-flex {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-  
-  .responsive-flex-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 16px !important;
   }
   
   .settings-sidebar {
     width: 100% !important;
     margin-bottom: 16px;
   }
+  
+  /* Buttons */
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .mobile-menu-btn {
   display: none;
 }
+
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: flex !important;
   }
   .sidebar-container {
-    transform: translateX(-100%) !important;
-    transition: transform 0.3s ease !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
   }
   .sidebar-container.open {
-    transform: translateX(0) !important;
+    transform: translateX(0);
   }
   .mobile-overlay {
     position: fixed;

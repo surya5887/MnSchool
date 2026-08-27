@@ -205,7 +205,7 @@ const MasterLedger: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
+      <div className="flex-responsive" style={{ marginBottom: "32px" }}>
         <div>
           <h1 className="page-title"><BookOpen size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Master Ledger (Bahi Khata)</h1>
           <p className="page-subtitle">A complete chronological record of all money in and money out.</p>
@@ -236,7 +236,7 @@ const MasterLedger: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+      <div className="dashboard-grid" style={{ marginBottom: "32px" }}>
         <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <div style={{ padding: '16px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
             <TrendingUp size={28} />
@@ -264,7 +264,7 @@ const MasterLedger: React.FC = () => {
       </div>
 
       <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="filter-bar" style={{ padding: "20px 24px", borderBottom: "1px solid var(--glass-border)", justifyContent: "space-between" }}>
            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
              {availableMonths.length > 0 && (
                 <select 
