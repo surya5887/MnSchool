@@ -203,7 +203,7 @@ const NewAdmission: React.FC = () => {
       try {
         const vehicles = await getVehicles();
         const uniqueRoutes = Array.from(new Set(vehicles.map(v => v.route).filter(Boolean)));
-        setRoutes(uniqueRoutes);
+        setRoutes(uniqueRoutes as string[]);
       } catch (error) {
         console.error("Error fetching routes", error);
       }

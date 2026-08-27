@@ -130,7 +130,7 @@ const Staff: React.FC = () => {
                       checked={teachers.length > 0 && selectedStaff.length === teachers.length}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedStaff(teachers.map(t => t.id as string));
+                          setSelectedStaff(teachers.map(t => t.id).filter(Boolean) as string[]);
                         } else {
                           setSelectedStaff([]);
                         }

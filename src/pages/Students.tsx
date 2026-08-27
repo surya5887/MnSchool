@@ -218,7 +218,7 @@ const Students: React.FC = () => {
                       checked={filteredStudents.length > 0 && selectedStudents.length === filteredStudents.length}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedStudents(filteredStudents.map(s => s.id as string));
+                          setSelectedStudents(filteredStudents.map(s => s.id).filter(Boolean) as string[]);
                         } else {
                           setSelectedStudents([]);
                         }
