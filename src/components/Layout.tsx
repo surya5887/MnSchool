@@ -99,6 +99,10 @@ const Layout: React.FC = () => {
           <img src="/images/logo_circular.png" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
             <h2 style={{ fontSize: '1.2rem', margin: 0 }}>MN Public School</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)' }}></div>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Session {activeSession}</span>
+            </div>
           </div>
           <button className="mobile-menu-btn" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }} onClick={() => setMobileMenuOpen(false)}>
             <X size={24} />
@@ -174,10 +178,7 @@ const Layout: React.FC = () => {
             <button className="mobile-menu-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', padding: '8px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.4)' }} onClick={() => setMobileMenuOpen(true)}>
               <Menu size={20} />
             </button>
-            <div className="glass-panel session-pill" style={{ display: "inline-flex", padding: "8px 16px", borderRadius: "20px", alignItems: "center", gap: "8px", border: "none", background: "rgba(255,255,255,0.4)" }}>
-               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></div>
-               <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-main)", whiteSpace: "nowrap" }}>{activeSession}</span>
-            </div> 
+             
               <LiveClock />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
