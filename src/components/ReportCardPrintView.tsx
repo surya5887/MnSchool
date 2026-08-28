@@ -36,7 +36,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, marks, term,
           <ArrowLeft size={18} /> Back
         </button>
         <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: 'var(--primary-gradient)', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-          <Printer size={18} /> Print Now
+          <Printer size={18} /> Print
         </button>
       </div>
 
