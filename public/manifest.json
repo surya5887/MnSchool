@@ -4,8 +4,8 @@
   "description": "MN Public School ERP System",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
   "theme_color": "#ffffff",
+  "background_color": "transparent",
   "icons": [
     {
       "src": "/images/logo_circular.png",
