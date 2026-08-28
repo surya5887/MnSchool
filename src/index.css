@@ -526,6 +526,7 @@ tr:hover {
 
 /* --- PRINT STYLES FOR REPORT CARDS --- */
 @media print {
+  body { margin: 0 !important; padding: 0 !important; }
   body * {
     visibility: hidden;
   }
@@ -550,15 +551,15 @@ tr:hover {
     margin: 0;
     padding: 0;
   }
-  .report-card-page { box-shadow: none !important; min-height: auto !important;
+  .report-card-page { box-shadow: none !important; min-height: 297mm !important; max-width: none !important;
     width: 100%;
     page-break-after: always;
     margin: 0;
-    padding: 20px !important;
+    padding: 20px;
     box-sizing: border-box;
   }
   @page {
-    margin: 1cm;
+    margin: 0;
     size: A4 portrait;
   }
 }
