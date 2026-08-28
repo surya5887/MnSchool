@@ -529,7 +529,7 @@ tr:hover {
   body * {
     visibility: hidden;
   }
-  .sidebar-container, .top-header {
+  .sidebar-container, .top-header, .preview-toolbar {
     display: none !important;
   }
   .app-container, .main-content {
@@ -541,6 +541,7 @@ tr:hover {
   .report-card-container, .report-card-container * {
     visibility: visible;
   }
+  .preview-overlay { padding: 0 !important; background: white !important; overflow: hidden !important; }
   .report-card-container {
     position: absolute;
     left: 0;
@@ -549,7 +550,7 @@ tr:hover {
     margin: 0;
     padding: 0;
   }
-  .report-card-page {
+  .report-card-page { box-shadow: none !important; min-height: auto !important;
     width: 100%;
     page-break-after: always;
     margin: 0;

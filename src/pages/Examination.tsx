@@ -238,7 +238,7 @@ const Examination: React.FC = () => {
                   <Save size={18} /> Save Marks
                 </button>
                 <button className="btn-primary" style={{ padding: '12px 24px' }} onClick={handlePrintReportCard}>
-                  <Printer size={18} /> Print Report Card
+                  <Printer size={18} /> Preview Report Card
                 </button>
               </div>
             </div>
@@ -278,7 +278,7 @@ const Examination: React.FC = () => {
             Click below to generate and print the Transfer Certificate for {selectedStudent.firstName}.
           </p>
           <button className="btn-primary" style={{ padding: '16px 32px', fontSize: '1.2rem' }} onClick={() => setShowTCPrintView(true)}>
-            <Printer size={24} /> Print Transfer Certificate
+            <Printer size={24} /> Preview Transfer Certificate
           </button>
         </div>
       </motion.div>
