@@ -62,8 +62,8 @@ const Examination: React.FC = () => {
       return;
     }
     let filtered = students;
-    const classId = classes.find(c => c.className === classFilter)?.id;
-    filtered = filtered.filter(s => s.classId === classId);
+    // In this database schema, student.classId actually stores the className string (e.g. "PLAY")
+    filtered = filtered.filter(s => s.classId === classFilter);
     if (sectionFilter) {
       filtered = filtered.filter(s => s.sectionId === sectionFilter);
     }
