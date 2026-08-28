@@ -86,7 +86,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
 
       <div className="report-card-container">
         <div className="report-card-page" style={{ 
-          padding: '24px 32px', 
+          padding: '40px', 
           background: '#ebefc8', 
           color: '#000', 
           fontFamily: "'Tiro Devanagari Hindi', 'Noto Sans Devanagari', Arial, sans-serif",
@@ -115,9 +115,9 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             <h1 style={{ margin: '0', fontSize: '26px', letterSpacing: '0.5px' }}>लीविंग सर्टीफिकेट बेसिक शिक्षा परिषद</h1>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px', fontSize: '15px', lineHeight: '1.7' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '30px', fontSize: '15px', lineHeight: '2' }}>
             
-            <div>
+            <div style={{ flex: 1, width: '48%' }}>
               <div style={{ display: 'flex' }}>
                 <span style={{ width: '22px' }}>1.</span>
                 <div style={{ flex: 1, display: 'flex' }}><span style={{ whiteSpace: 'nowrap' }}>नाम विद्यार्थी</span> <InputLine name="studentName" value={formData.studentName} onChange={handleChange} /></div>
@@ -177,7 +177,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
               </div>
             </div>
 
-            <div>
+            <div style={{ flex: 1, width: '48%' }}>
               <div style={{ display: 'flex' }}>
                 <span style={{ width: '28px' }}>10.</span>
                 <div style={{ flex: 1, display: 'flex' }}><span style={{ whiteSpace: 'nowrap' }}>नाम कटने की तिथि</span> <InputLine name="leavingDate" value={formData.leavingDate} onChange={handleChange} /></div>
@@ -229,7 +229,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
 
           </div>
 
-          <div style={{ marginTop: '28px', borderTop: '2px solid #000', paddingTop: '16px', fontSize: '15px' }}>
+          <div style={{ marginTop: '30px', borderTop: '2px solid #000', paddingTop: '16px', fontSize: '15px' }}>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                <div style={{ flex: 1, display: 'flex' }}>लिखने की तिथि <InputLine name="writingDate" value={formData.writingDate} onChange={handleChange} width="40px" /> माह <InputLine name="writingMonth" value={formData.writingMonth} onChange={handleChange} width="40px" /> सन् 20 <InputLine name="writingYear" value={formData.writingYear.substring(2)} onChange={handleChange} width="40px" /></div>
             </div>
@@ -239,7 +239,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', fontSize: '14px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', fontSize: '14px' }}>
              
              <div style={{ flex: 1, lineHeight: '2' }}>
                 (1) चाल-चलन संक्षिप्त शब्दों में लिखना चाहिए<br/>
