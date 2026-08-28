@@ -12,14 +12,14 @@ const StatCard = ({ title, value, icon: Icon, color, delay }: {title: string, va
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
     className="glass-panel" 
-    style={{ display: 'flex', alignItems: 'center', gap: '24px', padding: '32px' }}
+    style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px' }}
   >
-    <div style={{ padding: '20px', borderRadius: '20px', background: `rgba(${color}, 0.1)`, color: `rgb(${color})` }}>
-      <Icon size={40} />
+    <div style={{ padding: '16px', borderRadius: '16px', background: `rgba(${color}, 0.1)`, color: `rgb(${color})`, flexShrink: 0 }}>
+      <Icon size={32} />
     </div>
-    <div>
-      <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '8px' }}>{title}</p>
-      <h3 style={{ fontSize: '2.2rem', margin: 0 }}>{value}</h3>
+    <div style={{ minWidth: 0, flex: 1 }}>
+      <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</p>
+      <h3 style={{ fontSize: '1.8rem', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</h3>
     </div>
   </motion.div>
 );
@@ -111,16 +111,20 @@ const Dashboard: React.FC = () => {
           style={{ padding: '32px' }}
         >
           <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>Recent Activities</h3>
-          <div className="dashboard-grid">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {recentActivities.map((act, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '16px', padding: '16px', background: 'rgba(255,255,255,0.4)', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
-                <div style={{ padding: '12px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', height: 'fit-content' }}>
-                  <Clock size={24} />
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+                <div style={{ padding: '10px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', flexShrink: 0 }}>
+                  <Clock size={20} />
                 </div>
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: '4px' }}>{act.action}</div>
-                  <div style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginBottom: '8px' }}>{act.details}</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--primary-color)' }}>{act.time}</div>
+                <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-main)' }}>{act.action}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{act.details}</div>
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', fontWeight: 500 }}>
+                    {act.time}
+                  </div>
                 </div>
               </div>
             ))}
