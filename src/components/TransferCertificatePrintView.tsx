@@ -62,7 +62,8 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
     writingDate: new Date().getDate().toString().padStart(2, '0'),
     writingMonth: (new Date().getMonth() + 1).toString().padStart(2, '0'),
     writingYear: new Date().getFullYear().toString(),
-    schoolAddress: ''
+    schoolAddress: 'M.N. PUBLIC SCHOOL, HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA',
+    schoolAddress2: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +236,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             </div>
             <div style={{ display: 'flex' }}>
                <div style={{ whiteSpace: 'nowrap' }}>पाठशाला मौहल्ला</div>
-               <InputLine name="schoolAddress2" value={formData.schoolAddress} onChange={handleChange} />
+               <InputLine name="schoolAddress2" value={formData.schoolAddress2} onChange={handleChange} />
             </div>
           </div>
 
