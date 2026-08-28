@@ -57,3 +57,17 @@ export const getExamMarks = async (examTerm: string, subject: string) => {
     throw error;
   }
 };
+
+export const getAllExamMarksForTerm = async (examTerm: string) => {
+  try {
+    const q = query(
+      collection(db, EXAM_MARKS_COLLECTION),
+      where("examTerm", "==", examTerm)
+    );
+    const querySnapshot = await getDocs(q as any);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ExamMarkData));
+  } catch (error) {
+    console.error("Error fetching all exam marks for term: ", error);
+    throw error;
+  }
+};

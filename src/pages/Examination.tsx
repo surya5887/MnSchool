@@ -1,99 +1,121 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Save, Download, Award, CheckCircle } from 'lucide-react';
+import { FileText, Download, Save, CheckCircle, Award } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
-import { getExamMarks, saveExamMark } from '../services/examService';
 import { getClasses, type ClassData } from '../services/classService';
+import { getExamMarks, saveExamMark, getAllExamMarksForTerm, type ExamMarkData } from '../services/examService';
+import ReportCardPrintView from '../components/ReportCardPrintView';
 
 const Examination: React.FC = () => {
-  const [examType, setExamType] = useState('Half Yearly Exam');
+  const [classes, setClasses] = useState<ClassData[]>([]);
+  const [students, setStudents] = useState<StudentData[]>([]);
+  
   const [classFilter, setClassFilter] = useState('');
   const [sectionFilter, setSectionFilter] = useState('');
   const [subjectFilter, setSubjectFilter] = useState('');
-  const [students, setStudents] = useState<StudentData[]>([]);
-  const [classes, setClasses] = useState<ClassData[]>([]);
-  const [marksMap, setMarksMap] = useState<Record<string, { theory: number, practical: number }>>({});
+  const [examType, setExamType] = useState('Half Yearly Exam');
+  const [maxMarks, setMaxMarks] = useState(100);
+  
+  const [activeSections, setActiveSections] = useState<string[]>([]);
+  const [activeSubjects, setActiveSubjects] = useState<string[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<StudentData[]>([]);
+  
+  const [marksMap, setMarksMap] = useState<Record<string, { theory: number; practical: number }>>({});
   const [saved, setSaved] = useState(false);
   
+  const [showPrintView, setShowPrintView] = useState(false);
+  const [printMarks, setPrintMarks] = useState<ExamMarkData[]>([]);
+
+  const maxTheory = Math.round(maxMarks * 0.8);
+  const maxPractical = Math.round(maxMarks * 0.2);
+
   useEffect(() => {
-    const fetchStudentsAndClasses = async () => {
-      try {
-        const [studentData, classData] = await Promise.all([
-          getStudents(),
-          getClasses()
-        ]);
-        setStudents(studentData);
-        setClasses(classData);
-      } catch (error) {
-        console.error("Error fetching data", error);
-      }
-    };
-    fetchStudentsAndClasses();
+    getClasses().then(setClasses);
+    getStudents().then(setStudents);
   }, []);
 
   useEffect(() => {
-    if (!subjectFilter) return;
-    const fetchMarks = async () => {
-      try {
-        const marksData = await getExamMarks(examType, subjectFilter);
-        const map: Record<string, { theory: number, practical: number }> = {};
-        marksData.forEach(m => {
-          map[m.studentId] = { theory: m.theoryMarks, practical: m.practicalMarks };
-        });
-        setMarksMap(map);
-      } catch (error) {
-        console.error("Error fetching marks", error);
+    if (classFilter) {
+      const cls = classes.find(c => c.className === classFilter);
+      if (cls) {
+        setActiveSections(cls.sections || []);
+        setActiveSubjects(cls.subjects || []);
       }
-    };
-    fetchMarks();
-  }, [examType, subjectFilter]);
-
-  const filteredStudents = students.filter(s => {
-    const matchClass = !classFilter || s.classId === classFilter;
-    const matchSection = !sectionFilter || s.sectionId === sectionFilter;
-    // If no class is selected, show none to avoid confusion during data entry
-    if (!classFilter) return false;
-    return matchClass && matchSection;
-  });
-  
-  const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newClass = e.target.value;
-    setClassFilter(newClass);
-    setSectionFilter('');
-    const selectedClass = classes.find(c => c.className === newClass);
-    if (selectedClass && selectedClass.subjects && selectedClass.subjects.length > 0) {
-      setSubjectFilter(selectedClass.subjects[0]);
     } else {
-      setSubjectFilter('');
+      setActiveSections([]);
+      setActiveSubjects([]);
     }
+    setSectionFilter('');
+    setSubjectFilter('');
+  }, [classFilter, classes]);
+
+  useEffect(() => {
+    let filtered = students;
+    if (classFilter) {
+      const classId = classes.find(c => c.className === classFilter)?.id;
+      filtered = filtered.filter(s => s.classId === classId);
+    }
+    if (sectionFilter) {
+      filtered = filtered.filter(s => s.sectionId === sectionFilter);
+    }
+    setFilteredStudents(filtered);
+  }, [classFilter, sectionFilter, students, classes]);
+
+  useEffect(() => {
+    if (examType && subjectFilter && filteredStudents.length > 0) {
+      const fetchMarks = async () => {
+        const marksData = await getExamMarks(examType, subjectFilter);
+        const newMap: Record<string, { theory: number; practical: number }> = {};
+        marksData.forEach(m => {
+          newMap[m.studentId] = { theory: m.theoryMarks, practical: m.practicalMarks };
+        });
+        setMarksMap(newMap);
+      };
+      fetchMarks();
+    } else {
+      setMarksMap({});
+    }
+  }, [examType, subjectFilter, filteredStudents]);
+
+  const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setClassFilter(e.target.value);
   };
 
-  const activeClassObj = classes.find(c => c.className === classFilter);
-  const activeSections = activeClassObj?.sections || [];
-  const activeSubjects = activeClassObj?.subjects || [];
+  const handleMarkChange = (studentId: string, type: 'theory' | 'practical', value: string) => {
+    let numVal = parseInt(value, 10);
+    if (isNaN(numVal)) numVal = 0;
+    
+    // Validation
+    if (type === 'theory' && numVal > maxTheory) numVal = maxTheory;
+    if (type === 'practical' && numVal > maxPractical) numVal = maxPractical;
+    if (numVal < 0) numVal = 0;
 
-  const handleMarkChange = (studentId: string, type: 'theory' | 'practical', value: number) => {
     setMarksMap(prev => ({
       ...prev,
       [studentId]: {
-        ...prev[studentId],
-        [type]: value || 0
+        ...(prev[studentId] || { theory: 0, practical: 0 }),
+        [type]: numVal
       }
     }));
   };
 
   const calculateGrade = (total: number) => {
-    if (total >= 90) return 'A1';
-    if (total >= 80) return 'A2';
-    if (total >= 70) return 'B1';
-    if (total >= 60) return 'B2';
-    if (total >= 50) return 'C1';
-    if (total >= 40) return 'C2';
-    if (total >= 33) return 'D';
+    const percent = (total / maxMarks) * 100;
+    if (percent >= 91) return 'A1';
+    if (percent >= 81) return 'A2';
+    if (percent >= 71) return 'B1';
+    if (percent >= 61) return 'B2';
+    if (percent >= 51) return 'C1';
+    if (percent >= 41) return 'C2';
+    if (percent >= 33) return 'D';
     return 'E';
   };
 
   const handleSaveMarks = async () => {
+    if (!subjectFilter) {
+      alert("Please select a subject first.");
+      return;
+    }
     for (const student of filteredStudents) {
       const marks = marksMap[student.id!] || { theory: 0, practical: 0 };
       await saveExamMark({
@@ -107,7 +129,57 @@ const Examination: React.FC = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
-  
+
+  const handleDownloadTemplate = () => {
+    if (filteredStudents.length === 0) {
+      alert("No students to export.");
+      return;
+    }
+    // Generate CSV
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Roll No,Student Name,Theory Marks (Max " + maxTheory + "),Practical Marks (Max " + maxPractical + ")\r\n";
+    
+    filteredStudents.forEach(student => {
+      const theory = marksMap[student.id!]?.theory || 0;
+      const prac = marksMap[student.id!]?.practical || 0;
+      const row = `"${student.rollNumber || ''}","${student.firstName} ${student.lastName}",${theory},${prac}`;
+      csvContent += row + "\r\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Marks_Template_${classFilter}_${sectionFilter}_${subjectFilter}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleGenerateReportCards = async () => {
+    if (filteredStudents.length === 0) {
+      alert("Please select a class with students first.");
+      return;
+    }
+    // Fetch all marks for this term
+    const allMarks = await getAllExamMarksForTerm(examType);
+    setPrintMarks(allMarks);
+    setShowPrintView(true);
+  };
+
+  if (showPrintView) {
+    return (
+      <ReportCardPrintView 
+        students={filteredStudents} 
+        marks={printMarks} 
+        term={examType} 
+        className={classFilter || 'All Classes'} 
+        section={sectionFilter} 
+        maxMarks={maxMarks}
+        onClose={() => setShowPrintView(false)} 
+      />
+    );
+  }
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
@@ -115,10 +187,10 @@ const Examination: React.FC = () => {
           <h1 className="page-title"><FileText size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Examinations & Results</h1>
           <p className="page-subtitle">Enter student marks, grade automatically, and generate beautiful PDF report cards.</p>
         </div>
-        <button className="btn-primary"><Award size={18} /> Generate Report Cards (PDF)</button>
+        <button className="btn-primary" onClick={handleGenerateReportCards}><Award size={18} /> Generate Report Cards (PDF)</button>
       </div>
 
-      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
+      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '16px' }}>
         <div>
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Class</label>
           <select className="glass-input" value={classFilter} onChange={handleClassChange}>
@@ -150,7 +222,7 @@ const Examination: React.FC = () => {
         </div>
         <div>
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Max Marks</label>
-          <input type="number" className="glass-input" defaultValue="100" />
+          <input type="number" className="glass-input" value={maxMarks} onChange={(e) => setMaxMarks(Number(e.target.value) || 0)} min="10" />
         </div>
       </div>
 
@@ -168,8 +240,8 @@ const Examination: React.FC = () => {
               <tr>
                 <th style={{ width: '80px' }}>Roll No.</th>
                 <th>Student Name</th>
-                <th>Theory Marks (80)</th>
-                <th>Practical Marks (20)</th>
+                <th>Theory Marks ({maxTheory})</th>
+                <th>Practical Marks ({maxPractical})</th>
                 <th>Total & Grade (Auto)</th>
                 <th>Action</th>
               </tr>
@@ -185,12 +257,12 @@ const Examination: React.FC = () => {
                   <tr key={student.id}>
                     <td style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{student.rollNumber || '-'}</td>
                     <td style={{ fontWeight: 500 }}>{student.firstName} {student.lastName}</td>
-                    <td><input type="number" value={theory} onChange={e => handleMarkChange(student.id!, 'theory', Number(e.target.value))} className="glass-input" style={{ width: '80px', padding: '6px' }}/></td>
-                    <td><input type="number" value={prac} onChange={e => handleMarkChange(student.id!, 'practical', Number(e.target.value))} className="glass-input" style={{ width: '80px', padding: '6px' }}/></td>
+                    <td><input type="number" max={maxTheory} min="0" value={theory.toString()} onChange={e => handleMarkChange(student.id!, 'theory', e.target.value)} className="glass-input" style={{ width: '80px', padding: '6px' }}/></td>
+                    <td><input type="number" max={maxPractical} min="0" value={prac.toString()} onChange={e => handleMarkChange(student.id!, 'practical', e.target.value)} className="glass-input" style={{ width: '80px', padding: '6px' }}/></td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{total}</span>
-                        <span className={`badge ${total >= 33 ? 'success' : 'danger'}`}>{grade}</span>
+                        <span className={`badge ${(total/maxMarks*100) >= 33 ? 'success' : 'danger'}`}>{grade}</span>
                       </div>
                     </td>
                     <td>
@@ -209,7 +281,7 @@ const Examination: React.FC = () => {
         </div>
         
         <div style={{ padding: '20px', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-          <button className="btn-secondary"><Download size={18} /> Download Excel Template</button>
+          <button className="btn-secondary" onClick={handleDownloadTemplate}><Download size={18} /> Download Excel Template</button>
           <button className="btn-primary" style={{ padding: '10px 32px' }} onClick={handleSaveMarks}><Save size={18} /> Save All Marks</button>
         </div>
       </div>
