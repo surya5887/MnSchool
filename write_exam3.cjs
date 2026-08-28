@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+const fs = require('fs');
+
+const code = `import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
@@ -102,10 +104,6 @@ const Examination: React.FC = () => {
         [type]: numVal
       }
     }));
-  };
-
-  const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setClassFilter(e.target.value);
   };
 
   const calculateGrade = (total: number) => {
@@ -227,7 +225,7 @@ const Examination: React.FC = () => {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{total}</span>
-                      <span className={`badge ${(total/maxMarks*100) >= 33 ? 'success' : 'danger'}`}>{grade}</span>
+                      <span className={\`badge \${(total/maxMarks*100) >= 33 ? 'success' : 'danger'}\`}>{grade}</span>
                     </div>
                   </div>
                 );
@@ -356,3 +354,7 @@ const Examination: React.FC = () => {
 };
 
 export default Examination;
+`;
+
+fs.writeFileSync('src/pages/Examination.tsx', code);
+console.log('Examination.tsx rewritten to strict request specs');
