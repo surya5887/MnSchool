@@ -12,9 +12,9 @@ const StatCard = ({ title, value, icon: Icon, color, delay }: {title: string, va
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
     className="glass-panel" 
-    style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px' }}
+    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '20px 16px' }}
   >
-    <div style={{ padding: '16px', borderRadius: '16px', background: `rgba(${color}, 0.1)`, color: `rgb(${color})`, flexShrink: 0 }}>
+    <div style={{ padding: '12px', borderRadius: '16px', background: `rgba(${color}, 0.1)`, color: `rgb(${color})`, flexShrink: 0 }}>
       <Icon size={32} />
     </div>
     <div style={{ minWidth: 0, flex: 1 }}>
