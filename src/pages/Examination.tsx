@@ -164,7 +164,6 @@ const Examination: React.FC = () => {
       <TransferCertificatePrintView 
         student={selectedStudent}
         className={classFilter || 'Unknown Class'}
-        section={sectionFilter}
         onClose={() => setShowTCPrintView(false)}
       />
     );
