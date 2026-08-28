@@ -2,14 +2,19 @@
   "name": "MN Public School",
   "short_name": "MN Public School",
   "description": "MN Public School ERP System",
-  "start_url": "/",
+  "start_url": "/?app=true",
   "display": "standalone",
   "theme_color": "#ffffff",
-  "background_color": "transparent",
   "icons": [
     {
+      "src": "/images/transparent_icon.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
       "src": "/images/logo_circular.png",
-      "sizes": "192x192 512x512",
+      "sizes": "192x192 512x512 1600x1600",
       "type": "image/png",
       "purpose": "any"
     }
