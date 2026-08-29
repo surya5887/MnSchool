@@ -51,7 +51,7 @@ const Transport: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+      <div className="flex-responsive" style={{ marginBottom: '32px' }}>
         <div>
           <h1 className="page-title"><Bus size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Transport & Fleet</h1>
           <p className="page-subtitle">Manage school buses, assigned routes, and transport fees.</p>
@@ -60,7 +60,7 @@ const Transport: React.FC = () => {
       </div>
 
       {/* Stats Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
+      <div className="dashboard-grid" style={{ marginBottom: '32px' }}>
         <div className="glass-card stat-card" style={{ padding: '24px' }}>
           <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)' }}><Bus size={24} /></div>
           <h3>Total Vehicles</h3>
