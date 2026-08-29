@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Check, Trash2, Edit2, Eye } from 'lucide-react';
+import { Plus, Check, Trash2, Edit2, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getClasses, type ClassData, getSequenceIndex, addClass, updateClass, deleteClass } from '../services/classService';
 import { getStaff, type StaffData } from '../services/staffService';
+import { getStudents, type StudentData } from '../services/studentService';
 import Modal from '../components/Modal';
 
 const Classes: React.FC = () => {
@@ -13,6 +14,7 @@ const Classes: React.FC = () => {
   const [saved, setSaved] = useState(false);
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
   const [staffList, setStaffList] = useState<StaffData[]>([]);
+  const [students, setStudents] = useState<StudentData[]>([]);
 
   const [newClassData, setNewClassData] = useState({
     className: '',
@@ -28,12 +30,14 @@ const Classes: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const [classData, staffData] = await Promise.all([
-        getClasses(),
-        getStaff()
-      ]);
-      setClasses(classData);
-      setStaffList(staffData);
+      const [classData, staffData, studentData] = await Promise.all([
+          getClasses(),
+          getStaff(),
+          getStudents()
+        ]);
+        setClasses(classData);
+        setStaffList(staffData);
+        setStudents(studentData);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -115,73 +119,98 @@ const Classes: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div>
-          <h1 className="page-title">Classes & Sections</h1>
-          <p className="page-subtitle">Manage school classes, sections, assigned teachers, and base fees.</p>
+      <div className="flex-responsive" style={{ marginBottom: '32px' }}>
+          <div>
+            <h1 className="page-title">Classes & Sections</h1>
+            <p className="page-subtitle">Manage school classes, sections, assigned teachers, and base fees.</p>
+          </div>
+          <button className="btn-primary" onClick={() => {
+            setEditingClassId(null);
+            setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
+            setClassModalOpen(true);
+          }}>
+            <Plus size={20} /> Add New Class
+          </button>
         </div>
-        <button className="btn-primary" onClick={() => {
-          setEditingClassId(null);
-          setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
-          setClassModalOpen(true);
-        }}>
-          <Plus size={20} /> Add New Class
-        </button>
-      </div>
 
-      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
-        <div className="glass-table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Class Name</th>
-                <th>Sections</th>
-                <th>Subjects Assigned</th>
-                <th>Base Fee</th>
-                <th>Class Teacher</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>Loading classes...</td></tr>
-              ) : sortedClasses.length === 0 ? (
-                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>No classes found. Add a class to get started.</td></tr>
-              ) : sortedClasses.map(c => (
-                <tr 
-                  key={c.id} 
-                  onClick={() => navigate(`/classes/${c.id}`)}
-                  style={{ cursor: 'pointer' }}
-                  className="clickable-row"
-                >
-                  <td style={{ fontWeight: 600 }}>{c.className}</td>
-                  <td>{c.sections.join(', ')}</td>
-                  <td>{c.subjects.join(', ')}</td>
-                  <td style={{ fontWeight: 600, color: 'var(--primary)' }}>
-                    {c.fees && c.fees.length > 0 ? c.fees.map(f => `${f.feeName}: ₹${f.amount}`).join(', ') : 'Not Set'}
-                  </td>
-                  <td>{c.classTeacher}</td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      <button onClick={(e) => handleOpenEdit(e, c)} style={{ color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <Edit2 size={18} />
-                      </button>
-                      <button onClick={(e) => c.id && handleDeleteClass(e, c.id)} style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <Trash2 size={18} />
-                      </button>
-                      <button onClick={() => navigate(`/classes/${c.id}`)} style={{ color: 'var(--text-main)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <Eye size={18} />
-                      </button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+          {loading ? (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Loading classes...</div>
+          ) : sortedClasses.length === 0 ? (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No classes found. Add a class to get started.</div>
+          ) : (
+            sortedClasses.flatMap(c => {
+              // Ensure there's at least one section to map over, fallback to 'A' if empty
+              const sections = c.sections && c.sections.length > 0 ? c.sections : ['A'];
+              return sections.map(section => {
+                const studentCount = students.filter(s => s.classId === c.className && s.sectionId === section).length;
+                return (
+                  <motion.div
+                    key={`${c.id}-${section}`}
+                    className="glass-panel"
+                    whileHover={{ scale: 1.02, translateY: -4 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate(`/classes/${c.id}`)}
+                    style={{ 
+                      padding: '24px', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: '20px', 
+                      cursor: 'pointer',
+                      borderTop: '4px solid var(--primary)',
+                      borderRadius: '20px',
+                      aspectRatio: '1 / 0.9'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <h2 style={{ fontSize: '1.8rem', margin: '0 0 8px 0', color: 'var(--primary)' }}>{c.className}</h2>
+                        <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', padding: '6px 12px', fontSize: '0.85rem' }}>Section {section}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button 
+                          onClick={(e) => handleOpenEdit(e, c)} 
+                          style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex' }}
+                          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)'}
+                          onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
+                          onClick={(e) => c.id && handleDeleteClass(e, c.id)} 
+                          style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex' }}
+                          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+                          onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      <Modal isOpen={isClassModalOpen} onClose={() => setClassModalOpen(false)} title={editingClassId ? "Edit Class" : "Add New Class"}>
+                    <div style={{ flex: 1 }}></div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(255,255,255,0.5)', padding: '16px', borderRadius: '16px' }}>
+                      <div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px' }}>Students</div>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Users size={18} color="var(--primary)" /> {studentCount}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px' }}>Class Teacher</div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {c.classTeacher || 'Not Assigned'}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              });
+            })
+          )}
+        </div>
+
+        <Modal isOpen={isClassModalOpen} onClose={() => setClassModalOpen(false)} title={editingClassId ? "Edit Class" : "Add New Class"}>
         <form onSubmit={handleSaveClass} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Class Name</label>
