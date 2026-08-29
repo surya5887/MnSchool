@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, User, Phone, Camera } from 'lucide-react';
+import { X, Save, User, Phone, Camera, Edit3 } from 'lucide-react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -127,159 +127,154 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ isOpen, onClose, authUs
             onClick={onClose}
             style={{
               position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
+              top: 0, left: 0, right: 0, bottom: 0,
               background: 'rgba(15, 23, 42, 0.4)',
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(4px)',
               zIndex: 99998
             }}
           />
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 250 }}
+            initial={{ x: '100%', opacity: 0.5 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0.5 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             style={{
               position: 'fixed',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: '100%',
-              maxWidth: '420px',
-              background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '-10px 0 40px rgba(0,0,0,0.2)',
+              top: 0, right: 0, bottom: 0,
+              width: '100%', maxWidth: '420px',
+              background: '#ffffff',
+              boxShadow: '-10px 0 40px rgba(0,0,0,0.15)',
               zIndex: 99999,
-              display: 'flex',
-              flexDirection: 'column',
-              borderLeft: '1px solid rgba(255,255,255,0.5)'
+              display: 'flex', flexDirection: 'column'
             }}
           >
-            {/* Header */}
+            {/* Header Area with Gradient */}
             <div style={{ 
-              padding: '24px', 
-              background: 'linear-gradient(135deg, var(--primary) 0%, #a855f7 100%)',
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              borderBottom: '1px solid rgba(0,0,0,0.1)'
+              background: 'var(--primary-gradient)',
+              padding: '24px 24px 60px 24px', 
+              borderBottomLeftRadius: '32px',
+              borderBottomRightRadius: '32px',
+              position: 'relative',
+              boxShadow: '0 10px 30px rgba(99, 102, 241, 0.2)'
             }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '10px', color: 'white', fontWeight: 600 }}>
-                <User size={22} color="white" /> My Profile
-              </h2>
-              <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'} onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
-                <X size={20} />
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ margin: 0, fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '10px', color: 'white', fontWeight: 700, letterSpacing: '0.5px' }}>
+                  <User size={22} color="white" /> My Profile
+                </h2>
+                <button 
+                  onClick={onClose} 
+                  style={{ 
+                    background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', border: 'none', 
+                    cursor: 'pointer', color: 'white', borderRadius: '50%', width: '36px', height: '36px', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' 
+                  }} 
+                  onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'} 
+                  onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 32px 24px', display: 'flex', flexDirection: 'column' }}>
               
-              {/* Avatar Section */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {/* Avatar Section - Pulled up to overlap header */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-50px', marginBottom: '24px' }}>
                 <div 
-                  style={{ position: 'relative', cursor: 'pointer' }}
+                  style={{ position: 'relative', cursor: 'pointer', borderRadius: '50%', padding: '4px', background: 'white', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', transition: 'transform 0.2s' }}
                   onClick={() => fileInputRef.current?.click()}
-                  className="profile-avatar-container"
+                  onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.05)')}
+                  onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
                 >
                   <img 
                     src={profileData.photoUrl || `https://ui-avatars.com/api/?name=${profileData.name || 'U'}&background=6366f1&color=fff&size=150`}
                     alt="Profile" 
                     style={{ 
-                      width: '120px', 
-                      height: '120px', 
-                      borderRadius: '50%', 
-                      objectFit: 'cover', 
-                      border: '4px solid white', 
-                      boxShadow: '0 8px 24px rgba(99, 102, 241, 0.25)',
-                      transition: 'transform 0.2s'
+                      width: '110px', height: '110px', borderRadius: '50%', objectFit: 'cover'
                     }}
-                    onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.05)')}
-                    onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
                   />
                   <div style={{ 
-                    position: 'absolute', bottom: '4px', right: '4px', 
-                    background: 'linear-gradient(135deg, var(--primary), #a855f7)', 
-                    color: 'white', padding: '10px', borderRadius: '50%', 
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    position: 'absolute', bottom: '0px', right: '0px', 
+                    background: 'var(--primary-gradient)', color: 'white', 
+                    padding: '8px', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '2px solid white'
+                    border: '3px solid white'
                   }}>
                     <Camera size={16} />
                   </div>
                 </div>
-                <h3 style={{ margin: '20px 0 6px 0', fontSize: '1.4rem', color: '#1e293b', fontWeight: 700 }}>{profileData.name || authUser.name}</h3>
+                <h3 style={{ margin: '16px 0 6px 0', fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
+                  {profileData.name || authUser.name}
+                </h3>
                 <span style={{ 
-                  background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', 
+                  background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary-color)', 
                   padding: '6px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600,
-                  border: '1px solid rgba(99, 102, 241, 0.2)'
+                  boxShadow: 'inset 0 0 0 1px rgba(99, 102, 241, 0.2)'
                 }}>
                   {authUser.role}
                 </span>
                 
                 <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  style={{ display: 'none' }} 
-                  accept="image/jpeg, image/png, image/webp" 
-                  onChange={handleImageUpload}
+                  type="file" ref={fileInputRef} style={{ display: 'none' }} 
+                  accept="image/jpeg, image/png, image/webp" onChange={handleImageUpload}
                 />
               </div>
 
-              {/* Form Fields */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: '#f8fafc', padding: '24px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+              {/* Form Fields container */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: '#f8fafc', padding: '24px', borderRadius: '24px', border: '1px solid #e2e8f0', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <User size={16} color="var(--primary)" /> Full Name
+                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Edit3 size={16} color="var(--primary-color)" /> Full Name
                   </label>
                   <input 
                     type="text" 
                     style={{ 
-                      width: '100%', padding: '12px 16px', borderRadius: '12px', 
-                      border: '1px solid #cbd5e1', background: 'white', fontSize: '1rem',
-                      color: '#334155', transition: 'border-color 0.2s', outline: 'none'
+                      width: '100%', padding: '14px 16px', borderRadius: '14px', 
+                      border: '2px solid transparent', background: 'white', fontSize: '1rem',
+                      color: 'var(--text-main)', transition: 'all 0.2s', outline: 'none',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                     }}
                     value={profileData.name}
                     onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                    onFocus={e => e.target.style.borderColor = 'var(--primary)'}
-                    onBlur={e => e.target.style.borderColor = '#cbd5e1'}
+                    onFocus={e => { e.target.style.borderColor = 'var(--primary-color)'; e.target.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)'; }}
+                    onBlur={e => { e.target.style.borderColor = 'transparent'; e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; }}
                   />
                 </div>
                 
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Phone size={16} color="var(--primary)" /> Phone Number
+                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Phone size={16} color="var(--primary-color)" /> Phone Number
                   </label>
                   <input 
                     type="text" 
                     style={{ 
-                      width: '100%', padding: '12px 16px', borderRadius: '12px', 
-                      border: '1px solid #cbd5e1', background: 'white', fontSize: '1rem',
-                      color: '#334155', transition: 'border-color 0.2s', outline: 'none'
+                      width: '100%', padding: '14px 16px', borderRadius: '14px', 
+                      border: '2px solid transparent', background: 'white', fontSize: '1rem',
+                      color: 'var(--text-main)', transition: 'all 0.2s', outline: 'none',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                     }}
                     value={profileData.phone}
                     onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
                     placeholder="e.g. +91 9876543210"
-                    onFocus={e => e.target.style.borderColor = 'var(--primary)'}
-                    onBlur={e => e.target.style.borderColor = '#cbd5e1'}
+                    onFocus={e => { e.target.style.borderColor = 'var(--primary-color)'; e.target.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)'; }}
+                    onBlur={e => { e.target.style.borderColor = 'transparent'; e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; }}
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '24px', borderTop: '1px solid #e2e8f0', background: 'rgba(255,255,255,0.8)' }}>
+            <div style={{ padding: '24px', background: 'white', borderTop: '1px solid #f1f5f9' }}>
               <button 
                 style={{ 
-                  width: '100%', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', 
-                  fontSize: '1.05rem', fontWeight: 600, color: 'white', border: 'none', borderRadius: '14px',
-                  background: 'linear-gradient(135deg, var(--primary) 0%, #a855f7 100%)',
-                  boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)', cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.7 : 1, transition: 'transform 0.1s, box-shadow 0.1s'
+                  width: '100%', padding: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', 
+                  fontSize: '1.05rem', fontWeight: 600, color: 'white', border: 'none', borderRadius: '16px',
+                  background: 'var(--primary-gradient)',
+                  boxShadow: '0 10px 25px rgba(99, 102, 241, 0.35)', cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.8 : 1, transition: 'all 0.2s'
                 }}
-                onMouseOver={e => { if(!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(99, 102, 241, 0.4)'; } }}
-                onMouseOut={e => { if(!loading) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.3)'; } }}
+                onMouseOver={e => { if(!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 30px rgba(99, 102, 241, 0.45)'; } }}
+                onMouseOut={e => { if(!loading) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(99, 102, 241, 0.35)'; } }}
                 onClick={handleSave}
                 disabled={loading}
               >
