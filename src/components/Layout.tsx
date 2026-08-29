@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X, User } from 'lucide-react'; 
 import { LiveClock } from './LiveClock';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,11 @@ import { migrateMissingSessions } from '../services/migrationService';
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
   const [billingNotification, setBillingNotification] = useState('');
   const [authUser] = useState<any>(
