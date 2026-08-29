@@ -219,7 +219,7 @@ const Classes: React.FC = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
                           <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>Base Fee</div>
-                          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>?{baseFee}</div>
+                          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>₹{baseFee}</div>
                         </div>
                         <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
                           <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>Students</div>
