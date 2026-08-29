@@ -204,7 +204,7 @@ const StaffProfile: React.FC = () => {
         <button className="btn-secondary" onClick={() => navigate('/staff')} style={{ padding: '8px 16px' }}>
           <ArrowLeft size={18} /> Back to Staff
         </button>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="staff-action-buttons">
           {['Principal', 'Manager', 'Super Admin'].includes(role) && (
             <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsDeleteModalOpen(true)}>
               <Trash2 size={16} /> Delete Staff
@@ -262,7 +262,7 @@ const StaffProfile: React.FC = () => {
                Staff Details
             </h3>
             {isEditing ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="settings-grid" style={{ gap: '16px' }}>
                 <div><label className="form-label">Name</label><input type="text" className="glass-input" value={editData.name || ''} onChange={e => setEditData({...editData, name: e.target.value})} /></div>
                 <div><label className="form-label">Custom ID</label><input type="text" className="glass-input" value={editData.customId || ''} onChange={e => setEditData({...editData, customId: e.target.value})} /></div>
                 <div><label className="form-label">Phone / Contact</label><input type="text" className="glass-input" value={editData.phone || ''} onChange={e => setEditData({...editData, phone: e.target.value})} /></div>
@@ -292,7 +292,7 @@ const StaffProfile: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="settings-grid" style={{ gap: '20px' }}>
                 <div><div className="detail-label">Phone</div><div className="detail-value">{staff.phone || 'N/A'}</div></div>
                 <div><div className="detail-label">Email</div><div className="detail-value">{staff.email || 'N/A'}</div></div>
                 <div style={{ gridColumn: '1 / -1' }}><div className="detail-label">Address</div><div className="detail-value">{staff.address || 'N/A'}</div></div>
@@ -308,7 +308,7 @@ const StaffProfile: React.FC = () => {
                 {role === 'Super Admin' && (
                   <div style={{ gridColumn: '1 / -1', background: 'rgba(99, 102, 241, 0.05)', padding: '16px', borderRadius: '12px', marginTop: '12px' }}>
                     <div className="detail-label" style={{ color: 'var(--primary-color)' }}>System Credentials (Admin Only)</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '8px' }}>
+                    <div className="settings-grid" style={{ gap: '20px', marginTop: '8px' }}>
                       <div>
                         <div className="detail-label">Login ID (Email)</div>
                         {isEditing ? (
@@ -441,7 +441,7 @@ const StaffProfile: React.FC = () => {
       {/* Payment / Ledger Modal */}
       <Modal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} title="Record Transaction">
         <form onSubmit={handleAddTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="settings-grid" style={{ gap: '16px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Type</label>
               <select className="glass-input" value={newTxn.type} onChange={e => setNewTxn({...newTxn, type: e.target.value})}>
