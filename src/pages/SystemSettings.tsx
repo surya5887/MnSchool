@@ -104,7 +104,7 @@ const SystemSettings: React.FC = () => {
         </div>
 
         {/* Settings Content Area */}
-        <div style={{ flex: 1, minHeight: '600px' }}>
+        <div style={{ flex: 1, minHeight: '600px', minWidth: 0, width: '100%' }}>
           
           <AnimatePresence mode="wait">
             {activeTab === 'core' && settings && (
