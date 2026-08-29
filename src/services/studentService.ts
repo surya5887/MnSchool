@@ -1,3 +1,4 @@
+import { autoLog } from './auditService';
 import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
@@ -81,6 +82,7 @@ export const addStudent = async (studentData: StudentData) => {
     }
 
     const docRef = await addDoc(collection(db, STUDENTS_COLLECTION), studentData as any);
+    await autoLog(`Admitted new student: ${studentData.firstName} ${studentData.lastName}`);
     return docRef.id;
   } catch (error) {
     console.error("Error adding student: ", error);

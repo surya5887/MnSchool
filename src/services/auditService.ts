@@ -58,3 +58,14 @@ export const getAuditLogs = async () => {
     throw error;
   }
 };
+
+export const autoLog = async (action: string, status: 'Success' | 'Failed' = 'Success') => {
+  try {
+    const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
+    const user = authUser.name || 'Unknown User';
+    const role = authUser.role || 'Unknown Role';
+    await logAction(user, role, action, status);
+  } catch (e) {
+    console.error("Auto log failed", e);
+  }
+};

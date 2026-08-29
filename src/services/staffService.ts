@@ -1,3 +1,4 @@
+import { autoLog } from './auditService';
 import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
@@ -53,6 +54,8 @@ export const addStaff = async (staffData: StaffData) => {
     staffData.password = bcrypt.hashSync(staffData.password, 10);
     
     const docRef = await addDoc(collection(db, STAFF_COLLECTION), staffData as any);
+    await autoLog(`Added new staff member: ${staffData.name}`);
+    await autoLog('Added new staff member: ${staffData.name}');
     return docRef.id;
   } catch (error) {
     console.error("Error adding staff: ", error);

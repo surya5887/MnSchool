@@ -1,3 +1,4 @@
+import { autoLog } from './auditService';
 import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -28,6 +29,7 @@ export const addTransaction = async (data: TransactionData) => {
       data.session = activeSession;
     }
     const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), data as any);
+    await autoLog(`Processed ${data.type === "Income" ? "Fee Collection" : "Expense"} of ?${data.amount}`);
     return docRef.id;
   } catch (error) {
     console.error("Error adding transaction: ", error);
