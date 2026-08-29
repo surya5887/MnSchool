@@ -412,6 +412,7 @@ tr:hover {
     -webkit-overflow-scrolling: touch;
   }
   
+  .settings-sidebar::-webkit-scrollbar { display: none; }
   .settings-sidebar {
     width: 100% !important;
     margin-bottom: 16px;
@@ -561,5 +562,30 @@ tr:hover {
   @page {
     margin: 0;
     size: A4 portrait;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .settings-sidebar {
+    width: 100% !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .settings-sidebar > button {
+    min-width: 250px;
+  }
+}
+
+.settings-grid {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 768px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
   }
 }

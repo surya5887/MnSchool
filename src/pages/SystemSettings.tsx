@@ -65,10 +65,10 @@ const SystemSettings: React.FC = () => {
         <p className="page-subtitle" style={{ marginTop: '8px' }}>Configure the core modules, classes, and administrative access of your ERP.</p>
       </div>
 
-      <div className="responsive-flex" style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+      <div className="settings-layout" style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
         
         {/* Beautiful Settings Sidebar */}
-        <div style={{ width: '300px', display: 'flex', flexDirection: 'column', gap: '12px', flexShrink: 0 }}>
+        <div className="settings-sidebar" style={{ width: '300px', display: 'flex', flexDirection: 'column', gap: '12px', flexShrink: 0 }}>
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -114,7 +114,7 @@ const SystemSettings: React.FC = () => {
                     <Building2 size={24} color="var(--primary)" /> Core School Details
                   </h2>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                  <div className="settings-grid" style={{ display: 'grid', gap: '24px' }}>
                     <div style={{ gridColumn: '1 / -1' }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
                         <PenTool size={16} /> School Name (Appears on Receipts)
