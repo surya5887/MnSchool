@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Check, Trash2, Edit2, Users } from 'lucide-react';
+import { Plus, Check, Trash2, Edit2, Users, BookOpen, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getClasses, type ClassData, getSequenceIndex, addClass, updateClass, deleteClass } from '../services/classService';
 import { getStaff, type StaffData } from '../services/staffService';
@@ -139,7 +139,17 @@ const Classes: React.FC = () => {
           ) : sortedClasses.length === 0 ? (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No classes found. Add a class to get started.</div>
           ) : (
-            sortedClasses.flatMap(c => {
+            sortedClasses.flatMap((c, classIndex) => {
+              const COLOR_THEMES = [
+                { gradient: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', bg: 'rgba(99, 102, 241, 0.1)', text: '#6366f1' },
+                { gradient: 'linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%)', bg: 'rgba(59, 130, 246, 0.1)', text: '#3b82f6' },
+                { gradient: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)', bg: 'rgba(245, 158, 11, 0.1)', text: '#d97706' },
+                { gradient: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)', bg: 'rgba(236, 72, 153, 0.1)', text: '#db2777' },
+                { gradient: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)', bg: 'rgba(16, 185, 129, 0.1)', text: '#059669' },
+              ];
+              const theme = COLOR_THEMES[classIndex % COLOR_THEMES.length];
+              const baseFee = c.fees && c.fees.length > 0 ? c.fees[0].amount : (c.monthlyBaseFee || 0);
+
               // Ensure there's at least one section to map over, fallback to 'A' if empty
               const sections = c.sections && c.sections.length > 0 ? c.sections : ['A'];
               return sections.map(section => {
@@ -147,59 +157,88 @@ const Classes: React.FC = () => {
                 return (
                   <motion.div
                     key={`${c.id}-${section}`}
-                    className="glass-panel"
                     whileHover={{ scale: 1.02, translateY: -4 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate(`/classes/${c.id}`)}
                     style={{ 
-                      padding: '24px', 
                       display: 'flex', 
                       flexDirection: 'column', 
-                      gap: '20px', 
                       cursor: 'pointer',
-                      borderTop: '4px solid var(--primary)',
-                      borderRadius: '20px',
-                      aspectRatio: '1 / 0.9'
+                      borderRadius: '24px',
+                      overflow: 'hidden',
+                      background: 'rgba(255, 255, 255, 0.7)',
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+                      border: '1px solid rgba(255,255,255,0.6)',
+                      backdropFilter: 'blur(10px)'
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <h2 style={{ fontSize: '1.8rem', margin: '0 0 8px 0', color: 'var(--primary)' }}>{c.className}</h2>
-                        <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', padding: '6px 12px', fontSize: '0.85rem' }}>Section {section}</span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <button 
-                          onClick={(e) => handleOpenEdit(e, c)} 
-                          style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex' }}
-                          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)'}
-                          onMouseOut={(e) => e.currentTarget.style.background = 'none'}
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button 
-                          onClick={(e) => c.id && handleDeleteClass(e, c.id)} 
-                          style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex' }}
-                          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
-                          onMouseOut={(e) => e.currentTarget.style.background = 'none'}
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                    {/* Beautiful Gradient Header */}
+                    <div style={{ background: theme.gradient, padding: '24px', color: 'white', position: 'relative' }}>
+                      <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                        <div>
+                          <div style={{ fontSize: '0.85rem', opacity: 0.9, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 600 }}>Section {section}</div>
+                          <h2 style={{ fontSize: '2.2rem', margin: 0, fontWeight: 800, textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{c.className}</h2>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleOpenEdit(e, c); }}
+                            style={{ color: 'white', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex', backdropFilter: 'blur(4px)' }}
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); c.id && handleDeleteClass(e, c.id); }}
+                            style={{ color: 'white', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex', backdropFilter: 'blur(4px)' }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    <div style={{ flex: 1 }}></div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(255,255,255,0.5)', padding: '16px', borderRadius: '16px' }}>
+                    {/* Card Content */}
+                    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', flex: 1 }}>
+                      
+                      {/* Subjects */}
                       <div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px' }}>Students</div>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Users size={18} color="var(--primary)" /> {studentCount}
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase' }}>
+                          <BookOpen size={14} /> Subjects
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                          {c.subjects && c.subjects.length > 0 ? c.subjects.map((sub, i) => (
+                            <span key={i} style={{ background: theme.bg, color: theme.text, padding: '4px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600 }}>{sub}</span>
+                          )) : <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>No subjects added</span>}
                         </div>
                       </div>
-                      <div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px' }}>Class Teacher</div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {c.classTeacher || 'Not Assigned'}
+
+                      <div style={{ flex: 1 }}></div>
+
+                      {/* Stats Grid */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>Base Fee</div>
+                          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>?{baseFee}</div>
+                        </div>
+                        <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>Students</div>
+                          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Users size={16} color={theme.text} /> {studentCount}
+                          </div>
+                        </div>
+
+                        {/* Teacher */}
+                        <div style={{ gridColumn: '1 / -1', background: theme.bg, padding: '12px 16px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: theme.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
+                            <User size={16} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.7rem', color: theme.text, fontWeight: 700, textTransform: 'uppercase', opacity: 0.8 }}>Class Teacher</div>
+                            <div style={{ fontSize: '0.95rem', fontWeight: 700, color: theme.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {c.classTeacher || 'Not Assigned'}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
