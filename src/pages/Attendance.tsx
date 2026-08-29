@@ -16,7 +16,7 @@ const Attendance: React.FC = () => {
   
   const [students, setStudents] = useState<StudentData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
-  const [loading, setLoading] = useState(true);
+  
 
   // Map of studentId -> AttendanceStatus ('Present' | 'Absent' | 'Unmarked')
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
@@ -50,7 +50,7 @@ const Attendance: React.FC = () => {
       } catch (error) {
         console.error("Error fetching data", error);
       } finally {
-        setLoading(false);
+        
       }
     };
     fetchInitialData();
@@ -66,7 +66,7 @@ const Attendance: React.FC = () => {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       if (!selectedClass || !selectedSection || !date) return;
-      setLoading(true);
+      
       const activeSession = localStorage.getItem('activeSession') || '2026-2027';
       try {
         const record = await getAttendance(date, selectedClass, selectedSection, activeSession);
@@ -200,95 +200,83 @@ const Attendance: React.FC = () => {
         </div>
       </div>
 
-      <div className="glass-panel" style={{ padding: 0, overflow: 'hidden', marginBottom: '24px' }}>
-
-        <div className="glass-table-container">
-          <table>
-            <thead>
-              <tr>
-                <th style={{ width: '80px' }}>Roll No.</th>
-                <th>Student Details</th>
-                <th>Mark Attendance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activeStudents.map(student => {
-                if (!student.id) return null;
-                const status = attendance[student.id] || 'Unmarked';
-                
-                return (
-                  <tr key={student.id} style={{ 
-                    background: status === 'Absent' ? 'rgba(239, 68, 68, 0.05)' : status === 'Present' ? 'rgba(16, 185, 129, 0.05)' : 'transparent', 
-                    transition: '0.2s' 
-                  }}>
-                    <td style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{student.rollNumber || '-'}</td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random&size=40`} alt={student.firstName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{student.firstName} {student.lastName}</div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Father: {student.parentName || student.parentPhone}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button 
-                          onClick={() => setStudentStatus(student.id!, 'Unmarked')}
-                          style={{ 
-                            display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', 
-                            background: status === 'Unmarked' ? 'var(--glass-border)' : 'transparent',
-                            color: status === 'Unmarked' ? 'var(--text-main)' : 'var(--text-muted)',
-                            border: `1px solid var(--glass-border)`, cursor: 'pointer', fontSize: '0.9rem'
-                          }}
-                        >
-                          <Circle size={14} /> Unmarked
-                        </button>
-                        <button 
-                          onClick={() => setStudentStatus(student.id!, 'Present')}
-                          style={{ 
-                            display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', 
-                            background: status === 'Present' ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
-                            color: status === 'Present' ? 'var(--success)' : 'var(--text-muted)',
-                            border: `1px solid ${status === 'Present' ? 'rgba(16, 185, 129, 0.3)' : 'var(--glass-border)'}`, 
-                            cursor: 'pointer', fontSize: '0.9rem'
-                          }}
-                        >
-                          <CheckCircle size={14} /> Present
-                        </button>
-                        <button 
-                          onClick={() => setStudentStatus(student.id!, 'Absent')}
-                          style={{ 
-                            display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', 
-                            background: status === 'Absent' ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
-                            color: status === 'Absent' ? 'var(--danger)' : 'var(--text-muted)',
-                            border: `1px solid ${status === 'Absent' ? 'rgba(239, 68, 68, 0.3)' : 'var(--glass-border)'}`, 
-                            cursor: 'pointer', fontSize: '0.9rem'
-                          }}
-                        >
-                          <XCircle size={14} /> Absent
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {loading && (
-                <tr>
-                  <td colSpan={3} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
-                </tr>
-              )}
-              {!loading && activeStudents.length === 0 && (
-                <tr>
-                  <td colSpan={3} style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>No students found for the selected class/section.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            {activeStudents.length === 0 ? (
+        <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', marginBottom: '24px' }}>
+          No students found for the selected class/section.
         </div>
-      </div>
-      
-      
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+          {activeStudents.map(student => {
+            if (!student.id) return null;
+            const status = attendance[student.id] || 'Unmarked';
+            
+            return (
+              <div key={student.id} className="glass-panel" style={{ 
+                padding: '20px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '16px',
+                borderLeft: `6px solid ${status === 'Present' ? 'var(--success)' : status === 'Absent' ? 'var(--danger)' : 'var(--text-muted)'}`
+              }}>
+                 {/* Top row: Profile */}
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random&size=50`} alt={student.firstName} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--glass-border)' }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{student.firstName} {student.lastName}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Roll No: {student.rollNumber || '-'} | Father: {student.parentName || 'N/A'}</div>
+                    </div>
+                 </div>
+                 
+                 {/* Bottom row: Action Buttons */}
+                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                    <button 
+                      onClick={() => setStudentStatus(student.id, 'Unmarked')} 
+                      style={{ 
+                        padding: '12px 4px', 
+                        borderRadius: '12px', 
+                        border: `1px solid ${status === 'Unmarked' ? 'transparent' : 'var(--glass-border)'}`, 
+                        background: status === 'Unmarked' ? 'var(--text-muted)' : 'var(--glass-bg)', 
+                        color: status === 'Unmarked' ? 'white' : 'var(--text-color)', 
+                        fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: '0.2s',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
+                      }}>
+                      <Circle size={16} /> Unmarked
+                    </button>
+                    
+                    <button 
+                      onClick={() => setStudentStatus(student.id, 'Present')} 
+                      style={{ 
+                        padding: '12px 4px', 
+                        borderRadius: '12px', 
+                        border: `1px solid ${status === 'Present' ? 'transparent' : 'var(--glass-border)'}`, 
+                        background: status === 'Present' ? 'var(--success)' : 'var(--glass-bg)', 
+                        color: status === 'Present' ? 'white' : 'var(--success)', 
+                        fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: '0.2s',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
+                      }}>
+                      <CheckCircle size={16} /> Present
+                    </button>
+                    
+                    <button 
+                      onClick={() => setStudentStatus(student.id, 'Absent')} 
+                      style={{ 
+                        padding: '12px 4px', 
+                        borderRadius: '12px', 
+                        border: `1px solid ${status === 'Absent' ? 'transparent' : 'var(--glass-border)'}`, 
+                        background: status === 'Absent' ? 'var(--danger)' : 'var(--glass-bg)', 
+                        color: status === 'Absent' ? 'white' : 'var(--danger)', 
+                        fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: '0.2s',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
+                      }}>
+                      <XCircle size={16} /> Absent
+                    </button>
+                 </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--primary)' }}>
         <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', fontSize: '1.2rem' }}>Attendance Summary</h3>
         <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
@@ -310,7 +298,7 @@ const Attendance: React.FC = () => {
           </div>
         </div>
         
-        <button className="btn-primary" style={{ padding: '16px', width: '100%', justifyContent: 'center', fontSize: '1.1rem', background: 'var(--primary)', border: 'none' }} onClick={() => saveAttendanceToDB(attendance)} disabled={saving}>
+        <button className="btn-primary" style={{ padding: '16px', width: '100%', justifyContent: 'center', fontSize: '1.1rem' }} onClick={() => saveAttendanceToDB(attendance)} disabled={saving}>
           <Save size={20} /> {saving ? 'Saving...' : 'Submit & Save Attendance'}
         </button>
       </div>
