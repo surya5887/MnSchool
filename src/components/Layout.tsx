@@ -132,31 +132,31 @@ const Layout: React.FC = () => {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto' }} onClick={() => setMobileMenuOpen(false)}>
           
           {['Principal', 'Manager', 'Super Admin', 'Teacher'].includes(role) && (
-            <NavLink to="/dashboard" style={navLinkStyle}><LayoutDashboard size={20} /> Dashboard</NavLink>
+            <NavLink to="/dashboard" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><LayoutDashboard size={20} /> Dashboard</NavLink>
           )}
           
           {['Principal', 'Manager', 'Super Admin'].includes(role) && (
             <>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
-              <NavLink to="/admission" style={navLinkStyle}><UserPlus size={20} /> New Admission</NavLink>
-              <NavLink to="/students" style={navLinkStyle}><Users size={20} /> Students Directory</NavLink>
-              <NavLink to="/staff" style={navLinkStyle}><GraduationCap size={20} /> Teachers</NavLink>
-              <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
+              <NavLink to="/admission" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><UserPlus size={20} /> New Admission</NavLink>
+              <NavLink to="/students" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Users size={20} /> Students Directory</NavLink>
+              <NavLink to="/staff" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><GraduationCap size={20} /> Teachers</NavLink>
+              <NavLink to="/attendance" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><CalendarCheck size={20} /> Daily Attendance</NavLink>
               
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Academics & Operations</div>
-              <NavLink to="/classes" style={navLinkStyle}><BookOpen size={20} /> Classes & Sections</NavLink>
-              <NavLink to="/exam" style={navLinkStyle}><FileText size={20} /> Exams & Results</NavLink>
-              <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
-              <NavLink to="/transport" style={navLinkStyle}><Bus size={20} /> Transport Fleet</NavLink>
-              <NavLink to="/library" style={navLinkStyle}><LibraryIcon size={20} /> Library Management</NavLink>
+              <NavLink to="/classes" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><BookOpen size={20} /> Classes & Sections</NavLink>
+              <NavLink to="/exam" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><FileText size={20} /> Exams & Results</NavLink>
+              <NavLink to="/timetable" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Clock size={20} /> Class Timetable</NavLink>
+              <NavLink to="/transport" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Bus size={20} /> Transport Fleet</NavLink>
+              <NavLink to="/library" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><LibraryIcon size={20} /> Library Management</NavLink>
 
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
-              <NavLink to="/ledger" style={navLinkStyle}><BookOpen size={20} /> Master Ledger</NavLink>
+              <NavLink to="/ledger" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><BookOpen size={20} /> Master Ledger</NavLink>
               
               {role === 'Super Admin' && (
                 <>
                   <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Security & Config</div>
-                  <NavLink to="/audit" style={navLinkStyle}><ShieldAlert size={20} /> Audit Logs</NavLink>
+                  <NavLink to="/audit" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><ShieldAlert size={20} /> Audit Logs</NavLink>
                 </>
               )}
             </>
@@ -165,26 +165,26 @@ const Layout: React.FC = () => {
           {role === 'Teacher' && (
             <>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>My Work</div>
-              <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> Daily Attendance</NavLink>
-              <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
-              <NavLink to="/students" style={navLinkStyle}><Users size={20} /> Students Directory</NavLink>
-              <NavLink to={`/staff/${authUser.id}`} style={navLinkStyle}><User size={20} /> My Profile & Ledger</NavLink>
+              <NavLink to="/attendance" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><CalendarCheck size={20} /> Daily Attendance</NavLink>
+              <NavLink to="/timetable" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Clock size={20} /> Class Timetable</NavLink>
+              <NavLink to="/students" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Users size={20} /> Students Directory</NavLink>
+              <NavLink to={`/staff/${authUser.id}`} style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><User size={20} /> My Profile & Ledger</NavLink>
             </>
           )}
 
           {role === 'Student' && (
             <>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>My Dashboard</div>
-              <NavLink to={`/student/${authUser.id}`} style={navLinkStyle}><User size={20} /> My Profile & Ledger</NavLink>
-              <NavLink to="/attendance" style={navLinkStyle}><CalendarCheck size={20} /> My Attendance</NavLink>
-              <NavLink to="/timetable" style={navLinkStyle}><Clock size={20} /> Class Timetable</NavLink>
+              <NavLink to={`/student/${authUser.id}`} style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><User size={20} /> My Profile & Ledger</NavLink>
+              <NavLink to="/attendance" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><CalendarCheck size={20} /> My Attendance</NavLink>
+              <NavLink to="/timetable" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Clock size={20} /> Class Timetable</NavLink>
             </>
           )}
         </nav>
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }} onClick={() => setMobileMenuOpen(false)}>
           {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-            <NavLink to="/settings" style={navLinkStyle}><Settings size={20} /> System Settings</NavLink>
+            <NavLink to="/settings" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Settings size={20} /> System Settings</NavLink>
           )}
           <button onClick={handleLogout} className="btn-secondary" style={{ width: '100%', justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--danger)' }}>
             <LogOut size={18} /> Logout
