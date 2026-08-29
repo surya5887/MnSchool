@@ -138,7 +138,7 @@ const Attendance: React.FC = () => {
   if (role === 'Student') {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="flex-responsive" style={{ marginBottom: "32px" }}>
           <div>
             <h1 className="page-title"><CalendarCheck size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> My Attendance</h1>
             <p className="page-subtitle">View your daily attendance history.</p>
@@ -153,7 +153,7 @@ const Attendance: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div className="flex-responsive" style={{ marginBottom: "32px" }}>
         <div>
           <h1 className="page-title"><CalendarCheck size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Smart Attendance System</h1>
           <p className="page-subtitle">Mark daily attendance. Auto-saves to database instantly.</p>
@@ -166,38 +166,42 @@ const Attendance: React.FC = () => {
         </div>
       </div>
 
-      <div className="glass-panel" style={{ padding: '20px 24px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class</label>
-          <select className="glass-input" value={selectedClass} onChange={handleClassChange}>
-             {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
-          </select>
-        </div>
-        <div style={{ flex: 1, minWidth: '100px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section</label>
-          <select className="glass-input" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
-             {uniqueClasses.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Date</label>
-          <input type="date" className="glass-input" value={date} onChange={(e) => setDate(e.target.value)} />
-        </div>
-        <div style={{ position: 'relative', flex: 2, minWidth: '200px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'transparent' }}>Search</label>
-          <Search size={18} style={{ position: 'absolute', left: '16px', top: '44px', color: 'var(--text-muted)' }} />
-          <input 
-            type="text" 
-            placeholder="Search student name..." 
-            value={searchQuery} 
-            onChange={e => setSearchQuery(e.target.value)} 
-            className="glass-input"
-            style={{ paddingLeft: '48px', width: '100%' }} 
-          />
+      
+      <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
+        <div className="dashboard-grid">
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Select Class</label>
+            <select className="glass-input" style={{ width: '100%' }} value={selectedClass} onChange={handleClassChange}>
+               {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Section</label>
+            <select className="glass-input" style={{ width: '100%' }} value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
+               {uniqueClasses.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Date</label>
+            <input type="date" className="glass-input" style={{ width: '100%' }} value={date} onChange={(e) => setDate(e.target.value)} />
+          </div>
+          <div style={{ position: 'relative' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Search Student</label>
+            <Search size={18} style={{ position: 'absolute', left: '16px', top: '42px', color: 'var(--text-muted)' }} />
+            <input 
+              type="text" 
+              placeholder="Search name..." 
+              value={searchQuery} 
+              onChange={e => setSearchQuery(e.target.value)} 
+              className="glass-input"
+              style={{ paddingLeft: '44px', width: '100%' }} 
+            />
+          </div>
         </div>
       </div>
 
       <div className="glass-panel" style={{ padding: 0, overflow: 'hidden', marginBottom: '24px' }}>
+
         <div className="glass-table-container">
           <table>
             <thead>
@@ -284,18 +288,34 @@ const Attendance: React.FC = () => {
         </div>
       </div>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--glass-bg)', padding: '16px 24px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-        <div style={{ display: 'flex', gap: '24px' }}>
-          <div>Total Students: <strong style={{ color: 'var(--text-main)' }}>{activeStudents.length}</strong></div>
-          <div>Present: <strong style={{ color: 'var(--success)' }}>{presentCount}</strong></div>
-          <div>Absent: <strong style={{ color: 'var(--danger)' }}>{absentCount}</strong></div>
-          <div>Unmarked: <strong style={{ color: 'var(--text-muted)' }}>{unmarkedCount}</strong></div>
+      
+      <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--primary)' }}>
+        <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', fontSize: '1.2rem' }}>Attendance Summary</h3>
+        <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
+          <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Total Students</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{activeStudents.length}</div>
+          </div>
+          <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{presentCount}</div>
+          </div>
+          <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#ef4444', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Absent</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{absentCount}</div>
+          </div>
+          <div style={{ background: 'rgba(107, 114, 128, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(107,114,128,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#6b7280', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Unmarked</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6b7280' }}>{unmarkedCount}</div>
+          </div>
         </div>
-        <button className="btn-primary" style={{ padding: '12px 32px' }} onClick={() => saveAttendanceToDB(attendance)} disabled={saving}>
-          <Save size={18} /> {saving ? 'Saving...' : 'Submit / Save Attendance'}
+        
+        <button className="btn-primary" style={{ padding: '16px', width: '100%', justifyContent: 'center', fontSize: '1.1rem', background: 'var(--primary)', border: 'none' }} onClick={() => saveAttendanceToDB(attendance)} disabled={saving}>
+          <Save size={20} /> {saving ? 'Saving...' : 'Submit & Save Attendance'}
         </button>
       </div>
     </motion.div>
+
   );
 };
 
