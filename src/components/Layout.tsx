@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
 import { migrateMissingSessions } from '../services/migrationService';
+import { getAuditLogs } from '../services/auditService';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +19,57 @@ const Layout: React.FC = () => {
   }, [location.pathname]);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
   const [billingNotification, setBillingNotification] = useState('');
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchNotifications = async () => {
+    try {
+      let notifs = [];
+      
+      // Check for Drafts
+      const draftStr = localStorage.getItem('admission_drafts');
+      if (draftStr) {
+        const draftsObj = JSON.parse(draftStr);
+        const draftsCount = Object.keys(draftsObj).length;
+        if (draftsCount > 0) {
+          notifs.push({
+            id: 'draft',
+            title: 'Draft Forms Pending',
+            message: `You have ${draftsCount} admission form(s) saved in draft. Don't forget to complete them.`,
+            time: new Date().toISOString(),
+            type: 'warning'
+          });
+        }
+      }
+
+      // Fetch Audit Logs (Recent 10)
+      if (['Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
+        const logs = await getAuditLogs();
+        const recentLogs = logs.slice(0, 10).map(log => ({
+          id: log.id,
+          title: log.action,
+          message: `By ${log.user} (${log.role})`,
+          time: log.time,
+          type: log.status === 'Success' ? 'info' : 'error'
+        }));
+        notifs = [...notifs, ...recentLogs];
+      }
+
+      setNotifications(notifs);
+      setUnreadCount(notifs.length); // simple counter for UI
+    } catch (err) {
+      console.error("Failed to load notifications", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000); // refresh every minute
+    return () => clearInterval(interval);
+  }, []);
+
   const [authUser] = useState<any>(
     JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}')
   );
@@ -207,10 +260,71 @@ const Layout: React.FC = () => {
               <LiveClock />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <button className="glass-panel" style={{ padding: '8px', borderRadius: '50%', display: 'flex', border: 'none', cursor: 'pointer', position: 'relative' }}>
-              <Bell size={20} color="var(--text-main)" />
-              <div style={{ position: 'absolute', top: '0', right: '0', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--danger)', border: '2px solid white' }}></div>
-            </button>
+            <div style={{ position: 'relative' }}>
+              <button 
+                className="glass-panel" 
+                onClick={() => { setShowNotifications(!showNotifications); if(!showNotifications) fetchNotifications(); }}
+                style={{ padding: '10px', borderRadius: '50%', display: 'flex', border: 'none', cursor: 'pointer', position: 'relative', background: showNotifications ? 'rgba(99, 102, 241, 0.1)' : 'var(--glass-bg)' }}
+              >
+                <Bell size={20} color={showNotifications ? "var(--primary)" : "var(--text-main)"} />
+                {unreadCount > 0 && (
+                  <div style={{ position: 'absolute', top: '-2px', right: '-2px', width: '18px', height: '18px', borderRadius: '50%', background: 'var(--danger)', border: '2px solid white', color: 'white', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </div>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <>
+                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 }} onClick={() => setShowNotifications(false)}></div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }} 
+                      animate={{ opacity: 1, y: 0, scale: 1 }} 
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      style={{ 
+                        position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '340px', 
+                        background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(20px)',
+                        borderRadius: '20px', boxShadow: '0 10px 40px rgba(0,0,0,0.15)', border: '1px solid var(--glass-border)',
+                        zIndex: 999, overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '80vh'
+                      }}
+                    >
+                      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(99, 102, 241, 0.05)' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}><Bell size={18} color="var(--primary)"/> Notifications</h3>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setUnreadCount(0)}>Mark all read</span>
+                      </div>
+                      <div style={{ overflowY: 'auto', flex: 1, padding: '8px 0' }}>
+                        {notifications.length === 0 ? (
+                          <div style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                            <div style={{ background: 'var(--glass-bg)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                              <Bell size={24} color="var(--text-muted)" opacity={0.5} />
+                            </div>
+                            No new notifications
+                          </div>
+                        ) : (
+                          notifications.map((notif, idx) => (
+                            <div key={idx} style={{ padding: '12px 20px', borderBottom: idx < notifications.length - 1 ? '1px solid var(--glass-border)' : 'none', display: 'flex', gap: '12px', transition: 'background 0.2s', cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.background = 'var(--glass-bg)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'} onClick={() => { if(notif.id === 'draft') { navigate('/new-admission'); setShowNotifications(false); } }}>
+                              <div style={{ marginTop: '2px' }}>
+                                {notif.type === 'warning' && <AlertCircle size={18} color="var(--warning)" />}
+                                {notif.type === 'error' && <AlertCircle size={18} color="var(--danger)" />}
+                                {notif.type === 'info' && <CheckCircle2 size={18} color="var(--success)" />}
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>{notif.title}</div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>{notif.message}</div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '6px', opacity: 0.7 }}>
+                                  {new Date(notif.time).toLocaleDateString()} at {new Date(notif.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div className="hide-on-mobile" style={{ textAlign: "right" }}>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{authUser.name || 'User'}</div>

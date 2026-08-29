@@ -78,7 +78,7 @@ const Attendance: React.FC = () => {
       } catch (error) {
         console.error("Error fetching attendance record", error);
       } finally {
-        setLoading(false);
+        
       }
     };
     fetchAttendanceData();
