@@ -4,6 +4,7 @@ import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen
 import { LiveClock } from './LiveClock';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
+import ProfileSidebar from './ProfileSidebar';
 import { runAutomatedBilling } from '../services/billingService';
 import { migrateMissingSessions } from '../services/migrationService';
 import { getAuditLogs, clearSpamLogs, autoLog } from '../services/auditService';
@@ -24,6 +25,7 @@ const Layout: React.FC = () => {
   const [billingNotification, setBillingNotification] = useState('');
 
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileSidebar, setShowProfileSidebar] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -384,13 +386,13 @@ const Layout: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div className="hide-on-mobile" style={{ textAlign: "right" }}>
-                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{authUser.name || 'User'}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{authUser.role || 'Role'}</div>
+            <div onClick={() => setShowProfileSidebar(true)} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '4px 8px', borderRadius: '12px', transition: 'background 0.2s' }} className="hover-highlight">
+                <div className="hide-on-mobile" style={{ textAlign: "right" }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{authUser.name || 'User'}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{authUser.role || 'Role'}</div>
+                </div>
+                <img src={authUser.photoUrl || `https://ui-avatars.com/api/?name=${authUser.name || 'U'}&background=6366f1&color=fff`} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
               </div>
-              <img src={`https://ui-avatars.com/api/?name=${authUser.name || 'U'}&background=6366f1&color=fff`} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
-            </div>
           </div>
         </header>
 
@@ -419,6 +421,7 @@ const Layout: React.FC = () => {
         )}
       </AnimatePresence>
 
+      <ProfileSidebar isOpen={showProfileSidebar} onClose={() => setShowProfileSidebar(false)} authUser={authUser} />
     </div>
   );
 };

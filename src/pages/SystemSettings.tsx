@@ -49,7 +49,7 @@ const SystemSettings: React.FC = () => {
   const tabs = [
     { id: 'core', label: 'Core Setup', desc: 'School details & academic session', icon: <Building2 size={20} /> },
     { id: 'rbac', label: 'Roles & Permissions', desc: 'System access & restrictions', icon: <ShieldCheck size={20} /> },
-    { id: 'credentials', label: authUser.role === 'Super Admin' ? 'System Credentials' : 'My Profile', desc: 'Manage profile and access', icon: <Lock size={20} /> }
+    ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', desc: 'Manage email & passwords', icon: <Lock size={20} /> }] : [])
   ];
 
   return (
@@ -196,16 +196,16 @@ const SystemSettings: React.FC = () => {
               </motion.div>
             )}
 
-            {activeTab === 'credentials' && (
+            {activeTab === 'credentials' && authUser.role === 'Super Admin' && (
               <motion.div key="credentials" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
                 <div className="glass-panel" style={{ padding: '32px', borderRadius: '24px' }}>
                   <h2 style={{ margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Lock size={24} color="var(--primary)" /> {authUser.role === 'Super Admin' ? 'System Credentials' : 'My Profile'}
+                    <Lock size={24} color="var(--primary)" /> System Credentials
                   </h2>
                   <p style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '0.95rem' }}>Manage secure access for top-level administrators. Passwords are securely hashed with bcrypt encryption.</p>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {admins.filter(admin => authUser.role === 'Super Admin' ? true : admin.id === authUser.id).map(admin => (
+                    {admins.map(admin => (
                       <div key={admin.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}>
                         
                         {editingAdmin === admin.id ? (
