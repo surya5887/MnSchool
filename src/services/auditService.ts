@@ -29,6 +29,20 @@ export const logAction = async (user: string, role: string, action: string, stat
   }
 };
 
+import { deleteDoc, doc } from 'firebase/firestore';
+
+export const clearSpamLogs = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, AUDIT_COLLECTION));
+    for (const d of querySnapshot.docs) {
+      if (d.data().action === 'Updated Core Settings' || d.data().action.includes('Fee Collected') || d.data().action.includes('Expense Logged')) {
+        await deleteDoc(doc(db, AUDIT_COLLECTION, d.id));
+      }
+    }
+    console.log('Spam cleared');
+  } catch (e) { console.error(e); }
+};
+
 export const getAuditLogs = async () => {
   try {
     // Note: requires an index on 'time' if we use orderBy, but since it's a small app without indexes yet, we'll fetch and sort.

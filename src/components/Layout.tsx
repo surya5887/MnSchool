@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
 import { migrateMissingSessions } from '../services/migrationService';
-import { getAuditLogs } from '../services/auditService';
+import { getAuditLogs, clearSpamLogs } from '../services/auditService';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Layout: React.FC = () => {
@@ -15,6 +15,9 @@ const Layout: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+      Notification.requestPermission();
+    }
     setMobileMenuOpen(false);
   }, [location.pathname]);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
@@ -24,7 +27,7 @@ const Layout: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const fetchNotifications = async () => {
+    const fetchNotifications = async () => {
     try {
       let notifs = [];
       
@@ -46,7 +49,13 @@ const Layout: React.FC = () => {
 
       // Fetch Audit Logs (Recent 10)
       if (['Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
-        const logs = await getAuditLogs();
+        let logs = await getAuditLogs();
+        
+        // ROLE-BASED FILTERING: Hide Super Admin activities from everyone else
+        if (authUser.role !== 'Super Admin') {
+          logs = logs.filter(log => log.role !== 'Super Admin');
+        }
+
         const recentLogs = logs.slice(0, 10).map(log => ({
           id: log.id,
           title: log.action,
@@ -55,6 +64,38 @@ const Layout: React.FC = () => {
           type: log.status === 'Success' ? 'info' : 'error'
         }));
         notifs = [...notifs, ...recentLogs];
+
+        // OS PUSH NOTIFICATIONS LOGIC
+        if (Notification.permission === 'granted' && logs.length > 0) {
+          const lastNotifiedTimeStr = localStorage.getItem('last_os_notification_time') || '0';
+          const lastNotifiedTime = new Date(lastNotifiedTimeStr).getTime();
+          let latestLogTime = lastNotifiedTime;
+
+          logs.forEach(log => {
+            const logTime = new Date(log.time).getTime();
+            if (logTime > lastNotifiedTime) {
+              // Send native push notification
+              new Notification("MN Public School Alert", {
+                body: `${log.action} by ${log.user} (${log.role})`,
+                icon: '/images/logo_circular.png' // assuming this exists based on the header code
+              });
+              if (logTime > latestLogTime) {
+                latestLogTime = logTime;
+              }
+            }
+          });
+
+          // Update the last notified time if we sent new ones
+          if (latestLogTime > lastNotifiedTime) {
+            localStorage.setItem('last_os_notification_time', new Date(latestLogTime).toISOString());
+          }
+        } else if (Notification.permission !== 'denied') {
+           // If they haven't explicitly denied, request on mount will handle it, 
+           // but we can ensure first run sets the baseline time so we don't spam 50 old logs when they accept.
+           if (!localStorage.getItem('last_os_notification_time') && logs.length > 0) {
+              localStorage.setItem('last_os_notification_time', new Date(logs[0].time).toISOString());
+           }
+        }
       }
 
       setNotifications(notifs);
@@ -65,6 +106,10 @@ const Layout: React.FC = () => {
   };
 
   useEffect(() => {
+    // Temp cleanup
+    if (!localStorage.getItem('spam_cleared')) {
+      clearSpamLogs().then(() => localStorage.setItem('spam_cleared', 'true'));
+    }
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000); // refresh every minute
     return () => clearInterval(interval);
