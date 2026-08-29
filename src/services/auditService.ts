@@ -83,3 +83,14 @@ export const autoLog = async (action: string, status: 'Success' | 'Failed' = 'Su
     console.error("Auto log failed", e);
   }
 };
+
+export const removeAuditTrailActivatedLog = async () => {
+  try {
+    const snap = await getDocs(collection(db, AUDIT_COLLECTION));
+    for (const d of snap.docs) {
+      if (d.data().action && d.data().action.includes('Audit Trail Activated')) {
+        await deleteDoc(doc(db, AUDIT_COLLECTION, d.id));
+      }
+    }
+  } catch (e) {}
+};

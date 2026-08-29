@@ -7,7 +7,7 @@ import { getSchoolSettings } from '../services/settingsService';
 import ProfileSidebar from './ProfileSidebar';
 import { runAutomatedBilling } from '../services/billingService';
 import { migrateMissingSessions } from '../services/migrationService';
-import { getAuditLogs, clearSpamLogs, autoLog } from '../services/auditService';
+import { getAuditLogs, clearSpamLogs, autoLog, removeAuditTrailActivatedLog } from '../services/auditService';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Layout: React.FC = () => {
@@ -107,7 +107,11 @@ const Layout: React.FC = () => {
       }
 
       setNotifications(notifs);
-      setUnreadCount(notifs.length); // simple counter for UI
+      
+        const lastRead = parseInt(localStorage.getItem('lastReadTimestamp_' + authUser.id) || '0');
+        const unread = notifs.filter(n => new Date(n.time).getTime() > lastRead).length;
+        setUnreadCount(unread);
+
     } catch (err) {
       console.error("Failed to load notifications", err);
     }
@@ -117,6 +121,7 @@ const Layout: React.FC = () => {
     // Temp cleanup
     if (!localStorage.getItem('spam_cleared')) {
       clearSpamLogs().then(() => localStorage.setItem('spam_cleared', 'true'));
+      removeAuditTrailActivatedLog();
     }
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000); // refresh every minute
@@ -327,7 +332,7 @@ const Layout: React.FC = () => {
                 onClick={() => { setShowNotifications(!showNotifications); if(!showNotifications) fetchNotifications(); }}
                 style={{ padding: '10px', borderRadius: '50%', display: 'flex', border: 'none', cursor: 'pointer', position: 'relative', background: showNotifications ? 'rgba(99, 102, 241, 0.1)' : 'var(--glass-bg)' }}
               >
-                <Bell size={20} color={showNotifications ? "var(--primary)" : "var(--text-main)"} />
+                <Bell size={20} color={showNotifications ? "var(--primary-color)" : "var(--text-main)"} />
                 {unreadCount > 0 && (
                   <div style={{ position: 'absolute', top: '-2px', right: '-2px', width: '18px', height: '18px', borderRadius: '50%', background: 'var(--danger)', border: '2px solid white', color: 'white', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                     {unreadCount > 9 ? '9+' : unreadCount}
@@ -351,8 +356,8 @@ const Layout: React.FC = () => {
                       }}
                     >
                       <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(99, 102, 241, 0.05)' }}>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}><Bell size={18} color="var(--primary)"/> Notifications</h3>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setUnreadCount(0)}>Mark all read</span>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}><Bell size={18} color="var(--primary-color)"/> Notifications</h3>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 600, cursor: 'pointer' }} onClick={() => { localStorage.setItem('lastReadTimestamp_' + authUser.id, Date.now().toString()); setUnreadCount(0); }}>Mark all read</span>
                       </div>
                       <div style={{ overflowY: 'auto', flex: 1, padding: '8px 0' }}>
                         {notifications.length === 0 ? (
