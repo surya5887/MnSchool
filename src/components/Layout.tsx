@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
 import { runAutomatedBilling } from '../services/billingService';
 import { migrateMissingSessions } from '../services/migrationService';
-import { getAuditLogs, clearSpamLogs } from '../services/auditService';
+import { getAuditLogs, clearSpamLogs, autoLog } from '../services/auditService';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Layout: React.FC = () => {
@@ -54,6 +54,12 @@ const Layout: React.FC = () => {
         // ROLE-BASED FILTERING: Hide Super Admin activities from everyone else
         if (authUser.role !== 'Super Admin') {
           logs = logs.filter(log => log.role !== 'Super Admin');
+        }
+
+        // EXCLUDE Auth (login/logout) from bell notifications
+        logs = logs.filter(log => !log.action.toLowerCase().includes('logged'));
+        // --- dummy block for brace matching ---
+        if(false){
         }
 
         const recentLogs = logs.slice(0, 10).map(log => ({
@@ -159,7 +165,8 @@ const Layout: React.FC = () => {
     return () => window.removeEventListener('settingsUpdated', handleSettingsUpdate);
   }, [authUser.role]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await autoLog('User logged out', 'Success');
     localStorage.removeItem('authUser');
     sessionStorage.removeItem('authUser');
     navigate('/login');

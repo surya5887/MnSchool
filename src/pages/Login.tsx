@@ -5,6 +5,7 @@ import { getDocs, collection, query, where, updateDoc } from 'firebase/firestore
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
 import { createDefaultAdminIfNeeded } from '../services/adminService';
+import { autoLog } from '../services/auditService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ const Login: React.FC = () => {
           const isValid = await verifyPassword(password, adminDoc.data().password, adminDoc.ref);
           if (isValid) {
             saveSession({ role: adminDoc.data().role || 'Principal', id: adminDoc.id, name: adminDoc.data().name });
+            await autoLog('User logged in', 'Success');
             navigate('/dashboard');
             return;
           }
@@ -73,6 +75,7 @@ const Login: React.FC = () => {
               name: staffDoc.data().name,
               assignedClass: staffDoc.data().assignedClass || '' 
             });
+            await autoLog('User logged in', 'Success');
             navigate('/dashboard');
             return;
           }
@@ -90,6 +93,7 @@ const Login: React.FC = () => {
               id: studentDoc.id, 
               name: `${studentDoc.data().firstName} ${studentDoc.data().lastName}`
             });
+            await autoLog('User logged in', 'Success');
             navigate(`/student/${studentDoc.id}`);
             return;
           }

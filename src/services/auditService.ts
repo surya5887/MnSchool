@@ -13,6 +13,20 @@ export interface AuditLogData {
   status: 'Success' | 'Failed';
 }
 
+
+let cachedIpInfo = '';
+export const getClientInfo = async () => {
+  if (cachedIpInfo) return cachedIpInfo;
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    cachedIpInfo = `${data.ip} (${data.city || 'Unknown'}, ${data.country_name || 'Location'})`;
+    return cachedIpInfo;
+  } catch (e) {
+    return 'Unknown IP';
+  }
+};
+
 export const logAction = async (user: string, role: string, action: string, status: 'Success' | 'Failed' = 'Success') => {
   try {
     const data: AuditLogData = {
@@ -20,7 +34,7 @@ export const logAction = async (user: string, role: string, action: string, stat
       role,
       action,
       time: new Date().toISOString(),
-      ip: '192.168.1.1', // Mock IP for now
+      ip: await getClientInfo(),
       status
     };
     await addDoc(collection(db, AUDIT_COLLECTION), data as any);

@@ -7,6 +7,7 @@ const AuditLogs: React.FC = () => {
   const [logs, setLogs] = useState<AuditLogData[]>([]);
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
+  const [selectedType, setSelectedType] = useState('');
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -29,10 +30,21 @@ const AuditLogs: React.FC = () => {
 
   const uniqueUsers = Array.from(new Set(logs.map(log => log.user))).filter(Boolean);
 
-  const filteredLogs = logs.filter(log => {
+    const filteredLogs = logs.filter(log => {
     const matchesSearch = log.user.toLowerCase().includes(search.toLowerCase()) || log.action.toLowerCase().includes(search.toLowerCase());
     const matchesUser = selectedUser ? log.user === selectedUser : true;
-    return matchesSearch && matchesUser;
+    
+    let matchesType = true;
+    if (selectedType) {
+      const act = log.action.toLowerCase();
+      if (selectedType === 'Auth') matchesType = act.includes('log');
+      else if (selectedType === 'Student') matchesType = act.includes('student');
+      else if (selectedType === 'Finance') matchesType = act.includes('fee') || act.includes('expense') || act.includes('?');
+      else if (selectedType === 'Staff') matchesType = act.includes('staff') || act.includes('teacher');
+      else if (selectedType === 'System') matchesType = act.includes('settings') || act.includes('audit');
+    }
+
+    return matchesSearch && matchesUser && matchesType;
   });
 
   return (
@@ -42,18 +54,35 @@ const AuditLogs: React.FC = () => {
           <h1 className="page-title"><ShieldAlert size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Audit Trail & Security Logs</h1>
           <p className="page-subtitle">Track every action performed by staff on the platform to ensure 100% transparency.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-          <Filter size={16} color="var(--primary)" />
-          <select 
-            value={selectedUser} 
-            onChange={(e) => setSelectedUser(e.target.value)}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', outline: 'none', fontWeight: 600, cursor: 'pointer' }}
-          >
-            <option value="">All Users</option>
-            {uniqueUsers.map(user => (
-              <option key={user} value={user}>{user}</option>
-            ))}
-          </select>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+            <Filter size={16} color="var(--primary)" />
+            <select 
+              value={selectedType} 
+              onChange={(e) => setSelectedType(e.target.value)}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', outline: 'none', fontWeight: 600, cursor: 'pointer' }}
+            >
+              <option value="">All Activities</option>
+              <option value="Auth">Login / Logout</option>
+              <option value="Student">Admissions & Students</option>
+              <option value="Finance">Finance & Fees</option>
+              <option value="Staff">Staff Management</option>
+              <option value="System">System Settings</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+            <Filter size={16} color="var(--primary)" />
+            <select 
+              value={selectedUser} 
+              onChange={(e) => setSelectedUser(e.target.value)}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', outline: 'none', fontWeight: 600, cursor: 'pointer' }}
+            >
+              <option value="">All Users</option>
+              {uniqueUsers.map(user => (
+                <option key={user} value={user}>{user}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
