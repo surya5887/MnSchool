@@ -165,7 +165,6 @@ const Layout: React.FC = () => {
             cursor: 'pointer',
             padding: '6px',
             borderRadius: '50%',
-            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10000,
