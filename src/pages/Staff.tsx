@@ -22,7 +22,7 @@ const Staff: React.FC = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [docFiles, setDocFiles] = useState<File[]>([]);
 
-  const [selectedStaff, setSelectedStaff] = useState<string[]>([]);
+  
   const [staffToDelete, setStaffToDelete] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
@@ -89,7 +89,7 @@ const Staff: React.FC = () => {
       await Promise.all(staffToDelete.map(id => deleteStaff(id)));
       setIsDeleteModalOpen(false);
       setStaffToDelete([]);
-      setSelectedStaff([]);
+      
       setDeletePassword('');
       setDeleteError('');
       fetchStaff();

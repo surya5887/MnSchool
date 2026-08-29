@@ -15,7 +15,7 @@ const SystemSettings: React.FC = () => {
   const [newSessionInput, setNewSessionInput] = useState('');
   const [admins, setAdmins] = useState<any[]>([]);
   const [editingAdmin, setEditingAdmin] = useState<string | null>(null);
-  const [editAdminData, setEditAdminData] = useState({ email: '', password: '' });
+  const [editAdminData, setEditAdminData] = useState({ name: '', email: '', password: '' });
   
   const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
   
@@ -49,7 +49,7 @@ const SystemSettings: React.FC = () => {
   const tabs = [
     { id: 'core', label: 'Core Setup', desc: 'School details & academic session', icon: <Building2 size={20} /> },
     { id: 'rbac', label: 'Roles & Permissions', desc: 'System access & restrictions', icon: <ShieldCheck size={20} /> },
-    ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', desc: 'Manage email & passwords', icon: <Lock size={20} /> }] : [])
+    { id: 'credentials', label: authUser.role === 'Super Admin' ? 'System Credentials' : 'My Profile', desc: 'Manage profile and access', icon: <Lock size={20} /> }
   ];
 
   return (
@@ -196,16 +196,16 @@ const SystemSettings: React.FC = () => {
               </motion.div>
             )}
 
-            {activeTab === 'credentials' && authUser.role === 'Super Admin' && (
+            {activeTab === 'credentials' && (
               <motion.div key="credentials" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
                 <div className="glass-panel" style={{ padding: '32px', borderRadius: '24px' }}>
                   <h2 style={{ margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Lock size={24} color="var(--primary)" /> System Credentials
+                    <Lock size={24} color="var(--primary)" /> {authUser.role === 'Super Admin' ? 'System Credentials' : 'My Profile'}
                   </h2>
                   <p style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '0.95rem' }}>Manage secure access for top-level administrators. Passwords are securely hashed with bcrypt encryption.</p>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {admins.map(admin => (
+                    {admins.filter(admin => authUser.role === 'Super Admin' ? true : admin.id === authUser.id).map(admin => (
                       <div key={admin.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}>
                         
                         {editingAdmin === admin.id ? (
@@ -237,8 +237,14 @@ const SystemSettings: React.FC = () => {
                             </div>
                             <div style={{ display: 'flex', gap: '8px', alignSelf: 'flex-end', paddingBottom: '2px' }}>
                               <button className="btn-primary" style={{ padding: '10px 20px', borderRadius: '12px' }} onClick={async () => {
-                                await updateAdminCredentials(admin.id, editAdminData.email, editAdminData.password);
+                                await updateAdminCredentials(admin.id, editAdminData.email, editAdminData.name, editAdminData.password);
                                 setAdmins(await getAllAdmins());
+                                if (admin.id === authUser.id) {
+                                  const updatedUser = { ...authUser, name: editAdminData.name };
+                                  localStorage.setItem('authUser', JSON.stringify(updatedUser));
+                                  sessionStorage.setItem('authUser', JSON.stringify(updatedUser));
+                                  window.dispatchEvent(new Event('storage'));
+                                }
                                 setEditingAdmin(null);
                                 handleSave('Credentials');
                               }}>
@@ -264,7 +270,7 @@ const SystemSettings: React.FC = () => {
                             </div>
                             <button className="btn-secondary" onClick={() => {
                               setEditingAdmin(admin.id);
-                              setEditAdminData({ email: admin.email, password: '' });
+                              setEditAdminData({ name: admin.name || '', email: admin.email, password: '' });
                             }} style={{ padding: '10px 20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <Edit size={16} /> Edit Access
                             </button>

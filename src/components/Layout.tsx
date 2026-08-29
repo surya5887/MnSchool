@@ -121,7 +121,7 @@ const Layout: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const [authUser] = useState<any>(
+  const [authUser, setAuthUser] = useState<any>(
     JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}')
   );
 
@@ -180,6 +180,14 @@ const Layout: React.FC = () => {
     boxShadow: isActive ? '0 4px 15px rgba(99, 102, 241, 0.3)' : 'none',
     transition: 'var(--transition)'
   });
+  useEffect(() => {
+    const handleStorage = () => {
+      setAuthUser(JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}'));
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
 
   const role = authUser.role || '';
 

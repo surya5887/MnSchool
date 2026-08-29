@@ -79,11 +79,25 @@ export const getAllAdmins = async () => {
   return uniqueAdmins;
 };
 
-export const updateAdminCredentials = async (id: string, email: string, password?: string) => {
+export const updateAdminCredentials = async (id: string, email: string, name: string, password?: string) => {
   const adminRef = doc(db, 'admins', id);
-  const updateData: any = { email };
+  const updateData: any = { email, name };
   if (password) {
     updateData.password = bcrypt.hashSync(password, 10);
   }
   await updateDoc(adminRef, updateData);
+};
+
+export const setupInitialProfiles = async () => {
+  if (localStorage.getItem('profiles_setup')) return;
+  const snap = await getDocs(collection(db, 'admins'));
+  for (const d of snap.docs) {
+    const data = d.data();
+    if (data.role === 'Principal' && data.name === 'Principal / Admin') {
+      await updateDoc(doc(db, 'admins', d.id), { name: 'Mohd Arif' });
+    } else if (data.role === 'Manager' && data.name === 'Manager') {
+      await updateDoc(doc(db, 'admins', d.id), { name: 'Mufti Shariq' });
+    }
+  }
+  localStorage.setItem('profiles_setup', 'true');
 };

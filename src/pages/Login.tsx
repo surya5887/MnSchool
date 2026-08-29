@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { getDocs, collection, query, where, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
-import { createDefaultAdminIfNeeded } from '../services/adminService';
+import { createDefaultAdminIfNeeded, setupInitialProfiles } from '../services/adminService';
 import { autoLog } from '../services/auditService';
 
 const Login: React.FC = () => {
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     // Ensure default admin exists
-    createDefaultAdminIfNeeded();
+    createDefaultAdminIfNeeded().then(() => setupInitialProfiles());
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
