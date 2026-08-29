@@ -309,7 +309,7 @@ const StudentProfile: React.FC = () => {
           <ArrowLeft size={20} /> Back to Directory
         </button>
         {isEditing ? (
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="staff-action-buttons">
              <button className="btn-secondary" onClick={handleEditToggle}>Cancel</button>
              <button className="btn-primary" onClick={handleSaveProfile} disabled={saving}>
                {saving ? 'Saving...' : <><Save size={16}/> Save Changes</>}
@@ -487,7 +487,7 @@ const StudentProfile: React.FC = () => {
           {(student.admissionType === 'Old' || previousDues > 0 || previousPaidAmount > 0) && (
             <div className="glass-panel" style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)' }}>
               <h4 style={{ margin: '0 0 12px 0', color: 'var(--primary-color)' }}>📋 Previous Session History</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
+              <div className="dashboard-grid" style={{ gap: '12px' }}>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Session</span><br/><strong>{student.previousSession || 'N/A'}</strong></div>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Dues</span><br/><strong style={{ color: 'var(--danger)' }}>₹{previousDues}</strong></div>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Paid</span><br/><strong style={{ color: 'var(--success)' }}>₹{previousPaidAmount}</strong></div>
