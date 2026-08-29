@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { UserPlus, Trash2, BookOpen, Clock } from 'lucide-react';
+import { UserPlus, BookOpen, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getStaff, addStaff, deleteStaff, type StaffData } from '../services/staffService';
 import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
@@ -107,11 +107,7 @@ const Staff: React.FC = () => {
         </div>
         {['Principal', 'Manager', 'Super Admin'].includes(role) && (
           <div style={{ display: 'flex', gap: '12px' }}>
-            {selectedStaff.length > 0 && (
-              <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => { setStaffToDelete(selectedStaff); setIsDeleteModalOpen(true); }}>
-                <Trash2 size={20} /> Delete Selected ({selectedStaff.length})
-              </button>
-            )}
+            
             <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
               <UserPlus size={20} /> Add Staff
             </button>
@@ -120,24 +116,7 @@ const Staff: React.FC = () => {
       </div>
 
       
-      {['Principal', 'Manager', 'Super Admin'].includes(role) && teachers.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', padding: '0 8px' }}>
-          <input 
-            type="checkbox" 
-            id="selectAll"
-            checked={selectedStaff.length === teachers.length}
-            onChange={(e) => {
-              if (e.target.checked) {
-                setSelectedStaff(teachers.map(t => t.id).filter(Boolean) as string[]);
-              } else {
-                setSelectedStaff([]);
-              }
-            }}
-            style={{ cursor: 'pointer', width: '18px', height: '18px', accentColor: 'var(--primary)' }}
-          />
-          <label htmlFor="selectAll" style={{ fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer' }}>Select All Teachers</label>
-        </div>
-      )}
+      
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
         {teachers.map((teacher, idx) => {
@@ -173,24 +152,7 @@ const Staff: React.FC = () => {
                 position: 'relative'
               }}
             >
-              {/* Admin Checkbox */}
-              {isAdmin && (
-                <div style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10 }}>
-                  <input 
-                    type="checkbox" 
-                    onClick={(e) => e.stopPropagation()}
-                    checked={selectedStaff.includes(teacher.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedStaff([...selectedStaff, teacher.id]);
-                      } else {
-                        setSelectedStaff(selectedStaff.filter(id => id !== teacher.id));
-                      }
-                    }}
-                    style={{ cursor: 'pointer', width: '20px', height: '20px', accentColor: theme.text }}
-                  />
-                </div>
-              )}
+              
               
               {/* Header Profile Area */}
               <div style={{ background: theme.gradient, padding: '32px 24px 24px', color: 'white', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
