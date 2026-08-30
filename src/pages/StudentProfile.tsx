@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2 } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
+import FeeReceiptPrintView from '../components/FeeReceiptPrintView';
 import Cropper from 'react-easy-crop';
 import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
@@ -84,6 +85,7 @@ const StudentProfile: React.FC = () => {
 
   // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
+  const [printTransaction, setPrintTransaction] = useState<any>(null);
   const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: getISTDateTimeLocalString() });
 
 
@@ -128,6 +130,15 @@ const StudentProfile: React.FC = () => {
     };
     fetchData();
   }, [id]);
+
+  
+  const handlePrintReceipt = (txn: any) => {
+    setPrintTransaction(txn);
+    setTimeout(() => {
+      window.print();
+      setPrintTransaction(null);
+    }, 500);
+  };
 
   const handleRecordPayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -571,11 +582,16 @@ const StudentProfile: React.FC = () => {
                         </td>
                         <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-                              <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                <Trash2 size={16} />
-                              </button>
-                            )}
+                            {t.type === 'Income' && (
+                                <button className="icon-btn" onClick={() => handlePrintReceipt(t)} style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', cursor: 'pointer' }} title="Print Receipt">
+                                  <Printer size={16} />
+                                </button>
+                              )}
+                              {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                                <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                  <Trash2 size={16} />
+                                </button>
+                              )}
                           </div>
                         </td>
                       </tr>
@@ -762,6 +778,13 @@ const StudentProfile: React.FC = () => {
         </div>
       )}
 
+          {printTransaction && (
+        <FeeReceiptPrintView 
+          student={student} 
+          transaction={printTransaction} 
+          classNameStr={studentClass?.className || 'Unknown'} 
+        />
+      )}
     </motion.div>
   );
 };
