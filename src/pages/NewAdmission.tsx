@@ -8,6 +8,8 @@ import { getSchoolSettings, saveSchoolSettings } from '../services/settingsServi
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
   return new Promise((resolve, reject) => {
@@ -613,8 +615,16 @@ const NewAdmission: React.FC = () => {
                 <input type="text" name="fatherOccupation" value={formData.fatherOccupation} onChange={handleInputChange} className="glass-input" placeholder="e.g. Business, Service" />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number</label>
-                <input type="text" name="parentPhone" value={formData.parentPhone} onChange={handleInputChange} className="glass-input" placeholder="+91 9876543210" />
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number (Country Code)</label>
+                  <PhoneInput
+                    country={'in'}
+                    value={formData.parentPhone}
+                    onChange={(phone) => setFormData({ ...formData, parentPhone: '+' + phone })}
+                    inputClass="glass-input"
+                    containerStyle={{ width: '100%' }}
+                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', paddingLeft: '48px', height: '42px', borderRadius: '8px' }}
+                    buttonStyle={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '8px 0 0 8px' }}
+                  />
               </div>
             </div>
 

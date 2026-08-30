@@ -47,7 +47,7 @@ export default async function handler(req: any, res: any) {
     });
 
     // Format phone number for WhatsApp (e.g., 919876543210@s.whatsapp.net)
-    const formattedPhone = phone.startsWith('91') ? `${phone}@s.whatsapp.net` : `91${phone}@s.whatsapp.net`;
+    const formattedPhone = `${phone}@s.whatsapp.net`;
     
     await sock.sendMessage(formattedPhone, { text: message });
     
