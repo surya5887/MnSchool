@@ -40,7 +40,7 @@ const Layout: React.FC = () => {
         const draftsObj = JSON.parse(draftStr);
         const draftsCount = Object.keys(draftsObj).length;
         if (draftsCount > 0) {
-          const latestDraftTime = Math.max(...Object.values(draftsObj).map((d) => d.timestamp || Date.now()));
+          const latestDraftTime = Math.max(...Object.values(draftsObj).map((d: any) => d.timestamp || Date.now()));
           notifs.push({
             id: 'draft',
             title: 'Draft Forms Pending',
