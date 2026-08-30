@@ -5,13 +5,13 @@ import { db } from '../lib/firebase';
 const TRANSACTIONS_COLLECTION = 'transactions';
 
 export interface TransactionData {
-  id₹: string;
+  id?: string;
   type: 'Income' | 'Expense' | 'Charge' | 'Discount';
   category: string; // 'Fee Collection', 'Salary', 'Maintenance', etc.
   amount: number;
   date: string;
   description: string;
-  paymentMethod₹: 'Cash' | 'Bank Transfer' | 'UPI' | string;
+  paymentMethod?: 'Cash' | 'Bank Transfer' | 'UPI' | string;
   referenceId?: string; // Student ID or Staff ID if applicable
   studentId?: string; // Explicitly link to a student
   staffId?: string; // Explicitly link to a staff member

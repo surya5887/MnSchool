@@ -20,6 +20,7 @@ const Layout: React.FC = () => {
       Notification.requestPermission();
     }
     setMobileMenuOpen(false);
+    fetchNotifications();
   }, [location.pathname]);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
   const [billingNotification, setBillingNotification] = useState('');
@@ -35,15 +36,16 @@ const Layout: React.FC = () => {
       
       // Check for Drafts
       const draftStr = localStorage.getItem('admission_drafts');
-      if (draftStr) {
+      if (draftStr && location.pathname !== '/new-admission') {
         const draftsObj = JSON.parse(draftStr);
         const draftsCount = Object.keys(draftsObj).length;
         if (draftsCount > 0) {
+          const latestDraftTime = Math.max(...Object.values(draftsObj).map((d) => d.timestamp || Date.now()));
           notifs.push({
             id: 'draft',
             title: 'Draft Forms Pending',
             message: `You have ${draftsCount} admission form(s) saved in draft. Don't forget to complete them.`,
-            time: new Date().toISOString(),
+            time: new Date(latestDraftTime).toISOString(),
             type: 'warning'
           });
         }
