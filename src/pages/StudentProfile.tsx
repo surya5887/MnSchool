@@ -309,7 +309,15 @@ const StudentProfile: React.FC = () => {
   
   const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
-  const ledgerRows = sortedTransactions;
+  let currentBal = 0;
+  const ledgerRows = sortedTransactions.map(t => {
+    if (t.type === 'Charge') currentBal += t.amount;
+    else if (t.type === 'Income' || t.type === 'Discount') currentBal -= t.amount;
+    return { ...t, runningBalance: currentBal };
+  });
+  
+  const currentDue = currentBal > 0 ? currentBal : 0;
+  const currentAdvance = currentBal < 0 ? Math.abs(currentBal) : 0;
   
   const availableMonths = Array.from(new Set(ledgerRows.map(t => t.date.substring(0, 7)))).sort().reverse();
 
@@ -513,8 +521,19 @@ const StudentProfile: React.FC = () => {
           <div className="glass-panel">
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IndianRupee size={20} className="text-primary" /> Financial Ledger
-              </h3>
+                <IndianRupee size={20} className="text-primary" /> Financial Ledger</h3>
+              
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                <div style={{ flex: 1, minWidth: '150px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--danger)', fontWeight: 600, textTransform: 'uppercase' }}>Pending Balance</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--danger)' }}>?{typeof currentDue !== 'undefined' ? currentDue.toLocaleString() : 0}</span>
+                </div>
+                <div style={{ flex: 1, minWidth: '150px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--success)', fontWeight: 600, textTransform: 'uppercase' }}>Advance Paid</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)' }}>?{typeof currentAdvance !== 'undefined' ? currentAdvance.toLocaleString() : 0}</span>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 {availableMonths.length > 0 && (
                   <select 
@@ -534,10 +553,10 @@ const StudentProfile: React.FC = () => {
                 {['Principal', 'Manager', 'Super Admin'].includes(role) && (
                   <>
                     <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
-                      <Plus size={16} /> Record Payment
+                      <Plus size={16} /> Receive Payment
                     </button>
                     <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsFineModalOpen(true)}>
-                      <Plus size={16} /> Add Charge
+                      <Plus size={16} /> Add Manual Due
                     </button>
                   </>
                 )}
@@ -560,8 +579,8 @@ const StudentProfile: React.FC = () => {
                       <tr>
                         <th style={{ whiteSpace: 'nowrap' }}>Date</th>
                         <th>Description</th>
-                        <th style={{ whiteSpace: 'nowrap' }}>Charge</th>
-                        <th style={{ whiteSpace: 'nowrap' }}>Paid</th>
+                        <th style={{ whiteSpace: 'nowrap' }}>Charge (Due)</th>
+                        <th style={{ whiteSpace: 'nowrap' }}>Paid (Cr)</th>
                           <th style={{ whiteSpace: 'nowrap', textAlign: 'right' }}>Balance</th>
                         {['Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
                       </tr>
@@ -580,7 +599,10 @@ const StudentProfile: React.FC = () => {
                         <td style={{ color: 'var(--success)', fontWeight: 500 }}>
                           {t.type === 'Income' || t.type === 'Discount' ? `₹${t.amount}` : '-'}
                         </td>
-                        <td style={{ textAlign: 'center' }}>
+                        <td style={{ textAlign: 'right', fontWeight: 600, color: t.runningBalance > 0 ? 'var(--danger)' : (t.runningBalance < 0 ? 'var(--success)' : 'var(--text-muted)') }}>
+                            {t.runningBalance > 0 ? `?${t.runningBalance} Due` : (t.runningBalance < 0 ? `?${Math.abs(t.runningBalance)} Adv` : '?0')}
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             {t.type === 'Income' && (
                                 <button className="icon-btn" onClick={() => handlePrintReceipt(t)} style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', cursor: 'pointer' }} title="Print Receipt">
@@ -625,7 +647,7 @@ const StudentProfile: React.FC = () => {
       </div>
 
       {/* Payment Modal */}
-      <Modal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} title="Record Payment">
+      <Modal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} title="Receive Payment">
         <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
@@ -649,7 +671,7 @@ const StudentProfile: React.FC = () => {
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsPaymentModalOpen(false)}>Cancel</button>
-            <button type="submit" className="btn-primary" style={{ background: 'var(--success)' }}>Record Payment</button>
+            <button type="submit" className="btn-primary" style={{ background: 'var(--success)' }}>Receive Payment</button>
           </div>
         </form>
       </Modal>
