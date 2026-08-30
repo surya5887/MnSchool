@@ -45,48 +45,40 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
   });
 };
 
+const INITIAL_FORM_DATA: Partial<StudentData> = {
+  admissionType: 'New',
+  originalAdmissionDate: '',
+  previousDues: 0,
+  previousPaidAmount: 0,
+  previousSession: '',
+  firstName: '',
+  lastName: '',
+  dob: '',
+  gender: 'Male',
+  classId: '',
+  sectionId: '',
+  feeGroup: 'General Fee Category',
+  transportRoute: 'Not Required',
+  aadharNumber: '',
+  bloodGroup: '',
+  parentName: '',
+  motherName: '',
+  parentPhone: '',
+  email: '',
+  status: 'Active',
+  admissionNo: '',
+  rollNumber: '' as any,
+  address: '',
+  fatherOccupation: '',
+};
+
 const NewAdmission: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const birthCertInputRef = useRef<HTMLInputElement>(null);
   const tcInputRef = useRef<HTMLInputElement>(null);
   const [admissionType, setAdmissionType] = useState<'New' | 'Old'>('New');
-  const [formData, setFormData] = useState<Partial<StudentData>>({
-    admissionType: 'New' as 'New' | 'Old',
-    originalAdmissionDate: '',
-    previousDues: 0,
-    previousPaidAmount: 0,
-    previousSession: '',
-    firstName: '',
-    lastName: '',
-    dob: '',
-    gender: 'Male',
-    classId: '',
-    sectionId: '',
-    feeGroup: 'General Fee Category',
-    transportRoute: 'Not Required',
-    aadharNumber: '',
-    bloodGroup: '',
-    parentName: '',
-    parentPhone: '',
-    email: '',
-    status: 'Active',
-    admissionNo: '',
-    rollNumber: '' as any,
-    address: '',
-    motherName: '',
-    emergencyContact: '',
-    caste: '',
-    religion: '',
-    fatherAadhar: '',
-    fatherQualification: '',
-    fatherOccupation: '',
-    motherAadhar: '',
-    motherQualification: '',
-    motherOccupation: '',
-    motherPhone: '',
-    discountPercent: 0
-  });
+  const [formData, setFormData] = useState<Partial<StudentData>>(INITIAL_FORM_DATA);
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -135,7 +127,10 @@ const NewAdmission: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const hasData = formData.firstName || formData.lastName || formData.parentName || formData.parentPhone;
+      const hasData = Object.keys(formData).some(key => {
+          if (['status', 'admissionType', 'gender', 'feeGroup', 'transportRoute'].includes(key)) return false;
+          return Boolean(formData[key as keyof typeof formData]);
+        });
       if (hasData) {
         const existingStr = localStorage.getItem('admission_drafts');
         let drafts = existingStr ? JSON.parse(existingStr) : {};
@@ -396,6 +391,15 @@ const NewAdmission: React.FC = () => {
         delete draftsObj[draftId];
         localStorage.setItem('admission_drafts', JSON.stringify(draftsObj));
       }
+      
+      // Reset form so the useEffect doesn't immediately save a ghost draft
+      setFormData(INITIAL_FORM_DATA);
+      setPhotoFile(null);
+      setPhotoPreview('');
+      setBirthCertFile(null);
+      setTcFile(null);
+      setCustomDocs([]);
+      
       setDraftId(Date.now().toString());
 
       setSaved(true);
