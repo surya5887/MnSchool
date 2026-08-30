@@ -43,6 +43,7 @@ export interface StudentData {
   previousPaidAmount?: number;
   previousSession?: string;
   billedMonths?: string[];
+  lateFeesApplied?: string[];
   session?: string;
   caste?: string;
   fatherAadhar?: string;
