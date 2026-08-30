@@ -11,6 +11,7 @@ import NewAdmission from './pages/NewAdmission';
 import Attendance from './pages/Attendance';
 import AuditLogs from './pages/AuditLogs';
 import SystemSettings from './pages/SystemSettings';
+import DefaultersList from './pages/DefaultersList';
 import Examination from './pages/Examination';
 import Timetable from './pages/Timetable';
 import Transport from './pages/Transport';
@@ -43,6 +44,7 @@ function App() {
           <Route path="library" element={<Library />} />
           <Route path="audit" element={<AuditLogs />} />
           <Route path="settings" element={<SystemSettings />} />
+          <Route path="defaulters" element={<DefaultersList />} />
         </Route>
       </Routes>
     </BrowserRouter>
