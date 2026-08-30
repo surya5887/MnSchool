@@ -10,18 +10,42 @@ const WhatsAppSetup: React.FC = () => {
   const [error, setError] = useState('');
 
   const generateQR = async () => {
+    const pwd = prompt("Enter security password to generate QR:");
+    if (pwd !== '790077Aa@') {
+      if (pwd !== null) alert("Incorrect password.");
+      return;
+    }
+
     setLoading(true);
     setError('');
+    setQrCode(null);
+    setConnected(false);
+
     try {
-      // In production, this would hit the Vercel API
-      // const res = await fetch('/api/generate-qr');
-      // const data = await res.json();
+      const source = new EventSource('/api/whatsapp-link');
       
-      // Mocking for UI demonstration
-      setTimeout(() => {
-        setQrCode("1@mock_qr_code_string_for_demonstration_purposes_only");
+      source.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.status === 'qr') {
+          setQrCode(data.qr);
+          setLoading(false);
+        } else if (data.status === 'success') {
+          setConnected(true);
+          setLoading(false);
+          setQrCode(null);
+          source.close();
+        } else if (data.status === 'timeout' || data.status === 'error') {
+          setError(data.message);
+          setLoading(false);
+          source.close();
+        }
+      };
+
+      source.onerror = () => {
+        setError('Connection interrupted.');
         setLoading(false);
-      }, 2000);
+        source.close();
+      };
       
     } catch (err: any) {
       setError(err.message);
