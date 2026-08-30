@@ -105,7 +105,7 @@ const DefaultersList: React.FC = () => {
       const res = await fetch('/api/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number: '91' + num, message })
+        body: JSON.stringify({ phone: '91' + num, message })
       });
       
       const data = await res.json();
