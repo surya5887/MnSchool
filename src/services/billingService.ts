@@ -3,7 +3,6 @@ import { getClasses } from './classService';
 import { getVehicles } from './transportService';
 import { addTransaction, getTransactions } from './financeService';
 
-const LATE_FINE_AMOUNT = 50; // Default flat late fine
 
 export const runAutomatedBilling = async () => {
   try {
@@ -34,8 +33,7 @@ export const runAutomatedBilling = async () => {
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1; // 1-12
-    const currentDay = today.getDate();
-    
+        
     const currentMonthKey = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthName = monthNames[today.getMonth()];
@@ -57,8 +55,7 @@ export const runAutomatedBilling = async () => {
       if (!student.id || !student.classId) continue;
       
       const billedMonths = student.billedMonths || [];
-      const lateFeesApplied = student.lateFeesApplied || [];
-      
+            
       // Also ensure admission date isn't in the future compared to current month
       if (student.admissionDate) {
         const adminDate = new Date(student.admissionDate);
@@ -68,8 +65,7 @@ export const runAutomatedBilling = async () => {
       }
 
       // --- 1. BASE FEE LOGIC ---
-      let baseFeeGeneratedThisLoop = false;
-      if (!billedMonths.includes(currentMonthKey)) {
+            if (!billedMonths.includes(currentMonthKey)) {
         let baseFee = classMap.get(student.classId) || 0;
         
         // Apply discount if any
@@ -112,8 +108,7 @@ export const runAutomatedBilling = async () => {
           const updatedBilledMonths = [...billedMonths, currentMonthKey];
           await updateStudent(student.id, { billedMonths: updatedBilledMonths });
           generatedCount++;
-          baseFeeGeneratedThisLoop = true;
-          
+                    
           studentBalances.set(student.id, currentBalance);
         }
       }
