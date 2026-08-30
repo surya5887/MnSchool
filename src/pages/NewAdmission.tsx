@@ -128,8 +128,22 @@ const NewAdmission: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const hasData = Object.keys(formData).some(key => {
+          // Ignore fields that have default values
           if (['status', 'admissionType', 'gender', 'feeGroup', 'transportRoute'].includes(key)) return false;
-          return Boolean(formData[key as keyof typeof formData]);
+          
+          const val = formData[key as keyof typeof formData];
+          
+          // Ignore empty strings, 0, or boolean false
+          if (!val) return false;
+          
+          // Specifically ignore if phone is just the country code auto-inserted
+          if (key === 'parentPhone' && (val === '+' || val === '+91' || val === '91')) return false;
+          
+          // Ignore if the value hasn't changed from the initial state
+          const initialVal = INITIAL_FORM_DATA[key as keyof typeof INITIAL_FORM_DATA];
+          if (val === initialVal) return false;
+
+          return true;
         });
       if (hasData) {
         const existingStr = localStorage.getItem('admission_drafts');
@@ -624,7 +638,7 @@ const NewAdmission: React.FC = () => {
                   <PhoneInput
                     country={'in'}
                     value={formData.parentPhone}
-                    onChange={(phone) => setFormData({ ...formData, parentPhone: '+' + phone })}
+                    onChange={(phone) => setFormData({ ...formData, parentPhone: phone ? '+' + phone : '' })}
                     inputClass="glass-input"
                     containerStyle={{ width: '100%' }}
                     inputStyle={{ width: '100%', background: 'var(--glass-bg)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', paddingLeft: '48px', height: '42px', borderRadius: '8px' }}
