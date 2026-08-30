@@ -128,8 +128,8 @@ const NewAdmission: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const hasData = Object.keys(formData).some(key => {
-          // Ignore fields that have default values
-          if (['status', 'admissionType', 'gender', 'feeGroup', 'transportRoute'].includes(key)) return false;
+          // Ignore fields that have default values or are auto-populated
+          if (['status', 'admissionType', 'gender', 'feeGroup', 'transportRoute', 'classId', 'sectionId'].includes(key)) return false;
           
           const val = formData[key as keyof typeof formData];
           
