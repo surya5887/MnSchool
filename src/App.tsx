@@ -16,6 +16,7 @@ import Examination from './pages/Examination';
 import Timetable from './pages/Timetable';
 import Transport from './pages/Transport';
 import Library from './pages/Library';
+import Announcements from './pages/Announcements';
 import Classes from './pages/Classes';
 import ClassDetails from './pages/ClassDetails';
 import StaffProfile from './pages/StaffProfile';
@@ -36,6 +37,7 @@ function App() {
           <Route path="staff" element={<Staff />} />
           <Route path="staff/:id" element={<StaffProfile />} />
           <Route path="ledger" element={<MasterLedger />} />
+          <Route path="announcements" element={<Announcements />} />
           <Route path="classes" element={<Classes />} />
           <Route path="classes/:id" element={<ClassDetails />} />
           <Route path="exam" element={<Examination />} />

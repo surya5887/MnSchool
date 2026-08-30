@@ -18,6 +18,7 @@ export interface SchoolSettingsData {
   customChargeTypes?: string[];
   academicSessions?: string[];
   activeSession?: string;
+  feeReminderTemplate?: string;
 }
 
 export const getSchoolSettings = async () => {
