@@ -1,23 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { PlayCircle, CheckCircle2, AlertTriangle, MessageSquare, Clock, Zap } from 'lucide-react';
-import { runAutomatedBilling } from '../services/billingService';
+import { CheckCircle2, AlertTriangle, MessageSquare, Clock, Zap } from 'lucide-react';
 
 const FinancialAutomation: React.FC = () => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [resultMessage, setResultMessage] = useState<string | null>(null);
 
-  const handleRunEngine = async () => {
-    setIsRunning(true);
-    setResultMessage(null);
-    try {
-      const count = await runAutomatedBilling();
-      setResultMessage(`Success! Generated ${count} new invoices/fines.`);
-    } catch (error) {
-      setResultMessage(`Error running billing engine.`);
-    }
-    setIsRunning(false);
-  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container">
@@ -47,20 +33,9 @@ const FinancialAutomation: React.FC = () => {
           <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
             System automatically scans all active students, fetches their class monthly fee, and posts a "Due" entry to their ledger. It skips students who have already been billed for the current month.
           </p>
-          <div style={{ marginTop: 'auto', padding: '16px', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-             <button 
-                className="btn-primary" 
-                style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}
-                onClick={handleRunEngine}
-                disabled={isRunning}
-             >
-               {isRunning ? 'Processing...' : <><PlayCircle size={18} /> Force Run Engine Now</>}
-             </button>
-             {resultMessage && (
-               <div style={{ marginTop: '12px', padding: '10px', background: 'rgba(34,197,94,0.1)', color: 'var(--success)', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', fontWeight: 600 }}>
-                 {resultMessage}
-               </div>
-             )}
+          <div style={{ marginTop: 'auto', padding: '16px', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+             <span style={{ fontSize: '0.9rem', color: 'var(--success)', fontWeight: 600 }}>100% Fully Automated</span>
+             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>No manual intervention required.</p>
           </div>
         </div>
 
