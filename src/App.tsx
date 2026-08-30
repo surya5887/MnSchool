@@ -7,7 +7,6 @@ import Login from './pages/Login';
 import Staff from './pages/Staff';
 import StudentProfile from './pages/StudentProfile';
 import MasterLedger from './pages/MasterLedger';
-import FinancialAutomation from './pages/FinancialAutomation';
 import NewAdmission from './pages/NewAdmission';
 import Attendance from './pages/Attendance';
 import AuditLogs from './pages/AuditLogs';
@@ -37,7 +36,6 @@ function App() {
           <Route path="staff" element={<Staff />} />
           <Route path="staff/:id" element={<StaffProfile />} />
           <Route path="ledger" element={<MasterLedger />} />
-            <Route path="automation" element={<FinancialAutomation />} />
           <Route path="classes" element={<Classes />} />
           <Route path="classes/:id" element={<ClassDetails />} />
           <Route path="exam" element={<Examination />} />
