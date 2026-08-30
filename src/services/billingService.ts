@@ -118,38 +118,8 @@ export const runAutomatedBilling = async () => {
         }
       }
 
-      // --- 2. LATE FINE LOGIC ---
-      // If today is 11th or later, check if they have dues > 0
-      if (currentDay >= 11 && !lateFeesApplied.includes(currentMonthKey)) {
-        const currentBalance = studentBalances.get(student.id) || 0;
-        
-        // If balance is > 0, they are a defaulter, apply late fine
-        if (currentBalance > 0) {
-          await addTransaction({
-            type: 'Charge',
-            category: 'Late Fine',
-            amount: LATE_FINE_AMOUNT,
-            date: today.toISOString().split('T')[0],
-            description: `Late Fine for ${monthName} ${currentYear}`,
-            studentId: student.id,
-            chargeType: 'Late Fine'
-          });
-
-          // Fetch fresh student data to avoid overwriting billedMonths if it was just updated
-          // Actually, we can just push to our local array and update
-          const updatedLateFees = [...lateFeesApplied, currentMonthKey];
-          
-          // If we generated base fee in THIS EXACT LOOP, we need to merge the updates
-          if (baseFeeGeneratedThisLoop) {
-             const updatedBilledMonths = [...billedMonths, currentMonthKey];
-             await updateStudent(student.id, { billedMonths: updatedBilledMonths, lateFeesApplied: updatedLateFees });
-          } else {
-             await updateStudent(student.id, { lateFeesApplied: updatedLateFees });
-          }
-          
-          generatedCount++;
-        }
-      }
+      // --- 2. LATE FINE LOGIC REMOVED --- 
+        // Late fines are disabled to prevent unexpected automatic charges.
     }
 
     return generatedCount;
