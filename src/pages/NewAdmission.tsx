@@ -8,7 +8,8 @@ import { getSchoolSettings, saveSchoolSettings } from '../services/settingsServi
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
-import PhoneInput from 'react-phone-input-2';
+import PhoneInputModule from 'react-phone-input-2';
+const PhoneInput = (PhoneInputModule as any).default || PhoneInputModule;
 import 'react-phone-input-2/lib/style.css';
 
 const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
