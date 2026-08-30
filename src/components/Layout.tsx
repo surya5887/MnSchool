@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, Bus, Clock, Library as LibraryIcon, Menu, X, User } from 'lucide-react'; 
+import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, AlertTriangle, Bus, Clock, Library as LibraryIcon, Menu, X, User } from 'lucide-react'; 
 import { LiveClock } from './LiveClock';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
@@ -276,6 +276,7 @@ const Layout: React.FC = () => {
 
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Financials</div>
               <NavLink to="/ledger" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><BookOpen size={20} /> Master Ledger</NavLink>
+                <NavLink to="/defaulters" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><AlertTriangle size={20} /> Fee Defaulters</NavLink>
               
               {role === 'Super Admin' && (
                 <>
