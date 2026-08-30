@@ -81,7 +81,7 @@ const FinancialAutomation: React.FC = () => {
           <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--bg-color)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Late Fine Amount:</span>
-               <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>,150.00 / month</span>
+               <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>₹50.00 / month</span>
              </div>
              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--bg-color)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Grace Period Ends:</span>
