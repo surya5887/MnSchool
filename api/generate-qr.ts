@@ -6,7 +6,7 @@ export default async function handler(req: any, res: any) {
   // NOTE: On Vercel Hobby tier, keeping this alive to wait for a scan might timeout at 10s.
   // It's a "Jugaad" proof of concept.
 
-  const sessionId = 'school_1';
+  const sessionId = 'school_erp';
 
   try {
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);

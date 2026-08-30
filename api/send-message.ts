@@ -4,7 +4,7 @@ import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
   
-  const { phone, message, sessionId = 'school_1' } = req.body;
+  const { phone, message, sessionId = 'school_erp' } = req.body;
   
   if (!phone || !message) {
     return res.status(400).json({ error: 'Phone and message required' });
