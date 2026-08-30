@@ -1,6 +1,6 @@
 import WhatsAppSetup from './WhatsAppSetup';
 import { getAllAdmins, updateAdminCredentials } from '../services/adminService';
-import { Lock, Edit, Save, X as XIcon, Building2, Phone, Mail, Calendar, User, ShieldCheck, Settings as SettingsIcon } from 'lucide-react';
+import { Lock, Edit, Save, X as XIcon, Building2, Phone, Mail, Calendar, User, ShieldCheck, Settings as SettingsIcon, MessageSquare } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, PenTool, Check } from 'lucide-react';
@@ -51,10 +51,10 @@ const SystemSettings: React.FC = () => {
     { id: 'core', label: 'Core Setup', desc: 'School details & academic session', icon: <Building2 size={20} /> },
     { id: 'rbac', label: 'Roles & Permissions', desc: 'System access & restrictions', icon: <ShieldCheck size={20} /> },
     ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', desc: 'Manage email & passwords', icon: <Lock size={20} /> }] : [])
-  ];
-
-  return (
-    <>
+  , { id: 'whatsapp', label: 'WhatsApp API', desc: 'Serverless Automation', icon: <MessageSquare size={20} /> }
+    ];
+    return (
+      <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div style={{ marginBottom: '40px' }}>
         <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
