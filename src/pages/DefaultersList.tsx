@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle, IndianRupee, MessageCircle, Phone, Search, CheckCircle2 } from 'lucide-react';
 import { getStudents } from '../services/studentService';
 import type { StudentData } from '../services/studentService';
+import { getSchoolSettings } from '../services/settingsService';
 import { getTransactions } from '../services/financeService';
 import type { TransactionData } from '../services/financeService';
 import { getClasses } from '../services/classService';
@@ -17,6 +18,7 @@ const DefaultersList: React.FC = () => {
   const [defaulters, setDefaulters] = useState<Defaulter[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [settings, setSettings] = useState<any>(null);
   const [totalOutstanding, setTotalOutstanding] = useState(0);
 
   useEffect(() => {
@@ -84,6 +86,7 @@ const DefaultersList: React.FC = () => {
     };
 
     fetchData();
+    getSchoolSettings().then(data => setSettings(data));
   }, []);
 
   const filteredDefaulters = defaulters.filter(d => 
@@ -111,7 +114,9 @@ const DefaultersList: React.FC = () => {
         cleanPhone = '91' + cleanPhone; // Default to India if only 10 digits
       }
       
-      const message = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. ${due} is currently outstanding for your ward ${name}. Kindly clear the dues at the earliest.\nThank you.`;
+      const defaultTemplate = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. {{due}} is currently outstanding for your ward {{name}}. Kindly clear the dues at the earliest.\nThank you.`;
+      const templateStr = settings?.feeReminderTemplate || defaultTemplate;
+      const message = templateStr.replace(/\{\{name\}\}/g, name).replace(/\{\{due\}\}/g, String(due));
       
       setSendingWa(cleanPhone);
       try {

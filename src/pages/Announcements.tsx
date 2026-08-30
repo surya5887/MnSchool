@@ -44,7 +44,12 @@ const Announcements: React.FC = () => {
     const data = await getSchoolSettings();
     if (data) {
       setSettings(data);
-      if (data.feeReminderTemplate) setFeeTemplate(data.feeReminderTemplate);
+      const defaultTemplate = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. {{due}} is currently outstanding for your ward {{name}}. Kindly clear the dues at the earliest.\nThank you.`;
+      if (data.feeReminderTemplate) {
+        setFeeTemplate(data.feeReminderTemplate);
+      } else {
+        setFeeTemplate(defaultTemplate);
+      }
     }
   };
 
@@ -387,7 +392,7 @@ const Announcements: React.FC = () => {
               <Settings2 size={22} color="#f59e0b" /> Automated Fee Reminder Template
             </h2>
             <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '24px', lineHeight: '1.5' }}>
-              This exact message will be dynamically personalized and sent to parents when you generate an automated fee reminder from the Ledger.
+              This exact message will be dynamically personalized and sent to parents. You can use placeholders like <b>{`{{name}}`}</b> for student name and <b>{`{{due}}`}</b> for the due amount.
             </p>
             
             <textarea 
