@@ -95,13 +95,19 @@ const DefaultersList: React.FC = () => {
 
     const [sendingWa, setSendingWa] = useState<string | null>(null);
 
-  const openWhatsApp = async (phone: string, name: string, due: number) => {
-    if (!phone) return alert("No phone number available for this student.");
-    const num = phone.replace(/\D/g, '');
-    const message = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. ${due} is currently outstanding for your ward ${name}. Kindly clear the dues at the earliest.\nThank you.`;
-    
-    setSendingWa(num);
-        try {
+    const openWhatsApp = async (phone: string, name: string, due: number) => {
+      if (!phone) return alert("No phone number available for this student.");
+      
+      if (window.location.hostname === 'localhost') {
+        alert("Guru ji, Serverless WhatsApp API 'localhost' par kaam nahi karti kyunki serverless functions Vercel par host hain! Kripya ise aapke LIVE URL par check karein jo apne dusre tab me khol rakha hai.");
+        return;
+      }
+
+      const num = phone.replace(/\D/g, '');
+      const message = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. ${due} is currently outstanding for your ward ${name}. Kindly clear the dues at the earliest.\nThank you.`;
+      
+      setSendingWa(num);
+          try {
       const res = await fetch('/api/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
