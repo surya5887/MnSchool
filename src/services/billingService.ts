@@ -1,14 +1,16 @@
 import { getStudents, updateStudent } from './studentService';
 import { getClasses } from './classService';
+import { getVehicles } from './transportService';
 import { addTransaction, getTransactions } from './financeService';
 
 const LATE_FINE_AMOUNT = 50; // Default flat late fine
 
 export const runAutomatedBilling = async () => {
   try {
-    const [students, classes, txns] = await Promise.all([
+    const [students, classes, vehicles, txns] = await Promise.all([
       getStudents(),
       getClasses(),
+      getVehicles(),
       getTransactions()
     ]);
     
@@ -20,6 +22,14 @@ export const runAutomatedBilling = async () => {
       classMap.set(c.id, c.monthlyBaseFee || 0);
       classMap.set(c.className, c.monthlyBaseFee || 0);
     });
+
+    const transportMap = new Map();
+    if (typeof vehicles !== 'undefined') {
+       vehicles.forEach(v => {
+         const fee = parseInt(String(v.monthlyFee).replace(/\D/g, '')) || 0;
+         transportMap.set(v.route, fee);
+       });
+    }
 
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -79,14 +89,32 @@ export const runAutomatedBilling = async () => {
             chargeType: 'Base Fee'
           });
 
+          let currentBalance = studentBalances.get(student.id) || 0;
+          currentBalance += baseFee;
+
+          // Process Transport Fee if applicable
+          if (student.transportRoute && student.transportRoute !== 'Not Required' && student.transportRoute !== '') {
+            const tFee = transportMap.get(student.transportRoute) || 0;
+            if (tFee > 0) {
+              await addTransaction({
+                type: 'Charge',
+                category: 'Transport Fee',
+                amount: tFee,
+                date: today.toISOString().split('T')[0],
+                description: `${monthName} ${currentYear} Transport/Bus Fee`,
+                studentId: student.id,
+                chargeType: 'Transport Fee'
+              });
+              currentBalance += tFee;
+            }
+          }
+
           const updatedBilledMonths = [...billedMonths, currentMonthKey];
           await updateStudent(student.id, { billedMonths: updatedBilledMonths });
           generatedCount++;
           baseFeeGeneratedThisLoop = true;
           
-          // Update live balance
-          let currentBalance = studentBalances.get(student.id) || 0;
-          studentBalances.set(student.id, currentBalance + baseFee);
+          studentBalances.set(student.id, currentBalance);
         }
       }
 
