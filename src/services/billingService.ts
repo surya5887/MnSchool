@@ -79,7 +79,7 @@ export const runAutomatedBilling = async () => {
             type: 'Charge',
             category: 'Monthly Fee',
             amount: baseFee,
-            date: today.toISOString().split('T')[0],
+            date: today.toISOString(),
             description: `${monthName} ${currentYear} Base Fee`,
             studentId: student.id,
             chargeType: 'Base Fee'
@@ -96,7 +96,7 @@ export const runAutomatedBilling = async () => {
                 type: 'Charge',
                 category: 'Transport Fee',
                 amount: tFee,
-                date: today.toISOString().split('T')[0],
+                date: today.toISOString(),
                 description: `${monthName} ${currentYear} Transport/Bus Fee`,
                 studentId: student.id,
                 chargeType: 'Transport Fee'
