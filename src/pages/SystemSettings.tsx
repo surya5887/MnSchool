@@ -1,3 +1,4 @@
+import WhatsAppSetup from './WhatsAppSetup';
 import { getAllAdmins, updateAdminCredentials } from '../services/adminService';
 import { Lock, Edit, Save, X as XIcon, Building2, Phone, Mail, Calendar, User, ShieldCheck, Settings as SettingsIcon } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
@@ -283,6 +284,12 @@ const SystemSettings: React.FC = () => {
               </motion.div>
             )}
 
+                        {activeTab === 'whatsapp' && (
+              <motion.div key="whatsapp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                <WhatsAppSetup />
+              </motion.div>
+            )}
+            
             {activeTab === 'rbac' && (
               <motion.div key="rbac" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
                 <div className="glass-panel" style={{ padding: '32px', borderRadius: '24px' }}>
