@@ -526,11 +526,11 @@ const StudentProfile: React.FC = () => {
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
                 <div style={{ flex: 1, minWidth: '150px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '0.85rem', color: 'var(--danger)', fontWeight: 600, textTransform: 'uppercase' }}>Pending Balance</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--danger)' }}>?{typeof currentDue !== 'undefined' ? currentDue.toLocaleString() : 0}</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--danger)' }}>₹{typeof currentDue !== 'undefined' ? currentDue.toLocaleString() : 0}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: '150px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '0.85rem', color: 'var(--success)', fontWeight: 600, textTransform: 'uppercase' }}>Advance Paid</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)' }}>?{typeof currentAdvance !== 'undefined' ? currentAdvance.toLocaleString() : 0}</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)' }}>₹{typeof currentAdvance !== 'undefined' ? currentAdvance.toLocaleString() : 0}</span>
                 </div>
               </div>
 
@@ -600,7 +600,7 @@ const StudentProfile: React.FC = () => {
                           {t.type === 'Income' || t.type === 'Discount' ? `₹${t.amount}` : '-'}
                         </td>
                         <td style={{ textAlign: 'right', fontWeight: 600, color: t.runningBalance > 0 ? 'var(--danger)' : (t.runningBalance < 0 ? 'var(--success)' : 'var(--text-muted)') }}>
-                            {t.runningBalance > 0 ? `?${t.runningBalance} Due` : (t.runningBalance < 0 ? `?${Math.abs(t.runningBalance)} Adv` : '?0')}
+                            {t.runningBalance > 0 ? `₹${t.runningBalance} Due` : (t.runningBalance < 0 ? `₹${Math.abs(t.runningBalance)} Adv` : '₹0')}
                           </td>
                           <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
