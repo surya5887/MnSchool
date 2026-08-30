@@ -55,14 +55,16 @@ export default async function handler(req: any, res: any) {
     });
 
     // Get the connected user's ID
-    const myId = sock.user?.id?.split(':')[0];
+    const rawMyId = sock.user?.id || state.creds?.me?.id;
+    const myId = rawMyId ? rawMyId.split(':')[0].split('@')[0] : null;
+    console.log("My WhatsApp ID resolved to:", myId);
 
     const groupsRaw = await sock.groupFetchAllParticipating();
     const groups = Object.values(groupsRaw).map(g => {
       
       let iAmAdmin = false;
       if (myId && g.participants) {
-        const me = g.participants.find(p => p.id.includes(myId));
+        const me = g.participants.find(p => p.id && p.id.startsWith(myId + '@'));
         if (me && (me.admin === 'admin' || me.admin === 'superadmin')) {
           iAmAdmin = true;
         }
