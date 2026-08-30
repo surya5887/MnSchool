@@ -101,20 +101,31 @@ const DefaultersList: React.FC = () => {
     const message = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. ${due} is currently outstanding for your ward ${name}. Kindly clear the dues at the earliest.\nThank you.`;
     
     setSendingWa(num);
-    try {
+        try {
       const res = await fetch('/api/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: '91' + num, message })
       });
       
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        alert("Failed to parse API response. Are you running on localhost without Vercel API support? Try testing on the live Vercel URL.");
+        window.open(`https://wa.me/91${num}?text=${encodeURIComponent(message)}`, '_blank');
+        setSendingWa(null);
+        return;
+      }
+
       if (data.success) {
         alert("? Serverless WhatsApp sent successfully!");
       } else {
+        alert("API Error: " + (data.error || JSON.stringify(data)));
         window.open(`https://wa.me/91${num}?text=${encodeURIComponent(message)}`, '_blank');
       }
-    } catch (error) {
+    } catch (error: any) {
+      alert("Network Error: " + error.message);
       console.error(error);
       window.open(`https://wa.me/91${num}?text=${encodeURIComponent(message)}`, '_blank');
     }
