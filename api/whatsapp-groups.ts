@@ -11,7 +11,6 @@ export default async function handler(req: any, res: any) {
   try {
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
-    // Check if auth exists (we assume user already linked)
     if (!state.creds || !state.creds.me) {
       return res.status(401).json({ error: 'WhatsApp not connected. Please link your account first.' });
     }
@@ -26,7 +25,6 @@ export default async function handler(req: any, res: any) {
 
     sock.ev.on('creds.update', saveCreds);
 
-    // Wait for connection to open
     await new Promise((resolve, reject) => {
       let isResolved = false;
       
@@ -56,18 +54,38 @@ export default async function handler(req: any, res: any) {
       });
     });
 
-    // Fetch groups
-    const groupsRaw = await sock.groupFetchAllParticipating();
-    const groups = Object.values(groupsRaw).map(g => ({
-      id: g.id,
-      name: g.subject,
-      desc: g.desc,
-      participantsCount: g.participants.length,
-      isCommunity: !!g.isCommunity,
-      isCommunityAnnounce: !!g.isCommunityAnnounce
-    })).sort((a, b) => a.name.localeCompare(b.name));
+    // Get the connected user's ID
+    const myId = sock.user?.id?.split(':')[0];
 
-    // End connection gracefully
+    const groupsRaw = await sock.groupFetchAllParticipating();
+    const groups = Object.values(groupsRaw).map(g => {
+      
+      let iAmAdmin = false;
+      if (myId && g.participants) {
+        const me = g.participants.find(p => p.id.includes(myId));
+        if (me && (me.admin === 'admin' || me.admin === 'superadmin')) {
+          iAmAdmin = true;
+        }
+      }
+
+      const isAnnounceOnly = !!g.announce;
+      const readOnly = isAnnounceOnly && !iAmAdmin; // Cannot send if it's announce-only and I'm not an admin
+
+      // Community check: usually linkedParent indicates it's part of a community, 
+      // or isCommunity / isCommunityAnnounce flags if present in Baileys.
+      const isCommunity = !!(g as any).isCommunity || !!(g as any).linkedParent;
+      const isCommunityAnnounce = !!(g as any).isCommunityAnnounce;
+
+      return {
+        id: g.id,
+        name: g.subject || 'Unnamed Group',
+        participantsCount: g.participants?.length || 0,
+        isCommunity: isCommunity || isCommunityAnnounce,
+        iAmAdmin,
+        readOnly
+      };
+    }).sort((a, b) => a.name.localeCompare(b.name));
+
     sock.end(undefined);
 
     return res.status(200).json({ groups });

@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, Users, Search, CheckSquare, Square, Send, Loader2, MessageSquare, AlertCircle, Settings2, Languages } from 'lucide-react';
+import { Megaphone, Users, Search, CheckSquare, Square, Send, Loader2, MessageSquare, AlertCircle, Settings2, Languages, Lock, ShieldCheck } from 'lucide-react';
 import { useTransliterate } from '../hooks/useTransliterate';
 import { getSchoolSettings, saveSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 
 interface Group {
   id: string;
   name: string;
-  desc?: string;
   participantsCount: number;
   isCommunity: boolean;
-  isCommunityAnnounce: boolean;
+  iAmAdmin: boolean;
+  readOnly: boolean;
 }
 
 const Announcements: React.FC = () => {
@@ -28,6 +28,7 @@ const Announcements: React.FC = () => {
   const [hindiEnabled, setHindiEnabled] = useState(false);
   const { processText } = useTransliterate();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const templateRef = useRef<HTMLTextAreaElement>(null);
   
   // Settings for templates
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
@@ -52,6 +53,11 @@ const Announcements: React.FC = () => {
     setIsSavingTemplate(true);
     await saveSchoolSettings({ ...settings, feeReminderTemplate: feeTemplate });
     setIsSavingTemplate(false);
+    
+    // Show quick success state
+    const original = feeTemplate;
+    setFeeTemplate('? Saved successfully!');
+    setTimeout(() => setFeeTemplate(original), 1500);
   };
 
   const fetchGroups = async () => {
@@ -63,6 +69,8 @@ const Announcements: React.FC = () => {
       
       if (!res.ok) throw new Error(data.error || 'Failed to fetch groups');
       setGroups(data.groups || []);
+      // Clear selections on refresh
+      setSelectedGroups([]);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -70,17 +78,21 @@ const Announcements: React.FC = () => {
     }
   };
 
-  const toggleGroup = (id: string) => {
+  const toggleGroup = (group: Group) => {
+    if (group.readOnly) return; // Cannot select read-only groups
     setSelectedGroups(prev => 
-      prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
+      prev.includes(group.id) ? prev.filter(g => g !== group.id) : [...prev, group.id]
     );
   };
 
+  const selectableGroups = groups.filter(g => !g.readOnly && g.name?.toLowerCase().includes(search.toLowerCase()));
+  const filteredGroups = groups.filter(g => g.name?.toLowerCase().includes(search.toLowerCase()));
+
   const selectAll = () => {
-    if (selectedGroups.length === filteredGroups.length) {
+    if (selectedGroups.length === selectableGroups.length && selectableGroups.length > 0) {
       setSelectedGroups([]);
     } else {
-      setSelectedGroups(filteredGroups.map(g => g.id));
+      setSelectedGroups(selectableGroups.map(g => g.id));
     }
   };
 
@@ -89,17 +101,13 @@ const Announcements: React.FC = () => {
     const cursor = e.target.selectionStart;
     
     if (hindiEnabled && text.length > message.length) {
-      // User is typing
       setMessage(text);
       if (text.endsWith(' ') || text.endsWith('\n')) {
-         const { text: newText } = await processText(text, cursor);
+         const { text: newText, cursorPosition: newCursor } = await processText(text, cursor);
          if (newText !== text) {
            setMessage(newText);
-           // Restore cursor
            setTimeout(() => {
-             if (textareaRef.current) {
-               textareaRef.current.setSelectionRange(newCursor, newCursor);
-             }
+             if (textareaRef.current) textareaRef.current.setSelectionRange(newCursor, newCursor);
            }, 10);
          }
       }
@@ -118,6 +126,9 @@ const Announcements: React.FC = () => {
          const { text: newText, cursorPosition: newCursor } = await processText(text, cursor);
          if (newText !== text) {
            setFeeTemplate(newText);
+           setTimeout(() => {
+             if (templateRef.current) templateRef.current.setSelectionRange(newCursor, newCursor);
+           }, 10);
          }
       }
     } else {
@@ -148,179 +159,273 @@ const Announcements: React.FC = () => {
     }
   };
 
-  const filteredGroups = groups.filter(g => g.name?.toLowerCase().includes(search.toLowerCase()));
-
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      <div>
-        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)' }}>
-            <Megaphone size={24} color="white" />
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '24px 32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+        <div>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '0 0 8px 0', color: '#1e293b', fontSize: '1.75rem' }}>
+            <div style={{ background: '#25D366', padding: '10px', borderRadius: '14px', color: 'white', display: 'flex', boxShadow: '0 8px 16px rgba(37, 211, 102, 0.25)' }}>
+              <Megaphone size={28} />
+            </div>
+            Broadcast Hub
+          </h1>
+          <p style={{ margin: 0, color: '#64748b', fontSize: '1rem' }}>Manage your WhatsApp communications and templates across all groups.</p>
+        </div>
+        
+        {/* Magic Transliteration Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: hindiEnabled ? '#f0fdf4' : '#f1f5f9', padding: '8px 16px', borderRadius: '100px', border: `1px solid ${hindiEnabled ? '#bbf7d0' : '#e2e8f0'}`, transition: 'all 0.3s' }}>
+          <div style={{ background: hindiEnabled ? '#22c55e' : '#94a3b8', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+            <Languages size={18} />
           </div>
-          Announcements
-        </h1>
-        <p className="page-subtitle" style={{ marginTop: '8px' }}>Send broadcast messages to WhatsApp groups and manage notification templates.</p>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: hindiEnabled ? '#16a34a' : '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Smart Typing</div>
+            <div style={{ fontSize: '0.9rem', color: '#1e293b', fontWeight: 500 }}>Hinglish to Hindi</div>
+          </div>
+          <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', marginLeft: '12px' }}>
+            <input type="checkbox" checked={hindiEnabled} onChange={(e) => setHindiEnabled(e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
+            <span style={{ position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: hindiEnabled ? '#22c55e' : '#cbd5e1', transition: '.4s', borderRadius: '34px' }}>
+              <span style={{ position: 'absolute', content: '""', height: '18px', width: '18px', left: hindiEnabled ? '22px' : '3px', bottom: '3px', backgroundColor: 'white', transition: '.4s', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+            </span>
+          </label>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(380px, 1.2fr) 1.5fr', gap: '24px', alignItems: 'start' }}>
         
-        {/* Left Column: Groups */}
-        <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '600px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={20} color="var(--primary)" /> WhatsApp Groups
-            </h2>
-            <button onClick={fetchGroups} className="btn-secondary" style={{ padding: '8px 12px', fontSize: '0.85rem' }} disabled={loading}>
-              Refresh
-            </button>
+        {/* Left Column: Groups Directory */}
+        <div style={{ background: 'white', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)', overflow: 'hidden' }}>
+          
+          {/* Panel Header */}
+          <div style={{ padding: '24px 24px 16px 24px', borderBottom: '1px solid #f1f5f9' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Users size={20} color="#3b82f6" /> Directory
+              </h2>
+              <button onClick={fetchGroups} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', color: '#475569', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }} disabled={loading}>
+                {loading ? <Loader2 size={14} className="spin" /> : 'Refresh'}
+              </button>
+            </div>
+
+            <div style={{ position: 'relative' }}>
+              <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input 
+                type="text" 
+                placeholder="Search groups & communities..." 
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
+                {filteredGroups.length} total, {selectableGroups.length} selectable
+              </span>
+              <button 
+                onClick={selectAll} 
+                disabled={selectableGroups.length === 0}
+                style={{ background: 'none', border: 'none', color: '#3b82f6', fontWeight: 600, fontSize: '0.85rem', cursor: selectableGroups.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '6px', opacity: selectableGroups.length === 0 ? 0.5 : 1 }}
+              >
+                {selectedGroups.length === selectableGroups.length && selectableGroups.length > 0 ? <CheckSquare size={16}/> : <Square size={16}/>} 
+                Select All Allowed
+              </button>
+            </div>
           </div>
 
-          <div style={{ position: 'relative', marginBottom: '16px' }}>
-            <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
-            <input 
-              type="text" 
-              placeholder="Search groups..." 
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="glass-input"
-              style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '12px', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{filteredGroups.length} Groups Found</span>
-            <button onClick={selectAll} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {selectedGroups.length === filteredGroups.length && filteredGroups.length > 0 ? <CheckSquare size={16}/> : <Square size={16}/>} 
-              Select All
-            </button>
-          </div>
-
-          <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px', marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Groups List */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {loading ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
-                <Loader2 size={32} style={{ animation: 'spin 1.5s linear infinite', marginBottom: '16px' }} />
-                Fetching WhatsApp groups...
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
+                <Loader2 size={32} style={{ animation: 'spin 1.5s linear infinite', marginBottom: '16px' }} color="#cbd5e1" />
+                <p>Syncing WhatsApp contacts...</p>
               </div>
             ) : error ? (
-              <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '32px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '16px' }}>
+              <div style={{ textAlign: 'center', color: '#ef4444', padding: '32px', background: '#fef2f2', borderRadius: '16px', border: '1px solid #fecaca' }}>
                 <AlertCircle size={32} style={{ margin: '0 auto 12px' }} />
-                <p style={{ margin: 0 }}>{error}</p>
+                <p style={{ margin: 0, fontWeight: 500 }}>{error}</p>
               </div>
             ) : filteredGroups.length === 0 ? (
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '32px' }}>
-                No groups found. Make sure WhatsApp is linked in settings.
+              <div style={{ textAlign: 'center', color: '#94a3b8', padding: '32px' }}>
+                No groups found. Please ensure your WhatsApp is properly linked in settings.
               </div>
             ) : (
-              filteredGroups.map(group => (
-                <div 
-                  key={group.id} 
-                  onClick={() => toggleGroup(group.id)}
-                  style={{ 
-                    display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', 
-                    background: selectedGroups.includes(group.id) ? 'rgba(99, 102, 241, 0.08)' : 'rgba(255,255,255,0.5)', 
-                    borderRadius: '16px', cursor: 'pointer', border: `1px solid ${selectedGroups.includes(group.id) ? 'var(--primary)' : 'transparent'}`,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <div style={{ color: selectedGroups.includes(group.id) ? 'var(--primary)' : 'var(--text-muted)' }}>
-                    {selectedGroups.includes(group.id) ? <CheckSquare size={20} /> : <Square size={20} />}
+              filteredGroups.map(group => {
+                const isSelected = selectedGroups.includes(group.id);
+                
+                // Determine styling based on group permissions
+                let bgColor = '#ffffff';
+                let borderColor = '#e2e8f0';
+                let iconColor = '#94a3b8';
+
+                if (group.readOnly) {
+                  bgColor = '#fef2f2'; // light red
+                  borderColor = '#fecaca';
+                } else if (group.iAmAdmin) {
+                  bgColor = isSelected ? '#dcfce7' : '#f0fdf4'; // green tinted
+                  borderColor = isSelected ? '#22c55e' : '#bbf7d0';
+                  iconColor = isSelected ? '#16a34a' : '#22c55e';
+                } else {
+                  bgColor = isSelected ? '#eff6ff' : '#ffffff'; // blue tinted for standard groups
+                  borderColor = isSelected ? '#3b82f6' : '#e2e8f0';
+                  iconColor = isSelected ? '#2563eb' : '#94a3b8';
+                }
+
+                return (
+                  <div 
+                    key={group.id} 
+                    onClick={() => toggleGroup(group)}
+                    style={{ 
+                      display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', 
+                      background: bgColor, 
+                      borderRadius: '16px', 
+                      cursor: group.readOnly ? 'not-allowed' : 'pointer', 
+                      border: `1px solid ${borderColor}`,
+                      transition: 'all 0.2s',
+                      opacity: group.readOnly ? 0.8 : 1
+                    }}
+                  >
+                    <div style={{ color: group.readOnly ? '#f87171' : iconColor, transition: 'color 0.2s' }}>
+                      {group.readOnly ? <Lock size={22} /> : (isSelected ? <CheckSquare size={22} /> : <Square size={22} />)}
+                    </div>
+                    
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <h4 style={{ margin: '0 0 6px 0', color: group.readOnly ? '#991b1b' : '#1e293b', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{group.name}</span>
+                        
+                        {group.isCommunity && (
+                          <span style={{ fontSize: '0.65rem', background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: '100px', fontWeight: 700, border: '1px solid #cbd5e1' }}>Community</span>
+                        )}
+                      </h4>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: group.readOnly ? '#b91c1c' : '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Users size={12} /> {group.participantsCount} participants
+                        </p>
+                        
+                        {group.readOnly ? (
+                          <span style={{ fontSize: '0.7rem', color: '#b91c1c', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><AlertCircle size={12}/> Cannot Send</span>
+                        ) : group.iAmAdmin ? (
+                          <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><ShieldCheck size={12}/> Admin</span>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 style={{ margin: '0 0 4px 0', color: 'var(--text-main)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {group.name} 
-                      {group.isCommunity && <span style={{ fontSize: '0.65rem', background: '#dcfce7', color: '#16a34a', padding: '2px 8px', borderRadius: '100px' }}>Community</span>}
-                    </h4>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>{group.participantsCount} participants</p>
-                  </div>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
         </div>
 
         {/* Right Column: Compose & Templates */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MessageSquare size={20} color="var(--primary)" /> Compose Broadcast
-              </h2>
-              <button 
-                onClick={() => setHindiEnabled(!hindiEnabled)}
-                className={hindiEnabled ? "btn-primary" : "btn-secondary"} 
-                style={{ padding: '6px 12px', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', borderRadius: '10px' }}
-              >
-                <Languages size={16} /> Hinglish to Hindi {hindiEnabled ? 'ON' : 'OFF'}
-              </button>
+          {/* Broadcast Composer */}
+          <div style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+            <h2 style={{ margin: '0 0 20px 0', fontSize: '1.25rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MessageSquare size={22} color="#8b5cf6" /> Live Broadcast
+            </h2>
+            
+            <div style={{ position: 'relative' }}>
+              <textarea 
+                ref={textareaRef}
+                value={message}
+                onChange={handleMessageChange}
+                placeholder="Type your announcement here...&#10;(e.g. Kal school ki chhutti hai due to heavy rain. Please stay safe!)"
+                style={{ 
+                  width: '100%', minHeight: '220px', padding: '20px', borderRadius: '16px', 
+                  boxSizing: 'border-box', resize: 'vertical', fontSize: '1.05rem', lineHeight: '1.6',
+                  border: '1px solid #e2e8f0', background: '#f8fafc', outline: 'none', color: '#334155',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}
+              />
+              {hindiEnabled && (
+                <div style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'rgba(34, 197, 94, 0.1)', color: '#16a34a', padding: '6px 12px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Languages size={14} /> Translating
+                </div>
+              )}
             </div>
             
-            <textarea 
-              ref={textareaRef}
-              className="glass-input"
-              value={message}
-              onChange={handleMessageChange}
-              placeholder="Type your message here... (e.g. Tomorrow is a holiday due to rain)"
-              style={{ width: '100%', minHeight: '180px', padding: '16px', borderRadius: '16px', boxSizing: 'border-box', resize: 'vertical', fontSize: '1rem', lineHeight: '1.5' }}
-            />
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                {selectedGroups.length} groups selected
-              </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: selectedGroups.length > 0 ? '#10b981' : '#94a3b8' }}></div>
+                <span style={{ fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  Sending to {selectedGroups.length} selected group{selectedGroups.length !== 1 ? 's' : ''}
+                </span>
+              </div>
               <button 
-                className="btn-primary" 
                 onClick={sendMessage} 
                 disabled={sending || selectedGroups.length === 0 || !message.trim()}
-                style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{ 
+                  padding: '12px 28px', display: 'flex', alignItems: 'center', gap: '8px', 
+                  background: (sending || selectedGroups.length === 0 || !message.trim()) ? '#cbd5e1' : '#25D366', 
+                  color: 'white', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: 600,
+                  cursor: (sending || selectedGroups.length === 0 || !message.trim()) ? 'not-allowed' : 'pointer',
+                  boxShadow: (sending || selectedGroups.length === 0 || !message.trim()) ? 'none' : '0 4px 14px rgba(37, 211, 102, 0.3)',
+                  transition: 'all 0.2s'
+                }}
               >
-                {sending ? <Loader2 size={18} style={{ animation: 'spin 1.5s linear infinite' }} /> : <Send size={18} />}
-                {sending ? 'Sending...' : 'Send Broadcast'}
+                {sending ? <Loader2 size={18} className="spin" /> : <Send size={18} />}
+                {sending ? 'Broadcasting...' : 'Send Now'}
               </button>
             </div>
 
             {sendResult && (
-              <div style={{ marginTop: '16px', padding: '12px', borderRadius: '12px', background: sendResult.success ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: sendResult.success ? 'var(--success)' : 'var(--danger)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {sendResult.success ? <CheckSquare size={16} /> : <AlertCircle size={16} />}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ marginTop: '20px', padding: '16px', borderRadius: '12px', background: sendResult.success ? '#f0fdf4' : '#fef2f2', border: `1px solid ${sendResult.success ? '#bbf7d0' : '#fecaca'}`, color: sendResult.success ? '#15803d' : '#b91c1c', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 500 }}>
+                {sendResult.success ? <CheckSquare size={20} /> : <AlertCircle size={20} />}
                 {sendResult.success 
-                  ? `Successfully sent to ${sendResult.sent} out of ${sendResult.total} groups.` 
-                  : sendResult.error}
-              </div>
+                  ? `Success! Message delivered to ${sendResult.sent} out of ${sendResult.total} groups.` 
+                  : `Error: ${sendResult.error}`}
+              </motion.div>
             )}
           </div>
 
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h2 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Settings2 size={20} color="var(--primary)" /> Fee Reminder Template
+          {/* Fee Reminder Template Settings */}
+          <div style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+            <h2 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Settings2 size={22} color="#f59e0b" /> Automated Fee Reminder Template
             </h2>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
-              This message will be sent automatically to parents whose fees are due. 
-              <br/>(Use Hinglish to Hindi translation by enabling it above)
+            <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '24px', lineHeight: '1.5' }}>
+              This exact message will be dynamically personalized and sent to parents when you generate an automated fee reminder from the Ledger.
             </p>
             
             <textarea 
-              className="glass-input"
+              ref={templateRef}
               value={feeTemplate}
               onChange={handleTemplateChange}
-              placeholder="Dear Parent, your ward's fee is due. Please pay soon to avoid late fees."
-              style={{ width: '100%', minHeight: '120px', padding: '16px', borderRadius: '16px', boxSizing: 'border-box', resize: 'vertical', fontSize: '0.95rem' }}
+              placeholder="Dear Parent, this is a reminder that fees are due for the current month..."
+              style={{ 
+                width: '100%', minHeight: '120px', padding: '20px', borderRadius: '16px', 
+                boxSizing: 'border-box', resize: 'vertical', fontSize: '1rem',
+                border: '1px solid #e2e8f0', background: '#fafafa', outline: 'none', color: '#334155'
+              }}
             />
             
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
               <button 
-                className="btn-secondary" 
                 onClick={saveTemplate} 
-                disabled={isSavingTemplate}
-                style={{ padding: '10px 20px' }}
+                disabled={isSavingTemplate || feeTemplate === settings?.feeReminderTemplate}
+                style={{ 
+                  padding: '10px 24px', background: (isSavingTemplate || feeTemplate === settings?.feeReminderTemplate) ? '#f1f5f9' : '#0f172a',
+                  color: (isSavingTemplate || feeTemplate === settings?.feeReminderTemplate) ? '#94a3b8' : 'white', 
+                  border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.95rem',
+                  cursor: (isSavingTemplate || feeTemplate === settings?.feeReminderTemplate) ? 'default' : 'pointer',
+                  transition: 'all 0.2s'
+                }}
               >
-                {isSavingTemplate ? 'Saving...' : 'Save Template'}
+                {isSavingTemplate ? 'Saving...' : 'Save Default Template'}
               </button>
             </div>
           </div>
 
         </div>
       </div>
+      
+      <style>{`
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+      `}</style>
     </motion.div>
   );
 };
