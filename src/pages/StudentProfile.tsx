@@ -485,7 +485,7 @@ const StudentProfile: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {(student.admissionType === 'Old' || previousDues > 0 || previousPaidAmount > 0) && (
-            <div className="glass-panel" style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)' }}>
+            <div className="glass-panel" style={{ background: 'rgba(99?02,241,0.05)', border: '1px solid rgba(99?02,241,0.2)' }}>
               <h4 style={{ margin: '0 0 12px 0', color: 'var(--primary-color)' }}>📋 Previous Session History</h4>
               <div className="dashboard-grid" style={{ gap: '12px' }}>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Session</span><br/><strong>{student.previousSession || 'N/A'}</strong></div>
@@ -551,6 +551,7 @@ const StudentProfile: React.FC = () => {
                         <th>Description</th>
                         <th style={{ whiteSpace: 'nowrap' }}>Charge</th>
                         <th style={{ whiteSpace: 'nowrap' }}>Paid</th>
+                          <th style={{ whiteSpace: 'nowrap', textAlign: 'right' }}>Balance</th>
                         {['Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
                       </tr>
                     </thead>
@@ -640,7 +641,7 @@ const StudentProfile: React.FC = () => {
       {/* Charge / Fine / Discount Modal */}
       <Modal isOpen={isFineModalOpen} onClose={() => setIsFineModalOpen(false)} title="Add Charge or Discount">
         <form onSubmit={handleAddCharge} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="alert-warning" style={{ background: 'rgba(245,158,11,0.1)', color: 'var(--warning)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', gap: '8px' }}>
+          <div className="alert-warning" style={{ background: 'rgba(245?58?1,0.1)', color: 'var(--warning)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', gap: '8px' }}>
             <AlertTriangle size={18} /> Charges increase pending dues. Discounts decrease pending dues.
           </div>
           
