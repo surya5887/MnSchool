@@ -1,6 +1,6 @@
 import { initAuthCreds, BufferJSON } from '@whiskeysockets/baileys';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../src/lib/firebase'; // Assuming Vercel allows importing from src
+import { dbNode as db } from './firebase-node';
 
 export const useFirebaseAuthState = async (sessionId: string) => {
   const collectionName = 'whatsapp_auth';

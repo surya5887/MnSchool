@@ -118,22 +118,19 @@ const DefaultersList: React.FC = () => {
       try {
         data = await res.json();
       } catch (parseErr) {
-        alert("Failed to parse API response. Are you running on localhost without Vercel API support? Try testing on the live Vercel URL.");
-        window.open(`https://wa.me/91${num}?text=${encodeURIComponent(message)}`, '_blank');
+        alert("Serverless Error (Vercel): Failed to parse API response. Please check Vercel Logs. Details: " + parseErr);
         setSendingWa(null);
         return;
       }
 
       if (data.success) {
-        alert("? Serverless WhatsApp sent successfully!");
+        alert("✅ Serverless WhatsApp sent successfully!");
       } else {
         alert("API Error: " + (data.error || JSON.stringify(data)));
-        window.open(`https://wa.me/91${num}?text=${encodeURIComponent(message)}`, '_blank');
       }
     } catch (error: any) {
       alert("Network Error: " + error.message);
       console.error(error);
-      window.open(`https://wa.me/91${num}?text=${encodeURIComponent(message)}`, '_blank');
     }
     setSendingWa(null);
   };
