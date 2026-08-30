@@ -29,7 +29,11 @@ const DefaultersList: React.FC = () => {
           getClasses()
         ]);
 
-        const classMap = new Map(classes.map(c => [c.id, c.className]));
+        const classMap = new Map();
+        classes.forEach(c => {
+          classMap.set(c.id, c.className);
+          classMap.set(c.className, c.className);
+        });
         const activeStudents = students.filter(s => s.status === 'Active');
         
         let totalDueSchool = 0;
@@ -119,15 +123,15 @@ const DefaultersList: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container">
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
-        <div>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+        <div style={{ flex: '1 1 auto', minWidth: '250px' }}>
           <h1 style={{ fontSize: '1.8rem', color: 'var(--text-main)', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <AlertCircle size={28} color="var(--danger)" /> Fee Defaulters
           </h1>
           <p style={{ color: 'var(--text-muted)', margin: 0 }}>List of students with pending fee dues.</p>
         </div>
         
-        <div style={{ background: 'var(--danger)', color: 'white', padding: '16px 24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(239, 68, 68, 0.25)', minWidth: '220px' }}>
+        <div style={{ flex: '0 0 auto', background: 'var(--danger)', color: 'white', padding: '16px 24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(239, 68, 68, 0.25)' }}>
           <span style={{ fontSize: '0.9rem', opacity: 0.9, fontWeight: 500, display: 'block', marginBottom: '4px' }}>Total Outstanding Dues</span>
           <h2 style={{ margin: 0, fontSize: '2rem', display: 'flex', alignItems: 'center' }}>
             <IndianRupee size={24} /> {totalOutstanding.toLocaleString()}
@@ -193,7 +197,7 @@ const DefaultersList: React.FC = () => {
                       </div>
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--danger)', fontSize: '1.05rem' }}>
-                      ?{d.totalDue.toLocaleString()}
+                      ₹{d.totalDue.toLocaleString()}
                     </td>
                     <td style={{ textAlign: 'center' }}>
                       <button 
