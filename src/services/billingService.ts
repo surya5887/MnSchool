@@ -15,7 +15,11 @@ export const runAutomatedBilling = async () => {
     const activeStudents = students.filter(s => s.status === 'Active');
     if (activeStudents.length === 0) return 0;
 
-    const classMap = new Map(classes.map(c => [c.id, c.monthlyBaseFee || 0]));
+    const classMap = new Map();
+    classes.forEach(c => {
+      classMap.set(c.id, c.monthlyBaseFee || 0);
+      classMap.set(c.className, c.monthlyBaseFee || 0);
+    });
 
     const today = new Date();
     const currentYear = today.getFullYear();
