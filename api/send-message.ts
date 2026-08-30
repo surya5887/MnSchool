@@ -1,6 +1,8 @@
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
 import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 
+export const maxDuration = 60; // Extend Vercel timeout to 60 seconds
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
   
@@ -25,7 +27,7 @@ export default async function handler(req: any, res: any) {
 
     // Wait for connection to open
     await new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Timeout: Could not connect to WhatsApp. Is your phone internet on?')), 8500);
+      const timeout = setTimeout(() => reject(new Error('Timeout: Could not connect to WhatsApp. Is your phone internet on?')), 45000);
       sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
         
