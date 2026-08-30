@@ -45,7 +45,9 @@ function App() {
           <Route path="audit" element={<AuditLogs />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="defaulters" element={<DefaultersList />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
