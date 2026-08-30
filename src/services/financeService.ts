@@ -5,13 +5,13 @@ import { db } from '../lib/firebase';
 const TRANSACTIONS_COLLECTION = 'transactions';
 
 export interface TransactionData {
-  id?: string;
+  id₹: string;
   type: 'Income' | 'Expense' | 'Charge' | 'Discount';
   category: string; // 'Fee Collection', 'Salary', 'Maintenance', etc.
   amount: number;
   date: string;
   description: string;
-  paymentMethod?: 'Cash' | 'Bank Transfer' | 'UPI' | string;
+  paymentMethod₹: 'Cash' | 'Bank Transfer' | 'UPI' | string;
   referenceId?: string; // Student ID or Staff ID if applicable
   studentId?: string; // Explicitly link to a student
   staffId?: string; // Explicitly link to a staff member
@@ -29,7 +29,7 @@ export const addTransaction = async (data: TransactionData) => {
       data.session = activeSession;
     }
     const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), data as any);
-    await autoLog(data.type === "Charge" ? `Generated Due/Charge of ?${data.amount}` : `Processed ${data.type} of ?${data.amount}`);
+    await autoLog(data.type === "Charge" ? `Generated Due/Charge of ₹${data.amount}` : `Processed ${data.type} of ₹${data.amount}`);
     return docRef.id;
   } catch (error) {
     console.error("Error adding transaction: ", error);
