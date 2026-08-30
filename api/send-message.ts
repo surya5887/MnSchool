@@ -25,12 +25,21 @@ export default async function handler(req: any, res: any) {
 
     // Wait for connection to open
     await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error('Timeout: Could not connect to WhatsApp. Is your phone internet on?')), 8500);
       sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
+        const { connection, lastDisconnect, qr } = update;
+        
+        if (qr) {
+          clearTimeout(timeout);
+          reject(new Error('WhatsApp Not Linked! Session expired. You need to re-scan the QR code.'));
+        }
+        
         if (connection === 'open') {
+          clearTimeout(timeout);
           resolve(true);
         } else if (connection === 'close') {
-          reject(new Error('Connection closed'));
+          clearTimeout(timeout);
+          reject(new Error('Connection closed or logged out.'));
         }
       });
     });
