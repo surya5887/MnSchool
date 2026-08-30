@@ -66,10 +66,10 @@ const SystemSettings: React.FC = () => {
         <p className="page-subtitle" style={{ marginTop: '8px' }}>Configure the core modules, classes, and administrative access of your ERP.</p>
       </div>
 
-      <div className="settings-layout" style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+      <div className="settings-layout" style={{ display: 'flex', flexDirection: 'column', gap: '32px', alignItems: 'stretch' }}>
         
         {/* Beautiful Settings Sidebar */}
-        <div className="settings-sidebar" style={{ width: '300px', display: 'flex', flexDirection: 'column', gap: '12px', flexShrink: 0 }}>
+        <div className="settings-sidebar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (

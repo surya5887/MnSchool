@@ -87,7 +87,7 @@ const WhatsAppSetup: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '40px' }}>
           
           {/* Instructions Column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -126,7 +126,7 @@ const WhatsAppSetup: React.FC = () => {
           </div>
 
           {/* Action Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'white', padding: '48px 32px', borderRadius: '24px', minHeight: '400px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
             
             {/* Background Decoration */}
             <div style={{ position: 'absolute', top: -50, right: -50, opacity: 0.03, pointerEvents: 'none' }}>
@@ -150,7 +150,7 @@ const WhatsAppSetup: React.FC = () => {
             ) : qrCode ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', zIndex: 1, width: '100%' }}>
                 <div style={{ display: 'inline-block', padding: '16px', background: 'white', borderRadius: '20px', boxShadow: '0 15px 35px rgba(0,0,0,0.1)', border: '1px solid #f1f5f9', marginBottom: '24px' }}>
-                   <QRCodeSVG value={qrCode} size={220} level="H" />
+                   <QRCodeSVG value={qrCode} size={260} level="H" />
                 </div>
                 <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '1.1rem' }}>Scan Code</h4>
                 <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>Open WhatsApp on your phone to link.</p>
