@@ -1,5 +1,5 @@
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
-import { useFirebaseAuthState } from './useFirebaseAuthState';
+import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');

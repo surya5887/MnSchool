@@ -1,5 +1,5 @@
 import makeWASocket from '@whiskeysockets/baileys';
-import { useFirebaseAuthState } from './useFirebaseAuthState';
+import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 
 export default async function handler(req: any, res: any) {
   // This route generates a QR code string.

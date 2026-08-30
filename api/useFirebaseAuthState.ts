@@ -1,6 +1,6 @@
 import { initAuthCreds, BufferJSON } from '@whiskeysockets/baileys';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { dbNode as db } from './firebase-node';
+import { dbNode as db } from './firebase-node.js';
 
 export const useFirebaseAuthState = async (sessionId: string) => {
   const collectionName = 'whatsapp_auth';
