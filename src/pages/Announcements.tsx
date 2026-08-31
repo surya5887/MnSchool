@@ -176,9 +176,9 @@ useEffect(() => {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
       
       {/* Dynamic Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '28px 32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+      <div className="header-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '28px 32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
         <div>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '0 0 8px 0', color: '#1e293b', fontSize: '1.85rem' }}>
+          <h1 className="header-title" style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '0 0 8px 0', color: '#1e293b', fontSize: '1.85rem' }}>
             <div style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', padding: '12px', borderRadius: '16px', color: 'white', display: 'flex', boxShadow: '0 8px 16px rgba(37, 211, 102, 0.25)' }}>
               <Megaphone size={26} strokeWidth={2.5} />
             </div>
@@ -188,7 +188,7 @@ useEffect(() => {
         </div>
         
         {/* Smart Typing Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: hindiEnabled ? '#f0fdf4' : '#f8fafc', padding: '10px 20px', borderRadius: '100px', border: `1px solid ${hindiEnabled ? '#bbf7d0' : '#e2e8f0'}`, transition: 'all 0.3s' }}>
+        <div className="smart-typing-toggle" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: hindiEnabled ? '#f0fdf4' : '#f8fafc', padding: '10px 20px', borderRadius: '100px', border: `1px solid ${hindiEnabled ? '#bbf7d0' : '#e2e8f0'}`, transition: 'all 0.3s' }}>
           <div style={{ background: hindiEnabled ? '#22c55e' : '#94a3b8', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
             <Languages size={18} strokeWidth={2.5} />
           </div>
@@ -206,12 +206,12 @@ useEffect(() => {
       </div>
 
       {/* Composer Section - Full Width */}
-      <div style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+      <div className="composer-card" style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+        <div className="composer-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
           <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
             <MessageSquare size={22} color="#6366f1" /> Message Editor
           </h2>
-          <button 
+          <button className="composer-btn"
             onClick={sendMessage} 
             disabled={sending || selectedGroups.length === 0 || !message.trim()}
             style={{ 
@@ -230,7 +230,7 @@ useEffect(() => {
           </button>
         </div>
         
-        <div style={{ position: 'relative' }}>
+        <div className="search-container" style={{ position: 'relative' }}>
           <textarea 
             ref={textareaRef}
             value={message}
@@ -257,16 +257,16 @@ useEffect(() => {
       </div>
 
       {/* Recipient Selection Section - Full Width */}
-      <div style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+      <div className="recipients-card" style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
           <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
             <Users size={22} color="#3b82f6" /> Select Recipients
           </h2>
           
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ position: 'relative' }}>
+          <div className="toolbar-container" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="search-container" style={{ position: 'relative' }}>
               <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input 
+              <input className="search-input"
                 type="text" 
                 placeholder="Search communities..." 
                 value={search}
@@ -278,6 +278,7 @@ useEffect(() => {
               />
             </div>
             
+            <div className="toolbar-buttons" style={{ display: 'flex', gap: '12px' }}>
             <button onClick={fetchGroups} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px 16px', borderRadius: '12px', fontSize: '0.95rem', color: '#475569', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }} disabled={loading}>
               {loading ? <Loader2 size={16} className="spin" /> : 'Refresh'}
             </button>
@@ -290,6 +291,7 @@ useEffect(() => {
               {selectedGroups.length === selectableGroups.length && selectableGroups.length > 0 ? <CheckSquare size={18}/> : <Square size={18}/>} 
               Select All
             </button>
+            </div>
           </div>
         </div>
 
@@ -449,7 +451,7 @@ useEffect(() => {
       </div>
 
       {/* Automated Fee Reminder Template */}
-      <div style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginTop: '8px' }}>
+      <div className="template-card" style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginTop: '8px' }}>
         <h2 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
           <Settings2 size={22} color="#f59e0b" /> Automated Fee Reminder Template
         </h2>
@@ -492,6 +494,60 @@ useEffect(() => {
       <style>{`
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Mobile Responsiveness for Announcements */
+        @media (max-width: 768px) {
+          .header-card {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 20px !important;
+            padding: 24px 20px !important;
+          }
+          .smart-typing-toggle {
+            width: 100% !important;
+            justify-content: space-between !important;
+            padding: 12px 16px !important;
+            box-sizing: border-box !important;
+          }
+          .composer-card, .recipients-card, .template-card {
+            padding: 24px 20px !important;
+          }
+          .composer-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 16px !important;
+          }
+          .composer-btn {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          .toolbar-container {
+            width: 100% !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          .search-container {
+            width: 100% !important;
+          }
+          .search-input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .toolbar-buttons {
+            display: flex !important;
+            width: 100% !important;
+            gap: 12px !important;
+          }
+          .toolbar-buttons > button {
+            flex: 1 !important;
+            justify-content: center !important;
+            padding: 12px !important;
+            font-size: 0.9rem !important;
+          }
+          .header-title {
+            font-size: 1.5rem !important;
+          }
+        }
       `}</style>
     </motion.div>
   );
