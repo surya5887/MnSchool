@@ -548,14 +548,25 @@ const NewAdmission: React.FC = () => {
                   <input type="date" name="admissionDate" value={formData.admissionDate || ''} onChange={handleInputChange} className="glass-input" />
                 </div>
                 <div>
-                  <label>Fee Group</label>
-                  <select name="feeGroup" value={formData.feeGroup || 'General Fee Category'} onChange={handleInputChange} className="glass-input">
-                    <option value="General Fee Category">General Fee Category</option>
-                    <option value="Staff Child">Staff Child</option>
-                    <option value="RTE">RTE (Right to Education)</option>
-                    <option value="Scholarship">Scholarship</option>
-                    <option value="Management Quota">Management Quota</option>
-                  </select>
+                  <label>Fee Group & Discount (%)</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: '8px' }}>
+                    <select name="feeGroup" value={formData.feeGroup || 'General Fee Category'} onChange={handleInputChange} className="glass-input">
+                      <option value="General Fee Category">General Fee Category</option>
+                      <option value="Staff Child">Staff Child</option>
+                      <option value="RTE">RTE (Right to Education)</option>
+                      <option value="Scholarship">Scholarship</option>
+                      <option value="Management Quota">Management Quota</option>
+                    </select>
+                    <input 
+                      type="number" 
+                      name="discountPercent" 
+                      value={formData.discountPercent === 0 ? '' : formData.discountPercent} 
+                      onChange={(e) => setFormData(prev => ({...prev, discountPercent: Math.min(100, Math.max(0, Number(e.target.value))) }))} 
+                      className="glass-input" 
+                      placeholder="%" 
+                      min="0" max="100"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label>Transport Route</label>
