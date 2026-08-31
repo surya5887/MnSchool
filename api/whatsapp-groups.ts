@@ -130,11 +130,7 @@ export default async function handler(req: any, res: any) {
 
       const isAnnounceOnly = !!g.announce;
       
-      // If it's a Parent Community Group (not the announcement group), we shouldn't even show it
-      // because you can't broadcast to virtual parent groups directly.
-      if (g.isCommunity && !g.isCommunityAnnounce) {
-          continue; // Skip this group
-      }
+      
 
       // If we couldn't fetch parent data for a community announcement, 
       // assume admin if they are the owner of the announcement group itself.
@@ -159,8 +155,11 @@ export default async function handler(req: any, res: any) {
         name: g.subject || 'Unnamed Group',
         participantsCount: g.participants?.length || 0,
         isCommunity: isCommunity || isCommunityAnnounce,
+        isCommunityAnnounce: !!g.isCommunityAnnounce,
+        isParentCommunity: !!(g.isCommunity && !g.isCommunityAnnounce),
+        linkedParent: g.linkedParent || null,
         iAmAdmin,
-        readOnly,
+        readOnly: g.isCommunity && !g.isCommunityAnnounce ? true : readOnly, // Virtual parents are always readonly
         isAnnounceOnly
       });
     }

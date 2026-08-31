@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, Users, Search, CheckSquare, Square, Send, Loader2, MessageSquare, AlertCircle, Settings2, Languages, Lock, ShieldCheck } from 'lucide-react';
+import { Megaphone, Users, Search, CheckSquare, Square, Send, Loader2, MessageSquare, AlertCircle, Settings2, Languages, Lock, ShieldCheck, Folder } from 'lucide-react';
 import { useTransliterate } from '../hooks/useTransliterate';
 import { getSchoolSettings, saveSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 
@@ -244,81 +244,140 @@ const Announcements: React.FC = () => {
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
                 <Loader2 size={32} style={{ animation: 'spin 1.5s linear infinite', marginBottom: '16px' }} color="#cbd5e1" />
-                <p>Syncing WhatsApp contacts...</p>
+                <p>Loading WhatsApp Groups...</p>
               </div>
             ) : error ? (
-              <div style={{ textAlign: 'center', color: '#ef4444', padding: '32px', background: '#fef2f2', borderRadius: '16px', border: '1px solid #fecaca' }}>
+              <div style={{ textAlign: 'center', color: '#ef4444', padding: '24px', background: '#fef2f2', borderRadius: '16px' }}>
                 <AlertCircle size={32} style={{ margin: '0 auto 12px' }} />
                 <p style={{ margin: 0, fontWeight: 500 }}>{error}</p>
               </div>
             ) : filteredGroups.length === 0 ? (
               <div style={{ textAlign: 'center', color: '#94a3b8', padding: '32px' }}>
-                No groups found. Please ensure your WhatsApp is properly linked in settings.
+                No groups found matching your search.
               </div>
             ) : (
-              filteredGroups.map(group => {
-                const isSelected = selectedGroups.includes(group.id);
-                
-                // Determine styling based on group permissions
-                let bgColor = '#ffffff';
-                let borderColor = '#e2e8f0';
-                let iconColor = '#94a3b8';
-
-                if (group.readOnly) {
-                  bgColor = '#fef2f2'; // light red
-                  borderColor = '#fecaca';
-                } else if (group.iAmAdmin) {
-                  bgColor = isSelected ? '#dcfce7' : '#f0fdf4'; // green tinted
-                  borderColor = isSelected ? '#22c55e' : '#bbf7d0';
-                  iconColor = isSelected ? '#16a34a' : '#22c55e';
-                } else {
-                  bgColor = isSelected ? '#eff6ff' : '#ffffff'; // blue tinted for standard groups
-                  borderColor = isSelected ? '#3b82f6' : '#e2e8f0';
-                  iconColor = isSelected ? '#2563eb' : '#94a3b8';
-                }
-
+              <>
+              {/* Community Groups */}
+              {Array.from(() => {
+                const map = new Map<string, { parent?: Group, subgroups: Group[] }>();
+                groups.filter(g => g.isParentCommunity).forEach(p => map.set(p.id, { parent: p, subgroups: [] }));
+                filteredGroups.filter(g => g.linkedParent).forEach(g => {
+                   if (!map.has(g.linkedParent!)) map.set(g.linkedParent!, { subgroups: [] });
+                   map.get(g.linkedParent!)!.subgroups.push(g);
+                });
+                return map.entries();
+              })().filter(([_, comm]) => comm.subgroups.length > 0).map(([pId, comm]) => {
+                const pName = comm.parent?.name || 'Community Sub-groups';
                 return (
-                  <div 
-                    key={group.id} 
-                    onClick={() => toggleGroup(group)}
-                    style={{ 
-                      display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', 
-                      background: bgColor, 
-                      borderRadius: '16px', 
-                      cursor: group.readOnly ? 'not-allowed' : 'pointer', 
-                      border: `1px solid ${borderColor}`,
-                      transition: 'all 0.2s',
-                      opacity: group.readOnly ? 0.8 : 1
-                    }}
-                  >
-                    <div style={{ color: group.readOnly ? '#f87171' : iconColor, transition: 'color 0.2s' }}>
-                      {group.readOnly ? <Lock size={22} /> : (isSelected ? <CheckSquare size={22} /> : <Square size={22} />)}
+                  <div key={pId} style={{ background: '#f8fafc', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: '#475569' }}>
+                       <Folder size={18} fill="#e2e8f0" color="#64748b" />
+                       <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>{pName}</h3>
                     </div>
-                    
-                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <h4 style={{ margin: '0 0 6px 0', color: group.readOnly ? '#991b1b' : '#1e293b', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{group.name}</span>
-                        
-                        {group.isCommunity && (
-                          <span style={{ fontSize: '0.65rem', background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: '100px', fontWeight: 700, border: '1px solid #cbd5e1' }}>Community</span>
-                        )}
-                      </h4>
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <p style={{ margin: 0, fontSize: '0.8rem', color: group.readOnly ? '#b91c1c' : '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Users size={12} /> {group.participantsCount} participants
-                        </p>
-                        
-                        {group.readOnly ? (
-                          <span style={{ fontSize: '0.7rem', color: '#b91c1c', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><AlertCircle size={12}/> Cannot Send</span>
-                        ) : group.iAmAdmin ? (
-                          <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><ShieldCheck size={12}/> Admin</span>
-                        ) : null}
-                      </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {comm.subgroups.map(group => {
+                          const isSelected = selectedGroups.includes(group.id);
+                          let bgColor = '#ffffff';
+                          let borderColor = '#e2e8f0';
+                          let iconColor = '#94a3b8';
+                          if (group.readOnly) {
+                            bgColor = '#fef2f2'; borderColor = '#fecaca';
+                          } else if (group.iAmAdmin) {
+                            bgColor = isSelected ? '#dcfce7' : '#f0fdf4';
+                            borderColor = isSelected ? '#22c55e' : '#bbf7d0';
+                            iconColor = isSelected ? '#16a34a' : '#22c55e';
+                          } else {
+                            bgColor = isSelected ? '#eff6ff' : '#ffffff';
+                            borderColor = isSelected ? '#3b82f6' : '#e2e8f0';
+                            iconColor = isSelected ? '#2563eb' : '#94a3b8';
+                          }
+                          return (
+                            <div key={group.id} onClick={() => toggleGroup(group)}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px',
+                                background: bgColor, border: `1px solid ${borderColor}`,
+                                borderRadius: '12px', cursor: group.readOnly ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.2s', position: 'relative', overflow: 'hidden'
+                              }}>
+                              {isSelected && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: group.iAmAdmin ? '#22c55e' : '#3b82f6' }}></div>}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem', color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  {group.name}
+                                  {group.isCommunityAnnounce && <span style={{ fontSize: '0.6rem', background: '#e0e7ff', color: '#4f46e5', padding: '2px 6px', borderRadius: '100px', fontWeight: 700 }}>Announcement</span>}
+                                </h4>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                  <p style={{ margin: 0, fontSize: '0.75rem', color: group.readOnly ? '#b91c1c' : '#64748b' }}>
+                                    <Users size={12} style={{display:'inline', verticalAlign:'text-bottom'}}/> {group.participantsCount}
+                                  </p>
+                                  {group.readOnly ? (
+                                    <span style={{ fontSize: '0.7rem', color: '#b91c1c', fontWeight: 600 }}><AlertCircle size={10} style={{display:'inline'}}/> Cannot Send</span>
+                                  ) : group.iAmAdmin ? (
+                                    <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: 600 }}><ShieldCheck size={10} style={{display:'inline'}}/> Admin</span>
+                                  ) : null}
+                                </div>
+                              </div>
+                            </div>
+                          )
+                      })}
                     </div>
                   </div>
                 )
-              })
+              })}
+              
+              {/* Standalone Groups */}
+              {(() => {
+                 const standalone = filteredGroups.filter(g => !g.linkedParent && !g.isParentCommunity);
+                 if (standalone.length === 0) return null;
+                 return (
+                   <>
+                   <h3 style={{ margin: '12px 0 8px 8px', fontSize: '0.9rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Other Groups</h3>
+                   {standalone.map(group => {
+                      const isSelected = selectedGroups.includes(group.id);
+                      let bgColor = '#ffffff';
+                      let borderColor = '#e2e8f0';
+                      let iconColor = '#94a3b8';
+                      if (group.readOnly) {
+                        bgColor = '#fef2f2'; borderColor = '#fecaca';
+                      } else if (group.iAmAdmin) {
+                        bgColor = isSelected ? '#dcfce7' : '#f0fdf4';
+                        borderColor = isSelected ? '#22c55e' : '#bbf7d0';
+                        iconColor = isSelected ? '#16a34a' : '#22c55e';
+                      } else {
+                        bgColor = isSelected ? '#eff6ff' : '#ffffff';
+                        borderColor = isSelected ? '#3b82f6' : '#e2e8f0';
+                        iconColor = isSelected ? '#2563eb' : '#94a3b8';
+                      }
+                      return (
+                        <div key={group.id} onClick={() => toggleGroup(group)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px',
+                            background: bgColor, border: `1px solid ${borderColor}`,
+                            borderRadius: '12px', cursor: group.readOnly ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s', position: 'relative', overflow: 'hidden'
+                          }}>
+                          {isSelected && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: group.iAmAdmin ? '#22c55e' : '#3b82f6' }}></div>}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem', color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {group.name}
+                            </h4>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <p style={{ margin: 0, fontSize: '0.75rem', color: group.readOnly ? '#b91c1c' : '#64748b' }}>
+                                <Users size={12} style={{display:'inline', verticalAlign:'text-bottom'}}/> {group.participantsCount}
+                              </p>
+                              {group.readOnly ? (
+                                <span style={{ fontSize: '0.7rem', color: '#b91c1c', fontWeight: 600 }}><AlertCircle size={10} style={{display:'inline'}}/> Cannot Send</span>
+                              ) : group.iAmAdmin ? (
+                                <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: 600 }}><ShieldCheck size={10} style={{display:'inline'}}/> Admin</span>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                   })}
+                   </>
+                 )
+              })()}
+              </>
             )}
           </div>
         </div>
