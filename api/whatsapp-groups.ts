@@ -96,16 +96,10 @@ export default async function handler(req: any, res: any) {
         }
       }
 
-      // 4. Robust Fallback: If Baileys returned this group, the user is in it.
-      // If we couldn't even FIND the user in the participants array, the array is incomplete
-      // (which happens often for large WhatsApp Communities to save bandwidth).
-      // We MUST NOT block the user from attempting to send if we don't have complete data.
-      if (!iAmAdmin && !meFoundInParticipants) {
-          iAmAdmin = true; // Assume true to unblock the UI. Server will reject if false.
-      }
+      
 
       const isAnnounceOnly = !!g.announce;
-      const readOnly = isAnnounceOnly && !iAmAdmin;
+      const readOnly = false; // Never block UI, let WhatsApp API handle rejection
 
       const isCommunity = !!g.isCommunity || !!g.linkedParent;
       const isCommunityAnnounce = !!g.isCommunityAnnounce;
