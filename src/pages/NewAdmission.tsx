@@ -434,367 +434,434 @@ const NewAdmission: React.FC = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h1 className="page-title"><UserPlus size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> New Admission</h1>
-          <p className="page-subtitle">Enroll a new student into the system with full digital records.</p>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '2.4rem' }}>
+            <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', padding: '12px', borderRadius: '16px', color: 'white', display: 'flex', boxShadow: '0 8px 15px rgba(99,102,241,0.3)' }}>
+              <UserPlus size={32} />
+            </div>
+            New Admission
+          </h1>
+          <p className="page-subtitle" style={{ fontSize: '1.1rem', marginTop: '8px' }}>Enroll a new student into the system with full digital records.</p>
         </div>
-        <button className="btn-secondary" onClick={() => setShowDraftsModal(true)} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <FileText size={18} /> Saved Drafts
+        <button className="btn-secondary hover-scale" onClick={() => setShowDraftsModal(true)} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'white', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+          <FileText size={18} color="#6366f1" /> Saved Drafts
         </button>
       </div>
 
-      {/* Student Type Toggle */}
-      <div className="glass-panel" style={{ marginBottom: '24px', padding: '20px' }}>
-        <h3 style={{ margin: '0 0 16px 0' }}>Student Type</h3>
-        <div className="filter-bar">
-          <button
-            type="button"
-            className={admissionType === 'New' ? 'btn-primary' : 'btn-secondary'}
-            style={{ flex: 1, padding: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            onClick={() => { setAdmissionType('New'); setFormData(prev => ({...prev, admissionType: 'New', previousDues: 0, previousPaidAmount: 0, previousSession: '', originalAdmissionDate: ''})); }}
-          >
-            🆕 New Admission
-          </button>
-          <button
-            type="button"
-            className={admissionType === 'Old' ? 'btn-primary' : 'btn-secondary'}
-            style={{ flex: 1, padding: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            onClick={() => { setAdmissionType('Old'); setFormData(prev => ({...prev, admissionType: 'Old'})); }}
-          >
-            🔄 Old / Continuing Student
-          </button>
-        </div>
-      </div>
-
-      <div className="form-layout">
-        
-        {/* Left Column - Forms */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }}>
           
-          <div className="glass-panel">
-            <h3 style={{ margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={18} /> Student Details</h3>
-            <div className="form-grid">
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>First Name *</label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Rahul" />
+          {/* Main Form Area */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            
+            {/* Student Type Selection */}
+            <div className="glass-panel" style={{ padding: '32px', background: 'linear-gradient(145deg, #ffffff, #f8fafc)', borderTop: '4px solid #3b82f6' }}>
+              <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
+                <Check size={20} color="#3b82f6" /> Admission Type
+              </h3>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <button
+                  type="button"
+                  style={{
+                    flex: 1, padding: '16px', fontSize: '1.1rem', fontWeight: 600, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s',
+                    background: admissionType === 'New' ? '#eff6ff' : 'white',
+                    color: admissionType === 'New' ? '#2563eb' : '#64748b',
+                    border: admissionType === 'New' ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                    boxShadow: admissionType === 'New' ? '0 4px 12px rgba(59,130,246,0.1)' : 'none'
+                  }}
+                  onClick={() => { setAdmissionType('New'); setFormData(prev => ({...prev, admissionType: 'New', previousDues: 0, previousPaidAmount: 0, previousSession: '', originalAdmissionDate: ''})); }}
+                >
+                  <UserPlus size={20} /> Fresh Admission
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    flex: 1, padding: '16px', fontSize: '1.1rem', fontWeight: 600, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s',
+                    background: admissionType === 'Old' ? '#f0fdf4' : 'white',
+                    color: admissionType === 'Old' ? '#16a34a' : '#64748b',
+                    border: admissionType === 'Old' ? '2px solid #16a34a' : '1px solid #e2e8f0',
+                    boxShadow: admissionType === 'Old' ? '0 4px 12px rgba(22,163,74,0.1)' : 'none'
+                  }}
+                  onClick={() => { setAdmissionType('Old'); setFormData(prev => ({...prev, admissionType: 'Old'})); }}
+                >
+                  <FileText size={20} /> Old / Continuing Student
+                </button>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Last Name *</label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Kumar" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Date of Birth</label>
-                <input type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="glass-input" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Aadhar Number</label>
-                <input type="text" name="aadharNumber" value={formData.aadharNumber} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Religion</label>
-                <input type="text" name="religion" value={formData.religion} onChange={handleInputChange} className="glass-input" placeholder="e.g. Hindu, Muslim, Sikh" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Caste / Category</label>
-                <input type="text" name="caste" value={formData.caste} onChange={handleInputChange} className="glass-input" placeholder="e.g. General, OBC, SC, ST" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Student Email ID</label>
-                <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="glass-input" placeholder="student@example.com" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Address</label>
-                <input type="text" name="address" value={formData.address} onChange={handleInputChange} className="glass-input" placeholder="Complete residential address" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Gender</label>
-                <select name="gender" value={formData.gender} onChange={handleInputChange} className="glass-input">
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Blood Group</label>
-                <select name="bloodGroup" value={formData.bloodGroup} onChange={handleInputChange} className="glass-input">
-                  <option value="">Select Blood Group</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
-              </div>
-            </div>
-          </div>
 
-          <div className="glass-panel">
-            <h3 style={{ margin: '0 0 20px 0' }}>Academic & Fee Details</h3>
-            <div className="form-grid">
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admission No. (Optional)</label>
-                <input type="text" name="admissionNo" value={formData.admissionNo} onChange={handleInputChange} className="glass-input" placeholder="e.g. ADM-2023-001" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Roll Number (Optional)</label>
-                <input type="number" name="rollNumber" value={formData.rollNumber} onChange={handleInputChange} className="glass-input" placeholder="e.g. 45" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admission to Class *</label>
-                <select name="classId" value={formData.classId} onChange={handleClassChange} className="glass-input">
-                  {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section *</label>
-                <select name="sectionId" value={formData.sectionId} onChange={handleInputChange} className="glass-input">
-                  {uniqueClasses.find(c => c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Fee Group & Discount (%)</label>
-                <div className="fee-group-grid" style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: "8px" }}>
-                  <select name="feeGroup" value={formData.feeGroup} onChange={handleInputChange} className="glass-input">
-                    <option>General Fee Category</option>
-                    <option>RTE Quota (Free)</option>
-                    <option>Staff Child</option>
-                  </select>
-                  <input 
-                    type="number" 
-                    name="discountPercent" 
-                    value={formData.discountPercent === 0 ? '' : formData.discountPercent} 
-                    onChange={(e) => setFormData(prev => ({...prev, discountPercent: Math.min(100, Math.max(0, Number(e.target.value))) }))} 
-                    className="glass-input" 
-                    placeholder="%" 
-                    min="0" max="100"
-                  />
-                </div>
-              </div>
-              {routes.length > 0 && (
+              <AnimatePresence>
+                {admissionType === 'Old' && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
+                    <div style={{ marginTop: '24px', background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <h4 style={{ margin: '0 0 16px 0', color: '#16a34a' }}>Continuing Student Details</h4>
+                      <div className="form-grid">
+                        <div>
+                          <label>Original Admission Date</label>
+                          <input type="date" name="originalAdmissionDate" value={formData.originalAdmissionDate || ''} onChange={handleInputChange} className="glass-input" />
+                        </div>
+                        <div>
+                          <label>Previous Session (e.g. 2025-2026)</label>
+                          <input type="text" name="previousSession" value={formData.previousSession || ''} onChange={handleInputChange} className="glass-input" placeholder="2025-2026" />
+                        </div>
+                        <div>
+                          <label>Pending Dues (Carry forward)</label>
+                          <input type="number" name="previousDues" value={formData.previousDues || ''} onChange={handleInputChange} className="glass-input" placeholder="0" />
+                        </div>
+                        <div>
+                          <label>Advance Paid (Carry forward)</label>
+                          <input type="number" name="previousPaidAmount" value={formData.previousPaidAmount || ''} onChange={handleInputChange} className="glass-input" placeholder="0" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Academic Details */}
+            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+              <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
+                <div style={{ background: '#e0e7ff', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#4f46e5" /></div> Academic Details
+              </h3>
+              <div className="form-grid">
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Transport Route</label>
-                  <select name="transportRoute" value={formData.transportRoute} onChange={handleInputChange} className="glass-input">
-                    <option>Not Required</option>
+                  <label>Class *</label>
+                  <select name="classId" value={formData.classId || ''} onChange={handleInputChange} className="glass-input" required>
+                    <option value="">Select Class</option>
+                    {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label>Section *</label>
+                  <select name="sectionId" value={formData.sectionId || ''} onChange={handleInputChange} className="glass-input" required disabled={!formData.classId}>
+                    <option value="">Select Section</option>
+                    {uniqueClasses.find(c => c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label>Roll Number</label>
+                  <input type="number" name="rollNumber" value={formData.rollNumber || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. 1" />
+                </div>
+                <div>
+                  <label>Admission Number</label>
+                  <input type="text" name="admissionNo" value={formData.admissionNo || ''} onChange={handleInputChange} className="glass-input" placeholder="Leave blank for auto-generate" />
+                </div>
+                <div>
+                  <label>Session</label>
+                  <input type="text" name="session" value={formData.session || '2026-2027'} onChange={handleInputChange} className="glass-input" />
+                </div>
+                <div>
+                  <label>Admission Date</label>
+                  <input type="date" name="admissionDate" value={formData.admissionDate || ''} onChange={handleInputChange} className="glass-input" />
+                </div>
+                <div>
+                  <label>Fee Group</label>
+                  <select name="feeGroup" value={formData.feeGroup || 'General Fee Category'} onChange={handleInputChange} className="glass-input">
+                    <option value="General Fee Category">General Fee Category</option>
+                    <option value="Staff Child">Staff Child</option>
+                    <option value="RTE">RTE (Right to Education)</option>
+                    <option value="Scholarship">Scholarship</option>
+                    <option value="Management Quota">Management Quota</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Transport Route</label>
+                  <select name="transportRoute" value={formData.transportRoute || 'Not Required'} onChange={handleInputChange} className="glass-input">
+                    <option value="Not Required">Not Required</option>
                     {routes.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
-              )}
-              {admissionType === 'Old' && (
-                <>
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
-                      <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>📋 Previous Session Details</h4>
-                    </div>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Original Admission Date *</label>
-                    <input type="date" name="originalAdmissionDate" value={formData.originalAdmissionDate} onChange={handleInputChange} className="glass-input" />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Previous Session</label>
-                    <input type="text" name="previousSession" value={formData.previousSession} onChange={handleInputChange} className="glass-input" placeholder="e.g. 2022-2023" />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Previous Dues (₹)</label>
-                    <input type="number" name="previousDues" value={formData.previousDues || ''} onChange={e => setFormData(prev => ({...prev, previousDues: Number(e.target.value)}))} className="glass-input" placeholder="e.g. 5000" />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Previous Amount Paid (₹)</label>
-                    <input type="number" name="previousPaidAmount" value={formData.previousPaidAmount || ''} onChange={e => setFormData(prev => ({...prev, previousPaidAmount: Number(e.target.value)}))} className="glass-input" placeholder="e.g. 10000" />
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="glass-panel">
-            <h3 style={{ margin: '0 0 20px 0' }}>Parents / Guardian Details</h3>
-            
-            {/* Father Details */}
-            <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
-              <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>👨 Father's Details</h4>
-            </div>
-            <div className="form-grid" style={{ marginBottom: "24px" }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Father's Name</label>
-                <input type="text" name="parentName" value={formData.parentName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ramesh Kumar" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Aadhar Number</label>
-                <input type="text" name="fatherAadhar" value={formData.fatherAadhar} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Qualification</label>
-                <input type="text" name="fatherQualification" value={formData.fatherQualification} onChange={handleInputChange} className="glass-input" placeholder="e.g. B.Tech, 12th Pass" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Occupation</label>
-                <input type="text" name="fatherOccupation" value={formData.fatherOccupation} onChange={handleInputChange} className="glass-input" placeholder="e.g. Business, Service" />
-              </div>
-              <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number (Country Code)</label>
-                  <PhoneInput
-                    country={'in'}
-                    value={formData.parentPhone}
-                    onChange={(phone) => setFormData({ ...formData, parentPhone: phone ? '+' + phone : '' })}
-                    inputClass="glass-input"
-                    containerStyle={{ width: '100%' }}
-                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', paddingLeft: '48px', height: '42px', borderRadius: '8px' }}
-                    buttonStyle={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '8px 0 0 8px' }}
-                  />
               </div>
             </div>
 
-            {/* Mother Details */}
-            <div style={{ borderTop: '1px dashed var(--glass-border)', margin: '8px 0 16px', paddingTop: '16px' }}>
-              <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary-color)' }}>👩 Mother's Details</h4>
-            </div>
-            <div className="form-grid" style={{ marginBottom: "24px" }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Mother's Name</label>
-                <input type="text" name="motherName" value={formData.motherName} onChange={handleInputChange} className="glass-input" placeholder="e.g. Sunita Devi" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Aadhar Number</label>
-                <input type="text" name="motherAadhar" value={formData.motherAadhar} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Qualification</label>
-                <input type="text" name="motherQualification" value={formData.motherQualification} onChange={handleInputChange} className="glass-input" placeholder="e.g. B.A., 10th Pass" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Occupation</label>
-                <input type="text" name="motherOccupation" value={formData.motherOccupation} onChange={handleInputChange} className="glass-input" placeholder="e.g. Homemaker, Teacher" />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Contact Number</label>
-                <input type="text" name="motherPhone" value={formData.motherPhone} onChange={handleInputChange} className="glass-input" placeholder="+91 9876543211" />
-              </div>
-            </div>
-
-            {/* Emergency Contact */}
-            <div style={{ borderTop: '2px dashed var(--text-muted)', margin: '16px 0 16px', paddingTop: '24px' }}>
-              <div className="form-grid">
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Emergency Contact</label>
-                  <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} className="glass-input" placeholder="+91 8765432109" />
+            {/* Personal Details */}
+            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+              <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
+                <div style={{ background: '#fae8ff', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#c026d3" /></div> Personal Details
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px' }}>
+                  <div>
+                    <label>First Name *</label>
+                    <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleInputChange} className="glass-input" required placeholder="e.g. Rahul" />
+                  </div>
+                  <div>
+                    <label>Last Name *</label>
+                    <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleInputChange} className="glass-input" required placeholder="e.g. Kumar" />
+                  </div>
+                </div>
+                <div className="form-grid">
+                  <div>
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" value={formData.dob || ''} onChange={handleInputChange} className="glass-input" />
+                  </div>
+                  <div>
+                    <label>Gender</label>
+                    <select name="gender" value={formData.gender || 'Male'} onChange={handleInputChange} className="glass-input">
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Religion</label>
+                    <input type="text" name="religion" value={formData.religion || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Hindu, Muslim, Sikh" />
+                  </div>
+                  <div>
+                    <label>Caste / Category</label>
+                    <input type="text" name="caste" value={formData.caste || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. General, OBC, SC, ST" />
+                  </div>
+                  <div>
+                    <label>Aadhar Number</label>
+                    <input type="text" name="aadharNumber" value={formData.aadharNumber || ''} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" />
+                  </div>
+                  <div>
+                    <label>Blood Group</label>
+                    <select name="bloodGroup" value={formData.bloodGroup || ''} onChange={handleInputChange} className="glass-input">
+                      <option value="">Select Blood Group</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-        </div>
+            {/* Parent Details */}
+            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+              <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
+                <div style={{ background: '#dbeafe', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#2563eb" /></div> Father & Mother Details
+              </h3>
+              
+              <h4 style={{ margin: '0 0 16px 0', color: '#2563eb', borderBottom: '1px dashed #e2e8f0', paddingBottom: '8px' }}>Father's Details</h4>
+              <div className="form-grid" style={{ marginBottom: '32px' }}>
+                <div><label>Father's Name</label><input type="text" name="parentName" value={formData.parentName || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ramesh Kumar" /></div>
+                <div><label>Father Aadhar</label><input type="text" name="fatherAadhar" value={formData.fatherAadhar || ''} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" /></div>
+                <div><label>Qualification</label><input type="text" name="fatherQualification" value={formData.fatherQualification || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. B.Tech" /></div>
+                <div><label>Occupation</label><input type="text" name="fatherOccupation" value={formData.fatherOccupation || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Business" /></div>
+              </div>
 
-        {/* Right Column - Photo & Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-            <h3 style={{ margin: '0 0 16px 0', alignSelf: 'flex-start' }}>Student Photo</h3>
-            
-            <input 
-              type="file" 
-              accept="image/*" 
-              ref={fileInputRef} 
-              style={{ display: 'none' }} 
-              onChange={handlePhotoChange} 
-            />
-            
-            <div 
-              onClick={handlePhotoClick}
-              style={{ 
-                position: 'relative',
-                width: '150px', height: '150px', borderRadius: '12px', border: '2px dashed var(--glass-border)', 
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
-                color: 'var(--text-muted)', marginBottom: '16px', background: 'rgba(255,255,255,0.3)', 
-                cursor: 'pointer', overflow: 'hidden'
-              }}
-            >
-              {photoPreview ? (
-                <>
-                  <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <button 
-                    onClick={handleRemovePhoto}
-                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
-                    title="Remove Photo"
-                  >
-                    <X size={16} />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Camera size={32} style={{ marginBottom: '8px' }} />
-                  <span style={{ fontSize: '0.85rem' }}>Upload Photo</span>
-                </>
-              )}
+              <h4 style={{ margin: '0 0 16px 0', color: '#db2777', borderBottom: '1px dashed #e2e8f0', paddingBottom: '8px' }}>Mother's Details</h4>
+              <div className="form-grid">
+                <div><label>Mother's Name</label><input type="text" name="motherName" value={formData.motherName || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Sunita Devi" /></div>
+                <div><label>Mother Aadhar</label><input type="text" name="motherAadhar" value={formData.motherAadhar || ''} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" /></div>
+                <div><label>Qualification</label><input type="text" name="motherQualification" value={formData.motherQualification || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. B.A." /></div>
+                <div><label>Occupation</label><input type="text" name="motherOccupation" value={formData.motherOccupation || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Homemaker" /></div>
+              </div>
+            </div>
+
+            {/* Contact Details with Country Code Dropdowns */}
+            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+              <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
+                <div style={{ background: '#dcfce7', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#16a34a" /></div> Contact Details
+              </h3>
+              
+              <div className="form-grid">
+                <div>
+                  <label>Primary Phone (Father)</label>
+                  <PhoneInput 
+                    country={'in'} 
+                    value={formData.parentPhone || ''} 
+                    onChange={(val) => setFormData(prev => ({...prev, parentPhone: '+' + val.replace('+', '')}))}
+                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
+                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                  />
+                </div>
+                <div>
+                  <label>Mother Phone</label>
+                  <PhoneInput 
+                    country={'in'} 
+                    value={formData.motherPhone || ''} 
+                    onChange={(val) => setFormData(prev => ({...prev, motherPhone: '+' + val.replace('+', '')}))}
+                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
+                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                  />
+                </div>
+                <div>
+                  <label>Student Phone (Optional)</label>
+                  <PhoneInput 
+                    country={'in'} 
+                    value={formData.phone || ''} 
+                    onChange={(val) => setFormData(prev => ({...prev, phone: '+' + val.replace('+', '')}))}
+                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
+                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                  />
+                </div>
+                <div>
+                  <label>Emergency Contact</label>
+                  <PhoneInput 
+                    country={'in'} 
+                    value={formData.emergencyContact || ''} 
+                    onChange={(val) => setFormData(prev => ({...prev, emergencyContact: '+' + val.replace('+', '')}))}
+                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
+                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                  />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label>Email Address</label>
+                  <input type="email" name="email" value={formData.email || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. email@example.com" />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label>Full Residential Address</label>
+                  <textarea name="address" value={formData.address || ''} onChange={handleInputChange} className="glass-input" style={{ width: '100%', minHeight: '80px', resize: 'vertical' }} placeholder="Enter complete address"></textarea>
+                </div>
+              </div>
             </div>
             
-            <h3 style={{ margin: '16px 0', alignSelf: 'flex-start' }}>Documents</h3>
-            
-            <input type="file" accept="image/*,.pdf" ref={birthCertInputRef} style={{ display: 'none' }} onChange={(e) => { if(e.target.files && e.target.files[0]) setBirthCertFile(e.target.files[0]) }} />
-            <input type="file" accept="image/*,.pdf" ref={tcInputRef} style={{ display: 'none' }} onChange={(e) => { if(e.target.files && e.target.files[0]) setTcFile(e.target.files[0]) }} />
-            
-            <button className="btn-secondary" style={{ width: '100%', marginBottom: '12px', background: birthCertFile ? 'var(--success)' : '', color: birthCertFile ? 'white' : '' }} onClick={() => birthCertInputRef.current?.click()}>
-              {birthCertFile ? <Check size={16} /> : <Upload size={16} />} 
-              {birthCertFile ? 'Birth Certificate Selected' : 'Upload Birth Certificate'}
-            </button>
-            <button className="btn-secondary" style={{ width: '100%', marginBottom: '16px', background: tcFile ? 'var(--success)' : '', color: tcFile ? 'white' : '' }} onClick={() => tcInputRef.current?.click()}>
-              {tcFile ? <Check size={16} /> : <Upload size={16} />} 
-              {tcFile ? 'TC / Marksheet Selected' : 'Upload TC / Marksheet'}
-            </button>
-            
-            <input type="file" accept="image/*,.pdf" ref={customDocInputRef} style={{ display: 'none' }} onChange={handleCustomDocChange} />
-            
-            {customDocs.map(doc => (
-              <div key={doc.id} style={{ display: 'flex', gap: '8px', marginBottom: '12px', width: '100%' }}>
-                <button 
-                  className="btn-secondary" 
-                  style={{ flex: 1, background: doc.file ? 'var(--success)' : '', color: doc.file ? 'white' : '', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} 
-                  onClick={() => { setActiveCustomDocId(doc.id); customDocInputRef.current?.click(); }}
-                  title={doc.name}
-                >
-                  {doc.file ? <Check size={16} /> : <Upload size={16} />} 
-                  {doc.name}
-                </button>
-                <button className="btn-secondary" style={{ padding: '0 12px', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => handleDeleteCustomDoc(doc.id)}>
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
+            {/* Photo & Documents Upload Array */}
+            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+              <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
+                <div style={{ background: '#fef3c7', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#d97706" /></div> Student Photo & Documents
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
+                {/* Photo Upload */}
+                <div>
+                  <h4 style={{ margin: '0 0 16px 0', color: '#475569' }}>Student Photo</h4>
+                  <div 
+                    onClick={handlePhotoClick}
+                    style={{ 
+                      width: '100%', height: '240px', border: '2px dashed #cbd5e1', borderRadius: '20px', 
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+                      cursor: 'pointer', background: '#f8fafc', overflow: 'hidden', position: 'relative', transition: 'all 0.2s'
+                    }}
+                    className="hover-scale"
+                  >
+                    {photoPreview ? (
+                      <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ textAlign: 'center', color: '#64748b' }}>
+                        <Camera size={48} style={{ margin: '0 auto 12px auto', opacity: 0.5 }} />
+                        <p style={{ margin: 0, fontWeight: 600 }}>Click to upload photo</p>
+                      </div>
+                    )}
+                    <input type="file" ref={fileInputRef} onChange={handlePhotoChange} accept="image/*" style={{ display: 'none' }} />
+                  </div>
+                  {photoPreview && (
+                    <button type="button" onClick={handleRemovePhoto} style={{ margin: '12px auto 0 auto', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 600 }}>
+                      <Trash2 size={16} /> Remove Photo
+                    </button>
+                  )}
+                </div>
 
-            {showNewDocInput ? (
-              <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-                <input type="text" className="glass-input" placeholder="Document Name" value={newDocName} onChange={e => setNewDocName(e.target.value)} autoFocus />
-                <button className="btn-primary" style={{ padding: '0 12px' }} onClick={handleAddCustomDoc}><Check size={16} /></button>
-                <button className="btn-secondary" style={{ padding: '0 12px' }} onClick={() => setShowNewDocInput(false)}><X size={16} /></button>
-              </div>
-            ) : (
-              <button className="btn-secondary" style={{ width: '100%', borderStyle: 'dashed' }} onClick={() => setShowNewDocInput(true)}>
-                <Plus size={16} /> Add Other Document
-              </button>
-            )}
-          </div>
+                {/* Documents Upload */}
+                <div>
+                  <h4 style={{ margin: '0 0 16px 0', color: '#475569' }}>Required Documents</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                         <div style={{ background: '#e0e7ff', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#4f46e5" /></div>
+                         <div>
+                            <div style={{ fontWeight: 600, color: '#1e293b' }}>Birth Certificate</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{birthCertFile ? birthCertFile.name : 'Not uploaded'}</div>
+                         </div>
+                      </div>
+                      <input type="file" ref={birthCertInputRef} onChange={(e) => { if(e.target.files) setBirthCertFile(e.target.files[0]); }} style={{ display: 'none' }} />
+                      <button type="button" className="btn-secondary" onClick={() => birthCertInputRef.current?.click()} style={{ padding: '8px 16px' }}>{birthCertFile ? 'Change' : 'Upload'}</button>
+                    </div>
 
-          <div className="glass-panel" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5))' }}>
-            <h3 style={{ margin: '0 0 16px 0' }}>Finalize</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '20px' }}>Please verify all details before submitting. An SMS will be automatically sent to the parents upon admission.</p>
-            <button className="btn-primary" style={{ width: '100%', padding: '12px' }} onClick={handleSubmit} disabled={loading}>
-              {loading ? 'Processing...' : <><Save size={18} /> Confirm Admission</>}
-            </button>
+                    <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                         <div style={{ background: '#dbeafe', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#2563eb" /></div>
+                         <div>
+                            <div style={{ fontWeight: 600, color: '#1e293b' }}>Transfer Certificate (TC)</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{tcFile ? tcFile.name : 'Not uploaded'}</div>
+                         </div>
+                      </div>
+                      <input type="file" ref={tcInputRef} onChange={(e) => { if(e.target.files) setTcFile(e.target.files[0]); }} style={{ display: 'none' }} />
+                      <button type="button" className="btn-secondary" onClick={() => tcInputRef.current?.click()} style={{ padding: '8px 16px' }}>{tcFile ? 'Change' : 'Upload'}</button>
+                    </div>
+
+                    {customDocs.map(doc => (
+                      <div key={doc.id} style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{ background: '#f3e8ff', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#a855f7" /></div>
+                          <div>
+                            <div style={{ fontWeight: 600, color: '#1e293b' }}>{doc.name}</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{doc.file ? doc.file.name : 'Not uploaded'}</div>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button type="button" className="btn-secondary" onClick={() => { setActiveCustomDocId(doc.id); setTimeout(() => customDocInputRef.current?.click(), 0); }} style={{ padding: '8px 16px' }}>{doc.file ? 'Change' : 'Upload'}</button>
+                          <button type="button" onClick={() => setCustomDocs(customDocs.filter(d => d.id !== doc.id))} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={18} /></button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <input type="file" ref={customDocInputRef} onChange={handleCustomDocChange} style={{ display: 'none' }} />
+                    
+                    {showNewDocInput ? (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input type="text" className="glass-input" value={newDocName} onChange={e => setNewDocName(e.target.value)} placeholder="e.g. Previous Marksheet" style={{ flex: 1 }} />
+                        <button type="button" className="btn-primary" onClick={handleAddCustomDoc} style={{ padding: '8px 16px' }}>Add</button>
+                        <button type="button" className="btn-secondary" onClick={() => { setShowNewDocInput(false); setNewDocName(''); }} style={{ padding: '8px' }}><X size={18} /></button>
+                      </div>
+                    ) : (
+                      <button type="button" onClick={() => setShowNewDocInput(true)} style={{ background: 'transparent', border: '1px dashed #cbd5e1', padding: '12px', borderRadius: '16px', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                        <Plus size={18} /> Add Document
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Submit Bar */}
+            <div className="glass-panel" style={{ padding: '24px', background: 'white', display: 'flex', justifyContent: 'flex-end', gap: '16px', position: 'sticky', bottom: '24px', zIndex: 100 }}>
+               <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="btn-secondary" style={{ padding: '12px 24px', fontSize: '1.1rem', borderRadius: '12px' }}>
+                 Reset Form
+               </button>
+               <button type="submit" disabled={loading} className="btn-primary hover-scale" style={{ padding: '12px 32px', fontSize: '1.1rem', fontWeight: 700, borderRadius: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 15px rgba(16,185,129,0.2)' }}>
+                 {loading ? 'Saving Records...' : <><Save size={20} /> Enroll Student</>}
+               </button>
+            </div>
           </div>
         </div>
-      </div>
-      
+      </form>
+
+      {/* Modals for Drafts & Success message */}
+      <AnimatePresence>
+        {showDraftsModal && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999, background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ background: 'white', width: '90%', maxWidth: '500px', borderRadius: '16px', padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0 }}>Saved Drafts</h3>
+                <button onClick={() => setShowDraftsModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
+              </div>
+              <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                {savedDrafts.length === 0 ? <p style={{ color: '#666' }}>No saved drafts.</p> : savedDrafts.map(draft => (
+                  <div key={draft.id} style={{ borderBottom: '1px solid #eee', padding: '12px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <strong>{draft.data.firstName || 'Unknown'} {draft.data.lastName || ''}</strong>
+                      <div style={{ fontSize: '0.8rem', color: '#666' }}>{new Date(draft.timestamp).toLocaleString()}</div>
+                    </div>
+                    <button onClick={() => { setFormData(draft.data); setDraftId(draft.id); setShowDraftsModal(false); }} className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.9rem' }}>Load</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {saved && (
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
             style={{
-              position: 'fixed', bottom: '40px', right: '40px',
-              background: 'var(--success)', color: 'white',
-              padding: '16px 24px', borderRadius: '12px',
+              position: 'fixed', bottom: '100px', right: '40px',
+              background: '#10b981', color: 'white', padding: '16px 24px',
+              borderRadius: '16px',
               boxShadow: '0 10px 25px rgba(16, 185, 129, 0.4)',
               display: 'flex', alignItems: 'center', gap: '12px',
               fontWeight: 600, zIndex: 1000
@@ -804,7 +871,6 @@ const NewAdmission: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Cropper Modal */}
       {showCropper && rawImage && (
         <div style={{
