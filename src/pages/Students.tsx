@@ -214,94 +214,119 @@ const Students: React.FC = () => {
           </select>
         </div>
 
-        <div className="glass-table-container">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
+                  {/* Select All Controls for Admin */}
+          {['Principal', 'Manager', 'Super Admin'].includes(role) && filteredStudents.length > 0 && (
+            <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.4)' }}>
+              <input 
+                type="checkbox" 
+                checked={filteredStudents.length > 0 && selectedStudents.length === filteredStudents.length}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedStudents(filteredStudents.map(s => s.id).filter(Boolean));
+                  } else {
+                    setSelectedStudents([]);
+                  }
+                }}
+                style={{ cursor: 'pointer', width: '18px', height: '18px', accentColor: 'var(--primary)' }}
+              />
+              <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Select All Students</span>
+              {selectedStudents.length > 0 && (
+                 <span style={{ marginLeft: 'auto', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600 }}>{selectedStudents.length} selected</span>
+              )}
+            </div>
+          )}
+
+          <div className="students-grid" style={{ padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+            {loading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                Loading students...
+              </div>
+            ) : filteredStudents.length === 0 ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                No students found matching your criteria.
+              </div>
+            ) : filteredStudents.map((student, index) => (
+              <motion.div 
+                key={student.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: Math.min(index * 0.05, 0.5) }}
+                style={{ 
+                  background: 'white', 
+                  borderRadius: '16px', 
+                  padding: '20px',
+                  boxShadow: selectedStudents.includes(student.id) ? '0 0 0 2px var(--primary), 0 4px 12px rgba(37,99,235,0.1)' : '0 2px 12px rgba(0,0,0,0.04)',
+                  border: '1px solid var(--glass-border)',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  transition: 'all 0.2s',
+                  transform: selectedStudents.includes(student.id) ? 'translateY(-2px)' : 'none'
+                }}
+              >
                 {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-                  <th style={{ width: '40px', textAlign: 'center' }}>
+                  <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 2 }}>
                     <input 
                       type="checkbox" 
-                      checked={filteredStudents.length > 0 && selectedStudents.length === filteredStudents.length}
+                      checked={selectedStudents.includes(student.id)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedStudents(filteredStudents.map(s => s.id).filter(Boolean) as string[]);
+                          setSelectedStudents([...selectedStudents, student.id]);
                         } else {
-                          setSelectedStudents([]);
+                          setSelectedStudents(selectedStudents.filter(id => id !== student.id));
                         }
                       }}
-                      style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
+                      style={{ cursor: 'pointer', width: '20px', height: '20px', accentColor: 'var(--primary)' }}
                     />
-                  </th>
+                  </div>
                 )}
-                <th>Roll No.</th>
-                <th>Adm No</th>
-                <th>Full Name</th>
-                <th>Class / Sec</th>
-                <th>Status</th>
-                {['Principal', 'Manager', 'Super Admin'].includes(role) && <th>Action</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                 <tr>
-                   <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 7 : 6} style={{ textAlign: 'center', padding: '40px' }}>Loading students...</td>
-                 </tr>
-              ) : filteredStudents.length === 0 ? (
-                <tr>
-                  <td colSpan={['Principal', 'Manager', 'Super Admin'].includes(role) ? 7 : 6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                    No students found matching your criteria.
-                  </td>
-                </tr>
-              ) : filteredStudents.map((student, index) => (
-                <motion.tr 
-                  key={student.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-                    <td style={{ textAlign: 'center' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={selectedStudents.includes(student.id as string)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedStudents([...selectedStudents, student.id as string]);
-                          } else {
-                            setSelectedStudents(selectedStudents.filter(id => id !== student.id));
-                          }
-                        }}
-                        style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
-                      />
-                    </td>
-                  )}
-                  <td>{student.rollNumber || '-'}</td>
-                  <td style={{ fontWeight: 600 }}>{student.admissionNo || '-'}</td>
-                                    <td>                    {['Principal', 'Manager', 'Super Admin'].includes(role) ? (                      <Link to={`/student/${student.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>                          <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />                          <span style={{ fontWeight: 500, color: 'var(--primary)' }}>{student.firstName} {student.lastName}</span>                        </div>                      </Link>                    ) : (                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>                        <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />                        <span style={{ fontWeight: 500 }}>{student.firstName} {student.lastName}</span>                      </div>                    )}                  </td>                  <td>{student.classId} - {student.sectionId}</td>                  
-                  <td>
-                    <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingRight: '24px' }}>
+                  <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '56px', height: '56px', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
+                  <div>
+                    {['Principal', 'Manager', 'Super Admin'].includes(role) ? (
+                      <Link to={`/student/${student.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <h4 style={{ margin: '0 0 4px 0', fontSize: '1.15rem', color: 'var(--text-primary)', fontWeight: 700, lineHeight: 1.2 }}>{student.firstName} {student.lastName}</h4>
+                      </Link>
+                    ) : (
+                      <h4 style={{ margin: '0 0 4px 0', fontSize: '1.15rem', color: 'var(--text-primary)', fontWeight: 700, lineHeight: 1.2 }}>{student.firstName} {student.lastName}</h4>
+                    )}
+                    <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`} style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '100px' }}>
                       {student.status || 'Active'}
                     </span>
-                  </td>
-                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-                    <td>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <Link to={`/student/${student.id}`} className="icon-btn" style={{ color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                          <Eye size={18} />
-                        </Link>
-                        <button className="icon-btn" onClick={() => { if(student.id) { setStudentToDelete([student.id]); setDeleteModalOpen(true); } }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  )}
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', background: 'var(--bg-light)', padding: '16px', borderRadius: '12px', marginTop: '4px', border: '1px solid rgba(0,0,0,0.02)' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Class</div>
+                    <div style={{ fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 600 }}>{student.classId} - {student.sectionId}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Roll No</div>
+                    <div style={{ fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 600 }}>{student.rollNumber || '-'}</div>
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Admission No</div>
+                    <div style={{ fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 600 }}>{student.admissionNo || '-'}</div>
+                  </div>
+                </div>
+
+                {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                  <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '8px' }}>
+                    <Link to={`/student/${student.id}`} className="btn-secondary" style={{ flex: 1, padding: '10px', fontSize: '0.95rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', textDecoration: 'none', background: 'white', border: '1px solid var(--glass-border)' }}>
+                      <Eye size={18} /> View Profile
+                    </Link>
+                    <button onClick={() => { if(student.id) { setStudentToDelete([student.id]); setDeleteModalOpen(true); } }} style={{ width: '42px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--danger)', background: 'rgba(239, 68, 68, 0.08)', border: 'none', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
 
       {/* Class Modal */}
       <Modal isOpen={isClassModalOpen} onClose={() => setClassModalOpen(false)} title="Add New Class & Sections">
@@ -335,6 +360,14 @@ const Students: React.FC = () => {
       </Modal>
 
       {/* Secure Delete Modal */}
+      <style>{`
+        @media (max-width: 768px) {
+          .students-grid {
+            grid-template-columns: 1fr !important;
+            padding: 16px !important;
+          }
+        }
+      `}</style>
       <Modal isOpen={deleteModalOpen} onClose={() => { setDeleteModalOpen(false); setDeleteError(''); }} title="Delete Student Record">
         <form onSubmit={handleSecureDelete} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="alert-warning" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem' }}>
