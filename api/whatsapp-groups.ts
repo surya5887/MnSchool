@@ -61,12 +61,16 @@ export default async function handler(req: any, res: any) {
     const groups = Object.values(groupsMap).map((g: any) => {
       
       let iAmAdmin = false;
+      let meFoundInParticipants = false;
       
       // 1. Direct admin check
       if (myId && g.participants) {
         const me = g.participants.find((p: any) => p.id && p.id.split('@')[0].split(':')[0] === myId);
-        if (me && (me.admin === 'admin' || me.admin === 'superadmin' || me.isSuperAdmin || me.admin === true || me.admin === 1)) {
-          iAmAdmin = true;
+        if (me) {
+          meFoundInParticipants = true;
+          if (me.admin === 'admin' || me.admin === 'superadmin' || me.isSuperAdmin || me.isAdmin || me.admin === true || me.admin === 1) {
+            iAmAdmin = true;
+          }
         }
       }
 
@@ -80,14 +84,24 @@ export default async function handler(req: any, res: any) {
         const parent = groupsMap[g.linkedParent];
         if (myId && parent.participants) {
           const meInParent = parent.participants.find((p: any) => p.id && p.id.split('@')[0].split(':')[0] === myId);
-          if (meInParent && (meInParent.admin === 'admin' || meInParent.admin === 'superadmin' || meInParent.isSuperAdmin || meInParent.admin === true || meInParent.admin === 1)) {
-            iAmAdmin = true;
+          if (meInParent) {
+            meFoundInParticipants = true; // We found them in the parent
+            if (meInParent.admin === 'admin' || meInParent.admin === 'superadmin' || meInParent.isSuperAdmin || meInParent.isAdmin || meInParent.admin === true || meInParent.admin === 1) {
+              iAmAdmin = true;
+            }
           }
         }
-        // Check if I am the owner of the parent group
         if (!iAmAdmin && parent.owner && myId && parent.owner.split('@')[0].split(':')[0] === myId) {
           iAmAdmin = true;
         }
+      }
+
+      // 4. Robust Fallback: If Baileys returned this group, the user is in it.
+      // If we couldn't even FIND the user in the participants array, the array is incomplete
+      // (which happens often for large WhatsApp Communities to save bandwidth).
+      // We MUST NOT block the user from attempting to send if we don't have complete data.
+      if (!iAmAdmin && !meFoundInParticipants) {
+          iAmAdmin = true; // Assume true to unblock the UI. Server will reject if false.
       }
 
       const isAnnounceOnly = !!g.announce;
