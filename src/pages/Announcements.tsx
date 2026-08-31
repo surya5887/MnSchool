@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import type { SchoolSettingsData } from '../services/settingsService';
-import { Megaphone, Users, Search, CheckSquare, Square, Send, Loader2, MessageSquare, AlertCircle, Settings2, Languages, ShieldCheck, Folder } from 'lucide-react';
+import { Megaphone, Users, Search, CheckSquare, Square, Send, Loader2, MessageSquare, AlertCircle, Settings2, Languages, ShieldCheck, Folder, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface Group {
