@@ -53,58 +53,72 @@ export default async function handler(req: any, res: any) {
     });
 
     const rawMyId = sock.user?.id || state.creds?.me?.id;
+    // Attempt to extract the true phone number JID
     const myId = rawMyId ? rawMyId.split(':')[0].split('@')[0] : null;
 
     const groupsRaw = await sock.groupFetchAllParticipating();
-    const groupsMap = groupsRaw as any; // map of JID to group
+    const groupsMap = groupsRaw as any;
 
-    const groups = Object.values(groupsMap).map((g: any) => {
-      
+    // Helper to check admin status inside an array of participants
+    const checkAdmin = (participants: any[], targetId: string) => {
+      if (!participants || !targetId) return false;
+      const me = participants.find((p: any) => p.id && p.id.split('@')[0].split(':')[0] === targetId);
+      if (me) {
+        return (me.admin === 'admin' || me.admin === 'superadmin' || me.isSuperAdmin || me.isAdmin || me.admin === true || me.admin === 1);
+      }
+      return false;
+    };
+
+    const checkOwner = (ownerId: string | undefined, targetId: string) => {
+      if (!ownerId || !targetId) return false;
+      return ownerId.split('@')[0].split(':')[0] === targetId;
+    };
+
+    let groups = [];
+    const groupValues = Object.values(groupsMap);
+
+    for (const g of groupValues as any[]) {
       let iAmAdmin = false;
-      let meFoundInParticipants = false;
       
-      // 1. Direct admin check
-      if (myId && g.participants) {
-        const me = g.participants.find((p: any) => p.id && p.id.split('@')[0].split(':')[0] === myId);
-        if (me) {
-          meFoundInParticipants = true;
-          if (me.admin === 'admin' || me.admin === 'superadmin' || me.isSuperAdmin || me.isAdmin || me.admin === true || me.admin === 1) {
-            iAmAdmin = true;
-          }
-        }
+      // 1. Direct check in this group
+      if (myId) {
+        iAmAdmin = checkAdmin(g.participants, myId);
       }
 
       // 2. Owner check
-      if (!iAmAdmin && g.owner && myId && g.owner.split('@')[0].split(':')[0] === myId) {
-        iAmAdmin = true;
+      if (!iAmAdmin && myId) {
+        iAmAdmin = checkOwner(g.owner, myId);
       }
 
-      // 3. Parent community admin check (for announcement groups)
-      if (!iAmAdmin && g.linkedParent && groupsMap[g.linkedParent]) {
-        const parent = groupsMap[g.linkedParent];
-        if (myId && parent.participants) {
-          const meInParent = parent.participants.find((p: any) => p.id && p.id.split('@')[0].split(':')[0] === myId);
-          if (meInParent) {
-            meFoundInParticipants = true; // We found them in the parent
-            if (meInParent.admin === 'admin' || meInParent.admin === 'superadmin' || meInParent.isSuperAdmin || meInParent.isAdmin || meInParent.admin === true || meInParent.admin === 1) {
-              iAmAdmin = true;
-            }
+      // 3. Parent community check
+      if (!iAmAdmin && g.linkedParent && myId) {
+        let parent = groupsMap[g.linkedParent];
+        
+        // If parent is not in groupsMap (not synced), fetch its metadata directly!
+        if (!parent) {
+          try {
+             parent = await sock.groupMetadata(g.linkedParent);
+          } catch (err) {
+             console.log("Could not fetch parent metadata for", g.linkedParent);
           }
         }
-        if (!iAmAdmin && parent.owner && myId && parent.owner.split('@')[0].split(':')[0] === myId) {
-          iAmAdmin = true;
+
+        if (parent) {
+           iAmAdmin = checkAdmin(parent.participants, myId);
+           if (!iAmAdmin) {
+             iAmAdmin = checkOwner(parent.owner, myId);
+           }
         }
       }
 
-      
-
       const isAnnounceOnly = !!g.announce;
-      const readOnly = false; // Never block UI, let WhatsApp API handle rejection
+      // If it's announceOnly and we STILL aren't admin, it's truly readOnly for us.
+      const readOnly = isAnnounceOnly && !iAmAdmin;
 
       const isCommunity = !!g.isCommunity || !!g.linkedParent;
       const isCommunityAnnounce = !!g.isCommunityAnnounce;
 
-      return {
+      groups.push({
         id: g.id,
         name: g.subject || 'Unnamed Group',
         participantsCount: g.participants?.length || 0,
@@ -112,9 +126,10 @@ export default async function handler(req: any, res: any) {
         iAmAdmin,
         readOnly,
         isAnnounceOnly
-      };
-    
-    }).sort((a: any, b: any) => a.name.localeCompare(b.name));
+      });
+    }
+
+    groups = groups.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
     sock.end(undefined);
 
