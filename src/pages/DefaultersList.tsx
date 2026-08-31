@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, IndianRupee, MessageCircle, Phone, Search, CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+
 import { getStudents } from '../services/studentService';
 import type { StudentData } from '../services/studentService';
 import { getSchoolSettings } from '../services/settingsService';
@@ -99,10 +101,10 @@ const DefaultersList: React.FC = () => {
     const [sendingWa, setSendingWa] = useState<string | null>(null);
 
     const openWhatsApp = async (phone: string, name: string, due: number) => {
-      if (!phone) return alert("No phone number available for this student.");
+      if (!phone) return toast.error("No phone number available for this student.");
       
       if (window.location.hostname === 'localhost') {
-        alert("Guru ji, Serverless WhatsApp API 'localhost' par kaam nahi karti kyunki serverless functions Vercel par host hain! Kripya ise aapke LIVE URL par check karein jo apne dusre tab me khol rakha hai.");
+        toast.error("Vercel Serverless API cannot run on localhost. Please use the live URL.");
         return;
       }
 
@@ -130,18 +132,18 @@ const DefaultersList: React.FC = () => {
       try {
         data = await res.json();
       } catch (parseErr) {
-        alert("Serverless Error (Vercel): Failed to parse API response. Please check Vercel Logs. Details: " + parseErr);
+        toast.error("Failed to parse API response: " + parseErr);
         setSendingWa(null);
         return;
       }
 
       if (data.success) {
-        alert("✅ Serverless WhatsApp sent successfully!");
+        toast.success("WhatsApp message sent successfully!", { icon: "??", style: { background: "#25D366", color: "#fff", fontWeight: "bold" } });
       } else {
-        alert("API Error: " + (data.error || JSON.stringify(data)));
+        toast.error("API Error: " + (data.error || JSON.stringify(data)));
       }
     } catch (error: any) {
-      alert("Network Error: " + error.message);
+      toast.error("Network Error: " + error.message);
       console.error(error);
     }
     setSendingWa(null);

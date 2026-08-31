@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import InstallPrompt from './components/InstallPrompt';
@@ -24,6 +25,7 @@ import StaffProfile from './pages/StaffProfile';
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" toastOptions={{ duration: 4000, style: { background: '#fff', color: '#363636', borderRadius: '12px', padding: '16px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', fontWeight: 500 } }} />
       <InstallPrompt />
       <Routes>
         <Route path="/login" element={<Login />} />
