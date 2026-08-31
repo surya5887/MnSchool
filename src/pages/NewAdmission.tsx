@@ -434,16 +434,11 @@ const NewAdmission: React.FC = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '2.4rem' }}>
-            <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', padding: '12px', borderRadius: '16px', color: 'white', display: 'flex', boxShadow: '0 8px 15px rgba(99,102,241,0.3)' }}>
-              <UserPlus size={32} />
-            </div>
-            New Admission
-          </h1>
-          <p className="page-subtitle" style={{ fontSize: '1.1rem', marginTop: '8px' }}>Enroll a new student into the system with full digital records.</p>
+          <h1 className="page-title"><UserPlus size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> New Admission</h1>
+          <p className="page-subtitle" style={{ fontSize: '1.1rem', marginTop: '4px' }}>Enroll a new student into the system with full digital records.</p>
         </div>
-        <button className="btn-secondary hover-scale" onClick={() => setShowDraftsModal(true)} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'white', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
-          <FileText size={18} color="#6366f1" /> Saved Drafts
+        <button className="btn-secondary hover-scale" onClick={() => setShowDraftsModal(true)} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+          <FileText size={18} color="var(--primary-color)" /> Saved Drafts
         </button>
       </div>
 
@@ -454,7 +449,7 @@ const NewAdmission: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             
             {/* Student Type Selection */}
-            <div className="glass-panel" style={{ padding: '32px', background: 'linear-gradient(145deg, #ffffff, #f8fafc)', borderTop: '4px solid #3b82f6' }}>
+            <div className="glass-panel" style={{ padding: '32px', borderTop: '4px solid #3b82f6' }}>
               <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
                 <Check size={20} color="#3b82f6" /> Admission Type
               </h3>
@@ -463,9 +458,9 @@ const NewAdmission: React.FC = () => {
                   type="button"
                   style={{
                     flex: 1, padding: '16px', fontSize: '1.1rem', fontWeight: 600, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s',
-                    background: admissionType === 'New' ? '#eff6ff' : 'white',
+                    background: admissionType === 'New' ? 'rgba(59,130,246,0.1)' : 'var(--glass-bg)',
                     color: admissionType === 'New' ? '#2563eb' : '#64748b',
-                    border: admissionType === 'New' ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                    border: admissionType === 'New' ? '2px solid #3b82f6' : '1px solid var(--glass-border)',
                     boxShadow: admissionType === 'New' ? '0 4px 12px rgba(59,130,246,0.1)' : 'none'
                   }}
                   onClick={() => { setAdmissionType('New'); setFormData(prev => ({...prev, admissionType: 'New', previousDues: 0, previousPaidAmount: 0, previousSession: '', originalAdmissionDate: ''})); }}
@@ -476,9 +471,9 @@ const NewAdmission: React.FC = () => {
                   type="button"
                   style={{
                     flex: 1, padding: '16px', fontSize: '1.1rem', fontWeight: 600, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s',
-                    background: admissionType === 'Old' ? '#f0fdf4' : 'white',
+                    background: admissionType === 'Old' ? 'rgba(22,163,74,0.1)' : 'var(--glass-bg)',
                     color: admissionType === 'Old' ? '#16a34a' : '#64748b',
-                    border: admissionType === 'Old' ? '2px solid #16a34a' : '1px solid #e2e8f0',
+                    border: admissionType === 'Old' ? '2px solid #16a34a' : '1px solid var(--glass-border)',
                     boxShadow: admissionType === 'Old' ? '0 4px 12px rgba(22,163,74,0.1)' : 'none'
                   }}
                   onClick={() => { setAdmissionType('Old'); setFormData(prev => ({...prev, admissionType: 'Old'})); }}
@@ -490,7 +485,7 @@ const NewAdmission: React.FC = () => {
               <AnimatePresence>
                 {admissionType === 'Old' && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
-                    <div style={{ marginTop: '24px', background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ marginTop: '24px', background: 'rgba(255,255,255,0.3)', padding: '24px', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
                       <h4 style={{ margin: '0 0 16px 0', color: '#16a34a' }}>Continuing Student Details</h4>
                       <div className="form-grid">
                         <div>
@@ -517,7 +512,7 @@ const NewAdmission: React.FC = () => {
             </div>
 
             {/* Academic Details */}
-            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+            <div className="glass-panel" style={{ padding: '32px' }}>
               <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
                 <div style={{ background: '#e0e7ff', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#4f46e5" /></div> Academic Details
               </h3>
@@ -573,7 +568,7 @@ const NewAdmission: React.FC = () => {
             </div>
 
             {/* Personal Details */}
-            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+            <div className="glass-panel" style={{ padding: '32px' }}>
               <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
                 <div style={{ background: '#fae8ff', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#c026d3" /></div> Personal Details
               </h3>
@@ -632,12 +627,12 @@ const NewAdmission: React.FC = () => {
             </div>
 
             {/* Parent Details */}
-            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+            <div className="glass-panel" style={{ padding: '32px' }}>
               <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
                 <div style={{ background: '#dbeafe', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#2563eb" /></div> Father & Mother Details
               </h3>
               
-              <h4 style={{ margin: '0 0 16px 0', color: '#2563eb', borderBottom: '1px dashed #e2e8f0', paddingBottom: '8px' }}>Father's Details</h4>
+              <h4 style={{ margin: '0 0 16px 0', color: '#2563eb', borderBottom: '1px dashed var(--glass-border)', paddingBottom: '8px' }}>Father's Details</h4>
               <div className="form-grid" style={{ marginBottom: '32px' }}>
                 <div><label>Father's Name</label><input type="text" name="parentName" value={formData.parentName || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ramesh Kumar" /></div>
                 <div><label>Father Aadhar</label><input type="text" name="fatherAadhar" value={formData.fatherAadhar || ''} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" /></div>
@@ -645,7 +640,7 @@ const NewAdmission: React.FC = () => {
                 <div><label>Occupation</label><input type="text" name="fatherOccupation" value={formData.fatherOccupation || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Business" /></div>
               </div>
 
-              <h4 style={{ margin: '0 0 16px 0', color: '#db2777', borderBottom: '1px dashed #e2e8f0', paddingBottom: '8px' }}>Mother's Details</h4>
+              <h4 style={{ margin: '0 0 16px 0', color: '#db2777', borderBottom: '1px dashed var(--glass-border)', paddingBottom: '8px' }}>Mother's Details</h4>
               <div className="form-grid">
                 <div><label>Mother's Name</label><input type="text" name="motherName" value={formData.motherName || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Sunita Devi" /></div>
                 <div><label>Mother Aadhar</label><input type="text" name="motherAadhar" value={formData.motherAadhar || ''} onChange={handleInputChange} className="glass-input" placeholder="0000 0000 0000" /></div>
@@ -655,7 +650,7 @@ const NewAdmission: React.FC = () => {
             </div>
 
             {/* Contact Details with Country Code Dropdowns */}
-            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+            <div className="glass-panel" style={{ padding: '32px' }}>
               <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
                 <div style={{ background: '#dcfce7', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#16a34a" /></div> Contact Details
               </h3>
@@ -667,9 +662,9 @@ const NewAdmission: React.FC = () => {
                     country={'in'} 
                     value={formData.parentPhone || ''} 
                     onChange={(val) => setFormData(prev => ({...prev, parentPhone: '+' + val.replace('+', '')}))}
-                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
-                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
-                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                    inputStyle={{ width: '100%', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px', height: '44px', color: '#1e293b', fontSize: '1rem', paddingLeft: '48px' }}
+                    buttonStyle={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: '#f8fafc', color: '#1e293b', zIndex: 9999, borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
                   />
                 </div>
                 <div>
@@ -678,9 +673,9 @@ const NewAdmission: React.FC = () => {
                     country={'in'} 
                     value={formData.motherPhone || ''} 
                     onChange={(val) => setFormData(prev => ({...prev, motherPhone: '+' + val.replace('+', '')}))}
-                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
-                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
-                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                    inputStyle={{ width: '100%', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px', height: '44px', color: '#1e293b', fontSize: '1rem', paddingLeft: '48px' }}
+                    buttonStyle={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: '#f8fafc', color: '#1e293b', zIndex: 9999, borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
                   />
                 </div>
                 <div>
@@ -689,9 +684,9 @@ const NewAdmission: React.FC = () => {
                     country={'in'} 
                     value={formData.phone || ''} 
                     onChange={(val) => setFormData(prev => ({...prev, phone: '+' + val.replace('+', '')}))}
-                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
-                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
-                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                    inputStyle={{ width: '100%', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px', height: '44px', color: '#1e293b', fontSize: '1rem', paddingLeft: '48px' }}
+                    buttonStyle={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: '#f8fafc', color: '#1e293b', zIndex: 9999, borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
                   />
                 </div>
                 <div>
@@ -700,9 +695,9 @@ const NewAdmission: React.FC = () => {
                     country={'in'} 
                     value={formData.emergencyContact || ''} 
                     onChange={(val) => setFormData(prev => ({...prev, emergencyContact: '+' + val.replace('+', '')}))}
-                    inputStyle={{ width: '100%', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', height: '44px', color: 'var(--text-main)' }}
-                    buttonStyle={{ background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px 0 0 12px' }}
-                    dropdownStyle={{ background: 'var(--bg-color)', color: 'var(--text-main)', zIndex: 9999 }}
+                    inputStyle={{ width: '100%', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px', height: '44px', color: '#1e293b', fontSize: '1rem', paddingLeft: '48px' }}
+                    buttonStyle={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '12px 0 0 12px' }}
+                    dropdownStyle={{ background: '#f8fafc', color: '#1e293b', zIndex: 9999, borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
                   />
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
@@ -717,7 +712,7 @@ const NewAdmission: React.FC = () => {
             </div>
             
             {/* Photo & Documents Upload Array */}
-            <div className="glass-panel" style={{ padding: '32px', background: 'white' }}>
+            <div className="glass-panel" style={{ padding: '32px' }}>
               <h3 style={{ margin: '0 0 24px 0', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
                 <div style={{ background: '#fef3c7', padding: '8px', borderRadius: '8px' }}><Check size={18} color="#d97706" /></div> Student Photo & Documents
               </h3>
@@ -729,9 +724,9 @@ const NewAdmission: React.FC = () => {
                   <div 
                     onClick={handlePhotoClick}
                     style={{ 
-                      width: '100%', height: '240px', border: '2px dashed #cbd5e1', borderRadius: '20px', 
+                      width: '100%', height: '240px', border: '2px dashed var(--glass-border)', borderRadius: '20px', 
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
-                      cursor: 'pointer', background: '#f8fafc', overflow: 'hidden', position: 'relative', transition: 'all 0.2s'
+                      cursor: 'pointer', background: 'rgba(255,255,255,0.2)', overflow: 'hidden', position: 'relative', transition: 'all 0.2s'
                     }}
                     className="hover-scale"
                   >
@@ -756,7 +751,7 @@ const NewAdmission: React.FC = () => {
                 <div>
                   <h4 style={{ margin: '0 0 16px 0', color: '#475569' }}>Required Documents</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.3)', borderRadius: '16px', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                          <div style={{ background: '#e0e7ff', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#4f46e5" /></div>
                          <div>
@@ -768,7 +763,7 @@ const NewAdmission: React.FC = () => {
                       <button type="button" className="btn-secondary" onClick={() => birthCertInputRef.current?.click()} style={{ padding: '8px 16px' }}>{birthCertFile ? 'Change' : 'Upload'}</button>
                     </div>
 
-                    <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.3)', borderRadius: '16px', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                          <div style={{ background: '#dbeafe', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#2563eb" /></div>
                          <div>
@@ -781,7 +776,7 @@ const NewAdmission: React.FC = () => {
                     </div>
 
                     {customDocs.map(doc => (
-                      <div key={doc.id} style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div key={doc.id} style={{ padding: '16px', background: 'rgba(255,255,255,0.3)', borderRadius: '16px', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <div style={{ background: '#f3e8ff', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#a855f7" /></div>
                           <div>
@@ -805,7 +800,7 @@ const NewAdmission: React.FC = () => {
                         <button type="button" className="btn-secondary" onClick={() => { setShowNewDocInput(false); setNewDocName(''); }} style={{ padding: '8px' }}><X size={18} /></button>
                       </div>
                     ) : (
-                      <button type="button" onClick={() => setShowNewDocInput(true)} style={{ background: 'transparent', border: '1px dashed #cbd5e1', padding: '12px', borderRadius: '16px', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                      <button type="button" onClick={() => setShowNewDocInput(true)} style={{ background: 'rgba(255,255,255,0.2)', border: '1px dashed var(--glass-border)', padding: '12px', borderRadius: '16px', color: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
                         <Plus size={18} /> Add Document
                       </button>
                     )}
@@ -815,7 +810,7 @@ const NewAdmission: React.FC = () => {
             </div>
             
             {/* Submit Bar */}
-            <div className="glass-panel" style={{ padding: '24px', background: 'white', display: 'flex', justifyContent: 'flex-end', gap: '16px', position: 'sticky', bottom: '24px', zIndex: 100 }}>
+            <div className="glass-panel" style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px', position: 'sticky', bottom: '24px', zIndex: 100, borderTop: '1px solid var(--glass-border)' }}>
                <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="btn-secondary" style={{ padding: '12px 24px', fontSize: '1.1rem', borderRadius: '12px' }}>
                  Reset Form
                </button>
@@ -871,7 +866,6 @@ const NewAdmission: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Cropper Modal */}
       {showCropper && rawImage && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
