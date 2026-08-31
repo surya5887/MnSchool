@@ -454,7 +454,7 @@ useEffect(() => {
           <Settings2 size={22} color="#f59e0b" /> Automated Fee Reminder Template
         </h2>
         <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '24px', lineHeight: '1.5' }}>
-          This exact message will be dynamically personalized and sent to parents. You can use placeholders like <b>{{name}}</b> for student name and <b>{{due}}</b> for the due amount.
+          This exact message will be dynamically personalized and sent to parents. You can use placeholders like <b>{`{{name}}`}</b> for student name and <b>{`{{due}}`}</b> for the due amount.
         </p>
         
         <textarea 
