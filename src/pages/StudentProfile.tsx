@@ -361,6 +361,10 @@ const StudentProfile: React.FC = () => {
   
   const availableMonths = Array.from(new Set(ledgerRows.map(t => t.date.substring(0, 7)))).sort().reverse();
 
+  const displayedRows = filterMonth === 'All' 
+    ? ledgerRows.slice().reverse() 
+    : ledgerRows.slice().reverse().filter(t => t.date.startsWith(filterMonth));
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex-responsive" style={{ marginBottom: "20px" }}>
@@ -575,17 +579,17 @@ const StudentProfile: React.FC = () => {
                     <tr key={row.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ whiteSpace: 'nowrap', padding: '16px' }}>{new Date(row.date).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</td>
                       <td style={{ padding: '16px', fontWeight: 500 }}>{row.description || row.category}</td>
-                      <td style={{ color: '#ef4444', fontWeight: row.isCharge ? 700 : 400, padding: '16px' }}>{row.isCharge ? `₹${row.amount}` : '-'}</td>
-                      <td style={{ color: '#10b981', fontWeight: !row.isCharge ? 700 : 400, padding: '16px' }}>{!row.isCharge ? `₹${row.amount}` : '-'}</td>
+                      <td style={{ color: '#ef4444', fontWeight: row.type === 'Charge' ? 700 : 400, padding: '16px' }}>{row.type === 'Charge' ? `₹${row.amount}` : '-'}</td>
+                      <td style={{ color: '#10b981', fontWeight: !row.type === 'Charge' ? 700 : 400, padding: '16px' }}>{!row.type === 'Charge' ? `₹${row.amount}` : '-'}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          {!row.isCharge && (
-                            <button onClick={() => handlePrintReceipt(row.original)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600 }}>
+                          {!row.type === 'Charge' && (
+                            <button onClick={() => handlePrintReceipt(row)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600 }}>
                               <Printer size={14} /> Receipt
                             </button>
                           )}
-                          {['Super Admin', 'Manager'].includes(role) && row.original && (
-                            <button onClick={() => { setDeleteTxnId(row.original.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}>
+                          {['Super Admin', 'Manager'].includes(role) && row && (
+                            <button onClick={() => { setDeleteTxnId(row.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}>
                               <Trash2 size={14} />
                             </button>
                           )}
