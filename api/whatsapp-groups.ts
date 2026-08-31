@@ -52,34 +52,23 @@ export default async function handler(req: any, res: any) {
       });
     });
 
-    
-    const rawMyId = sock.user?.phoneNumber || state.creds?.me?.phoneNumber || sock.user?.id || state.creds?.me?.id || "";
-    // Attempt to extract the true phone number JID
-    const myId = rawMyId ? rawMyId.split(':')[0].split('@')[0] : null;
+    let myId = null;
+    let myLid = null;
 
+    if (state.creds?.me?.id) {
+       myId = state.creds.me.id.split(':')[0].split('@')[0];
+    } else if (sock.user?.id && sock.user.id.includes('@s.whatsapp.net')) {
+       myId = sock.user.id.split(':')[0].split('@')[0];
+    }
+    
+    if (state.creds?.me?.lid) {
+       myLid = state.creds.me.lid.split(':')[0].split('@')[0];
+    } else if (sock.user?.id && sock.user.id.includes('@lid')) {
+       myLid = sock.user.id.split(':')[0].split('@')[0];
+    }
 
     const groupsRaw = await sock.groupFetchAllParticipating();
     const groupsMap = groupsRaw as any;
-
-    // Helper to check admin status inside an array of participants
-    
-    const checkAdmin = (participants: any[], targetId: string) => {
-      if (!participants || !targetId) return false;
-      const me = participants.find((p: any) => {
-         const pid = p.id ? p.id.split('@')[0].split(':')[0] : null;
-         const plid = p.lid ? p.lid.split('@')[0].split(':')[0] : null;
-         return pid === targetId || plid === targetId;
-      });
-      if (me) {
-        return (me.admin === 'admin' || me.admin === 'superadmin' || me.isSuperAdmin || me.isAdmin || me.admin === true || me.admin === 1);
-      }
-      return false;
-    };
-
-    const checkOwner = (ownerId: string | undefined, targetId: string) => {
-      if (!ownerId || !targetId) return false;
-      return ownerId.split('@')[0].split(':')[0] === targetId;
-    };
 
     let groups = [];
     const groupValues = Object.values(groupsMap);
@@ -88,13 +77,14 @@ export default async function handler(req: any, res: any) {
       let iAmAdmin = false;
       let meFoundInParticipants = false;
       
-      // Helper inside the loop to track meFoundInParticipants
-      const checkAdminAndFound = (participants: any[], targetId: string) => {
-          if (!participants || !targetId) return false;
+      const checkAdminAndFound = (participants: any[]) => {
+          if (!participants) return false;
+          if (!myId && !myLid) return false;
+          
           const me = participants.find((p: any) => {
              const pid = p.id ? p.id.split('@')[0].split(':')[0] : null;
              const plid = p.lid ? p.lid.split('@')[0].split(':')[0] : null;
-             return pid === targetId || plid === targetId;
+             return (myId && pid === myId) || (myLid && plid === myLid) || (myId && plid === myId) || (myLid && pid === myLid);
           });
           if (me) {
             meFoundInParticipants = true;
@@ -103,18 +93,21 @@ export default async function handler(req: any, res: any) {
           return false;
       };
 
-      // 1. Direct check in this group
-      if (myId) {
-        iAmAdmin = checkAdminAndFound(g.participants, myId);
+      const checkOwner = (ownerId: string | undefined) => {
+          if (!ownerId) return false;
+          const oid = ownerId.split('@')[0].split(':')[0];
+          return (myId && oid === myId) || (myLid && oid === myLid);
+      };
+
+      if (myId || myLid) {
+        iAmAdmin = checkAdminAndFound(g.participants);
       }
 
-      // 2. Owner check
-      if (!iAmAdmin && myId) {
-        iAmAdmin = checkOwner(g.owner, myId);
+      if (!iAmAdmin && (myId || myLid)) {
+        iAmAdmin = checkOwner(g.owner);
       }
 
-      // 3. Parent community check
-      if (!iAmAdmin && g.linkedParent && myId) {
+      if (!iAmAdmin && g.linkedParent && (myId || myLid)) {
         let parent = groupsMap[g.linkedParent];
         
         if (!parent) {
@@ -124,14 +117,13 @@ export default async function handler(req: any, res: any) {
         }
 
         if (parent) {
-           iAmAdmin = checkAdminAndFound(parent.participants, myId);
+           iAmAdmin = checkAdminAndFound(parent.participants);
            if (!iAmAdmin) {
-             iAmAdmin = checkOwner(parent.owner, myId);
+             iAmAdmin = checkOwner(parent.owner);
            }
         }
       }
       
-      // 4. Robust Fallback for truncated participants lists
       if (!iAmAdmin && !meFoundInParticipants) {
          iAmAdmin = true;
       }
@@ -154,9 +146,7 @@ export default async function handler(req: any, res: any) {
     }
 
     groups = groups.sort((a: any, b: any) => a.name.localeCompare(b.name));
-
     sock.end(undefined);
-
     return res.status(200).json({ groups });
   } catch (error: any) {
     console.error('Group fetch error:', error);
