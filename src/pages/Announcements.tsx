@@ -57,7 +57,7 @@ useEffect(() => {
       const data = await getSchoolSettings();
       setSettings(data);
       const defaultTemplate = `Dear Parent,\nThis is a gentle reminder from MN Public School that Rs. {{due}} is currently outstanding for your ward {{name}}. Kindly clear the dues at the earliest.\nThank you.`;
-      if (data.feeReminderTemplate) {
+      if (data && data.feeReminderTemplate) {
         setFeeTemplate(data.feeReminderTemplate);
       } else {
         setFeeTemplate(defaultTemplate);
@@ -497,4 +497,27 @@ useEffect(() => {
   );
 };
 
-export default Announcements;
+
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any}> {
+  constructor(props: any) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error: any) { return { hasError: true, error }; }
+  componentDidCatch(error: any, errorInfo: any) { console.error("Announcements Error:", error, errorInfo); }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{padding: 40, color: 'red'}}>
+        <h2>Something went wrong in Announcements.</h2>
+        <pre>{String(this.state.error)}</pre>
+        <pre>{this.state.error?.stack}</pre>
+      </div>;
+    }
+    return this.props.children; 
+  }
+}
+
+const AnnouncementsWrapped = () => (
+  <ErrorBoundary>
+    <Announcements />
+  </ErrorBoundary>
+);
+export default AnnouncementsWrapped;
+
