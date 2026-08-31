@@ -144,6 +144,7 @@ th, td {
   padding: 16px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
 }
 
 th {
@@ -628,3 +629,5 @@ tr:hover {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+@media (max-width: 768px) { .glass-panel { padding: 16px !important; } }
+.badge { white-space: nowrap !important; }
