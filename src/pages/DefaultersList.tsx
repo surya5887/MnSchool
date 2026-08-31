@@ -193,61 +193,7 @@ const DefaultersList: React.FC = () => {
         ) : (
           
             <>
-<div className="glass-table-container desktop-only">
-            <table style={{ width: '100%', minWidth: '800px' }}>
-              <thead>
-                <tr>
-                  <th>Student Name</th>
-                  <th>Class</th>
-                  <th>Parent Phone</th>
-                  <th style={{ textAlign: 'right' }}>Total Due</th>
-                  <th style={{ textAlign: 'center' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredDefaulters.map((d) => (
-                  <tr key={d.student.id}>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', fontWeight: 'bold' }}>
-                          {d.student.firstName[0]}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{d.student.firstName} {d.student.lastName}</div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Roll: {d.student.rollNumber || 'N/A'}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td><span className="badge" style={{ background: '#f1f5f9', color: '#475569' }}>{d.className}</span></td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                        <Phone size={14} /> {d.student.parentPhone || 'N/A'}
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--danger)', fontSize: '1.05rem' }}>
-                      ₹{d.totalDue.toLocaleString()}
-                    </td>
-                    <td style={{ textAlign: 'center' }}>
-                      <button 
-                        onClick={() => openWhatsApp(d.student.parentPhone || '', `${d.student.firstName} ${d.student.lastName}`, d.totalDue)}
-                        style={{ 
-                          background: '#25D366', color: 'white', border: 'none', padding: '8px 16px', 
-                          borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px', 
-                          cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' 
-                        }}
-                      >
-                        {sendingWa === d.student.parentPhone?.replace(/\D/g, '') ? 'Sending...' : <><MessageCircle size={16} /> Send Reminder</>}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-            
-            <div className="mobile-only" style={{ marginTop: '16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px', marginTop: '16px' }}>
                 {filteredDefaulters.map((d) => (
                   <div key={d.student.id} style={{ 
                     background: '#ffffff',
@@ -320,7 +266,6 @@ const DefaultersList: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div>
             </>
         )}
       </div>
