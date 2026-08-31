@@ -7,7 +7,7 @@ import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import FeeReceiptPrintView from '../components/FeeReceiptPrintView';
 import Cropper from 'react-easy-crop';
-import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
+import { getTransactions, addTransaction, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import Modal from '../components/Modal';
 
@@ -241,7 +241,34 @@ const StudentProfile: React.FC = () => {
   };
 
 
-  const handleDeleteTransaction = async (e: React.FormEvent) => {
+  
+  const handleEditTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editTxnPassword !== 'admin@8393') {
+      setEditTxnError('Incorrect admin password.');
+      return;
+    }
+    if (!editTxnData || !editTxnData.id) return;
+
+    try {
+      await updateTransaction(editTxnData.id, {
+        amount: Number(editTxnData.amount),
+        description: editTxnData.description,
+        date: editTxnData.date
+      });
+      setIsEditTxnModalOpen(false);
+      setEditTxnData(null);
+      setEditTxnPassword('');
+      setEditTxnError('');
+      const txns = await getTransactions({ studentId: id! });
+      setTransactions(txns);
+    } catch (error) {
+      console.error(error);
+      setEditTxnError('Failed to update transaction.');
+    }
+  };
+
+const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (deleteTxnPassword !== 'admin@8393') {
       setDeleteTxnError('Incorrect admin password.');
@@ -518,7 +545,7 @@ const StudentProfile: React.FC = () => {
                   <Plus size={18} /> Receive Payment
                 </button>
                 <button className="btn-primary" onClick={() => setIsFineModalOpen(true)} style={{ padding: '10px 20px', borderRadius: '12px', background: '#ef4444', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Plus size={18} /> Add Charge
+                  <Plus size={18} /> Add Manual Dues
                 </button>
               </div>
             )}
