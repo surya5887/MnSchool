@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, GraduationCap, IndianRupee, TrendingUp, Clock } from 'lucide-react';
+import { Users, GraduationCap, IndianRupee, TrendingUp, Clock, AlertTriangle, FileText, CheckCircle2 } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getTransactions, type TransactionData } from '../services/financeService';
 import { getStaff, type StaffData } from '../services/staffService';
 import { getClasses, type ClassData } from '../services/classService';
+import { getSchoolSettings, saveSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
+import { getVehicles, type VehicleData } from '../services/transportService';
+import { addTransaction } from '../services/financeService';
+
 
 const StatCard = ({ title, value, icon: Icon, color, delay }: {title: string, value: string, icon: any, color: string, delay: number}) => (
   <motion.div 
@@ -30,20 +34,29 @@ const Dashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
+  const [vehicles, setVehicles] = useState<VehicleData[]>([]);
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingDone, setBillingDone] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [studentsData, staffData, txnsData, classesData] = await Promise.all([
+        const [studentsData, staffData, txnsData, classesData, settingsData, vehiclesData] = await Promise.all([
           getStudents(),
           getStaff(),
           getTransactions(),
-          getClasses()
+          getClasses(),
+          getSchoolSettings(),
+          getVehicles()
         ]);
         setStudents(studentsData);
         setStaff(staffData);
         setTransactions(txnsData);
         setClasses(classesData);
+        setSettings(settingsData);
+        setVehicles(vehiclesData);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -52,6 +65,68 @@ const Dashboard: React.FC = () => {
     };
     fetchData();
   }, []);
+
+
+  const currentMonthStr = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+  const needsBilling = settings && settings.lastBillingMonth !== currentMonthStr;
+
+  const handleGenerateMonthlyFees = async () => {
+    if (!window.confirm(`Are you sure you want to generate automated fees for ${currentMonthStr}?`)) return;
+    setBillingLoading(true);
+    try {
+      let feesGenerated = 0;
+      
+      for (const student of students) {
+        if (student.status === 'Inactive') continue;
+
+        // 1. Generate Tuition Fee
+        const studentClass = classes.find(c => c.className === student.classId);
+        if (studentClass && studentClass.monthlyFee > 0) {
+          await addTransaction({
+            type: 'Charge',
+            category: 'Monthly Tuition Fee',
+            amount: studentClass.monthlyFee,
+            date: new Date().toISOString().split('T')[0],
+            description: `Tuition Fee for ${currentMonthStr}`,
+            studentId: student.id,
+            chargeType: 'Tuition Fee'
+          });
+          feesGenerated++;
+        }
+
+        // 2. Generate Transport Fee (if applicable)
+        if (student.transportRoute && student.transportRoute !== 'Not Required') {
+          const bus = vehicles.find(v => v.route === student.transportRoute);
+          if (bus && bus.monthlyFee > 0) {
+            await addTransaction({
+              type: 'Charge',
+              category: 'Transport Fee',
+              amount: bus.monthlyFee,
+              date: new Date().toISOString().split('T')[0],
+              description: `Transport Fee (${bus.route}) for ${currentMonthStr}`,
+              studentId: student.id,
+              chargeType: 'Transport Fee'
+            });
+            feesGenerated++;
+          }
+        }
+      }
+
+      if (settings) {
+        await saveSchoolSettings({ ...settings, lastBillingMonth: currentMonthStr });
+        setSettings({ ...settings, lastBillingMonth: currentMonthStr });
+      }
+      setBillingDone(true);
+      alert(`Successfully generated ${feesGenerated} fee charges for ${currentMonthStr}!`);
+      // Reload txns (optional, but a hard refresh works too)
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      alert('Error generating fees. Please check console.');
+    } finally {
+      setBillingLoading(false);
+    }
+  };
 
   const today = new Date().toISOString().split('T')[0];
   const todaysCollection = transactions

@@ -19,6 +19,7 @@ export interface SchoolSettingsData {
   academicSessions?: string[];
   activeSession?: string;
   feeReminderTemplate?: string;
+  lastBillingMonth?: string;
 }
 
 export const getSchoolSettings = async () => {

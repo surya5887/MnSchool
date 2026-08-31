@@ -87,7 +87,7 @@ const NewAdmission: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [classes, setClasses] = useState<ClassData[]>([]);
-  const [routes, setRoutes] = useState<string[]>([]);
+  const [transportVehicles, setTransportVehicles] = useState<any[]>([]);
   
   // Aggregate sections for classes with the same name
   const uniqueClasses = useMemo(() => {
@@ -214,8 +214,7 @@ const NewAdmission: React.FC = () => {
     const fetchRoutes = async () => {
       try {
         const vehicles = await getVehicles();
-        const uniqueRoutes = Array.from(new Set(vehicles.map(v => v.route).filter(Boolean)));
-        setRoutes(uniqueRoutes as string[]);
+        setTransportVehicles(vehicles);
       } catch (error) {
         console.error("Error fetching routes", error);
       }
@@ -570,10 +569,10 @@ const NewAdmission: React.FC = () => {
                 </div>
                 <div>
                   <label>Transport Route</label>
-                  <select name="transportRoute" value={formData.transportRoute || 'Not Required'} onChange={handleInputChange} className="glass-input">
-                    <option value="Not Required">Not Required</option>
-                    {routes.map(r => <option key={r} value={r}>{r}</option>)}
-                  </select>
+                    <select name="transportRoute" value={formData.transportRoute || 'Not Required'} onChange={handleInputChange} className="glass-input">
+                      <option value="Not Required">Not Required</option>
+                      {transportVehicles.map(v => <option key={v.id} value={v.route}>{v.route} (₹{v.monthlyFee}/mo)</option>)}
+                    </select>
                 </div>
               </div>
             </div>
