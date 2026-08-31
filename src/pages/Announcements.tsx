@@ -329,7 +329,7 @@ useEffect(() => {
                        <Folder size={22} fill="#e2e8f0" color="#64748b" />
                        <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>{pName}</h3>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+                    <div className="groups-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
                       {comm.subgroups.map(group => {
                           const isSelected = selectedGroups.includes(group.id);
                           let bgColor = '#ffffff';
@@ -344,7 +344,7 @@ useEffect(() => {
                             borderColor = isSelected ? '#3b82f6' : '#e2e8f0';
                           }
                           return (
-                            <div key={group.id} onClick={() => toggleGroup(group)}
+                            <div key={group.id} onClick={() => toggleGroup(group)} className="group-card"
                               style={{
                                 display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
                                 background: bgColor, border: `1px solid ${borderColor}`,
@@ -360,9 +360,9 @@ useEffect(() => {
                               </div>
                               
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  {group.name}
-                                  {group.isCommunityAnnounce && <span style={{ fontSize: '0.65rem', background: '#e0e7ff', color: '#4f46e5', padding: '3px 8px', borderRadius: '100px', fontWeight: 700, border: '1px solid #c7d2fe' }}>Announcement</span>}
+                                <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0 }}>{group.name}</span>
+                                  {group.isCommunityAnnounce && <span style={{ flexShrink: 0, fontSize: '0.65rem', background: '#e0e7ff', color: '#4f46e5', padding: '3px 8px', borderRadius: '100px', fontWeight: 700, border: '1px solid #c7d2fe' }}>Announcement</span>}
                                 </h4>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                   <p style={{ margin: 0, fontSize: '0.85rem', color: group.readOnly ? '#b91c1c' : '#64748b' }}>
@@ -394,7 +394,7 @@ useEffect(() => {
                       <MessageSquare size={22} color="#94a3b8" />
                       <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>Other Groups</h3>
                    </div>
-                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+                   <div className="groups-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
                      {standalone.map(group => {
                         const isSelected = selectedGroups.includes(group.id);
                         let bgColor = '#ffffff';
@@ -409,9 +409,9 @@ useEffect(() => {
                           borderColor = isSelected ? '#3b82f6' : '#e2e8f0';
                         }
                         return (
-                          <div key={group.id} onClick={() => toggleGroup(group)}
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
+                          <div key={group.id} onClick={() => toggleGroup(group)} className="group-card"
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
                               background: bgColor, border: `1px solid ${borderColor}`,
                               borderRadius: '16px', cursor: group.readOnly ? 'not-allowed' : 'pointer',
                               transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', position: 'relative', overflow: 'hidden',
@@ -425,8 +425,8 @@ useEffect(() => {
                             </div>
                             
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                {group.name}
+                              <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0 }}>{group.name}</span>
                               </h4>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <p style={{ margin: 0, fontSize: '0.85rem', color: group.readOnly ? '#b91c1c' : '#64748b' }}>
@@ -545,10 +545,18 @@ useEffect(() => {
             font-size: 0.9rem !important;
           }
           .header-title {
-            font-size: 1.5rem !important;
-          }
+          font-size: 1.5rem !important;
         }
-      `}</style>
+        .groups-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .group-card {
+          width: 100% !important;
+          box-sizing: border-box !important;
+          padding: 12px 14px !important;
+        }
+      }
+    `}</style>
     </motion.div>
   );
 };
