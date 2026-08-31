@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
@@ -54,6 +54,19 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
     image.onerror = (e) => reject(e);
   });
 };
+
+
+const InfoBadge = ({ icon, bg, label, value }: { icon: React.ReactNode, bg: string, label: string, value: string | number | undefined }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      {icon}
+    </div>
+    <div style={{ overflow: 'hidden' }}>
+      <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
+      <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value || 'N/A'}</div>
+    </div>
+  </div>
+);
 
 const StudentProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -341,156 +354,119 @@ const StudentProfile: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="flex-responsive" style={{ marginBottom: "24px" }}>
-        <button onClick={() => navigate(-1)} className="btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-          <ArrowLeft size={20} /> Back to Directory
+      <div className="flex-responsive" style={{ marginBottom: "20px" }}>
+        <button onClick={() => navigate(-1)} className="btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0, color: '#64748b', fontWeight: 600 }}>
+          <ArrowLeft size={18} style={{ marginRight: '6px' }} /> Back to Directory
         </button>
       </div>
 
-      {/* Modern Profile Header */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', 
-        borderRadius: '24px', 
+      {/* Modern, Beautiful, Colorful Header */}
+      <div className="glass-panel" style={{ 
         padding: '32px', 
-        color: 'white',
-        boxShadow: '0 10px 25px rgba(79, 70, 229, 0.2)',
         marginBottom: '24px',
         display: 'flex',
         alignItems: 'center',
-        gap: '24px',
-        flexWrap: 'wrap'
+        gap: '32px',
+        flexWrap: 'wrap',
+        background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+        borderTop: '5px solid #6366f1',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
       }}>
         <div style={{ position: 'relative' }}>
           <img 
-            src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=ffffff&color=4f46e5`} 
+            src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=6366f1&color=ffffff`} 
             alt="Profile" 
-            style={{ width: '120px', height: '120px', borderRadius: '24px', border: '4px solid rgba(255,255,255,0.2)', objectFit: 'cover' }} 
+            style={{ width: '130px', height: '130px', borderRadius: '50%', border: '6px solid white', boxShadow: '0 8px 20px rgba(99,102,241,0.15)', objectFit: 'cover' }} 
           />
         </div>
         
         <div style={{ flex: 1, minWidth: '250px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
-            <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800 }}>{student.firstName} {student.lastName}</h1>
-            <span style={{ padding: '4px 12px', background: student.status === 'Active' ? '#22c55e' : '#ef4444', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 600 }}>
-              {student.status || 'Active'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
+            <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 800, color: '#0f172a' }}>{student.firstName} {student.lastName}</h1>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#166534' : '#991b1b', padding: '6px 14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700 }}>
+              {student.status === 'Active' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />} {student.status || 'Active'}
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', opacity: 0.9 }}>
-            <span><strong style={{ fontWeight: 600 }}>Class:</strong> {studentClass?.className || student.classId} - {student.sectionId}</span>
-            <span><strong style={{ fontWeight: 600 }}>Roll No:</strong> {student.rollNumber || 'N/A'}</span>
-            <span><strong style={{ fontWeight: 600 }}>Adm No:</strong> {student.admissionNo || 'N/A'}</span>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ background: '#e0e7ff', color: '#3730a3', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+               <GraduationCap size={16} /> Class {studentClass?.className || student.classId} {student.sectionId}
+            </span>
+            <span style={{ background: '#fef3c7', color: '#92400e', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+               <Hash size={16} /> Roll: {student.rollNumber || 'N/A'}
+            </span>
+            <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+               <FileText size={16} /> Adm: {student.admissionNo || 'N/A'}
+            </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
           {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-            <button className="btn-primary" onClick={() => setIsEditing(true)} style={{ background: 'white', color: '#4f46e5', border: 'none', fontWeight: 700, padding: '12px 24px', borderRadius: '12px' }}>
-              <Edit size={18} style={{ display: 'inline', marginRight: '8px' }} /> Edit Profile
+            <button className="btn-primary hover-scale" onClick={() => setIsEditing(true)} style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', border: 'none', fontWeight: 700, padding: '14px 28px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 15px rgba(99,102,241,0.2)' }}>
+              <Edit size={18} /> Edit Profile
             </button>
           )}
         </div>
       </div>
 
-      {/* Tabs Menu */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '4px' }}>
-        <button onClick={() => setActiveTab('profile')} style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: activeTab === 'profile' ? 'var(--primary)' : 'var(--glass-bg)', color: activeTab === 'profile' ? 'white' : 'var(--text-main)', fontWeight: 600, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap' }}>Personal & Academic</button>
-        <button onClick={() => setActiveTab('finance')} style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: activeTab === 'finance' ? 'var(--primary)' : 'var(--glass-bg)', color: activeTab === 'finance' ? 'white' : 'var(--text-main)', fontWeight: 600, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap' }}>Financial Ledger</button>
-        <button onClick={() => setActiveTab('documents')} style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: activeTab === 'documents' ? 'var(--primary)' : 'var(--glass-bg)', color: activeTab === 'documents' ? 'white' : 'var(--text-main)', fontWeight: 600, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap' }}>Documents</button>
+      {/* Elegant Underline Tabs */}
+      <div style={{ display: 'flex', gap: '32px', marginBottom: '24px', overflowX: 'auto', borderBottom: '2px solid #e2e8f0', paddingBottom: '2px' }}>
+        <div onClick={() => setActiveTab('profile')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'profile' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'profile' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <User size={18} /> Profile Overview
+        </div>
+        <div onClick={() => setActiveTab('finance')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'finance' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'finance' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <IndianRupee size={18} /> Financial Ledger
+        </div>
+        <div onClick={() => setActiveTab('documents')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'documents' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'documents' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FileText size={18} /> Documents
+        </div>
       </div>
 
       {/* TAB CONTENT: PROFILE */}
       {activeTab === 'profile' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px', marginBottom: '40px' }}>
           
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid var(--glass-border)', paddingBottom: '12px' }}>
-              Academic Details
+          {/* Academic Info */}
+          <div className="glass-panel" style={{ padding: '24px', background: 'white' }}>
+            <h3 style={{ margin: '0 0 24px 0', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem' }}>
+              <div style={{ background: '#e0e7ff', padding: '8px', borderRadius: '10px' }}><GraduationCap size={20} color="#4f46e5" /></div> Academic Details
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Admission Date</span>
-                <span style={{ fontWeight: 500 }}>{student.admissionDate ? new Date(student.admissionDate).toLocaleDateString() : 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Admission Type</span>
-                <span style={{ fontWeight: 500 }}>{student.admissionType || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Session</span>
-                <span style={{ fontWeight: 500 }}>{student.session || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Transport Route</span>
-                <span style={{ fontWeight: 500 }}>{student.transportRoute || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Fee Group</span>
-                <span style={{ fontWeight: 500 }}>{student.feeGroup || 'N/A'}</span>
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+              <InfoBadge icon={<Calendar size={20} color="#0284c7" />} bg="#e0f2fe" label="Admission Date" value={student.admissionDate ? new Date(student.admissionDate).toLocaleDateString() : ''} />
+              <InfoBadge icon={<CheckCircle size={20} color="#16a34a" />} bg="#dcfce7" label="Admission Type" value={student.admissionType} />
+              <InfoBadge icon={<Clock size={20} color="#d946ef" />} bg="#fae8ff" label="Session" value={student.session} />
+              <InfoBadge icon={<Bus size={20} color="#ea580c" />} bg="#ffedd5" label="Transport Route" value={student.transportRoute} />
+              <InfoBadge icon={<IndianRupee size={20} color="#059669" />} bg="#d1fae5" label="Fee Group" value={student.feeGroup} />
             </div>
           </div>
 
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid var(--glass-border)', paddingBottom: '12px' }}>
-              Personal Details
+          {/* Personal Info */}
+          <div className="glass-panel" style={{ padding: '24px', background: 'white' }}>
+            <h3 style={{ margin: '0 0 24px 0', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem' }}>
+              <div style={{ background: '#fae8ff', padding: '8px', borderRadius: '10px' }}><User size={20} color="#c026d3" /></div> Personal Details
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Date of Birth</span>
-                <span style={{ fontWeight: 500 }}>{student.dob ? new Date(student.dob).toLocaleDateString() : 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Gender</span>
-                <span style={{ fontWeight: 500 }}>{student.gender || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Religion</span>
-                <span style={{ fontWeight: 500 }}>{student.religion || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Caste / Category</span>
-                <span style={{ fontWeight: 500 }}>{student.caste || 'N/A'} / {student.category || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Blood Group</span>
-                <span style={{ fontWeight: 500 }}>{student.bloodGroup || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Aadhar / National ID</span>
-                <span style={{ fontWeight: 500 }}>{student.aadharNumber || student.nationalIdNumber || 'N/A'}</span>
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+              <InfoBadge icon={<Calendar size={20} color="#f59e0b" />} bg="#fef3c7" label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString() : ''} />
+              <InfoBadge icon={<Users size={20} color="#8b5cf6" />} bg="#ede9fe" label="Gender" value={student.gender} />
+              <InfoBadge icon={<Shield size={20} color="#10b981" />} bg="#d1fae5" label="Religion" value={student.religion} />
+              <InfoBadge icon={<Users size={20} color="#f43f5e" />} bg="#ffe4e6" label="Category/Caste" value={student.category ? `${student.category} / ${student.caste || ''}` : student.caste} />
+              <InfoBadge icon={<Droplet size={20} color="#e11d48" />} bg="#ffe4e6" label="Blood Group" value={student.bloodGroup} />
+              <InfoBadge icon={<FileText size={20} color="#3b82f6" />} bg="#dbeafe" label="National ID / Aadhar" value={student.aadharNumber || student.nationalIdNumber} />
             </div>
           </div>
 
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid var(--glass-border)', paddingBottom: '12px' }}>
-              Parent & Contact Details
+          {/* Parent/Contact Info */}
+          <div className="glass-panel" style={{ padding: '24px', background: 'white', gridColumn: '1 / -1' }}>
+            <h3 style={{ margin: '0 0 24px 0', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem' }}>
+              <div style={{ background: '#ccfbf1', padding: '8px', borderRadius: '10px' }}><Phone size={20} color="#0d9488" /></div> Parent & Contact Info
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Father's Name</span>
-                <span style={{ fontWeight: 500 }}>{student.parentName || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Mother's Name</span>
-                <span style={{ fontWeight: 500 }}>{student.motherName || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Primary Phone</span>
-                <span style={{ fontWeight: 500 }}>{student.parentPhone || student.phone || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Emergency Contact</span>
-                <span style={{ fontWeight: 500 }}>{student.emergencyContact || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Email Address</span>
-                <span style={{ fontWeight: 500 }}>{student.email || 'N/A'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Address</span>
-                <span style={{ fontWeight: 500, textAlign: 'right', maxWidth: '200px' }}>{student.address || 'N/A'}</span>
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+              <InfoBadge icon={<User size={20} color="#2563eb" />} bg="#dbeafe" label="Father's Name" value={student.parentName} />
+              <InfoBadge icon={<User size={20} color="#db2777" />} bg="#fce7f3" label="Mother's Name" value={student.motherName} />
+              <InfoBadge icon={<Phone size={20} color="#16a34a" />} bg="#dcfce7" label="Primary Phone" value={student.parentPhone || student.phone} />
+              <InfoBadge icon={<AlertTriangle size={20} color="#ea580c" />} bg="#ffedd5" label="Emergency Contact" value={student.emergencyContact} />
+              <InfoBadge icon={<Mail size={20} color="#8b5cf6" />} bg="#ede9fe" label="Email Address" value={student.email} />
+              <InfoBadge icon={<MapPin size={20} color="#0284c7" />} bg="#e0f2fe" label="Address" value={student.address} />
             </div>
           </div>
         </div>
@@ -498,36 +474,47 @@ const StudentProfile: React.FC = () => {
 
       {/* TAB CONTENT: FINANCE */}
       {activeTab === 'finance' && (
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '40px' }}>
-          <div className="flex-responsive" style={{ marginBottom: "20px" }}>
-            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem' }}>
-              <IndianRupee size={24} className="text-primary" /> Financial Ledger
+        <div className="glass-panel" style={{ padding: '32px', marginBottom: '40px', background: 'white' }}>
+          <div className="flex-responsive" style={{ marginBottom: "32px" }}>
+            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
+              <div style={{ background: '#dcfce7', padding: '10px', borderRadius: '12px' }}><IndianRupee size={24} color="#16a34a" /></div> Financial Ledger
             </h3>
             {['Principal', 'Manager', 'Super Admin'].includes(role) && (
               <div style={{ display: 'flex', gap: '12px' }}>
-                <button className="btn-primary" onClick={() => setIsPaymentModalOpen(true)} style={{ padding: '8px 16px', borderRadius: '12px', background: '#10b981', border: 'none' }}>
-                  <Plus size={18} style={{ display: 'inline', marginRight: '4px' }} /> Receive Payment
+                <button className="btn-primary" onClick={() => setIsPaymentModalOpen(true)} style={{ padding: '10px 20px', borderRadius: '12px', background: '#10b981', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Plus size={18} /> Receive Payment
                 </button>
-                <button className="btn-primary" onClick={() => setIsFineModalOpen(true)} style={{ padding: '8px 16px', borderRadius: '12px', background: '#ef4444', border: 'none' }}>
-                  <Plus size={18} style={{ display: 'inline', marginRight: '4px' }} /> Add Charge
+                <button className="btn-primary" onClick={() => setIsFineModalOpen(true)} style={{ padding: '10px 20px', borderRadius: '12px', background: '#ef4444', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Plus size={18} /> Add Charge
                 </button>
               </div>
             )}
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-            <div style={{ padding: '20px', borderRadius: '16px', background: currentBal > 0 ? '#fee2e2' : '#f1f5f9', border: '1px solid', borderColor: currentBal > 0 ? '#fecaca' : '#e2e8f0' }}>
-              <div style={{ color: currentBal > 0 ? '#ef4444' : '#64748b', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}>Total Pending Dues</div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, color: currentBal > 0 ? '#ef4444' : '#1e293b' }}>₹{currentDue}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+            <div style={{ padding: '24px', borderRadius: '20px', background: currentBal > 0 ? '#fef2f2' : '#f8fafc', border: '1px solid', borderColor: currentBal > 0 ? '#fecaca' : '#e2e8f0', display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <div style={{ background: currentBal > 0 ? '#fee2e2' : '#f1f5f9', padding: '16px', borderRadius: '16px' }}>
+                <AlertTriangle size={32} color={currentBal > 0 ? '#ef4444' : '#94a3b8'} />
+              </div>
+              <div>
+                <div style={{ color: currentBal > 0 ? '#ef4444' : '#64748b', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Pending Dues</div>
+                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: currentBal > 0 ? '#ef4444' : '#1e293b' }}>₹{currentDue}</div>
+              </div>
             </div>
-            <div style={{ padding: '20px', borderRadius: '16px', background: currentAdvance > 0 ? '#dcfce7' : '#f1f5f9', border: '1px solid', borderColor: currentAdvance > 0 ? '#bbf7d0' : '#e2e8f0' }}>
-              <div style={{ color: currentAdvance > 0 ? '#10b981' : '#64748b', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}>Advance Paid</div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, color: currentAdvance > 0 ? '#10b981' : '#1e293b' }}>₹{currentAdvance}</div>
+            <div style={{ padding: '24px', borderRadius: '20px', background: currentAdvance > 0 ? '#f0fdf4' : '#f8fafc', border: '1px solid', borderColor: currentAdvance > 0 ? '#bbf7d0' : '#e2e8f0', display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <div style={{ background: currentAdvance > 0 ? '#dcfce7' : '#f1f5f9', padding: '16px', borderRadius: '16px' }}>
+                <CheckCircle size={32} color={currentAdvance > 0 ? '#10b981' : '#94a3b8'} />
+              </div>
+              <div>
+                <div style={{ color: currentAdvance > 0 ? '#10b981' : '#64748b', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Advance Paid</div>
+                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: currentAdvance > 0 ? '#10b981' : '#1e293b' }}>₹{currentAdvance}</div>
+              </div>
             </div>
           </div>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <select className="glass-input" style={{ width: '250px' }} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div style={{ fontWeight: 600, color: '#334155' }}>Transaction History</div>
+            <select className="glass-input" style={{ width: '250px', background: '#f8fafc' }} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
               <option value="All">All Months</option>
               {availableMonths.map(m => (
                 <option key={m} value={m}>{new Date(m + '-01').toLocaleDateString('default', { month: 'long', year: 'numeric' })}</option>
@@ -535,40 +522,41 @@ const StudentProfile: React.FC = () => {
             </select>
           </div>
 
-          <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
             <table style={{ width: '100%', minWidth: '700px' }}>
-              <thead style={{ position: 'sticky', top: 0, background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', zIndex: 1 }}>
+              <thead style={{ position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }}>
                 <tr>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th style={{ color: 'var(--danger)' }}>Charge (Due)</th>
-                  <th style={{ color: 'var(--success)' }}>Payment (Paid)</th>
-                  <th>Action</th>
+                  <th style={{ padding: '16px' }}>Date</th>
+                  <th style={{ padding: '16px' }}>Description</th>
+                  <th style={{ color: '#ef4444', padding: '16px' }}>Charge (Due)</th>
+                  <th style={{ color: '#10b981', padding: '16px' }}>Payment (Paid)</th>
+                  <th style={{ padding: '16px' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {displayedRows.length === 0 ? (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '60px', color: '#94a3b8' }}>
+                      <FileText size={40} style={{ margin: '0 auto 12px auto', opacity: 0.5 }} />
                       No financial records found.
                     </td>
                   </tr>
                 ) : (
                   displayedRows.map(row => (
-                    <tr key={row.id}>
-                      <td style={{ whiteSpace: 'nowrap' }}>{new Date(row.date).toLocaleString()}</td>
-                      <td>{row.description || row.category}</td>
-                      <td style={{ color: 'var(--danger)', fontWeight: row.isCharge ? 600 : 400 }}>{row.isCharge ? `₹${row.amount}` : '-'}</td>
-                      <td style={{ color: 'var(--success)', fontWeight: !row.isCharge ? 600 : 400 }}>{!row.isCharge ? `₹${row.amount}` : '-'}</td>
-                      <td>
+                    <tr key={row.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ whiteSpace: 'nowrap', padding: '16px' }}>{new Date(row.date).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</td>
+                      <td style={{ padding: '16px', fontWeight: 500 }}>{row.description || row.category}</td>
+                      <td style={{ color: '#ef4444', fontWeight: row.isCharge ? 700 : 400, padding: '16px' }}>{row.isCharge ? `₹${row.amount}` : '-'}</td>
+                      <td style={{ color: '#10b981', fontWeight: !row.isCharge ? 700 : 400, padding: '16px' }}>{!row.isCharge ? `₹${row.amount}` : '-'}</td>
+                      <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           {!row.isCharge && (
-                            <button onClick={() => handlePrintReceipt(row.original)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
+                            <button onClick={() => handlePrintReceipt(row.original)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600 }}>
                               <Printer size={14} /> Receipt
                             </button>
                           )}
                           {['Super Admin', 'Manager'].includes(role) && row.original && (
-                            <button onClick={() => { setDeleteTxnId(row.original.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}>
+                            <button onClick={() => { setDeleteTxnId(row.original.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}>
                               <Trash2 size={14} />
                             </button>
                           )}
@@ -585,28 +573,33 @@ const StudentProfile: React.FC = () => {
 
       {/* TAB CONTENT: DOCUMENTS */}
       {activeTab === 'documents' && (
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '40px' }}>
-          <h3 style={{ margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem' }}>
-            <FileText size={24} className="text-primary" /> Uploaded Documents
+        <div className="glass-panel" style={{ padding: '32px', marginBottom: '40px', background: 'white' }}>
+          <h3 style={{ margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
+            <div style={{ background: '#e0e7ff', padding: '10px', borderRadius: '12px' }}><FileText size={24} color="#4f46e5" /></div> Uploaded Documents
           </h3>
           
           {student.documents && student.documents.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
               {student.documents.map((doc, idx) => (
                 <a key={idx} href={doc.url} target="_blank" rel="noreferrer" style={{ 
-                  background: 'white', border: '1px solid var(--glass-border)', padding: '20px', borderRadius: '16px', 
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', textDecoration: 'none', 
-                  color: 'var(--text-main)', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' 
+                  background: '#f8fafc', border: '1px solid #e2e8f0', padding: '24px', borderRadius: '20px', 
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', 
+                  color: '#1e293b', transition: '0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' 
                 }} className="hover-scale">
-                  <FileText size={48} color="#6366f1" />
-                  <span style={{ fontWeight: 600, textAlign: 'center' }}>{doc.name}</span>
+                  <div style={{ background: 'white', padding: '16px', borderRadius: '16px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+                     <FileText size={40} color="#6366f1" />
+                  </div>
+                  <span style={{ fontWeight: 700, textAlign: 'center', fontSize: '1.1rem' }}>{doc.name}</span>
                 </a>
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-              <FileText size={48} color="#cbd5e1" style={{ marginBottom: '12px' }} />
-              <p style={{ color: '#64748b', margin: 0, fontWeight: 500 }}>No documents uploaded.</p>
+            <div style={{ textAlign: 'center', padding: '60px', background: '#f8fafc', borderRadius: '24px', border: '2px dashed #cbd5e1' }}>
+              <div style={{ background: 'white', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}>
+                 <FileText size={40} color="#cbd5e1" />
+              </div>
+              <h4 style={{ margin: '0 0 8px 0', color: '#475569', fontSize: '1.2rem' }}>No Documents</h4>
+              <p style={{ color: '#94a3b8', margin: 0, fontWeight: 500 }}>This student hasn't uploaded any documents yet.</p>
             </div>
           )}
         </div>
