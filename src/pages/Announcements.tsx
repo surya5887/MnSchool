@@ -258,15 +258,14 @@ const Announcements: React.FC = () => {
             ) : (
               <>
               {/* Community Groups */}
-              {Array.from(() => {
+              {(() => {
                 const map = new Map<string, { parent?: Group, subgroups: Group[] }>();
                 groups.filter(g => g.isParentCommunity).forEach(p => map.set(p.id, { parent: p, subgroups: [] }));
                 filteredGroups.filter(g => g.linkedParent).forEach(g => {
                    if (!map.has(g.linkedParent!)) map.set(g.linkedParent!, { subgroups: [] });
                    map.get(g.linkedParent!)!.subgroups.push(g);
                 });
-                return map.entries();
-              })().filter(([_, comm]) => comm.subgroups.length > 0).map(([pId, comm]) => {
+                return Array.from(map.entries()).filter(([_, comm]) => comm.subgroups.length > 0).map(([pId, comm]) => {
                 const pName = comm.parent?.name || 'Community Sub-groups';
                 return (
                   <div key={pId} style={{ background: '#f8fafc', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', marginBottom: '8px' }}>
@@ -322,7 +321,7 @@ const Announcements: React.FC = () => {
                     </div>
                   </div>
                 )
-              })}
+              })})() }
               
               {/* Standalone Groups */}
               {(() => {
