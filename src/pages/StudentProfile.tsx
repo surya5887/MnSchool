@@ -56,17 +56,26 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
 };
 
 
-const InfoBadge = ({ icon, bg, label, value }: { icon: React.ReactNode, bg: string, label: string, value: string | number | undefined }) => (
+const InfoBadge = ({ icon, bg, label, value, wrapText = false }: { icon: React.ReactNode, bg: string, label: string, value: string | number | undefined, wrapText?: boolean }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
     <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
       {icon}
     </div>
     <div style={{ overflow: 'hidden' }}>
       <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
-      <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value || 'N/A'}</div>
+      <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 700, whiteSpace: wrapText ? 'normal' : 'nowrap', overflow: wrapText ? 'visible' : 'hidden', textOverflow: wrapText ? 'clip' : 'ellipsis', wordBreak: wrapText ? 'break-word' : 'normal' }}>{value || 'N/A'}</div>
     </div>
   </div>
 );
+
+const calculateAge = (dobString: string | undefined) => {
+    if (!dobString) return '';
+    const birthDate = new Date(dobString);
+    const difference = Date.now() - birthDate.getTime();
+    const ageDate = new Date(difference);
+    return ` (${Math.abs(ageDate.getUTCFullYear() - 1970)} Yrs)`;
+};
+
 
 const StudentProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -446,12 +455,12 @@ const StudentProfile: React.FC = () => {
               <div style={{ background: '#fae8ff', padding: '8px', borderRadius: '10px' }}><User size={20} color="#c026d3" /></div> Personal Details
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-              <InfoBadge icon={<Calendar size={20} color="#f59e0b" />} bg="#fef3c7" label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString() : ''} />
+              <InfoBadge icon={<Calendar size={20} color="#f59e0b" />} bg="#fef3c7" label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString() + calculateAge(student.dob) : ''} />
               <InfoBadge icon={<Users size={20} color="#8b5cf6" />} bg="#ede9fe" label="Gender" value={student.gender} />
               <InfoBadge icon={<Shield size={20} color="#10b981" />} bg="#d1fae5" label="Religion" value={student.religion} />
               <InfoBadge icon={<Users size={20} color="#f43f5e" />} bg="#ffe4e6" label="Category/Caste" value={student.category ? `${student.category} / ${student.caste || ''}` : student.caste} />
               <InfoBadge icon={<Droplet size={20} color="#e11d48" />} bg="#ffe4e6" label="Blood Group" value={student.bloodGroup} />
-              <InfoBadge icon={<FileText size={20} color="#3b82f6" />} bg="#dbeafe" label="National ID / Aadhar" value={student.aadharNumber || student.nationalIdNumber} />
+              <InfoBadge icon={<FileText size={20} color="#3b82f6" />} bg="#dbeafe" label="Aadhar Number" value={student.aadharNumber || student.nationalIdNumber} />
             </div>
           </div>
 
@@ -461,12 +470,25 @@ const StudentProfile: React.FC = () => {
               <div style={{ background: '#ccfbf1', padding: '8px', borderRadius: '10px' }}><Phone size={20} color="#0d9488" /></div> Parent & Contact Info
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+              {/* Father Details */}
               <InfoBadge icon={<User size={20} color="#2563eb" />} bg="#dbeafe" label="Father's Name" value={student.parentName} />
+              <InfoBadge icon={<Shield size={20} color="#2563eb" />} bg="#dbeafe" label="Father Aadhar" value={student.fatherAadhar || student.parentAadhar} />
+              <InfoBadge icon={<GraduationCap size={20} color="#2563eb" />} bg="#dbeafe" label="Father Qual." value={student.fatherQualification} />
+              <InfoBadge icon={<Activity size={20} color="#2563eb" />} bg="#dbeafe" label="Father Occ." value={student.fatherOccupation} />
+              
+              {/* Mother Details */}
               <InfoBadge icon={<User size={20} color="#db2777" />} bg="#fce7f3" label="Mother's Name" value={student.motherName} />
+              <InfoBadge icon={<Shield size={20} color="#db2777" />} bg="#fce7f3" label="Mother Aadhar" value={student.motherAadhar} />
+              <InfoBadge icon={<GraduationCap size={20} color="#db2777" />} bg="#fce7f3" label="Mother Qual." value={student.motherQualification} />
+              <InfoBadge icon={<Activity size={20} color="#db2777" />} bg="#fce7f3" label="Mother Occ." value={student.motherOccupation} />
+              
+              {/* Contact Details */}
               <InfoBadge icon={<Phone size={20} color="#16a34a" />} bg="#dcfce7" label="Primary Phone" value={student.parentPhone || student.phone} />
               <InfoBadge icon={<AlertTriangle size={20} color="#ea580c" />} bg="#ffedd5" label="Emergency Contact" value={student.emergencyContact} />
               <InfoBadge icon={<Mail size={20} color="#8b5cf6" />} bg="#ede9fe" label="Email Address" value={student.email} />
-              <InfoBadge icon={<MapPin size={20} color="#0284c7" />} bg="#e0f2fe" label="Address" value={student.address} />
+              <div style={{ gridColumn: '1 / -1' }}>
+                  <InfoBadge icon={<MapPin size={20} color="#0284c7" />} bg="#e0f2fe" label="Full Address" value={student.address} wrapText={true} />
+              </div>
             </div>
           </div>
         </div>
@@ -608,11 +630,11 @@ const StudentProfile: React.FC = () => {
       {/* FULL SCREEN EDIT MODAL */}
       {isEditing && (
         <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000,
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
           background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
           <div style={{ 
-            background: 'var(--bg-color)', width: '90%', maxWidth: '1000px', height: '90vh', 
+            background: '#ffffff', width: '90%', maxWidth: '1000px', height: '90vh', 
             borderRadius: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' 
           }}>
@@ -675,9 +697,22 @@ const StudentProfile: React.FC = () => {
                 {/* Parent Section */}
                 <div className="glass-panel" style={{ padding: '24px', gridColumn: '1 / -1' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Parent & Contact Details</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                     <div><label>Father's Name</label><input className="glass-input" value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} /></div>
+                    <div><label>Father Aadhar</label><input className="glass-input" value={editData.fatherAadhar || ''} onChange={e => setEditData({...editData, fatherAadhar: e.target.value})} /></div>
+                    <div><label>Father Qualification</label><input className="glass-input" value={editData.fatherQualification || ''} onChange={e => setEditData({...editData, fatherQualification: e.target.value})} /></div>
+                    <div><label>Father Occupation</label><input className="glass-input" value={editData.fatherOccupation || ''} onChange={e => setEditData({...editData, fatherOccupation: e.target.value})} /></div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                     <div><label>Mother's Name</label><input className="glass-input" value={editData.motherName || ''} onChange={e => setEditData({...editData, motherName: e.target.value})} /></div>
+                    <div><label>Mother Aadhar</label><input className="glass-input" value={editData.motherAadhar || ''} onChange={e => setEditData({...editData, motherAadhar: e.target.value})} /></div>
+                    <div><label>Mother Qualification</label><input className="glass-input" value={editData.motherQualification || ''} onChange={e => setEditData({...editData, motherQualification: e.target.value})} /></div>
+                    <div><label>Mother Occupation</label><input className="glass-input" value={editData.motherOccupation || ''} onChange={e => setEditData({...editData, motherOccupation: e.target.value})} /></div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                     <div><label>Primary Phone</label><input className="glass-input" value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} /></div>
                     <div><label>Emergency Contact</label><input className="glass-input" value={editData.emergencyContact || ''} onChange={e => setEditData({...editData, emergencyContact: e.target.value})} /></div>
                     <div><label>Email Address</label><input type="email" className="glass-input" value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} /></div>
