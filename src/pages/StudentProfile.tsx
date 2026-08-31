@@ -68,6 +68,24 @@ const StudentProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<StudentData>>({});
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'profile' | 'finance' | 'documents'>('profile');
+  const [newDocs, setNewDocs] = useState<{name: string, file: File | null}[]>([]);
+  const [docsToRemove, setDocsToRemove] = useState<string[]>([]);
+  const [newDocName, setNewDocName] = useState('');
+  const [newDocFile, setNewDocFile] = useState<File | null>(null);
+
+  const handleAddDoc = () => {
+    if (newDocName && newDocFile) {
+      setNewDocs([...newDocs, { name: newDocName, file: newDocFile }]);
+      setNewDocName('');
+      setNewDocFile(null);
+    }
+  };
+
+  const handleRemoveNewDoc = (idx: number) => {
+    setNewDocs(newDocs.filter((_, i) => i !== idx));
+  };
+
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -327,324 +345,425 @@ const StudentProfile: React.FC = () => {
         <button onClick={() => navigate(-1)} className="btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0 }}>
           <ArrowLeft size={20} /> Back to Directory
         </button>
-        {isEditing ? (
-          <div className="staff-action-buttons">
-             <button className="btn-secondary" onClick={handleEditToggle}>Cancel</button>
-             <button className="btn-primary" onClick={handleSaveProfile} disabled={saving}>
-               {saving ? 'Saving...' : <><Save size={16}/> Save Changes</>}
-             </button>
-          </div>
-        ) : ['Principal', 'Manager', 'Super Admin'].includes(role) && (
-          <button className="btn-primary" onClick={handleEditToggle}>
-            <Edit size={16} /> Edit Profile
-          </button>
-        )}
       </div>
 
-      <div className="profile-layout">
+      {/* Modern Profile Header */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', 
+        borderRadius: '24px', 
+        padding: '32px', 
+        color: 'white',
+        boxShadow: '0 10px 25px rgba(79, 70, 229, 0.2)',
+        marginBottom: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '24px',
+        flexWrap: 'wrap'
+      }}>
+        <div style={{ position: 'relative' }}>
+          <img 
+            src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=ffffff&color=4f46e5`} 
+            alt="Profile" 
+            style={{ width: '120px', height: '120px', borderRadius: '24px', border: '4px solid rgba(255,255,255,0.2)', objectFit: 'cover' }} 
+          />
+        </div>
         
-        {/* Left Column - Profile Card */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ textAlign: 'center', position: 'relative' }}>
-            
-            <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handlePhotoChange} />
-            
-            <div style={{ 
-              width: '120px', height: '120px', borderRadius: '50%', background: 'var(--primary)', 
-              margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
-              fontSize: '3rem', fontWeight: 600, overflow: 'hidden', position: 'relative',
-              cursor: isEditing ? 'pointer' : 'default', border: isEditing ? '2px dashed var(--glass-border)' : 'none'
-            }} onClick={() => isEditing && fileInputRef.current?.click()}>
-              {newPhotoPreview || (editData.photoUrl && editData.photoUrl !== '') ? (
-                <>
-                  <img src={newPhotoPreview || editData.photoUrl} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  {isEditing && (
-                    <div style={{ position: 'absolute', bottom: 0, width: '100%', background: 'rgba(0,0,0,0.5)', padding: '4px', fontSize: '0.7rem' }}>
-                       <Camera size={14} /> Change
-                    </div>
-                  )}
-                </>
-              ) : (
-                isEditing ? <Camera size={32} /> : (student.firstName?.[0] || 'U')
-              )}
-            </div>
-            
-            {isEditing && (newPhotoPreview || (editData.photoUrl && editData.photoUrl !== '')) && (
-              <button 
-                onClick={handleRemovePhoto}
-                style={{ margin: '-10px auto 16px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '4px', padding: '4px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
-              >
-                <X size={14} /> Remove Photo
-              </button>
-            )}
+        <div style={{ flex: 1, minWidth: '250px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
+            <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800 }}>{student.firstName} {student.lastName}</h1>
+            <span style={{ padding: '4px 12px', background: student.status === 'Active' ? '#22c55e' : '#ef4444', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 600 }}>
+              {student.status || 'Active'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', opacity: 0.9 }}>
+            <span><strong style={{ fontWeight: 600 }}>Class:</strong> {studentClass?.className || student.classId} - {student.sectionId}</span>
+            <span><strong style={{ fontWeight: 600 }}>Roll No:</strong> {student.rollNumber || 'N/A'}</span>
+            <span><strong style={{ fontWeight: 600 }}>Adm No:</strong> {student.admissionNo || 'N/A'}</span>
+          </div>
+        </div>
 
-            {isEditing ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
-                <input className="glass-input" value={editData.firstName || ''} onChange={e => setEditData({...editData, firstName: e.target.value})} placeholder="First Name" />
-                <input className="glass-input" value={editData.lastName || ''} onChange={e => setEditData({...editData, lastName: e.target.value})} placeholder="Last Name" />
-                <select className="glass-input" value={editData.status} onChange={e => setEditData({...editData, status: e.target.value as 'Active' | 'Inactive'})}>
-                   <option value="Active">Active</option>
-                   <option value="Inactive">Inactive</option>
-                </select>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+            <button className="btn-primary" onClick={() => setIsEditing(true)} style={{ background: 'white', color: '#4f46e5', border: 'none', fontWeight: 700, padding: '12px 24px', borderRadius: '12px' }}>
+              <Edit size={18} style={{ display: 'inline', marginRight: '8px' }} /> Edit Profile
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs Menu */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '4px' }}>
+        <button onClick={() => setActiveTab('profile')} style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: activeTab === 'profile' ? 'var(--primary)' : 'var(--glass-bg)', color: activeTab === 'profile' ? 'white' : 'var(--text-main)', fontWeight: 600, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap' }}>Personal & Academic</button>
+        <button onClick={() => setActiveTab('finance')} style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: activeTab === 'finance' ? 'var(--primary)' : 'var(--glass-bg)', color: activeTab === 'finance' ? 'white' : 'var(--text-main)', fontWeight: 600, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap' }}>Financial Ledger</button>
+        <button onClick={() => setActiveTab('documents')} style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: activeTab === 'documents' ? 'var(--primary)' : 'var(--glass-bg)', color: activeTab === 'documents' ? 'white' : 'var(--text-main)', fontWeight: 600, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap' }}>Documents</button>
+      </div>
+
+      {/* TAB CONTENT: PROFILE */}
+      {activeTab === 'profile' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+          
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid var(--glass-border)', paddingBottom: '12px' }}>
+              Academic Details
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Admission Date</span>
+                <span style={{ fontWeight: 500 }}>{student.admissionDate ? new Date(student.admissionDate).toLocaleDateString() : 'N/A'}</span>
               </div>
-            ) : (
-              <>
-                <h2 style={{ margin: '0 0 8px 0' }}>{student.firstName} {student.lastName}</h2>
-                <p style={{ color: 'var(--text-muted)', margin: '0 0 16px 0' }}>
-                  {studentClass?.className} - {student.sectionId} | Roll: {student.rollNumber} 
-                  {student.admissionNo ? ` | Adm No: ${student.admissionNo}` : ''}
-                </p>
-                
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <span className={`badge ${student.status === 'Active' ? 'success' : 'danger'}`}>{student.status}</span>
-                  {student.transportRoute && <span className="badge warning">Bus: {student.transportRoute}</span>}
-                  {student.admissionType && (
-                    <span className={`badge ${student.admissionType === 'New' ? 'warning' : 'success'}`}>
-                      {student.admissionType === 'New' ? '🆕 New' : '🔄 Old'}
-                    </span>
-                  )}
-                </div>
-              </>
-            )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Admission Type</span>
+                <span style={{ fontWeight: 500 }}>{student.admissionType || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Session</span>
+                <span style={{ fontWeight: 500 }}>{student.session || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Transport Route</span>
+                <span style={{ fontWeight: 500 }}>{student.transportRoute || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Fee Group</span>
+                <span style={{ fontWeight: 500 }}>{student.feeGroup || 'N/A'}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="glass-panel">
-            <h3 style={{ margin: '0 0 16px 0' }}>Detailed Information</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Admission No</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.admissionNo || ''} onChange={e => setEditData({...editData, admissionNo: e.target.value})} placeholder="Admission No" /> 
-                  : <span>{student.admissionNo || 'N/A'}</span>
-                }
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid var(--glass-border)', paddingBottom: '12px' }}>
+              Personal Details
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Date of Birth</span>
+                <span style={{ fontWeight: 500 }}>{student.dob ? new Date(student.dob).toLocaleDateString() : 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Father Name</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} placeholder="Father's Name" /> 
-                  : <span>{student.parentName || 'N/A'}</span>
-                }
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Gender</span>
+                <span style={{ fontWeight: 500 }}>{student.gender || 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Mother Name</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.motherName || ''} onChange={e => setEditData({...editData, motherName: e.target.value})} placeholder="Mother's Name" /> 
-                  : <span>{student.motherName || 'N/A'}</span>
-                }
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Religion</span>
+                <span style={{ fontWeight: 500 }}>{student.religion || 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Primary Phone</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} placeholder="Parent Phone" /> 
-                  : <span>{student.parentPhone || 'N/A'}</span>
-                }
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Caste / Category</span>
+                <span style={{ fontWeight: 500 }}>{student.caste || 'N/A'} / {student.category || 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Emergency Contact</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.emergencyContact || ''} onChange={e => setEditData({...editData, emergencyContact: e.target.value})} placeholder="Emergency Contact" /> 
-                  : <span>{student.emergencyContact || 'N/A'}</span>
-                }
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Blood Group</span>
+                <span style={{ fontWeight: 500 }}>{student.bloodGroup || 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Email Address</span>
-                {isEditing ? 
-                  <input type="email" className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email Address" /> 
-                  : <span>{student.email || 'N/A'}</span>
-                }
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Aadhar / National ID</span>
+                <span style={{ fontWeight: 500 }}>{student.aadharNumber || student.nationalIdNumber || 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Address</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.address || ''} onChange={e => setEditData({...editData, address: e.target.value})} placeholder="Address" /> 
-                  : <span>{student.address || 'N/A'}</span>
-                }
+            </div>
+          </div>
+
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid var(--glass-border)', paddingBottom: '12px' }}>
+              Parent & Contact Details
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Father's Name</span>
+                <span style={{ fontWeight: 500 }}>{student.parentName || 'N/A'}</span>
               </div>
-              <div className="info-row" style={{ display: "flex", gap: "12px", alignItems: "center", color: "var(--text-muted)" }}>
-                <span style={{ width: '120px', fontWeight: 500 }}>Aadhar Number</span>
-                {isEditing ? 
-                  <input className="glass-input" style={{flex: 1, padding: '4px 8px'}} value={editData.aadharNumber || ''} onChange={e => {
-                    let val = e.target.value.replace(/\D/g, '');
-                    if (val.length > 12) val = val.substring(0, 12);
-                    val = val.match(/.{1,4}/g)?.join(' ') || val;
-                    setEditData({...editData, aadharNumber: val});
-                  }} placeholder="Aadhar Number" /> 
-                  : <span>{student.aadharNumber || 'N/A'}</span>
-                }
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Mother's Name</span>
+                <span style={{ fontWeight: 500 }}>{student.motherName || 'N/A'}</span>
               </div>
-              
-              {role === 'Super Admin' && (
-                <div style={{ background: 'rgba(99, 102, 241, 0.05)', padding: '16px', borderRadius: '12px', marginTop: '16px' }}>
-                  <div style={{ color: 'var(--primary-color)', fontWeight: 600, marginBottom: '12px' }}>System Credentials (Admin Only)</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <span style={{ width: '120px', fontWeight: 500, color: 'var(--text-muted)' }}>Login ID (Email)</span>
-                      {isEditing ? (
-                        <input type="email" className="glass-input" style={{ flex: 1, padding: '4px 8px' }} value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} placeholder="Email ID" />
-                      ) : (
-                        <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{student.email || 'N/A'}</span>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <span style={{ width: '120px', fontWeight: 500, color: 'var(--text-muted)' }}>Password</span>
-                      {isEditing ? (
-                        <input type="text" className="glass-input" style={{ flex: 1, padding: '4px 8px' }} placeholder="******** (Type to change)" value={editData.password && !editData.password.startsWith('$2a$') && !editData.password.startsWith('$2b$') ? editData.password : ''} onChange={e => setEditData({...editData, password: e.target.value})} />
-                      ) : (
-                        <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>********</span>
-                      )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Primary Phone</span>
+                <span style={{ fontWeight: 500 }}>{student.parentPhone || student.phone || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Emergency Contact</span>
+                <span style={{ fontWeight: 500 }}>{student.emergencyContact || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Email Address</span>
+                <span style={{ fontWeight: 500 }}>{student.email || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '8px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Address</span>
+                <span style={{ fontWeight: 500, textAlign: 'right', maxWidth: '200px' }}>{student.address || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: FINANCE */}
+      {activeTab === 'finance' && (
+        <div className="glass-panel" style={{ padding: '24px', marginBottom: '40px' }}>
+          <div className="flex-responsive" style={{ marginBottom: "20px" }}>
+            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem' }}>
+              <IndianRupee size={24} className="text-primary" /> Financial Ledger
+            </h3>
+            {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn-primary" onClick={() => setIsPaymentModalOpen(true)} style={{ padding: '8px 16px', borderRadius: '12px', background: '#10b981', border: 'none' }}>
+                  <Plus size={18} style={{ display: 'inline', marginRight: '4px' }} /> Receive Payment
+                </button>
+                <button className="btn-primary" onClick={() => setIsFineModalOpen(true)} style={{ padding: '8px 16px', borderRadius: '12px', background: '#ef4444', border: 'none' }}>
+                  <Plus size={18} style={{ display: 'inline', marginRight: '4px' }} /> Add Charge
+                </button>
+              </div>
+            )}
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ padding: '20px', borderRadius: '16px', background: currentBal > 0 ? '#fee2e2' : '#f1f5f9', border: '1px solid', borderColor: currentBal > 0 ? '#fecaca' : '#e2e8f0' }}>
+              <div style={{ color: currentBal > 0 ? '#ef4444' : '#64748b', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}>Total Pending Dues</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: currentBal > 0 ? '#ef4444' : '#1e293b' }}>₹{currentDue}</div>
+            </div>
+            <div style={{ padding: '20px', borderRadius: '16px', background: currentAdvance > 0 ? '#dcfce7' : '#f1f5f9', border: '1px solid', borderColor: currentAdvance > 0 ? '#bbf7d0' : '#e2e8f0' }}>
+              <div style={{ color: currentAdvance > 0 ? '#10b981' : '#64748b', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}>Advance Paid</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: currentAdvance > 0 ? '#10b981' : '#1e293b' }}>₹{currentAdvance}</div>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <select className="glass-input" style={{ width: '250px' }} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
+              <option value="All">All Months</option>
+              {availableMonths.map(m => (
+                <option key={m} value={m}>{new Date(m + '-01').toLocaleDateString('default', { month: 'long', year: 'numeric' })}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+            <table style={{ width: '100%', minWidth: '700px' }}>
+              <thead style={{ position: 'sticky', top: 0, background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', zIndex: 1 }}>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th style={{ color: 'var(--danger)' }}>Charge (Due)</th>
+                  <th style={{ color: 'var(--success)' }}>Payment (Paid)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayedRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                      No financial records found.
+                    </td>
+                  </tr>
+                ) : (
+                  displayedRows.map(row => (
+                    <tr key={row.id}>
+                      <td style={{ whiteSpace: 'nowrap' }}>{new Date(row.date).toLocaleString()}</td>
+                      <td>{row.description || row.category}</td>
+                      <td style={{ color: 'var(--danger)', fontWeight: row.isCharge ? 600 : 400 }}>{row.isCharge ? `₹${row.amount}` : '-'}</td>
+                      <td style={{ color: 'var(--success)', fontWeight: !row.isCharge ? 600 : 400 }}>{!row.isCharge ? `₹${row.amount}` : '-'}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          {!row.isCharge && (
+                            <button onClick={() => handlePrintReceipt(row.original)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
+                              <Printer size={14} /> Receipt
+                            </button>
+                          )}
+                          {['Super Admin', 'Manager'].includes(role) && row.original && (
+                            <button onClick={() => { setDeleteTxnId(row.original.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}>
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: DOCUMENTS */}
+      {activeTab === 'documents' && (
+        <div className="glass-panel" style={{ padding: '24px', marginBottom: '40px' }}>
+          <h3 style={{ margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem' }}>
+            <FileText size={24} className="text-primary" /> Uploaded Documents
+          </h3>
+          
+          {student.documents && student.documents.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+              {student.documents.map((doc, idx) => (
+                <a key={idx} href={doc.url} target="_blank" rel="noreferrer" style={{ 
+                  background: 'white', border: '1px solid var(--glass-border)', padding: '20px', borderRadius: '16px', 
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', textDecoration: 'none', 
+                  color: 'var(--text-main)', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' 
+                }} className="hover-scale">
+                  <FileText size={48} color="#6366f1" />
+                  <span style={{ fontWeight: 600, textAlign: 'center' }}>{doc.name}</span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+              <FileText size={48} color="#cbd5e1" style={{ marginBottom: '12px' }} />
+              <p style={{ color: '#64748b', margin: 0, fontWeight: 500 }}>No documents uploaded.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* FULL SCREEN EDIT MODAL */}
+      {isEditing && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center'
+        }}>
+          <div style={{ 
+            background: 'var(--bg-color)', width: '90%', maxWidth: '1000px', height: '90vh', 
+            borderRadius: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' 
+          }}>
+            <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
+              <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.5rem' }}>
+                <Edit size={24} className="text-primary" /> Edit Profile
+              </h2>
+              <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%' }}>
+                <X size={24} color="#64748b" />
+              </button>
+            </div>
+            
+            <div style={{ padding: '32px', overflowY: 'auto', flex: 1 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
+                
+                {/* Academic Section */}
+                <div className="glass-panel" style={{ padding: '24px' }}>
+                  <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Academic Details</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div><label>Class ID</label><input className="glass-input" value={editData.classId || ''} onChange={e => setEditData({...editData, classId: e.target.value})} /></div>
+                    <div><label>Section</label><input className="glass-input" value={editData.sectionId || ''} onChange={e => setEditData({...editData, sectionId: e.target.value})} /></div>
+                    <div><label>Roll Number</label><input type="number" className="glass-input" value={editData.rollNumber || ''} onChange={e => setEditData({...editData, rollNumber: Number(e.target.value)})} /></div>
+                    <div><label>Admission No</label><input className="glass-input" value={editData.admissionNo || ''} onChange={e => setEditData({...editData, admissionNo: e.target.value})} /></div>
+                    <div><label>Admission Date</label><input type="date" className="glass-input" value={editData.admissionDate || ''} onChange={e => setEditData({...editData, admissionDate: e.target.value})} /></div>
+                    <div><label>Session</label><input className="glass-input" value={editData.session || ''} onChange={e => setEditData({...editData, session: e.target.value})} /></div>
+                    <div><label>Fee Group</label><input className="glass-input" value={editData.feeGroup || ''} onChange={e => setEditData({...editData, feeGroup: e.target.value})} /></div>
+                    <div>
+                      <label>Status</label>
+                      <select className="glass-input" value={editData.status || 'Active'} onChange={e => setEditData({...editData, status: e.target.value as 'Active' | 'Inactive'})}>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
 
-        {/* Right Column - Ledgers and Details */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          
-          {(student.admissionType === 'Old' || previousDues > 0 || previousPaidAmount > 0) && (
-            <div className="glass-panel" style={{ background: 'rgba(99?02,241,0.05)', border: '1px solid rgba(99?02,241,0.2)' }}>
-              <h4 style={{ margin: '0 0 12px 0', color: 'var(--primary-color)' }}>📋 Previous Session History</h4>
-              <div className="dashboard-grid" style={{ gap: '12px' }}>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Session</span><br/><strong>{student.previousSession || 'N/A'}</strong></div>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Dues</span><br/><strong style={{ color: 'var(--danger)' }}>₹{previousDues}</strong></div>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Previous Paid</span><br/><strong style={{ color: 'var(--success)' }}>₹{previousPaidAmount}</strong></div>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Net Old Pending</span><br/><strong style={{ color: previousPending > 0 ? 'var(--danger)' : (previousPending < 0 ? 'var(--success)' : 'inherit') }}>
-                  {previousPending > 0 ? `₹${previousPending}` : (previousPending < 0 ? `Advance: ₹${Math.abs(previousPending)}` : '₹0')}
-                </strong></div>
-              </div>
-            </div>
-          )}
-
-          {/* Fee Overview */}
-          <div className="glass-panel">
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <IndianRupee size={20} className="text-primary" /> Financial Ledger</h3>
-              
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                <div style={{ flex: 1, minWidth: '150px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--danger)', fontWeight: 600, textTransform: 'uppercase' }}>Pending Balance</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--danger)' }}>₹{typeof currentDue !== 'undefined' ? currentDue.toLocaleString() : 0}</span>
+                {/* Personal Section */}
+                <div className="glass-panel" style={{ padding: '24px' }}>
+                  <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Personal Details</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div><label>First Name</label><input className="glass-input" value={editData.firstName || ''} onChange={e => setEditData({...editData, firstName: e.target.value})} /></div>
+                    <div><label>Last Name</label><input className="glass-input" value={editData.lastName || ''} onChange={e => setEditData({...editData, lastName: e.target.value})} /></div>
+                    <div><label>Date of Birth</label><input type="date" className="glass-input" value={editData.dob || ''} onChange={e => setEditData({...editData, dob: e.target.value})} /></div>
+                    <div>
+                      <label>Gender</label>
+                      <select className="glass-input" value={editData.gender || ''} onChange={e => setEditData({...editData, gender: e.target.value})}>
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </div>
+                    <div><label>Religion</label><input className="glass-input" value={editData.religion || ''} onChange={e => setEditData({...editData, religion: e.target.value})} /></div>
+                    <div><label>Caste</label><input className="glass-input" value={editData.caste || ''} onChange={e => setEditData({...editData, caste: e.target.value})} /></div>
+                    <div><label>Category</label><input className="glass-input" value={editData.category || ''} onChange={e => setEditData({...editData, category: e.target.value})} /></div>
+                    <div><label>Blood Group</label><input className="glass-input" value={editData.bloodGroup || ''} onChange={e => setEditData({...editData, bloodGroup: e.target.value})} /></div>
+                    <div style={{ gridColumn: '1 / -1' }}><label>Aadhar Number</label><input className="glass-input" value={editData.aadharNumber || ''} onChange={e => setEditData({...editData, aadharNumber: e.target.value})} /></div>
+                  </div>
                 </div>
-                <div style={{ flex: 1, minWidth: '150px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--success)', fontWeight: 600, textTransform: 'uppercase' }}>Advance Paid</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)' }}>₹{typeof currentAdvance !== 'undefined' ? currentAdvance.toLocaleString() : 0}</span>
-                </div>
-              </div>
 
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                {availableMonths.length > 0 && (
-                  <select 
-                    className="glass-input" 
-                    style={{ width: 'auto', padding: '6px 12px', margin: 0 }}
-                    value={filterMonth}
-                    onChange={e => setFilterMonth(e.target.value)}
-                  >
-                    <option value="All">All Months</option>
-                    {availableMonths.map(m => (
-                      <option key={m} value={m}>
-                        {new Date(m + "-01").toLocaleDateString('default', { month: 'short', year: 'numeric' })}
-                      </option>
+                {/* Parent Section */}
+                <div className="glass-panel" style={{ padding: '24px', gridColumn: '1 / -1' }}>
+                  <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Parent & Contact Details</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                    <div><label>Father's Name</label><input className="glass-input" value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} /></div>
+                    <div><label>Mother's Name</label><input className="glass-input" value={editData.motherName || ''} onChange={e => setEditData({...editData, motherName: e.target.value})} /></div>
+                    <div><label>Primary Phone</label><input className="glass-input" value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} /></div>
+                    <div><label>Emergency Contact</label><input className="glass-input" value={editData.emergencyContact || ''} onChange={e => setEditData({...editData, emergencyContact: e.target.value})} /></div>
+                    <div><label>Email Address</label><input type="email" className="glass-input" value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} /></div>
+                    <div style={{ gridColumn: '1 / -1' }}><label>Full Address</label><textarea className="glass-input" style={{ width: '100%', minHeight: '80px' }} value={editData.address || ''} onChange={e => setEditData({...editData, address: e.target.value})}></textarea></div>
+                  </div>
+                </div>
+
+                {/* Profile Photo */}
+                <div className="glass-panel" style={{ padding: '24px' }}>
+                  <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Profile Photo</h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                     <img src={newPhotoPreview || editData.photoUrl || 'https://ui-avatars.com/api/?name=U+A'} alt="Preview" style={{ width: '100px', height: '100px', borderRadius: '12px', objectFit: 'cover' }} />
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                       <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = () => { setRawImage(reader.result); setShowCropper(true); };
+                            reader.readAsDataURL(e.target.files[0]);
+                          }
+                       }} />
+                       <button type="button" className="btn-secondary" onClick={() => fileInputRef.current?.click()}><Camera size={16} style={{ display: 'inline', marginRight: '4px' }}/> Upload New</button>
+                       {(newPhotoPreview || editData.photoUrl) && <button type="button" onClick={handleRemovePhoto} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 600 }}>Remove</button>}
+                     </div>
+                  </div>
+                </div>
+
+                {/* Documents Management */}
+                <div className="glass-panel" style={{ padding: '24px' }}>
+                  <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Manage Documents</h4>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                    {(editData.documents || []).map((doc, idx) => {
+                       const isRemoved = docsToRemove.includes(doc.url);
+                       return (
+                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: isRemoved ? '#fee2e2' : '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                           <span style={{ textDecoration: isRemoved ? 'line-through' : 'none', color: isRemoved ? '#ef4444' : '#1e293b', display: 'flex', alignItems: 'center' }}><FileText size={14} style={{ marginRight: '8px' }}/> {doc.name}</span>
+                           <button type="button" onClick={() => {
+                              if (isRemoved) setDocsToRemove(docsToRemove.filter(u => u !== doc.url));
+                              else setDocsToRemove([...docsToRemove, doc.url]);
+                           }} style={{ color: isRemoved ? '#10b981' : '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                             {isRemoved ? 'Restore' : 'Delete'}
+                           </button>
+                         </div>
+                       );
+                    })}
+                    {newDocs.map((doc, idx) => (
+                         <div key={`new-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#dcfce7', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                           <span style={{ display: 'flex', alignItems: 'center' }}><FileText size={14} style={{ marginRight: '8px' }}/> {doc.name} (New)</span>
+                           <button type="button" onClick={() => handleRemoveNewDoc(idx)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Remove</button>
+                         </div>
                     ))}
-                  </select>
-                )}
-                {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-                  <>
-                    <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
-                      <Plus size={16} /> Receive Payment
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <input type="text" className="glass-input" placeholder="Document Name (e.g. TC)" value={newDocName} onChange={e => setNewDocName(e.target.value)} style={{ flex: 1 }} />
+                    <input type="file" id="doc_upload" style={{ display: 'none' }} onChange={e => { if (e.target.files && e.target.files[0]) setNewDocFile(e.target.files[0]); }} />
+                    <button type="button" className="btn-secondary" onClick={() => document.getElementById('doc_upload').click()}>
+                      {newDocFile ? newDocFile.name : 'Choose File'}
                     </button>
-                    <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsFineModalOpen(true)}>
-                      <Plus size={16} /> Add Manual Due
-                    </button>
-                  </>
-                )}
+                    <button type="button" className="btn-primary" onClick={handleAddDoc} disabled={!newDocName || !newDocFile}>Add</button>
+                  </div>
+                </div>
+
               </div>
             </div>
             
-            {(() => {
-              const displayedRows = filterMonth === 'All' 
-                ? ledgerRows.slice().reverse() 
-                : ledgerRows.slice().reverse().filter(t => t.date.startsWith(filterMonth));
-
-              if (displayedRows.length === 0) {
-                return <p style={{ color: 'var(--text-muted)' }}>No transactions or charges found for this period.</p>;
-              }
-
-              return (
-                <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  <table style={{ width: '100%', minWidth: '600px' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ whiteSpace: 'nowrap' }}>Date</th>
-                        <th>Description</th>
-                        <th style={{ whiteSpace: 'nowrap' }}>Charge (Due)</th>
-                        <th style={{ whiteSpace: 'nowrap' }}>Paid (Cr)</th>
-                          <th style={{ whiteSpace: 'nowrap', textAlign: 'right' }}>Balance</th>
-                        {['Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {displayedRows.map(t => (
-                      <tr key={t.id}>
-                        <td style={{ whiteSpace: 'nowrap' }}>{new Date(t.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                        <td>
-                          {t.description}
-                          {t.type === 'Discount' && <span className="badge success" style={{marginLeft: '8px', fontSize: '0.7rem'}}>Discount</span>}
-                        </td>
-                        <td style={{ color: 'var(--danger)', fontWeight: 500 }}>
-                          {t.type === 'Charge' ? `₹${t.amount}` : '-'}
-                        </td>
-                        <td style={{ color: 'var(--success)', fontWeight: 500 }}>
-                          {t.type === 'Income' || t.type === 'Discount' ? `₹${t.amount}` : '-'}
-                        </td>
-                        <td style={{ textAlign: 'right', fontWeight: 600, color: t.runningBalance > 0 ? 'var(--danger)' : (t.runningBalance < 0 ? 'var(--success)' : 'var(--text-muted)') }}>
-                            {t.runningBalance > 0 ? `₹${t.runningBalance} Due` : (t.runningBalance < 0 ? `₹${Math.abs(t.runningBalance)} Adv` : '₹0')}
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            {t.type === 'Income' && (
-                                <button className="icon-btn" onClick={() => handlePrintReceipt(t)} style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', cursor: 'pointer' }} title="Print Receipt">
-                                  <Printer size={16} />
-                                </button>
-                              )}
-                              {['Principal', 'Manager', 'Super Admin'].includes(role) && (
-                                <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                  <Trash2 size={16} />
-                                </button>
-                              )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              );
-            })()}
+            <div style={{ padding: '24px', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end', gap: '16px', background: 'white' }}>
+              <button type="button" className="btn-secondary" onClick={() => {
+                 setIsEditing(false);
+                 setNewDocs([]);
+                 setDocsToRemove([]);
+              }}>Cancel</button>
+              <button type="button" className="btn-primary" onClick={handleSaveProfile} disabled={saving} style={{ padding: '12px 32px', fontSize: '1.1rem' }}>
+                {saving ? 'Saving...' : <><Save size={18} style={{ display: 'inline', marginRight: '8px' }}/> Save Changes</>}
+              </button>
+            </div>
           </div>
-
-          {/* Documents */}
-          <div className="glass-panel">
-            <h3 style={{ margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FileText size={20} className="text-primary" /> Documents
-            </h3>
-            {student.documents && student.documents.length > 0 ? (
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                {student.documents.map((doc, idx) => (
-                  <a key={idx} href={doc.url} target="_blank" rel="noreferrer" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FileText size={16} /> {doc.name}
-                  </a>
-                ))}
-              </div>
-            ) : (
-              <p style={{ color: 'var(--text-muted)' }}>No documents uploaded.</p>
-            )}
-          </div>
-
         </div>
-      </div>
+      )}
 
       {/* Payment Modal */}
       <Modal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} title="Receive Payment">
