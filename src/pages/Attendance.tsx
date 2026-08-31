@@ -128,6 +128,10 @@ const Attendance: React.FC = () => {
       const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
       const matchSearch = fullName.includes(searchQuery.toLowerCase().trim());
       return matchStatus && matchClass && matchSection && matchSearch;
+    }).sort((a, b) => {
+      const rollA = Number(a.rollNumber) || 0;
+      const rollB = Number(b.rollNumber) || 0;
+      return rollA - rollB;
     });
   }, [students, selectedClass, selectedSection, searchQuery]);
 
