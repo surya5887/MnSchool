@@ -112,7 +112,7 @@ const ClassDetails: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: Math.min(idx * 0.05, 0.5) }}
-                onClick={() => navigate(`/students/${student.id}`)}
+                onClick={() => navigate(`/student/${student.id}`)}
                 style={{ 
                   background: 'linear-gradient(145deg, #ffffff, #f8fafc)', 
                   borderRadius: '16px', 
@@ -160,7 +160,7 @@ const ClassDetails: React.FC = () => {
                   </div>
                   
                   <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={(e) => { e.stopPropagation(); navigate(`/students/${student.id}`); }} style={{ width: '32px', height: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#3b82f6', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer' }}>
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/student/${student.id}`); }} style={{ width: '32px', height: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#3b82f6', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer' }}>
                       <Eye size={16} />
                     </button>
                   </div>
