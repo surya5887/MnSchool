@@ -52,17 +52,27 @@ export default async function handler(req: any, res: any) {
       });
     });
 
-    const rawMyId = sock.user?.id || state.creds?.me?.id;
+    
+    const meObj = sock.user || state.creds?.me || {};
+    let rawMyId = meObj.phoneNumber || meObj.id;
+    if (!rawMyId) rawMyId = "";
+    
     // Attempt to extract the true phone number JID
     const myId = rawMyId ? rawMyId.split(':')[0].split('@')[0] : null;
+
 
     const groupsRaw = await sock.groupFetchAllParticipating();
     const groupsMap = groupsRaw as any;
 
     // Helper to check admin status inside an array of participants
+    
     const checkAdmin = (participants: any[], targetId: string) => {
       if (!participants || !targetId) return false;
-      const me = participants.find((p: any) => p.id && p.id.split('@')[0].split(':')[0] === targetId);
+      const me = participants.find((p: any) => {
+         const pid = p.id ? p.id.split('@')[0].split(':')[0] : null;
+         const plid = p.lid ? p.lid.split('@')[0].split(':')[0] : null;
+         return pid === targetId || plid === targetId;
+      });
       if (me) {
         return (me.admin === 'admin' || me.admin === 'superadmin' || me.isSuperAdmin || me.isAdmin || me.admin === true || me.admin === 1);
       }
