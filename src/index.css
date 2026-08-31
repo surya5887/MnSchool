@@ -631,3 +631,5 @@ tr:hover {
 
 @media (max-width: 768px) { .glass-panel { padding: 16px !important; } }
 .badge { white-space: nowrap !important; }
+@media (min-width: 769px) { .mobile-only { display: none !important; } }
+@media (max-width: 768px) { .desktop-only { display: none !important; } }
