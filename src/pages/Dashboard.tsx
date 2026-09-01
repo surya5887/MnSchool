@@ -145,6 +145,10 @@ const Dashboard: React.FC = () => {
   // Calculate real Pending Dues dynamically
   let totalPendingDues = 0;
 
+  const teacherClass = classes.find(c => c.classTeacher === authUser.name);
+  const teacherClassName = teacherClass ? teacherClass.className : 'Not Assigned';
+  const myStudentsCount = students.filter(s => s.classId === teacherClassName).length;
+
   students.forEach(student => {
     const studentClass = classes.find(c => c.id === student.classId);
     let baseFeeTotal = 0;
@@ -198,25 +202,47 @@ const Dashboard: React.FC = () => {
           className="glass-panel"
           style={{ padding: '32px' }}
         >
-          <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>{role === 'Teacher' ? 'Recent Class Activities' : 'Recent Activities'}</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {(role === 'Teacher' ? [] : recentActivities).map((act, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-                <div style={{ padding: '10px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', flexShrink: 0 }}>
-                  <Clock size={20} />
-                </div>
-                <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-main)' }}>{act.action}</div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{act.details}</div>
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', fontWeight: 500 }}>
-                    {act.time}
-                  </div>
-                </div>
+          {role === 'Teacher' ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+              <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', padding: '32px', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 10px 25px rgba(99,102,241,0.2)' }}>
+                <h2 style={{ margin: '0 0 16px 0', fontSize: '1.8rem', fontWeight: 800 }}>Welcome to your Dashboard!</h2>
+                <p style={{ margin: 0, fontSize: '1.1rem', opacity: 0.95, lineHeight: 1.6 }}>Manage your class efficiently. You can mark daily attendance, check your timetable, and add new students directly from the sidebar.</p>
               </div>
-            ))}
-          </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h4 style={{ margin: 0, color: 'var(--text-muted)', fontSize: '1.1rem', fontWeight: 700 }}>Quick Actions</h4>
+                <a href="/attendance" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
+                  <div style={{ background: '#dcfce7', color: '#166534', padding: '12px', borderRadius: '12px' }}><CheckCircle2 size={24} /></div>
+                  <span style={{ fontSize: '1.1rem' }}>Mark Daily Attendance</span>
+                </a>
+                <a href="/admission" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
+                  <div style={{ background: '#e0e7ff', color: '#3730a3', padding: '12px', borderRadius: '12px' }}><Users size={24} /></div>
+                  <span style={{ fontSize: '1.1rem' }}>Admit New Student</span>
+                </a>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>Recent Activities</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {recentActivities.map((act, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+                    <div style={{ padding: '10px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', flexShrink: 0 }}>
+                      <Clock size={20} />
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-main)' }}>{act.action}</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{act.details}</div>
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', fontWeight: 500 }}>
+                        {act.time}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </motion.div>
       </div>
     </div>
@@ -224,3 +250,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
