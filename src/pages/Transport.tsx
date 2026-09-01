@@ -4,7 +4,8 @@ import { Bus, MapPin, Users, Plus, AlertCircle, Trash2, Edit, Save, X, Phone, Ch
 import Modal from '../components/Modal';
 import { getVehicles, addVehicle, updateVehicle, deleteVehicle, logTransportExpense, type VehicleData } from '../services/transportService';
 import { getStudents, type StudentData } from '../services/studentService';
-import { getTransactions, type TransactionData } from '../services/financeService';
+import { getTransactions, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
+import toast from 'react-hot-toast';
 
 const Transport: React.FC = () => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
@@ -25,6 +26,56 @@ const Transport: React.FC = () => {
   const [vehicleForm, setVehicleForm] = useState<Omit<VehicleData, 'id'>>({
     vehicleNo: '', route: '', driverName: '', driverPhone: '', capacity: '' as any, monthlyFee: '' as any, status: 'Running'
   });
+  
+  const [deleteTxnId, setDeleteTxnId] = useState<string | null>(null);
+  const [isDeleteTxnModalOpen, setIsDeleteTxnModalOpen] = useState(false);
+  
+  const [editTxnData, setEditTxnData] = useState<TransactionData | null>(null);
+  const [isEditTxnModalOpen, setIsEditTxnModalOpen] = useState(false);
+  
+  const [adminPassword, setAdminPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleDeleteTxn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminPassword !== 'admin@8393') {
+      setPasswordError('Incorrect admin password.');
+      return;
+    }
+    if (!deleteTxnId) return;
+    try {
+      await deleteTransaction(deleteTxnId);
+      toast.success('Transaction deleted');
+      setIsDeleteTxnModalOpen(false);
+      setDeleteTxnId(null);
+      setAdminPassword('');
+      setPasswordError('');
+      fetchData();
+    } catch (err) {
+      toast.error('Failed to delete transaction');
+    }
+  };
+
+  const handleEditTxn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminPassword !== 'admin@8393') {
+      setPasswordError('Incorrect admin password.');
+      return;
+    }
+    if (!editTxnData || !editTxnData.id) return;
+    try {
+      await updateTransaction(editTxnData.id, editTxnData);
+      toast.success('Transaction updated');
+      setIsEditTxnModalOpen(false);
+      setEditTxnData(null);
+      setAdminPassword('');
+      setPasswordError('');
+      fetchData();
+    } catch (err) {
+      toast.error('Failed to update transaction');
+    }
+  };
+
   const [expenseForm, setExpenseForm] = useState({
     vehicleId: '', amount: '' as any, category: 'Transport Fuel' as 'Transport Fuel' | 'Transport Maintenance' | 'Driver Salary', description: ''
   });
@@ -72,17 +123,17 @@ const Transport: React.FC = () => {
 
   const handleLogExpense = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!expenseForm.vehicleId) return alert('Select a vehicle');
+    if (!expenseForm.vehicleId) return toast.error('Select a vehicle');
     try {
       const v = vehicles.find(v => v.id === expenseForm.vehicleId);
       if(!v) return;
       await logTransportExpense(v.id!, v.vehicleNo, expenseForm.amount, expenseForm.category, expenseForm.description, new Date().toISOString().split('T')[0]);
       setIsExpenseModalOpen(false);
-      alert('Expense logged successfully to Master Ledger!');
+      toast.success('Expense logged successfully to Master Ledger!');
       fetchData();
     } catch (error) {
       console.error(error);
-      alert('Error logging expense');
+      toast.error('Error logging expense');
     }
   };
 
@@ -277,12 +328,13 @@ const Transport: React.FC = () => {
                   <th style={{ padding: '16px 24px', fontWeight: 600 }}>VEHICLE NO / DETAILS</th>
                   <th style={{ padding: '16px 24px', fontWeight: 600 }}>CATEGORY</th>
                   <th style={{ padding: '16px 24px', fontWeight: 600, textAlign: 'right' }}>AMOUNT (₹)</th>
+   <th style={{ padding: '16px 24px', fontWeight: 600, textAlign: 'right' }}>ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.length === 0 ? (
                   <tr>
-                    <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
                       No transport expenses logged yet.
                     </td>
                   </tr>
@@ -422,6 +474,53 @@ const Transport: React.FC = () => {
             <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--danger)', border: 'none' }}><TrendingDown size={18} /> Log Expense</button>
           </div>
         </form>
+      </Modal>
+
+      <Modal isOpen={isDeleteTxnModalOpen} onClose={() => setIsDeleteTxnModalOpen(false)} title="Delete Transaction">
+        <form onSubmit={handleDeleteTxn}>
+          <div style={{ marginBottom: '16px', color: 'var(--danger)', background: '#fee2e2', padding: '12px', borderRadius: '8px', fontSize: '0.9rem' }}>
+            Warning: This action cannot be undone and will affect financial reports.
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Admin Password *</label>
+            <input required type="password" className="glass-input" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Enter admin password" />
+            {passwordError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '4px' }}>{passwordError}</p>}
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'flex-end' }}>
+            <button type="button" onClick={() => setIsDeleteTxnModalOpen(false)} className="btn-secondary">Cancel</button>
+            <button type="submit" className="btn-primary" style={{ background: 'var(--danger)', border: 'none' }}>Delete Entry</button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal isOpen={isEditTxnModalOpen} onClose={() => setIsEditTxnModalOpen(false)} title="Edit Transaction">
+        {editTxnData && (
+          <form onSubmit={handleEditTxn}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', marginBottom: '24px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Amount (₹) *</label>
+                <input required type="number" className="glass-input" value={editTxnData.amount} onChange={e => setEditTxnData({...editTxnData, amount: Number(e.target.value)})} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Date *</label>
+                <input required type="date" className="glass-input" value={editTxnData.date} onChange={e => setEditTxnData({...editTxnData, date: e.target.value})} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Description *</label>
+                <input required type="text" className="glass-input" value={editTxnData.description} onChange={e => setEditTxnData({...editTxnData, description: e.target.value})} />
+              </div>
+              <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Admin Password to Save *</label>
+                <input required type="password" className="glass-input" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Enter admin password" />
+                {passwordError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '4px' }}>{passwordError}</p>}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setIsEditTxnModalOpen(false)} className="btn-secondary">Cancel</button>
+              <button type="submit" className="btn-primary">Save Changes</button>
+            </div>
+          </form>
+        )}
       </Modal>
     </div>
   );
