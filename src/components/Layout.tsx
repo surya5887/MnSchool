@@ -293,6 +293,7 @@ const Layout: React.FC = () => {
           {role === 'Teacher' && (
             <>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>My Work</div>
+              <NavLink to="/admission" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><UserPlus size={20} /> New Admission</NavLink>
               <NavLink to="/attendance" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><CalendarCheck size={20} /> Daily Attendance</NavLink>
               <NavLink to="/timetable" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Clock size={20} /> Class Timetable</NavLink>
               <NavLink to="/students" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Users size={20} /> Students Directory</NavLink>
