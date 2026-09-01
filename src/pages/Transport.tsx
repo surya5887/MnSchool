@@ -23,10 +23,10 @@ const Transport: React.FC = () => {
   // Form States
   const [editingId, setEditingId] = useState<string | null>(null);
   const [vehicleForm, setVehicleForm] = useState<Omit<VehicleData, 'id'>>({
-    vehicleNo: '', route: '', driverName: '', driverPhone: '', capacity: 40, monthlyFee: 0, status: 'Running'
+    vehicleNo: '', route: '', driverName: '', driverPhone: '', capacity: '' as any, monthlyFee: '' as any, status: 'Running'
   });
   const [expenseForm, setExpenseForm] = useState({
-    vehicleId: '', amount: 0, category: 'Transport Fuel' as 'Transport Fuel' | 'Transport Maintenance' | 'Driver Salary', description: ''
+    vehicleId: '', amount: '' as any, category: 'Transport Fuel' as 'Transport Fuel' | 'Transport Maintenance' | 'Driver Salary', description: ''
   });
 
   const fetchData = async () => {
@@ -116,10 +116,10 @@ const Transport: React.FC = () => {
           <p className="page-subtitle" style={{ fontSize: '1.1rem', marginTop: '8px' }}>Manage school buses, assigned routes, fees, and expenditures.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn-secondary hover-scale" onClick={() => { setExpenseForm({ vehicleId: '', amount: 0, category: 'Transport Fuel', description: '' }); setIsExpenseModalOpen(true); }} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', borderRadius: '12px' }}>
+          <button className="btn-secondary hover-scale" onClick={() => { setExpenseForm({ vehicleId: '', amount: '' as any, category: 'Transport Fuel', description: '' }); setIsExpenseModalOpen(true); }} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', borderRadius: '12px' }}>
             <TrendingDown size={18} color="var(--danger)" /> Log Expense
           </button>
-          <button className="btn-primary hover-scale" onClick={() => { setEditingId(null); setVehicleForm({ vehicleNo: '', route: '', driverName: '', driverPhone: '', capacity: 40, monthlyFee: 0, status: 'Running' }); setIsVehicleModalOpen(true); }} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px', background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)', border: 'none' }}>
+          <button className="btn-primary hover-scale" onClick={() => { setEditingId(null); setVehicleForm({ vehicleNo: '', route: '', driverName: '', driverPhone: '', capacity: '' as any, monthlyFee: '' as any, status: 'Running' }); setIsVehicleModalOpen(true); }} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px', background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)', border: 'none' }}>
             <Plus size={18} /> Add New Vehicle
           </button>
         </div>
@@ -356,15 +356,15 @@ const Transport: React.FC = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Vehicle No. *</label>
-              <input type="text" value={vehicleForm.vehicleNo} onChange={e => setVehicleForm({...vehicleForm, vehicleNo: e.target.value})} className="glass-input" required placeholder="UP 14 AB 1234" style={{ background: '#f8fafc' }} />
+              <input type="text" value={vehicleForm.vehicleNo} onChange={e => setVehicleForm({...vehicleForm, vehicleNo: e.target.value.toUpperCase()})} className="glass-input" required placeholder="UP 14 AB 1234" style={{ background: '#f8fafc' }} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Max Capacity *</label>
-              <input type="number" value={vehicleForm.capacity} onChange={e => setVehicleForm({...vehicleForm, capacity: Number(e.target.value)})} className="glass-input" required style={{ background: '#f8fafc' }} />
+              <input type="number" value={vehicleForm.capacity} onChange={e => setVehicleForm({...vehicleForm, capacity: e.target.value === '' ? '' as any : Number(e.target.value)})} className="glass-input" required style={{ background: '#f8fafc' }} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Driver Name *</label>
-              <input type="text" value={vehicleForm.driverName} onChange={e => setVehicleForm({...vehicleForm, driverName: e.target.value})} className="glass-input" required placeholder="e.g. Ramesh" style={{ background: '#f8fafc' }} />
+              <input type="text" value={vehicleForm.driverName} onChange={e => setVehicleForm({...vehicleForm, driverName: e.target.value.toUpperCase()})} className="glass-input" required placeholder="e.g. Ramesh" style={{ background: '#f8fafc' }} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Driver Phone</label>
@@ -372,7 +372,7 @@ const Transport: React.FC = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Monthly Fee (₹) *</label>
-              <input type="number" value={vehicleForm.monthlyFee} onChange={e => setVehicleForm({...vehicleForm, monthlyFee: Number(e.target.value)})} className="glass-input" required placeholder="e.g. 1500" style={{ background: '#f8fafc' }} />
+              <input type="number" value={vehicleForm.monthlyFee} onChange={e => setVehicleForm({...vehicleForm, monthlyFee: e.target.value === '' ? '' as any : Number(e.target.value)})} className="glass-input" required placeholder="e.g. 1500" style={{ background: '#f8fafc' }} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Status</label>
@@ -410,7 +410,7 @@ const Transport: React.FC = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Amount (₹) *</label>
-              <input type="number" value={expenseForm.amount || ''} onChange={e => setExpenseForm({...expenseForm, amount: Number(e.target.value)})} className="glass-input" required min="1" placeholder="e.g. 2000" style={{ background: '#f8fafc' }} />
+              <input type="number" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value === '' ? '' as any : Number(e.target.value)})} className="glass-input" required min="1" placeholder="e.g. 2000" style={{ background: '#f8fafc' }} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Description</label>
