@@ -76,6 +76,7 @@ const NewAdmission: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const birthCertInputRef = useRef<HTMLInputElement>(null);
+  const aadharInputRef = useRef<HTMLInputElement>(null);
   const tcInputRef = useRef<HTMLInputElement>(null);
   const [admissionType, setAdmissionType] = useState<'New' | 'Old'>('New');
   const [formData, setFormData] = useState<Partial<StudentData>>(INITIAL_FORM_DATA);
@@ -83,6 +84,7 @@ const NewAdmission: React.FC = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
+  const [aadharFile, setAadharFile] = useState<File | null>(null);
   const [tcFile, setTcFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -410,6 +412,7 @@ const NewAdmission: React.FC = () => {
       setPhotoFile(null);
       setPhotoPreview('');
       setBirthCertFile(null);
+      setAadharFile(null);
       setTcFile(null);
       setCustomDocs([]);
       
@@ -785,6 +788,19 @@ const NewAdmission: React.FC = () => {
                       <button type="button" className="btn-secondary" onClick={() => tcInputRef.current?.click()} style={{ padding: '8px 16px' }}>{tcFile ? 'Change' : 'Upload'}</button>
                     </div>
 
+                    
+                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.3)', borderRadius: '16px', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                         <div style={{ background: '#fce7f3', padding: '10px', borderRadius: '10px' }}><FileText size={20} color="#db2777" /></div>
+                         <div>
+                            <div style={{ fontWeight: 600, color: '#1e293b' }}>Aadhar Card</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{aadharFile ? aadharFile.name : 'Not uploaded'}</div>
+                         </div>
+                      </div>
+                      <input type="file" ref={aadharInputRef} onChange={(e) => { if(e.target.files) setAadharFile(e.target.files[0]); }} style={{ display: 'none' }} />
+                      <button type="button" className="btn-secondary" onClick={() => aadharInputRef.current?.click()} style={{ padding: '8px 16px' }}>{aadharFile ? 'Change' : 'Upload'}</button>
+                    </div>
+
                     {customDocs.map(doc => (
                       <div key={doc.id} style={{ padding: '16px', background: 'rgba(255,255,255,0.3)', borderRadius: '16px', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -796,7 +812,7 @@ const NewAdmission: React.FC = () => {
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <button type="button" className="btn-secondary" onClick={() => { setActiveCustomDocId(doc.id); setTimeout(() => customDocInputRef.current?.click(), 0); }} style={{ padding: '8px 16px' }}>{doc.file ? 'Change' : 'Upload'}</button>
-                          <button type="button" onClick={() => setCustomDocs(customDocs.filter(d => d.id !== doc.id))} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={18} /></button>
+                          <button type="button" onClick={() => handleDeleteCustomDoc(doc.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={18} /></button>
                         </div>
                       </div>
                     ))}
