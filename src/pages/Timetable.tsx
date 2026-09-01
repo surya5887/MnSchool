@@ -7,6 +7,8 @@ import Modal from '../components/Modal';
 import './Timetable.css';
 
 const Timetable: React.FC = () => {
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
   const [classFilter, setClassFilter] = useState('');
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
@@ -240,7 +242,7 @@ const Timetable: React.FC = () => {
       <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
         <div style={{ flex: 1 }}>
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
-          <select className="glass-input" value={classFilter} onChange={handleClassChange}>
+          <select className="glass-input" value={classFilter} onChange={handleClassChange} disabled={role === 'Teacher'}>
             {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
           </select>
         </div>
@@ -410,3 +412,4 @@ const Timetable: React.FC = () => {
 };
 
 export default Timetable;
+

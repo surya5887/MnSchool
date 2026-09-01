@@ -7,16 +7,16 @@ import { getClasses, addClass, type ClassData, getSequenceIndex } from '../servi
 import Modal from '../components/Modal';
 
 const Students: React.FC = () => {
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
+  const assignedClass = authUser.assignedClass || '';
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedClass, setSelectedClass] = useState('All');
+  const [selectedClass, setSelectedClass] = useState(role === 'Teacher' && assignedClass ? assignedClass : 'All');
   const [selectedSection, setSelectedSection] = useState('All');
   const [students, setStudents] = useState<StudentData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  
-  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
-  const role = authUser.role || '';
 
   // Add Class State
   const [isClassModalOpen, setClassModalOpen] = useState(false);
@@ -193,6 +193,7 @@ const Students: React.FC = () => {
             style={{ width: '200px', margin: 0 }}
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
+              disabled={role === 'Teacher'}
           >
             <option value="All">All Classes</option>
             {sortedClasses.map(c => (
@@ -395,3 +396,7 @@ const Students: React.FC = () => {
 };
 
 export default Students;
+
+
+
+

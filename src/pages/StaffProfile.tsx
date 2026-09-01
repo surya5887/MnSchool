@@ -248,9 +248,11 @@ const StaffProfile: React.FC = () => {
               <span className={`badge ${staff.status === 'Active' ? 'success' : 'danger'}`}>
                 {staff.status || 'Active'}
               </span>
-              <button onClick={toggleStatus} style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text-color)' }}>
-                Toggle Status
-              </button>
+              {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                <button onClick={toggleStatus} style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                  Toggle Status
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -501,3 +503,4 @@ const StaffProfile: React.FC = () => {
 };
 
 export default StaffProfile;
+

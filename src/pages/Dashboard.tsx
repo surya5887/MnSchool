@@ -29,6 +29,8 @@ const StatCard = ({ title, value, icon: Icon, color, delay }: {title: string, va
 );
 
 const Dashboard: React.FC = () => {
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
   const [students, setStudents] = useState<StudentData[]>([]);
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
@@ -170,12 +172,23 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
-        <StatCard title="Total Students" value={loading ? "..." : students.length.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
-        <StatCard title="Teachers" value={loading ? "..." : staff.length.toString()} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
-        <StatCard title="Today's Collection" value={`₹${todaysCollection.toLocaleString()}`} icon={IndianRupee} color="16, 185, 129" delay={0.3} />
-        <StatCard title="Pending Dues" value={loading ? "..." : `₹${totalPendingDues.toLocaleString()}`} icon={TrendingUp} color="245, 158, 11" delay={0.4} />
-      </div>
+        <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
+          {role === 'Teacher' ? (
+            <>
+              <StatCard title="My Class Students" value={loading ? "..." : students.filter(s => s.classId === authUser.assignedClass).length.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
+              <StatCard title="My Class" value={authUser.assignedClass || 'N/A'} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
+              <StatCard title="Today's Timetable" value="Check Menu" icon={Clock} color="16, 185, 129" delay={0.3} />
+              <StatCard title="Pending Tasks" value="0" icon={CheckCircle2} color="245, 158, 11" delay={0.4} />
+            </>
+          ) : (
+            <>
+              <StatCard title="Total Students" value={loading ? "..." : students.length.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
+              <StatCard title="Teachers" value={loading ? "..." : staff.length.toString()} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
+              <StatCard title="Today's Collection" value={`₹${todaysCollection.toLocaleString()}`} icon={IndianRupee} color="16, 185, 129" delay={0.3} />
+              <StatCard title="Pending Dues" value={loading ? "..." : `₹${totalPendingDues.toLocaleString()}`} icon={TrendingUp} color="245, 158, 11" delay={0.4} />
+            </>
+          )}
+        </div>
 
       <div>
         <motion.div 
@@ -185,9 +198,9 @@ const Dashboard: React.FC = () => {
           className="glass-panel"
           style={{ padding: '32px' }}
         >
-          <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>Recent Activities</h3>
+          <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>{role === 'Teacher' ? 'Recent Class Activities' : 'Recent Activities'}</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {recentActivities.map((act, idx) => (
+            {(role === 'Teacher' ? [] : recentActivities).map((act, idx) => (
               <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
                 <div style={{ padding: '10px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', flexShrink: 0 }}>
                   <Clock size={20} />

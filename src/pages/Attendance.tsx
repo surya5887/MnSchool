@@ -175,7 +175,7 @@ const Attendance: React.FC = () => {
         <div className="dashboard-grid">
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Select Class</label>
-            <select className="glass-input" style={{ width: '100%' }} value={selectedClass} onChange={handleClassChange}>
+            <select className="glass-input" style={{ width: '100%' }} value={selectedClass} onChange={handleClassChange} disabled={role === 'Teacher'}>
                {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
             </select>
           </div>
