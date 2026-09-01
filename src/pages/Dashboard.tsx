@@ -175,8 +175,8 @@ const Dashboard: React.FC = () => {
         <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
           {role === 'Teacher' ? (
             <>
-              <StatCard title="My Class Students" value={loading ? "..." : students.filter(s => s.classId === authUser.assignedClass).length.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
-              <StatCard title="My Class" value={authUser.assignedClass || 'N/A'} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
+              <StatCard title="My Class Students" value={loading ? "..." : myStudentsCount.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
+              <StatCard title="Assigned Class" value={teacherClassName} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
               <StatCard title="Today's Timetable" value="Check Menu" icon={Clock} color="16, 185, 129" delay={0.3} />
               <StatCard title="Pending Tasks" value="0" icon={CheckCircle2} color="245, 158, 11" delay={0.4} />
             </>

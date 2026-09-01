@@ -9,7 +9,7 @@ const Attendance: React.FC = () => {
   const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
   const role = authUser.role || '';
   
-  const [selectedClass, setSelectedClass] = useState(role === 'Teacher' ? (authUser.assignedClass || '') : '');
+  const [selectedClass, setSelectedClass] = useState('');
   const [selectedSection, setSelectedSection] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,7 +58,12 @@ const Attendance: React.FC = () => {
 
   useEffect(() => {
     if (uniqueClasses.length > 0 && !selectedClass) {
-      setSelectedClass(uniqueClasses[0].className);
+      let defaultClass = uniqueClasses[0].className;
+      if (role === 'Teacher') {
+        const myClass = uniqueClasses.find(c => c.classTeacher === authUser.name);
+        if (myClass) defaultClass = myClass.className;
+      }
+      setSelectedClass(defaultClass);
       setSelectedSection(uniqueClasses[0].sections[0] || '');
     }
   }, [uniqueClasses, selectedClass]);
