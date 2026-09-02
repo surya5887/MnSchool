@@ -60,11 +60,12 @@ const Attendance: React.FC = () => {
     if (uniqueClasses.length > 0 && !selectedClass) {
       let defaultClass = uniqueClasses[0].className;
       if (role === 'Teacher') {
-        const myClass = uniqueClasses.find(c => c.classTeacher === authUser.name);
+        const myClass = classes.find(c => c.classTeacher === authUser.name);
         if (myClass) defaultClass = myClass.className;
       }
       setSelectedClass(defaultClass);
-      setSelectedSection(uniqueClasses[0].sections[0] || '');
+      const matchedClass = uniqueClasses.find(c => c.className === defaultClass);
+        setSelectedSection(matchedClass?.sections[0] || '');
     }
   }, [uniqueClasses, selectedClass]);
 
@@ -317,3 +318,5 @@ const Attendance: React.FC = () => {
 };
 
 export default Attendance;
+
+

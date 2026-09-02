@@ -50,6 +50,13 @@ const Students: React.FC = () => {
   };
 
   useEffect(() => {
+    if (role === 'Teacher' && classes.length > 0) {
+      const myClass = classes.find(c => c.classTeacher === authUser.name);
+      if (myClass) setSelectedClass(myClass.className);
+    }
+  }, [classes, role, authUser.name]);
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -396,6 +403,7 @@ const Students: React.FC = () => {
 };
 
 export default Students;
+
 
 
 

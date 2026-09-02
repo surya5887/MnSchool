@@ -633,3 +633,8 @@ tr:hover {
 .badge { white-space: nowrap !important; }
 @media (min-width: 769px) { .mobile-only { display: none !important; } }
 @media (max-width: 768px) { .desktop-only { display: none !important; } }
+.glass-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.05);
+}
