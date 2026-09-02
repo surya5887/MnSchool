@@ -56,6 +56,7 @@ const Staff: React.FC = () => {
   const [deleteError, setDeleteError] = useState('');
 
   const fetchStaff = async () => {
+      await createDefaultAdminIfNeeded();
     try {
       const data = await getStaff();
       setAllStaff(data || []);
