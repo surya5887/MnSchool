@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Users, GraduationCap, IndianRupee, TrendingUp, Clock, AlertTriangle, FileText, CheckCircle2 } from 'lucide-react';
+import { Users, GraduationCap, IndianRupee, TrendingUp, Clock, AlertTriangle, FileText, CheckCircle2, BarChart2, Activity, Calendar } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getTransactions, type TransactionData } from '../services/financeService';
 import { getStaff, type StaffData } from '../services/staffService';
@@ -73,6 +74,46 @@ const Dashboard: React.FC = () => {
 
   const currentMonthStr = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
   const needsBilling = settings && settings.lastBillingMonth !== currentMonthStr;
+
+  
+  const [timeRange, setTimeRange] = useState('30d');
+
+  const analyticsData = useMemo(() => {
+    if (role === 'Teacher') return null;
+
+    const now = new Date();
+    let cutoff = new Date(0); // lifetime
+    if (timeRange === '7d') cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    if (timeRange === '30d') cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    if (timeRange === '2m') cutoff = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    if (timeRange === '3m') cutoff = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    if (timeRange === '6m') cutoff = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+    if (timeRange === '1y') cutoff = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+    const filteredTxns = transactions.filter(t => new Date(t.date) >= cutoff);
+    
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const dateMap = new Map();
+    
+    filteredTxns.forEach(t => {
+      if (t.type === 'Income') totalIncome += t.amount;
+      if (t.type === 'Expense') totalExpense += t.amount;
+
+      const dateObj = new Date(t.date);
+      const key = (timeRange === '6m' || timeRange === '1y' || timeRange === 'all') 
+        ? `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`
+        : dateObj.toISOString().split('T')[0];
+
+      if (!dateMap.has(key)) dateMap.set(key, { name: key, Income: 0, Expense: 0 });
+      const entry = dateMap.get(key);
+      if (t.type === 'Income') entry.Income += t.amount;
+      if (t.type === 'Expense') entry.Expense += t.amount;
+    });
+
+    const chartData = Array.from(dateMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return { totalIncome, totalExpense, chartData };
+  }, [transactions, timeRange, role]);
 
   const handleGenerateMonthlyFees = async () => {
     if (!window.confirm(`Are you sure you want to generate automated fees for ${currentMonthStr}?`)) return;
@@ -197,24 +238,24 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-        {role !== 'Teacher' && (
-          <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
-            <StatCard title="Total Students" value={loading ? "..." : students.length.toString()} icon={Users} color="99, 102, 241" delay={0.1} />
-            <StatCard title="Teachers" value={loading ? "..." : staff.length.toString()} icon={GraduationCap} color="168, 85, 247" delay={0.2} />
-            <StatCard title="Today's Collection" value={`₹${todaysCollection.toLocaleString()}`} icon={IndianRupee} color="16, 185, 129" delay={0.3} />
-            <StatCard title="Pending Dues" value={loading ? "..." : `₹${totalPendingDues.toLocaleString()}`} icon={TrendingUp} color="245, 158, 11" delay={0.4} />
-          </div>
-        )}
+          {role !== 'Teacher' && (
+            <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
+              <StatCard title="Total Students" value={loading ? "..." : students.length.toString()} icon={Users} bgGradient="linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" delay={0.1} />
+              <StatCard title="Teachers" value={loading ? "..." : staff.length.toString()} icon={GraduationCap} bgGradient="linear-gradient(135deg, #db2777 0%, #e11d48 100%)" delay={0.2} />
+              <StatCard title="Today's Collection" value={`₹${todaysCollection.toLocaleString()}`} icon={IndianRupee} bgGradient="linear-gradient(135deg, #059669 0%, #10b981 100%)" delay={0.3} />
+              <StatCard title="Pending Dues" value={loading ? "..." : `₹${totalPendingDues.toLocaleString()}`} icon={TrendingUp} bgGradient="linear-gradient(135deg, #d97706 0%, #f59e0b 100%)" delay={0.4} />
+            </div>
+          )}
 
-      <div>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="glass-panel"
-          style={{ padding: '32px' }}
-        >
-          {role === 'Teacher' ? (
+        <div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            className="glass-panel"
+            style={{ padding: '32px' }}
+          >
+            {role === 'Teacher' ? (
             <>
               {/* Teacher Today's Stats */}
               <div style={{ marginBottom: '32px' }}>
@@ -263,21 +304,100 @@ const Dashboard: React.FC = () => {
               </>
           ) : (
             <>
-              <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>Recent Activities</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {recentActivities.map((act, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', background: 'rgba(255,255,255,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-                    <div style={{ padding: '10px', borderRadius: '50%', background: 'rgba(99,102,241,0.1)', color: 'var(--primary-color)', flexShrink: 0 }}>
-                      <Clock size={20} />
+              {/* Premium Analytics Engine */}
+              {analyticsData && (
+                <div style={{ marginBottom: '40px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)' }}>
+                      <Activity size={24} color="var(--primary)" /> Financial Analytics Overview
+                    </h3>
+                    
+                    {/* Time Range Selector */}
+                    <div style={{ display: 'flex', background: 'var(--glass-bg)', padding: '4px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+                      {['7d', '30d', '2m', '3m', '6m', '1y', 'all'].map(r => (
+                        <button 
+                          key={r}
+                          onClick={() => setTimeRange(r)}
+                          style={{
+                            padding: '6px 16px',
+                            background: timeRange === r ? 'var(--primary)' : 'transparent',
+                            color: timeRange === r ? 'white' : 'var(--text-muted)',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: 600,
+                            transition: 'all 0.2s',
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          {r.toUpperCase()}
+                        </button>
+                      ))}
                     </div>
-                    <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                      <div>
-                        <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-main)' }}>{act.action}</div>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{act.details}</div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+                    <div style={{ background: 'rgba(16,185,129,0.1)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#059669', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Period Income</div>
+                      <div style={{ fontSize: '2rem', fontWeight: 800, color: '#059669' }}>₹{analyticsData.totalIncome.toLocaleString()}</div>
+                    </div>
+                    <div style={{ background: 'rgba(239,68,68,0.1)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(239,68,68,0.2)' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#b91c1c', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Period Expense</div>
+                      <div style={{ fontSize: '2rem', fontWeight: 800, color: '#b91c1c' }}>₹{analyticsData.totalExpense.toLocaleString()}</div>
+                    </div>
+                    <div style={{ background: 'rgba(99,102,241,0.1)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#4338ca', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Net Profit</div>
+                      <div style={{ fontSize: '2rem', fontWeight: 800, color: '#4338ca' }}>₹{(analyticsData.totalIncome - analyticsData.totalExpense).toLocaleString()}</div>
+                    </div>
+                  </div>
+
+                  <div style={{ height: '350px', width: '100%', background: 'white', padding: '20px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--glass-border)' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={analyticsData.chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          </linearGradient>
+                          <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                        <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val}`} />
+                        <RechartsTooltip 
+                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                          formatter={(value) => [`₹${value}`, undefined]}
+                        />
+                        <Area type="monotone" dataKey="Income" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
+                        <Area type="monotone" dataKey="Expense" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              <h3 style={{ marginTop: 0, marginBottom: '24px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Clock size={24} color="var(--primary)" /> Timeline & Activities
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
+                <div style={{ position: 'absolute', left: '23px', top: '20px', bottom: '20px', width: '2px', background: 'rgba(99,102,241,0.2)', zIndex: 0 }}></div>
+                {recentActivities.map((act, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', position: 'relative', zIndex: 1 }}>
+                    <div style={{ padding: '12px', borderRadius: '50%', background: act.action === 'Fee Collected' ? '#dcfce7' : act.action === 'Expense Logged' ? '#fee2e2' : '#e0e7ff', color: act.action === 'Fee Collected' ? '#166534' : act.action === 'Expense Logged' ? '#991b1b' : '#3730a3', flexShrink: 0, boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                      {act.action === 'Fee Collected' ? <IndianRupee size={20} /> : act.action === 'Expense Logged' ? <TrendingUp size={20} /> : <FileText size={20} />}
+                    </div>
+                    <div style={{ flex: 1, padding: '16px 20px', background: 'white', borderRadius: '16px', border: '1px solid var(--glass-border)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                        <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-main)' }}>{act.action}</div>
+                        <div style={{ fontSize: '0.85rem', color: '#6366f1', fontWeight: 600, background: 'rgba(99,102,241,0.1)', padding: '4px 10px', borderRadius: '8px' }}>
+                          <Calendar size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+                          {act.time}
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', fontWeight: 500 }}>
-                        {act.time}
-                      </div>
+                      <div style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>{act.details}</div>
                     </div>
                   </div>
                 ))}
@@ -291,6 +411,7 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
 
 
 
