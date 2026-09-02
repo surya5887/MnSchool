@@ -95,9 +95,11 @@ const Timetable: React.FC = () => {
         setClasses(classData);
         if (classData.length > 0) {
           let defaultClass = classData[0].className;
-          if (role === 'Teacher') {
-            defaultClass = authUser.assignedClass || '';
-          }
+            if (role === 'Teacher') {
+              const myClassByMapping = classData.find(c => c.classTeacher === authUser.name);
+              const isValidAssigned = authUser.assignedClass && classData.some(c => c.className === authUser.assignedClass);
+              defaultClass = isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || '');
+            }
           setClassFilter(defaultClass);
           fetchTimetableAndStructure(defaultClass);
         }
@@ -246,7 +248,7 @@ const Timetable: React.FC = () => {
           <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(245,158,11,0.2)' }}>
             <div>
               <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Viewing Timetable For</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Class {authUser.assignedClass || 'Not Assigned'}</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Class {(authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass) ? authUser.assignedClass : (classes.find(c => c.classTeacher === authUser.name)?.className || authUser.assignedClass || 'Not Assigned'))}</div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Class Teacher</div>

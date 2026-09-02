@@ -116,12 +116,22 @@ const Students: React.FC = () => {
     }
   }, [availableSections, selectedSection]);
 
+  const teacherFallback = useMemo(() => {
+    if (role !== 'Teacher') return { class: '', section: '' };
+    const myClassByMapping = classes.find(c => c.classTeacher === authUser.name);
+    const isValidAssigned = authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass);
+    return {
+      class: isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || ''),
+      section: teacherFallback.section || (myClassByMapping?.sections?.[0] || '')
+    };
+  }, [classes, role, authUser]);
+
   const filteredStudents = useMemo(() => {
     return students.filter(student => {
       // Role Restriction
       if (role === 'Teacher') {
-          if (authUser.assignedClass && student.classId !== authUser.assignedClass) return false;
-          if (authUser.assignedSection && student.sectionId !== authUser.assignedSection) return false;
+          if (teacherFallback.class && student.classId !== teacherFallback.class) return false;
+          if (teacherFallback.section && student.sectionId !== teacherFallback.section) return false;
         }
       
       const searchLower = searchTerm.toLowerCase();
@@ -142,7 +152,7 @@ const Students: React.FC = () => {
       if (rollB === 0) return -1;
       return rollA - rollB;
     });
-  }, [students, searchTerm, selectedClass, selectedSection, role, authUser.assignedClass]);
+  }, [students, searchTerm, selectedClass, selectedSection, role, teacherFallback]);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -193,8 +203,8 @@ const Students: React.FC = () => {
           
           {role === 'Teacher' ? (
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', padding: '10px 20px', borderRadius: '12px', border: '1px solid #a5b4fc', color: '#3730a3', fontWeight: 700, boxShadow: '0 4px 6px rgba(99,102,241,0.1)' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>👩‍🏫 My Class: <span style={{ background: '#3730a3', color: 'white', padding: '2px 8px', borderRadius: '6px', fontSize: '0.9rem' }}>{authUser.assignedClass || 'Not Assigned'}</span></span>
-                {authUser.assignedSection && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '12px' }}>Section: <span style={{ background: '#3730a3', color: 'white', padding: '2px 8px', borderRadius: '6px', fontSize: '0.9rem' }}>{authUser.assignedSection}</span></span>}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>👩‍🏫 My Class: <span style={{ background: '#3730a3', color: 'white', padding: '2px 8px', borderRadius: '6px', fontSize: '0.9rem' }}>{teacherFallback.class || 'Not Assigned'}</span></span>
+                {teacherFallback.section && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '12px' }}>Section: <span style={{ background: '#3730a3', color: 'white', padding: '2px 8px', borderRadius: '6px', fontSize: '0.9rem' }}>{teacherFallback.section}</span></span>}
               </div>
             ) : (
               <>

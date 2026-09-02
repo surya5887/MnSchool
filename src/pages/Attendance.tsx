@@ -56,11 +56,21 @@ const Attendance: React.FC = () => {
     fetchInitialData();
   }, []);
 
+  const teacherFallback = useMemo(() => {
+    if (role !== 'Teacher') return { class: '', section: '' };
+    const myClassByMapping = classes.find(c => c.classTeacher === authUser.name);
+    const isValidAssigned = authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass);
+    return {
+      class: isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || ''),
+      section: teacherFallback.section || (myClassByMapping?.sections?.[0] || '')
+    };
+  }, [classes, role, authUser]);
+
   useEffect(() => {
     if (uniqueClasses.length > 0 && !selectedClass) {
       if (role === 'Teacher') {
-        setSelectedClass(authUser.assignedClass || '');
-        setSelectedSection(authUser.assignedSection || '');
+        setSelectedClass(teacherFallback.class);
+        setSelectedSection(teacherFallback.section);
       } else {
         const defaultClass = uniqueClasses[0].className;
         setSelectedClass(defaultClass);
@@ -183,7 +193,7 @@ const Attendance: React.FC = () => {
           {role === 'Teacher' ? (
               <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', padding: '16px 24px', borderRadius: '12px', color: 'white', boxShadow: '0 4px 6px rgba(16,185,129,0.2)' }}>
                 <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Marking Attendance For</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{authUser.assignedClass || 'No Class'} {authUser.assignedSection ? `- Section ${authUser.assignedSection}` : ''}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{teacherFallback.class || 'No Class'} {teacherFallback.section ? `- Section ${teacherFallback.section}` : ''}</div>
               </div>
             ) : (
               <>
