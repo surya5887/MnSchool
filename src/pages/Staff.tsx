@@ -54,10 +54,11 @@ const Staff: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
+  const [debugLog, setDebugLog] = useState('');
 
   const fetchStaff = async () => {
-    try {
-      try { await createDefaultAdminIfNeeded(); } catch(e) { console.error("Migration error:", e); }
+        try {
+      try { await createDefaultAdminIfNeeded(); } catch(e: any) { }
 
       const data = await getStaff();
       setAllStaff(data || []);
@@ -161,6 +162,7 @@ const Staff: React.FC = () => {
         <div>
           <h1 className="page-title">Staff Directory</h1>
           <p className="page-subtitle" style={{ margin: 0 }}>Manage teachers, admins, and all support staff across the school.</p>
+<p style={{color:'red', background:'yellow', padding: '5px'}}>{debugLog}</p>
         </div>
         {(activeTab === 'Admin' ? userRole === 'Super Admin' : ['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole)) && (
             <div style={{ display: 'flex', gap: '12px' }}>
