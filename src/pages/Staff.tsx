@@ -43,7 +43,7 @@ const Staff: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   
   const [newStaff, setNewStaff] = useState<Partial<StaffData>>({
-    name: '', role: 'Teacher', department: '', subject: '', assignedClass: '', experience: '', salary: 0, status: 'Active',
+    name: '', role: 'Teacher', department: '', subject: '', assignedClass: '', experience: '', salary: '' as any, status: 'Active',
     customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: ''
   });
   
@@ -95,7 +95,7 @@ const Staff: React.FC = () => {
       });
       setAddModalOpen(false);
       setNewStaff({
-        name: '', role: 'Teacher', department: '', subject: '', assignedClass: '', experience: '', salary: 0, status: 'Active',
+        name: '', role: 'Teacher', department: '', subject: '', assignedClass: '', experience: '', salary: '' as any, status: 'Active',
         customId: '', email: '', phone: '', address: '', aadharNumber: '', cast: '', religion: '', qualification: ''
       });
       setPhotoFile(null);
@@ -419,8 +419,8 @@ const Staff: React.FC = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Base Salary (,1)</label>
-              <input type="number" className="glass-input" value={newStaff.salary} onChange={e => setNewStaff({...newStaff, salary: Number(e.target.value)})} />
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Base Salary (₹)</label>
+              <input type="number" className="glass-input" value={newStaff.salary === 0 ? '' : newStaff.salary} onChange={e => setNewStaff({...newStaff, salary: e.target.value === '' ? '' as any : Number(e.target.value)})} />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Status</label>

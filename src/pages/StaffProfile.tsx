@@ -307,7 +307,7 @@ const StaffProfile: React.FC = () => {
                     </div>
                   )}
                 <div><label className="form-label">Experience</label><input type="text" className="glass-input" value={editData.experience || ''} onChange={e => setEditData({...editData, experience: e.target.value})} /></div>
-                <div><label className="form-label">Base Salary (₹)</label><input type="number" className="glass-input" value={editData.salary || 0} onChange={e => setEditData({...editData, salary: Number(e.target.value)})} /></div>
+                <div><label className="form-label">Base Salary (₹)</label><input type="number" className="glass-input" value={editData.salary === 0 ? '' : (editData.salary || '')} onChange={e => setEditData({...editData, salary: e.target.value === '' ? '' as any : Number(e.target.value)})} /></div>
                 
                 <div>
                   <label className="form-label">Update Photo</label>
