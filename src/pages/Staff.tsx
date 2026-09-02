@@ -159,13 +159,13 @@ const Staff: React.FC = () => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      className="page-container" style={{ paddingTop: '16px', maxWidth: '1400px', margin: '0 auto' }}
+      className="page-container" style={{ paddingTop: '0px', maxWidth: '1400px', margin: '0 auto' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 className="page-title">Staff Directory</h1>
-          <p className="page-subtitle" style={{ margin: 0 }}>Manage teachers, admins, and all support staff across the school.</p>
-<p style={{color:'red', background:'yellow', padding: '5px'}}>{debugLog}</p>
+          <p className="page-subtitle" style={{ margin: 0 }}>Manage school staff, their roles, and system access.</p>
+
         </div>
         {(activeTab === 'Admin' ? userRole === 'Super Admin' : ['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole)) && (
             <div style={{ display: 'flex', gap: '12px' }}>
@@ -349,13 +349,13 @@ const Staff: React.FC = () => {
           })}
         </AnimatePresence>
         
-        {filteredStaff.length === 0 && (
+        {loading ? <Loader message="Loading staff directory..." /> : filteredStaff.length === 0 ? (
           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '64px 24px', background: 'var(--glass-bg)', borderRadius: '24px' }}>
             <Users size={48} color="var(--text-muted)" style={{ marginBottom: '16px', opacity: 0.5 }} />
             <h3 style={{ color: 'var(--text-main)', margin: '0 0 8px 0' }}>No staff found</h3>
             <p style={{ color: 'var(--text-muted)', margin: 0 }}>Try adjusting your search or role filters.</p>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Add Staff Modal */}
@@ -450,7 +450,7 @@ const Staff: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px', borderTop: '1px solid var(--glass-border)', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px', borderTop: '1px solid var(--glass-border)', paddingTop: '0px' }}>
             <button className="btn-secondary" onClick={() => setAddModalOpen(false)}>Cancel</button>
             <button className="btn-primary" onClick={handleAddStaff} disabled={isSaving}>
               {isSaving ? 'Saving...' : 'Save Staff Profile'}
