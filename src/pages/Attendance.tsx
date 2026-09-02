@@ -22,6 +22,7 @@ const Attendance: React.FC = () => {
   // Map of studentId -> AttendanceStatus ('Present' | 'Absent' | 'Unmarked')
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const uniqueClasses = useMemo(() => {
