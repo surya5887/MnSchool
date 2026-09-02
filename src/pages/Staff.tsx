@@ -212,26 +212,50 @@ const Staff: React.FC = () => {
       {/* Staff Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
         <AnimatePresence>
-          {filteredStaff.map((staff) => (
+          {filteredStaff.map((staff, idx) => {
+            const COLOR_THEMES = [
+              { gradient: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', bg: 'rgba(99, 102, 241, 0.1)', text: '#6366f1' },
+              { gradient: 'linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%)', bg: 'rgba(59, 130, 246, 0.1)', text: '#3b82f6' },
+              { gradient: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)', bg: 'rgba(245, 158, 11, 0.1)', text: '#d97706' },
+              { gradient: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)', bg: 'rgba(236, 72, 153, 0.1)', text: '#db2777' },
+              { gradient: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)', bg: 'rgba(16, 185, 129, 0.1)', text: '#059669' },
+            ];
+            // We use the index to assign a playful color theme just like the old UI, 
+            // but we can also use role if we want. Old UI used index for variety!
+            const theme = COLOR_THEMES[idx % COLOR_THEMES.length];
+
+            return (
             <motion.div
               layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, delay: (idx % 10) * 0.05 }}
               key={staff.id || Math.random().toString()}
-              className="glass-panel"
-              style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', position: 'relative', display: 'flex', flexDirection: 'column' }}
+              whileHover={{ scale: 1.02, translateY: -4 }}
+              whileTap={{ scale: 0.98 }}
               onClick={(e) => {
                 if ((e.target as HTMLElement).closest('.checkbox-container')) return;
                 if (staff.id) navigate(`/staff/${staff.id}`);
+              }}
+              style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  cursor: 'pointer',
+                  borderRadius: '24px',
+                  overflow: 'hidden',
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(255,255,255,0.6)',
+                  backdropFilter: 'blur(10px)',
+                  position: 'relative'
               }}
             >
               {userRole === 'Admin' && staff.id && (
                 <div className="checkbox-container" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10 }}>
                   <input 
                     type="checkbox" 
-                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--primary-color)' }}
+                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'white' }}
                     checked={staffToDelete.includes(staff.id)}
                     onChange={(e) => {
                       if (e.target.checked) setStaffToDelete(prev => [...prev, staff.id!]);
@@ -242,52 +266,47 @@ const Staff: React.FC = () => {
               )}
               
               {/* Header / Avatar Area */}
-              <div style={{ 
-                background: getRoleColor(staff.role),
-                padding: '32px 24px', 
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                color: 'white', position: 'relative'
-              }}>
-                <div style={{
-                  width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(255,255,255,0.9)', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary-color)',
-                  marginBottom: '16px', boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                  backgroundImage: staff.photoUrl ? `url(${staff.photoUrl})` : 'none',
-                  backgroundSize: 'cover', backgroundPosition: 'center'
-                }}>
-                  {!staff.photoUrl && (staff.name ? String(staff.name).charAt(0).toUpperCase() : '?')}
-                </div>
-                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', textAlign: 'center', fontWeight: 700 }}>{staff.name || 'Unknown'}</h3>
-                <p style={{ margin: 0, opacity: 0.9, fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.5px' }}>
-                  {String(staff.role || 'UNASSIGNED').toUpperCase()}
-                </p>
-                <div style={{
-                  position: 'absolute', bottom: '-12px', background: staff.status === 'Active' ? '#10b981' : '#ef4444',
-                  color: 'white', padding: '4px 16px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '2px solid white'
-                }}>
-                  {staff.status || 'Active'}
-                </div>
+              <div style={{ background: theme.gradient, padding: '32px 24px 24px', color: 'white', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
+                  <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
+                  
+                  <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 16px rgba(0,0,0,0.1)', marginBottom: '12px', position: 'relative', zIndex: 1, backgroundImage: staff.photoUrl ? `url(${staff.photoUrl})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    {!staff.photoUrl && (
+                      <span style={{ fontSize: '2.5rem', color: theme.text, fontWeight: 700 }}>
+                        {staff.name ? String(staff.name).charAt(0).toUpperCase() : '?'}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h2 style={{ fontSize: '1.4rem', margin: '0 0 4px 0', fontWeight: 800, textShadow: '0 2px 4px rgba(0,0,0,0.1)', position: 'relative', zIndex: 1 }}>{staff.name || 'Unknown'}</h2>
+                  <div style={{ fontSize: '0.85rem', opacity: 0.9, letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600, position: 'relative', zIndex: 1 }}>{String(staff.role || 'STAFF').toUpperCase()}</div>
               </div>
 
-              {/* Details Area */}
-              <div style={{ padding: '32px 24px 24px 24px', display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+              {/* Content Area */}
+              <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
                 
-                {staff.role === 'Teacher' && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(0,0,0,0.02)', padding: '12px', borderRadius: '12px' }}>
-                    <div>
-                      <p style={{ margin: '0 0 4px 0', fontSize: '0.7rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}><BookOpen size={12}/> SUBJECT</p>
-                      <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem' }}>{staff.subject || '-'}</p>
+                {/* Status Badge */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-40px', position: 'relative', zIndex: 2, marginBottom: '8px' }}>
+                  <span className={`badge ${staff.status === 'Active' ? 'success' : 'danger'}`} style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                    {staff.status || 'Active'}
+                  </span>
+                </div>
+
+                <div style={{ flex: 1 }}></div>
+
+                {/* Info Grid */}
+                {staff.role === 'Teacher' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}><BookOpen size={12}/> Subject</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{staff.subject || 'N/A'}</div>
                     </div>
-                    <div>
-                      <p style={{ margin: '0 0 4px 0', fontSize: '0.7rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12}/> EXP</p>
-                      <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem' }}>{staff.experience || '-'}</p>
+                    <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12}/> Experience</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{staff.experience || 'N/A'}</div>
                     </div>
                   </div>
-                )}
-
-                {(staff.phone || staff.email) && (
+                ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {staff.phone && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -311,7 +330,8 @@ const Staff: React.FC = () => {
                 )}
               </div>
             </motion.div>
-          ))}
+          );
+          })}
         </AnimatePresence>
         
         {filteredStaff.length === 0 && (
