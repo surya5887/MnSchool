@@ -214,26 +214,8 @@ const Dashboard: React.FC = () => {
         >
           {role === 'Teacher' ? (
             <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-              <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', padding: '32px', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 10px 25px rgba(99,102,241,0.2)' }}>
-                <h2 style={{ margin: '0 0 16px 0', fontSize: '1.8rem', fontWeight: 800 }}>Welcome to your Dashboard!</h2>
-                <p style={{ margin: 0, fontSize: '1.1rem', opacity: 0.95, lineHeight: 1.6 }}>Manage your class efficiently. You can mark daily attendance, check your timetable, and add new students directly from the sidebar.</p>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h4 style={{ margin: 0, color: 'var(--text-muted)', fontSize: '1.1rem', fontWeight: 700 }}>Quick Actions</h4>
-                <a href="/attendance" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
-                  <div style={{ background: '#dcfce7', color: '#166534', padding: '12px', borderRadius: '12px' }}><CheckCircle2 size={24} /></div>
-                  <span style={{ fontSize: '1.1rem' }}>Mark Daily Attendance</span>
-                </a>
-                <a href="/admission" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
-                  <div style={{ background: '#e0e7ff', color: '#3730a3', padding: '12px', borderRadius: '12px' }}><Users size={24} /></div>
-                  <span style={{ fontSize: '1.1rem' }}>Admit New Student</span>
-                  </a>
-                </div>
-              </div>
-              
               {/* Teacher Today's Stats */}
-              <div style={{ marginTop: '32px' }}>
+              <div style={{ marginBottom: '32px' }}>
                 <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-main)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Clock size={20} color="var(--primary)" /> Today's Attendance ({new Date().toLocaleDateString('en-GB')})
                 </h3>
@@ -256,6 +238,26 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+              <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', padding: '32px', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 10px 25px rgba(99,102,241,0.2)' }}>
+                <h2 style={{ margin: '0 0 16px 0', fontSize: '1.8rem', fontWeight: 800 }}>Welcome to your Dashboard!</h2>
+                <p style={{ margin: 0, fontSize: '1.1rem', opacity: 0.95, lineHeight: 1.6 }}>Manage your class efficiently. You can mark daily attendance, check your timetable, and add new students directly from the sidebar.</p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h4 style={{ margin: 0, color: 'var(--text-muted)', fontSize: '1.1rem', fontWeight: 700 }}>Quick Actions</h4>
+                <a href="/attendance" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
+                  <div style={{ background: '#dcfce7', color: '#166534', padding: '12px', borderRadius: '12px' }}><CheckCircle2 size={24} /></div>
+                  <span style={{ fontSize: '1.1rem' }}>Mark Daily Attendance</span>
+                </a>
+                <a href="/admission" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
+                  <div style={{ background: '#e0e7ff', color: '#3730a3', padding: '12px', borderRadius: '12px' }}><Users size={24} /></div>
+                  <span style={{ fontSize: '1.1rem' }}>Admit New Student</span>
+                  </a>
+                </div>
+              </div>
+              
+
               </>
           ) : (
             <>
@@ -287,6 +289,7 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
 
 
 
