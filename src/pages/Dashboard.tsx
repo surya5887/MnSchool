@@ -5,6 +5,7 @@ import { getStudents, type StudentData } from '../services/studentService';
 import { getTransactions, type TransactionData } from '../services/financeService';
 import { getStaff, type StaffData } from '../services/staffService';
 import { getClasses, type ClassData } from '../services/classService';
+import { getAttendance } from '../services/attendanceService';
 import { getSchoolSettings, saveSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 import { getVehicles, type VehicleData } from '../services/transportService';
 import { addTransaction } from '../services/financeService';
@@ -37,6 +38,7 @@ const Dashboard: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
+  const [todayAttendance, setTodayAttendance] = useState<Record<string, string>>({});
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingDone, setBillingDone] = useState(false);
@@ -145,9 +147,26 @@ const Dashboard: React.FC = () => {
   // Calculate real Pending Dues dynamically
   let totalPendingDues = 0;
 
-  const teacherClass = classes.find(c => c.classTeacher === authUser.name);
-  const teacherClassName = teacherClass ? teacherClass.className : 'Not Assigned';
-  const myStudentsCount = students.filter(s => s.classId === teacherClassName).length;
+  const myClassByMapping = classes.find(c => c.classTeacher === authUser.name);
+    const isValidAssigned = authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass);
+    const teacherFallback = {
+      class: isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || ''),
+      section: authUser.assignedSection || (myClassByMapping?.sections?.[0] || '')
+    };
+    
+    // Filter students strictly by BOTH class and section
+    const myStudentsList = students.filter(s => {
+      const matchClass = s.classId === teacherFallback.class;
+      const matchSection = (!teacherFallback.section || s.sectionId === teacherFallback.section);
+      const matchStatus = s.status !== 'Inactive';
+      return matchClass && matchSection && matchStatus;
+    });
+    
+    const myStudentsCount = myStudentsList.length;
+    
+    const presentCount = myStudentsList.filter(s => s.id && todayAttendance[s.id] === 'Present').length;
+    const absentCount = myStudentsList.filter(s => s.id && todayAttendance[s.id] === 'Absent').length;
+    const unmarkedCount = myStudentsCount - presentCount - absentCount;
 
   students.forEach(student => {
     const studentClass = classes.find(c => c.id === student.classId);
@@ -194,6 +213,7 @@ const Dashboard: React.FC = () => {
           style={{ padding: '32px' }}
         >
           {role === 'Teacher' ? (
+            <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
               <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', padding: '32px', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 10px 25px rgba(99,102,241,0.2)' }}>
                 <h2 style={{ margin: '0 0 16px 0', fontSize: '1.8rem', fontWeight: 800 }}>Welcome to your Dashboard!</h2>
@@ -208,9 +228,35 @@ const Dashboard: React.FC = () => {
                 <a href="/admission" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.6)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }} className="hover-scale">
                   <div style={{ background: '#e0e7ff', color: '#3730a3', padding: '12px', borderRadius: '12px' }}><Users size={24} /></div>
                   <span style={{ fontSize: '1.1rem' }}>Admit New Student</span>
-                </a>
+                  </a>
+                </div>
               </div>
-            </div>
+              
+              {/* Teacher Today's Stats */}
+              <div style={{ marginTop: '32px' }}>
+                <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-main)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Clock size={20} color="var(--primary)" /> Today's Attendance ({new Date().toLocaleDateString('en-GB')})
+                </h3>
+                <div className="dashboard-grid">
+                  <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>My Students</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{myStudentsCount}</div>
+                  </div>
+                  <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{presentCount}</div>
+                  </div>
+                  <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(239,68,68,0.2)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#ef4444', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Absent</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{absentCount}</div>
+                  </div>
+                  <div style={{ background: 'rgba(107, 114, 128, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(107,114,128,0.2)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#6b7280', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Unmarked</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6b7280' }}>{unmarkedCount}</div>
+                  </div>
+                </div>
+              </div>
+              </>
           ) : (
             <>
               <h3 style={{ marginTop: 0, marginBottom: '32px', fontSize: '1.5rem' }}>Recent Activities</h3>
@@ -241,6 +287,10 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
+
+
+
 
 
 
