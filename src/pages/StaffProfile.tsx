@@ -207,13 +207,13 @@ const StaffProfile: React.FC = () => {
           <ArrowLeft size={18} /> Back to Staff
         </button>
         <div className="staff-action-buttons">
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
             <button className="btn-primary" style={{ background: 'var(--danger)' }} onClick={() => setIsDeleteModalOpen(true)}>
               <Trash2 size={16} /> Delete Staff
             </button>
           )}
           {!isEditing ? (
-            ['Principal', 'Manager', 'Super Admin'].includes(role) && (
+            ['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
               <button className="btn-primary" onClick={() => setIsEditing(true)}>
                 <Edit size={16} /> Edit Profile
               </button>
@@ -250,7 +250,7 @@ const StaffProfile: React.FC = () => {
               <span className={`badge ${staff.status === 'Active' ? 'success' : 'danger'}`}>
                 {staff.status || 'Active'}
               </span>
-              {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+              {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                 <button onClick={toggleStatus} style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text-color)' }}>
                   Toggle Status
                 </button>
@@ -398,7 +398,7 @@ const StaffProfile: React.FC = () => {
                     ))}
                   </select>
                 )}
-                {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                   <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
                     <Plus size={16} /> Record Transaction
                   </button>
@@ -414,7 +414,7 @@ const StaffProfile: React.FC = () => {
                     <th>Description</th>
                     <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Credit (In)</th>
                     <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Debit (Out)</th>
-                    {['Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
+                    {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -436,7 +436,7 @@ const StaffProfile: React.FC = () => {
                       <td style={{ textAlign: 'right', color: 'var(--danger)', fontWeight: 600 }}>
                         {t.type === 'Expense' || t.type === 'Charge' ? `₹${t.amount}` : '-'}
                       </td>
-                      {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                      {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                         <td style={{ textAlign: 'center' }}>
                           <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                             <Trash2 size={16} />

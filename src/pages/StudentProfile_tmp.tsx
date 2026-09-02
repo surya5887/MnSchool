@@ -352,7 +352,7 @@ const StudentProfile: React.FC = () => {
                {saving ? 'Saving...' : <><Save size={16}/> Save Changes</>}
              </button>
           </div>
-        ) : ['Principal', 'Manager', 'Super Admin'].includes(role) && (
+        ) : ['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
           <button className="btn-primary" onClick={handleEditToggle}>
             <Edit size={16} /> Edit Profile
           </button>
@@ -568,7 +568,7 @@ const StudentProfile: React.FC = () => {
                     ))}
                   </select>
                 )}
-                {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                   <>
                     <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => setIsPaymentModalOpen(true)}>
                       <Plus size={16} /> Receive Payment
@@ -600,7 +600,7 @@ const StudentProfile: React.FC = () => {
                         <th style={{ whiteSpace: 'nowrap' }}>Charge (Due)</th>
                         <th style={{ whiteSpace: 'nowrap' }}>Paid (Cr)</th>
                           <th style={{ whiteSpace: 'nowrap', textAlign: 'right' }}>Balance</th>
-                        {['Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
+                        {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -627,7 +627,7 @@ const StudentProfile: React.FC = () => {
                                   <Printer size={16} />
                                 </button>
                               )}
-                              {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                              {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                                 <button className="icon-btn" onClick={() => { setDeleteTxnId(t.id || null); setIsDeleteTxnModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                                   <Trash2 size={16} />
                                 </button>

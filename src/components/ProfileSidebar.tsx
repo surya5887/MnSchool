@@ -21,7 +21,7 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ isOpen, onClose, authUs
   });
 
   const getCollectionName = (role: string) => {
-    if (['Principal', 'Manager', 'Super Admin'].includes(role)) return 'admins';
+    if (['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role)) return 'admins';
     if (role === 'Teacher') return 'staff';
     if (role === 'Student') return 'students';
     return 'admins';

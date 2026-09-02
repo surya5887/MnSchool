@@ -446,7 +446,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
             <button className="btn-primary hover-scale" onClick={() => setIsEditing(true)} style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', border: 'none', fontWeight: 700, padding: '14px 28px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 15px rgba(99,102,241,0.2)' }}>
               <Edit size={18} /> Edit Profile
             </button>
@@ -544,7 +544,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
               <div style={{ background: '#dcfce7', padding: '10px', borderRadius: '12px' }}><IndianRupee size={24} color="#16a34a" /></div> Financial Ledger
             </h3>
-            {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+            {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button className="btn-primary" onClick={() => setIsPaymentModalOpen(true)} style={{ padding: '10px 20px', borderRadius: '12px', background: '#10b981', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Plus size={18} /> Receive Payment
@@ -620,7 +620,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                               <Printer size={14} /> Receipt
                             </button>
                           )}
-                          {['Principal', 'Manager', 'Super Admin'].includes(role) && row && (
+                          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && row && (
                               <>
                                 <button onClick={() => { setEditTxnData(row); setIsEditTxnModalOpen(true); }} style={{ background: '#fef3c7', color: '#d97706', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Edit">
                                   <Edit size={14} />

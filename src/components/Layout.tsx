@@ -52,7 +52,7 @@ const Layout: React.FC = () => {
       }
 
       // Fetch Audit Logs (Recent 10)
-      if (['Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
+      if (['Admin', 'Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
         let logs = await getAuditLogs();
         
         // ROLE-BASED FILTERING: Hide Super Admin activities from everyone else
@@ -148,7 +148,7 @@ const Layout: React.FC = () => {
           setActiveSession(settings.activeSession);
           localStorage.setItem('activeSession', settings.activeSession);
           
-          if (['Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
+          if (['Admin', 'Principal', 'Manager', 'Super Admin'].includes(authUser.role)) {
             const migratedCount = await migrateMissingSessions();
             if (migratedCount > 0) {
               console.log(`Migrated ${migratedCount} entities to active session.`);
@@ -257,11 +257,11 @@ const Layout: React.FC = () => {
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto' }} onClick={() => setMobileMenuOpen(false)}>
           
-          {['Principal', 'Manager', 'Super Admin', 'Teacher'].includes(role) && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin', 'Teacher'].includes(role) && (
             <NavLink to="/dashboard" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><LayoutDashboard size={20} /> Dashboard</NavLink>
           )}
           
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
             <>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
               <NavLink to="/admission" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><UserPlus size={20} /> New Admission</NavLink>
@@ -312,7 +312,7 @@ const Layout: React.FC = () => {
         </nav>
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }} onClick={() => setMobileMenuOpen(false)}>
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
             <NavLink to="/settings" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Settings size={20} /> System Settings</NavLink>
           )}
           <button onClick={handleLogout} className="btn-secondary" style={{ width: '100%', justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--danger)' }}>

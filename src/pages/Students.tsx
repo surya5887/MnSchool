@@ -162,7 +162,7 @@ const Students: React.FC = () => {
           <p className="page-subtitle">View and manage all registered students across the school.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
             <>
               <button className="btn-secondary" onClick={() => setClassModalOpen(true)}>
                 <Plus size={20} /> Add Class
@@ -177,7 +177,7 @@ const Students: React.FC = () => {
 
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
         <div className="filter-bar" style={{ padding: "24px", borderBottom: "1px solid var(--glass-border)" }}>
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && selectedStudents.length > 0 && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && selectedStudents.length > 0 && (
             <button 
               className="btn-primary" 
               style={{ background: 'var(--danger)', padding: '0 16px', height: '42px' }}
@@ -236,7 +236,7 @@ const Students: React.FC = () => {
         </div>
 
                   {/* Select All Controls for Admin */}
-          {['Principal', 'Manager', 'Super Admin'].includes(role) && filteredStudents.length > 0 && (
+          {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && filteredStudents.length > 0 && (
             <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.4)' }}>
               <input 
                 type="checkbox" 
@@ -288,7 +288,7 @@ const Students: React.FC = () => {
               >
                 {/* Top Header Row: Avatar + Info */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                  {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                     <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 2 }}>
                       <input 
                         type="checkbox" 
@@ -305,12 +305,12 @@ const Students: React.FC = () => {
                     </div>
                   )}
                   
-                  <Link to={['Principal', 'Manager', 'Super Admin'].includes(role) ? `/student/${student.id}` : '#'} style={{ textDecoration: 'none' }}>
+                  <Link to={['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) ? `/student/${student.id}` : '#'} style={{ textDecoration: 'none' }}>
                     <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '42px', height: '42px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} />
                   </Link>
                   
                   <div style={{ flex: 1, paddingRight: '24px', minWidth: 0 }}>
-                    <Link to={['Principal', 'Manager', 'Super Admin'].includes(role) ? `/student/${student.id}` : '#'} style={{ textDecoration: 'none' }}>
+                    <Link to={['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) ? `/student/${student.id}` : '#'} style={{ textDecoration: 'none' }}>
                       <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {student.firstName} {student.lastName}
                       </h4>
@@ -339,7 +339,7 @@ const Students: React.FC = () => {
                     </div>
                   </div>
                   
-                  {['Principal', 'Manager', 'Super Admin'].includes(role) && (
+                  {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <Link to={`/student/${student.id}`} style={{ width: '32px', height: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#3b82f6', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                         <Eye size={16} />
