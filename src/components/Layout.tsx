@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, AlertTriangle, Bus, Clock, Library as LibraryIcon, Menu, X, User, Megaphone } from 'lucide-react'; 
+import { LayoutDashboard, Briefcase, Users, LogOut, Bell, GraduationCap, Settings, BookOpen, UserPlus, CalendarCheck, ShieldAlert, FileText, AlertTriangle, Bus, Clock, Library as LibraryIcon, Menu, X, User, Megaphone } from 'lucide-react'; 
 import { LiveClock } from './LiveClock';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSchoolSettings } from '../services/settingsService';
@@ -266,7 +266,7 @@ const Layout: React.FC = () => {
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Core System</div>
               <NavLink to="/admission" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><UserPlus size={20} /> New Admission</NavLink>
               <NavLink to="/students" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Users size={20} /> Students Directory</NavLink>
-              <NavLink to="/staff" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><GraduationCap size={20} /> Teachers</NavLink>
+              <NavLink to="/staff" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Briefcase size={20} /> Staff Directory</NavLink>
               <NavLink to="/attendance" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><CalendarCheck size={20} /> Daily Attendance</NavLink>
               
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginTop: '12px', paddingLeft: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Academics & Operations</div>

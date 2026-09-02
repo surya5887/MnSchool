@@ -355,8 +355,8 @@ const StaffProfile: React.FC = () => {
                     <div className="detail-label">Documents</div>
                     <div className="detail-value" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px' }}>
                       {staff.documents.map((doc, idx) => (
-                        <a key={idx} href={doc.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '6px 12px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', color: 'var(--primary)' }}>
-                          {doc.name}
+                        <a key={idx} href={typeof doc === 'string' ? doc : doc.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '6px 12px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', color: 'var(--primary)' }}>
+                          {typeof doc === 'string' ? 'Document ' + (idx + 1) : doc.name}
                         </a>
                       ))}
                     </div>
