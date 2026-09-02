@@ -80,12 +80,18 @@ const Dashboard: React.FC = () => {
         setVehicles(vehiclesData);
 
         const today = new Date().toISOString().split('T')[0];
-        const attendanceData = await getAttendance(today);
-        
+        // Fetch all attendance for today across all classes
+        const { collection, query, where, getDocs } = await import('firebase/firestore');
+        const { db } = await import('../lib/firebase');
+        const q = query(collection(db, 'attendance'), where('date', '==', today));
+        const snap = await getDocs(q);
         const attendanceMap: Record<string, string> = {};
-        attendanceData.forEach(record => {
-          if (record.studentId) {
-            attendanceMap[record.studentId] = record.status;
+        snap.forEach(doc => {
+          const data = doc.data();
+          if (data.records) {
+            Object.entries(data.records).forEach(([studentId, status]) => {
+              attendanceMap[studentId] = status as string;
+            });
           }
         });
         setTodayAttendance(attendanceMap);
@@ -149,17 +155,14 @@ const Dashboard: React.FC = () => {
     // Financial Metrics
     let totalIncome = 0;
     let totalExpense = 0;
-    let tuitionFee = 0;
-    let transportFee = 0;
-    let otherIncome = 0;
+    const revenueMap = new Map();
 
     const dateMap = new Map();
     filteredTxns.forEach(t => {
       if (t.type === 'Income') {
          totalIncome += t.amount;
-         if (t.category.toLowerCase().includes('tuition')) tuitionFee += t.amount;
-         else if (t.category.toLowerCase().includes('transport')) transportFee += t.amount;
-         else otherIncome += t.amount;
+         const method = t.paymentMethod || 'Cash';
+         revenueMap.set(method, (revenueMap.get(method) || 0) + t.amount);
       }
       if (t.type === 'Expense') totalExpense += t.amount;
 
@@ -175,12 +178,7 @@ const Dashboard: React.FC = () => {
     });
 
     const chartData = Array.from(dateMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-    
-    const revenueData = [
-      { name: 'Tuition Fee', value: tuitionFee },
-      { name: 'Transport Fee', value: transportFee },
-      { name: 'Other Income', value: otherIncome }
-    ].filter(d => d.value > 0);
+    const revenueData = Array.from(revenueMap.entries()).map(([k, v]) => ({ name: k, value: v })).filter(d => d.value > 0);
 
     // Demographic Analytics
     let activeStudents = students.filter(s => s.status !== 'Inactive');
@@ -409,7 +407,7 @@ const Dashboard: React.FC = () => {
                   </ResponsiveContainer>
                 </ChartCard>
 
-                <ChartCard title="Revenue Breakdown" icon={PieChartIcon} delay={1.0}>
+                <ChartCard title="Revenue Source (Payment Methods)" icon={PieChartIcon} delay={1.0}>
                   {analyticsData.revenueData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -439,6 +437,7 @@ const Dashboard: React.FC = () => {
                             {analyticsData.staffRoleData.map((e, i) => <Cell key={i} fill={analyticsData.PIE_COLORS_STAFF[i % analyticsData.PIE_COLORS_STAFF.length]} />)}
                           </Pie>
                           <RechartsTooltip formatter={(val) => [val, 'Staff']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}/>
+                          <Legend verticalAlign="bottom" height={36}/>
                         </PieChart>
                       </ResponsiveContainer>
                     ) : <div style={{ color: 'var(--text-muted)' }}>No data</div>}
