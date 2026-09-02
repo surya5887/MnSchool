@@ -5,6 +5,7 @@ import { Search, Plus, Trash2, Eye } from 'lucide-react';
 import { getStudents, deleteStudent, type StudentData } from '../services/studentService';
 import { getClasses, addClass, type ClassData, getSequenceIndex } from '../services/classService';
 import Modal from '../components/Modal';
+import Loader from '../components/Loader';
 
 const Students: React.FC = () => {
   const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');

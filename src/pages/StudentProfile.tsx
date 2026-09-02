@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock } from 'lucide-react';
@@ -369,7 +370,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
     setEditData({ ...editData, photoUrl: '' });
   };
 
-  if (loading) return <div>Loading Profile...</div>;
+  if (loading) return <Loader message="Loading data..." />;
   if (!student) return <div>Student not found.</div>;
 
   const previousDues = student.previousDues || 0;

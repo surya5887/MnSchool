@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { Download, TrendingUp, TrendingDown, BookOpen, Plus, Trash2 } from 'lucide-react';
 import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
@@ -20,6 +21,7 @@ const MasterLedger: React.FC = () => {
   const [session, setSession] = useState(localStorage.getItem('activeSession') || '2023-2024');
   const [academicSessions, setAcademicSessions] = useState<string[]>([localStorage.getItem('activeSession') || '2023-2024']);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filterMonth, setFilterMonth] = useState('All');
   
   // Date and Stats State
@@ -321,7 +323,7 @@ const MasterLedger: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {displayedRows.length === 0 ? (
+              {loading ? <Loader message="Loading ledger..." /> : displayedRows.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No records found.</td>
                 </tr>

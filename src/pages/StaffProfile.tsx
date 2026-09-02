@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { IndianRupee, ArrowLeft, Trash2, Edit, Save, Plus } from 'lucide-react';
@@ -192,7 +193,7 @@ const StaffProfile: React.FC = () => {
     }
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading) return <Loader message="Loading data..." />;
   if (!staff) return <div style={{ padding: '24px' }}>Staff not found</div>;
 
   const availableMonths = Array.from(new Set(transactions.map(t => t.date.substring(0, 7)))).sort().reverse();

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Users, Eye } from 'lucide-react';
@@ -38,7 +39,7 @@ const ClassDetails: React.FC = () => {
   }, [id]);
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '40px' }}>Loading Class Details...</div>;
+    return <Loader message="Loading data..." />;
   }
 
   if (!classData) {

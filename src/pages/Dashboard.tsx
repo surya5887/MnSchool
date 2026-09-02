@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { Users, GraduationCap, IndianRupee, TrendingUp, Clock, AlertTriangle, FileText, CheckCircle2, BarChart2, Activity, Calendar, PieChart as PieChartIcon, School, UserCheck, Shield } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';

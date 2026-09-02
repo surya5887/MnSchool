@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import Loader from '../components/Loader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check, Trash2, Edit2, Users, BookOpen, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -135,7 +136,7 @@ const Classes: React.FC = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
           {loading ? (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Loading classes...</div>
+            <Loader message="Loading data..." />
           ) : sortedClasses.length === 0 ? (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No classes found. Add a class to get started.</div>
           ) : (

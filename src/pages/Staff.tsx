@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getStaff, addStaff, deleteStaff, type StaffData } from '../services/staffService';
 import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
 import Modal from '../components/Modal';
+import Loader from '../components/Loader';
 
 const ROLES = [
   
@@ -36,6 +37,7 @@ const Staff: React.FC = () => {
   const navigate = useNavigate();
   
   const [allStaff, setAllStaff] = useState<StaffData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Teacher');
   const [searchQuery, setSearchQuery] = useState('');
   

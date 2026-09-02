@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import type { SchoolSettingsData } from '../services/settingsService';

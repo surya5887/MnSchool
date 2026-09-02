@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { AlertCircle, IndianRupee, MessageCircle, Phone, Search, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -183,7 +184,7 @@ const DefaultersList: React.FC = () => {
         </div>
 
         {loading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading records...</div>
+          <Loader message="Loading data..." />
         ) : filteredDefaulters.length === 0 ? (
           <div style={{ padding: '60px 20px', textAlign: 'center' }}>
             <div style={{ background: 'var(--success)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', opacity: 0.2 }}>

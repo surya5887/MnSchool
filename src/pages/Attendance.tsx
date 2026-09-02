@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Save, Search, Download, CheckCircle, XCircle, Circle } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
@@ -230,7 +231,7 @@ const Attendance: React.FC = () => {
         </div>
       </div>
 
-            {activeStudents.length === 0 ? (
+            {loading ? <Loader message="Loading attendance data..." /> : activeStudents.length === 0 ? (
         <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', marginBottom: '24px' }}>
           No students found for the selected class/section.
         </div>
