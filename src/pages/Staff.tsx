@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserPlus, Briefcase, Trash2, Mail, Phone, Search, Users, Shield, GraduationCap, Truck, Settings, Coffee } from 'lucide-react';
+import { UserPlus, Briefcase, Trash2, Mail, Phone, Search, Users, Shield, GraduationCap, Truck, Settings, Coffee, BookOpen, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getStaff, addStaff, deleteStaff, type StaffData } from '../services/staffService';
 import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
