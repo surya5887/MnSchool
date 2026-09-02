@@ -133,7 +133,8 @@ const Staff: React.FC = () => {
     
     return allStaff.filter(s => {
       try {
-        const matchesTab = activeTab === 'All' || (activeTab === 'Admin' ? ['Admin', 'Principal', 'Manager'].includes(String(s.role)) : s.role === activeTab);
+        const roleClean = String(s.role || '').trim();
+          const matchesTab = activeTab === 'All' || (activeTab === 'Admin' ? ['Admin', 'Principal', 'Manager'].includes(roleClean) : roleClean === activeTab);
         const searchStr = (searchQuery || '').toLowerCase();
         
         if (!searchStr) return matchesTab;

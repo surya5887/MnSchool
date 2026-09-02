@@ -15,28 +15,27 @@ export const getAdminByEmail = async (email: string) => {
 
 export const createDefaultAdminIfNeeded = async () => {
   try {
-    // ONE-TIME MIGRATION: Copy existing admins from 'admins' collection to 'staff' collection
-    const oldAdminsSnap = await getDocs(collection(db, 'admins'));
-    if (!oldAdminsSnap.empty) {
-      for (const oldDoc of oldAdminsSnap.docs) {
-        const adminData = oldDoc.data();
-        // Check if already in staff
-        if (!adminData.email) continue;
-        const staffQ = query(collection(db, 'staff'), where('email', '==', adminData.email));
-        const staffSnap = await getDocs(staffQ);
-        if (staffSnap.empty) {
-          // Add to staff with all their existing data (including their current changed password!)
-          await addDoc(collection(db, 'staff'), {
-            ...adminData,
-            status: 'Active',
-            createdAt: new Date().toISOString()
-          });
-          console.log(`Migrated ${adminData.email} from admins to staff.`);
+    try {
+      const oldAdminsSnap = await getDocs(collection(db, 'admins'));
+      if (!oldAdminsSnap.empty) {
+        for (const oldDoc of oldAdminsSnap.docs) {
+          const adminData = oldDoc.data();
+          if (!adminData.email) continue;
+          const staffQ = query(collection(db, 'staff'), where('email', '==', adminData.email));
+          const staffSnap = await getDocs(staffQ);
+          if (staffSnap.empty) {
+            await addDoc(collection(db, 'staff'), {
+              ...adminData,
+              status: 'Active',
+              createdAt: new Date().toISOString()
+            });
+          }
         }
       }
+    } catch (e) {
+      console.warn('Migration ignored', e);
     }
 
-    // Now proceed with normal default creation (in staff) if they STILL don't exist
     const admin = await getAdminByEmail('mnpsharsoli@gmail.com');
     if (!admin) {
       const hashedPassword = bcrypt.hashSync('admin@8393', 10);
@@ -47,7 +46,6 @@ export const createDefaultAdminIfNeeded = async () => {
         name: 'Principal / Admin',
         status: 'Active'
       });
-      console.log('Default Principal created securely.');
     }
 
     const manager = await getAdminByEmail('manager@mnps.in');
@@ -60,7 +58,6 @@ export const createDefaultAdminIfNeeded = async () => {
         name: 'Manager',
         status: 'Active'
       });
-      console.log('Default Manager created securely.');
     }
 
     const superAdmin = await getAdminByEmail('superadmin@mnps.in');
@@ -73,7 +70,6 @@ export const createDefaultAdminIfNeeded = async () => {
         name: 'Super Admin',
         status: 'Active'
       });
-      console.log('Default Super Admin created securely.');
     }
   } catch (error) {
     console.error('Error creating default admins', error);
