@@ -122,7 +122,7 @@ const Students: React.FC = () => {
     const isValidAssigned = authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass);
     return {
       class: isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || ''),
-      section: teacherFallback.section || (myClassByMapping?.sections?.[0] || '')
+      section: authUser.assignedSection || (myClassByMapping?.sections?.[0] || '')
     };
   }, [classes, role, authUser]);
 
@@ -416,6 +416,7 @@ const Students: React.FC = () => {
 };
 
 export default Students;
+
 
 
 
