@@ -38,7 +38,7 @@ const ChartCard = ({ title, icon: Icon, children, delay }: {title: string, icon:
     <h4 style={{ margin: '0 0 24px 0', color: 'var(--text-main)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
       <Icon size={18} color="var(--primary)"/> {title}
     </h4>
-    <div style={{ flex: 1, minHeight: '280px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ flex: 1, height: '280px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       {children}
     </div>
   </motion.div>
@@ -223,7 +223,8 @@ const Dashboard: React.FC = () => {
     // Staff Roles
     const staffRoleMap = new Map();
     staff.filter(s => s.status === 'Active').forEach(s => {
-      staffRoleMap.set(s.role, (staffRoleMap.get(s.role) || 0) + 1);
+      const roleName = s.role || 'Unassigned';
+      staffRoleMap.set(roleName, (staffRoleMap.get(roleName) || 0) + 1);
     });
     const staffRoleData = Array.from(staffRoleMap.entries()).map(([k, v]) => ({ name: k, value: v }));
 
@@ -275,7 +276,7 @@ const Dashboard: React.FC = () => {
   const unmarkedCount = myStudentsCount - presentCount - absentCount;
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '40px' }}>
+    <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '40px', paddingTop: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
           <h1 className="page-title">Dashboard Overview</h1>
@@ -340,7 +341,7 @@ const Dashboard: React.FC = () => {
                       <BarChart data={analyticsData.classDistData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f3f4f6" />
                         <XAxis type="number" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis type="category" dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} width={80} />
+                        <YAxis type="category" dataKey="name" stroke="#9ca3af" fontSize={11} tickLine={false} axisLine={false} width={110} tickFormatter={(val) => val.length > 15 ? val.substring(0,12)+'..' : val} />
                         <RechartsTooltip cursor={{fill: '#f9fafb'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}/>
                         <Bar dataKey="Students" fill="#6366f1" radius={[0, 4, 4, 0]} />
                       </BarChart>
@@ -352,7 +353,7 @@ const Dashboard: React.FC = () => {
                   {analyticsData.genderData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie data={analyticsData.genderData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                        <Pie data={analyticsData.genderData} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}>
                           {analyticsData.genderData.map((e, i) => <Cell key={i} fill={analyticsData.PIE_COLORS_GEN[i % analyticsData.PIE_COLORS_GEN.length]} />)}
                         </Pie>
                         <RechartsTooltip formatter={(val) => [val, 'Students']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}/>
@@ -430,22 +431,18 @@ const Dashboard: React.FC = () => {
                     <Shield size={24} color="var(--primary)" />
                     <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Staff Distribution</h3>
                   </div>
-                  <ChartCard title="Staff by Role" icon={UserCheck} delay={1.1}>
+                  <div style={{ height: '320px', width: '100%', display: 'flex' }}><ChartCard title="Staff by Role" icon={UserCheck} delay={1.1}>
                     {analyticsData.staffRoleData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={analyticsData.staffRoleData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                          <Pie data={analyticsData.staffRoleData} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}>
                             {analyticsData.staffRoleData.map((e, i) => <Cell key={i} fill={analyticsData.PIE_COLORS_STAFF[i % analyticsData.PIE_COLORS_STAFF.length]} />)}
                           </Pie>
                           <RechartsTooltip formatter={(val) => [val, 'Staff']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}/>
                         </PieChart>
                       </ResponsiveContainer>
                     ) : <div style={{ color: 'var(--text-muted)' }}>No data</div>}
-                  </ChartCard>
-                </div>
-
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                  </ChartCard></div></div><div><div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                     <Clock size={24} color="var(--primary)" />
                     <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Timeline & Recent Activities</h3>
                   </div>
