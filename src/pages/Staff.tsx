@@ -210,7 +210,7 @@ const Staff: React.FC = () => {
       </div>
 
       {/* Staff Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '24px' }}>
         <AnimatePresence>
           {filteredStaff.map((staff, idx) => {
             const COLOR_THEMES = [
@@ -295,7 +295,7 @@ const Staff: React.FC = () => {
                 <div style={{ flex: 1 }}></div>
 
                 {/* Info Grid */}
-                {staff.role === 'Teacher' ? (
+                {staff.role === 'Teacher' && (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '16px' }}>
                       <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}><BookOpen size={12}/> Subject</div>
@@ -306,20 +306,20 @@ const Staff: React.FC = () => {
                       <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{staff.experience || 'N/A'}</div>
                     </div>
                   </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {staff.phone && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                        <Phone size={14} /> {staff.phone}
-                      </div>
-                    )}
-                    {staff.email && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                        <Mail size={14} /> {staff.email}
-                      </div>
-                    )}
-                  </div>
                 )}
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {staff.phone && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                      <Phone size={14} /> {staff.phone}
+                    </div>
+                  )}
+                  {staff.email && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                      <Mail size={14} /> {staff.email}
+                    </div>
+                  )}
+                </div>
                 
                 {staff.customId && (
                   <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'center' }}>
