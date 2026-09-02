@@ -22,8 +22,8 @@ const StatCard = ({ title, value, icon: Icon, bgGradient, delay }: {title: strin
       <Icon size={36} />
     </div>
     <div style={{ minWidth: 0, flex: 1 }}>
-      <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</p>
-      <h3 style={{ fontSize: '2.2rem', margin: 0, fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</h3>
+      <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px', whiteSpace: 'normal', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>{title}</p>
+      <h3 style={{ fontSize: '1.8rem', margin: 0, fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</h3>
     </div>
   </motion.div>
 );
@@ -33,7 +33,7 @@ const ChartCard = ({ title, icon: Icon, children, delay }: {title: string, icon:
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    style={{ background: 'white', padding: '24px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column' }}
+    style={{ background: 'white', padding: '24px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}
   >
     <h4 style={{ margin: '0 0 24px 0', color: 'var(--text-main)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
       <Icon size={18} color="var(--primary-color)"/> {title}
@@ -429,7 +429,7 @@ const Dashboard: React.FC = () => {
                     <Shield size={24} color="var(--primary-color)" />
                     <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Staff Distribution</h3>
                   </div>
-                  <div style={{ height: '320px', width: '100%', display: 'flex' }}><ChartCard title="Staff by Role" icon={UserCheck} delay={1.1}>
+                  <div style={{ height: '360px', width: '100%', display: 'flex' }}><ChartCard title="Staff by Role" icon={UserCheck} delay={1.1}>
                     {analyticsData.staffRoleData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
