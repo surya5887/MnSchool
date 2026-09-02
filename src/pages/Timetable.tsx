@@ -94,7 +94,11 @@ const Timetable: React.FC = () => {
         const classData = await getClasses();
         setClasses(classData);
         if (classData.length > 0) {
-          const defaultClass = classData[0].className;
+          let defaultClass = classData[0].className;
+          if (role === 'Teacher') {
+            const myClass = classData.find(c => c.classTeacher === authUser.name);
+            if (myClass) defaultClass = myClass.className;
+          }
           setClassFilter(defaultClass);
           fetchTimetableAndStructure(defaultClass);
         }
