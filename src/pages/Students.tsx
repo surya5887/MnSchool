@@ -49,12 +49,7 @@ const Students: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (role === 'Teacher' && classes.length > 0) {
-      const myClass = classes.find(c => c.classTeacher === authUser.name);
-      if (myClass) setSelectedClass(myClass.className);
-    }
-  }, [classes, role, authUser.name]);
+  
 
   useEffect(() => {
     fetchData();
@@ -124,9 +119,10 @@ const Students: React.FC = () => {
   const filteredStudents = useMemo(() => {
     return students.filter(student => {
       // Role Restriction
-      if (role === 'Teacher' && authUser.assignedClass) {
-        if (student.classId !== authUser.assignedClass) return false;
-      }
+      if (role === 'Teacher') {
+          if (authUser.assignedClass && student.classId !== authUser.assignedClass) return false;
+          if (authUser.assignedSection && student.sectionId !== authUser.assignedSection) return false;
+        }
       
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 

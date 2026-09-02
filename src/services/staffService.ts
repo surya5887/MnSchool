@@ -27,6 +27,7 @@ export interface StaffData {
   qualification?: string;
   password?: string;
   assignedClass?: string;
+  assignedSection?: string;
   
   documents?: {name: string, url: string}[];
   
@@ -132,3 +133,4 @@ export const deleteStaff = async (id: string) => {
 };
 
 export const updateStaffPassword = async (id: string, password: string) => { const docRef = doc(db, STAFF_COLLECTION, id); await updateDoc(docRef, { password }); };
+

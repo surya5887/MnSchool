@@ -73,7 +73,8 @@ const Login: React.FC = () => {
               role: 'Teacher', 
               id: staffDoc.id, 
               name: staffDoc.data().name,
-              assignedClass: staffDoc.data().assignedClass || '' 
+              assignedClass: staffDoc.data().assignedClass || '', 
+                assignedSection: staffDoc.data().assignedSection || '' 
             });
             await autoLog('User logged in', 'Success');
             navigate('/dashboard');
@@ -435,3 +436,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

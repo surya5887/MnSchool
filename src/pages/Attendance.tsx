@@ -58,14 +58,15 @@ const Attendance: React.FC = () => {
 
   useEffect(() => {
     if (uniqueClasses.length > 0 && !selectedClass) {
-      let defaultClass = uniqueClasses[0].className;
       if (role === 'Teacher') {
-        const myClass = classes.find(c => c.classTeacher === authUser.name);
-        if (myClass) defaultClass = myClass.className;
-      }
-      setSelectedClass(defaultClass);
-      const matchedClass = uniqueClasses.find(c => c.className === defaultClass);
+        setSelectedClass(authUser.assignedClass || '');
+        setSelectedSection(authUser.assignedSection || '');
+      } else {
+        const defaultClass = uniqueClasses[0].className;
+        setSelectedClass(defaultClass);
+        const matchedClass = uniqueClasses.find(c => c.className === defaultClass);
         setSelectedSection(matchedClass?.sections[0] || '');
+      }
     }
   }, [uniqueClasses, selectedClass]);
 

@@ -96,8 +96,7 @@ const Timetable: React.FC = () => {
         if (classData.length > 0) {
           let defaultClass = classData[0].className;
           if (role === 'Teacher') {
-            const myClass = classData.find(c => c.classTeacher === authUser.name);
-            if (myClass) defaultClass = myClass.className;
+            defaultClass = authUser.assignedClass || '';
           }
           setClassFilter(defaultClass);
           fetchTimetableAndStructure(defaultClass);
@@ -243,17 +242,30 @@ const Timetable: React.FC = () => {
         </div>
       </div>
 
-      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-        <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
-          <select className="glass-input" value={classFilter} onChange={handleClassChange} disabled={role === 'Teacher'}>
-            {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
-          </select>
-        </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
-           <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
-        </div>
-      </div>
+      {role === 'Teacher' ? (
+          <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(245,158,11,0.2)' }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Viewing Timetable For</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Class {authUser.assignedClass || 'Not Assigned'}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Class Teacher</div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{authUser.name}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
+              <select className="glass-input" value={classFilter} onChange={handleClassChange}>
+                {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+              </select>
+            </div>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
+               <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
+            </div>
+          </div>
+        )}
 
       <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>

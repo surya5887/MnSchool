@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { IndianRupee, ArrowLeft, Trash2, Edit, Save, Plus } from 'lucide-react';
 import { getStaffById, updateStaff, deleteStaff, type StaffData } from '../services/staffService';
 import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
+import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
 import Modal from '../components/Modal';
 
@@ -25,6 +26,7 @@ const StaffProfile: React.FC = () => {
   const role = authUser.role || '';
   const [staff, setStaff] = useState<StaffData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [classes, setClasses] = useState<ClassData[]>([]);
 
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -275,7 +277,24 @@ const StaffProfile: React.FC = () => {
                 <div><label className="form-label">Religion</label><input type="text" className="glass-input" value={editData.religion || ''} onChange={e => setEditData({...editData, religion: e.target.value})} /></div>
                 <div><label className="form-label">Qualification</label><input type="text" className="glass-input" value={editData.qualification || ''} onChange={e => setEditData({...editData, qualification: e.target.value})} /></div>
                 <div><label className="form-label">Subject</label><input type="text" className="glass-input" value={editData.subject || ''} onChange={e => setEditData({...editData, subject: e.target.value})} /></div>
-                <div><label className="form-label">Assigned Class</label><input type="text" className="glass-input" value={editData.assignedClass || ''} onChange={e => setEditData({...editData, assignedClass: e.target.value})} placeholder="e.g. 10th" /></div>
+                <div>
+                    <label className="form-label">Assigned Class</label>
+                    <select className="glass-input" value={editData.assignedClass || ''} onChange={e => {
+                      setEditData({...editData, assignedClass: e.target.value, assignedSection: ''});
+                    }}>
+                      <option value="">None</option>
+                      {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+                    </select>
+                  </div>
+                  {editData.assignedClass && (
+                    <div>
+                      <label className="form-label">Assigned Section</label>
+                      <select className="glass-input" value={editData.assignedSection || ''} onChange={e => setEditData({...editData, assignedSection: e.target.value})}>
+                        <option value="">None</option>
+                        {classes.find(c => c.className === editData.assignedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  )}
                 <div><label className="form-label">Experience</label><input type="text" className="glass-input" value={editData.experience || ''} onChange={e => setEditData({...editData, experience: e.target.value})} /></div>
                 <div><label className="form-label">Base Salary (₹)</label><input type="number" className="glass-input" value={editData.salary || 0} onChange={e => setEditData({...editData, salary: Number(e.target.value)})} /></div>
                 
@@ -303,7 +322,7 @@ const StaffProfile: React.FC = () => {
                 <div><div className="detail-label">Religion</div><div className="detail-value">{staff.religion || 'N/A'}</div></div>
                 <div><div className="detail-label">Qualification</div><div className="detail-value">{staff.qualification || 'N/A'}</div></div>
                 <div><div className="detail-label">Subject</div><div className="detail-value">{staff.subject || 'N/A'}</div></div>
-                <div><div className="detail-label">Assigned Class</div><div className="detail-value">{staff.assignedClass || 'N/A'}</div></div>
+                <div><div className="detail-label">Assigned Class</div><div className="detail-value">{staff.assignedClass ? `${staff.assignedClass} ${staff.assignedSection ? '('+staff.assignedSection+')' : ''}` : 'N/A'}</div></div>
                 <div><div className="detail-label">Experience</div><div className="detail-value">{staff.experience || 'N/A'}</div></div>
                 <div><div className="detail-label">Base Salary</div><div className="detail-value">₹{staff.salary || 0}</div></div>
                 
