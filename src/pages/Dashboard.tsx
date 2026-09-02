@@ -138,11 +138,19 @@ const Dashboard: React.FC = () => {
     .reduce((sum, t) => sum + t.amount, 0);
 
   // Generate dynamic recent activities from transactions
-  const recentActivities = transactions.slice(0, 5).map(t => ({
-    time: new Date(t.date).toLocaleDateString(),
-    action: t.type === 'Income' ? 'Fee Collected' : 'Expense Logged',
-    details: `${t.description} (₹${t.amount})`
-  }));
+  const recentActivities = transactions.slice(0, 5).map(t => {
+    let actionLabel = 'Transaction';
+    if (t.type === 'Income') actionLabel = 'Fee Collected';
+    else if (t.type === 'Charge') actionLabel = 'Dues Generated';
+    else if (t.type === 'Expense') actionLabel = 'Expense Logged';
+    else if (t.type === 'Discount') actionLabel = 'Discount Given';
+    
+    return {
+      time: new Date(t.date).toLocaleDateString(),
+      action: actionLabel,
+      details: `${t.description} (₹${t.amount})`
+    };
+  });
 
   // Calculate real Pending Dues dynamically
   let totalPendingDues = 0;
@@ -169,22 +177,16 @@ const Dashboard: React.FC = () => {
     const unmarkedCount = myStudentsCount - presentCount - absentCount;
 
   students.forEach(student => {
-    const studentClass = classes.find(c => c.id === student.classId);
-    let baseFeeTotal = 0;
-    if (studentClass && studentClass.fees) {
-      baseFeeTotal = studentClass.fees.reduce((sum, f) => sum + f.amount, 0);
-    }
-    
     const studentTxns = transactions.filter(t => t.studentId === student.id);
-    const totalPaid = studentTxns.filter(t => t.type === 'Income' && t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
-    const customCharges = studentTxns.filter(t => t.type === 'Income' && t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0);
-
-    const pending = (baseFeeTotal + customCharges) - totalPaid;
-    if (pending > 0) {
-      totalPendingDues += pending;
+    let currentBal = 0;
+    studentTxns.forEach(t => {
+      if (t.type === 'Charge') currentBal += t.amount;
+      else if (t.type === 'Income' || t.type === 'Discount') currentBal -= t.amount;
+    });
+    if (currentBal > 0) {
+      totalPendingDues += currentBal;
     }
   });
-
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -289,6 +291,9 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
+
+
 
 
 
