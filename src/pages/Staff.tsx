@@ -7,7 +7,7 @@ import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudina
 import Modal from '../components/Modal';
 
 const ROLES = [
-  { name: 'All Staff', icon: Users, filter: 'All' },
+  
   { name: 'Teachers', icon: GraduationCap, filter: 'Teacher' },
   { name: 'Admins', icon: Shield, filter: 'Admin' },
   { name: 'Accountants', icon: Briefcase, filter: 'Accountant' },
@@ -36,7 +36,7 @@ const Staff: React.FC = () => {
   const navigate = useNavigate();
   
   const [allStaff, setAllStaff] = useState<StaffData[]>([]);
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState('Teacher');
   const [searchQuery, setSearchQuery] = useState('');
   
   const [isAddModalOpen, setAddModalOpen] = useState(false);
@@ -168,8 +168,8 @@ const Staff: React.FC = () => {
                 <Trash2 size={18} /> Delete Selected ({staffToDelete.length})
               </button>
             )}
-            <button className="btn-primary" onClick={() => setAddModalOpen(true)}>
-              <UserPlus size={20} style={{ marginRight: '8px' }} /> Add Staff
+            <button className="btn-primary" onClick={() => { setNewStaff({...newStaff, role: activeTab}); setAddModalOpen(true); }}>
+              <UserPlus size={20} style={{ marginRight: '8px' }} /> Add {activeTab === 'Support Staff' ? 'Support' : activeTab}
             </button>
           </div>
         )}
@@ -344,36 +344,23 @@ const Staff: React.FC = () => {
       </div>
 
       {/* Add Staff Modal */}
-      <Modal isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} title="Register New Staff">
+      <Modal isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} title={`Register New ${activeTab}`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '70vh', overflowY: 'auto', paddingRight: '8px' }}>
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Role / Position</label>
-              <select className="glass-input" value={newStaff.role} onChange={e => setNewStaff({...newStaff, role: e.target.value})} required>
-                <option value="Teacher">Teacher</option>
-                <option value="Admin">Admin</option>
-                <option value="Accountant">Accountant</option>
-                <option value="Driver">Driver</option>
-                <option value="Support Staff">Support Staff / Peon</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Full Name</label>
               <input type="text" className="glass-input" value={newStaff.name} onChange={e => setNewStaff({...newStaff, name: e.target.value})} required />
             </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Custom ID</label>
               <input type="text" className="glass-input" value={newStaff.customId} onChange={e => setNewStaff({...newStaff, customId: e.target.value})} placeholder="e.g. STF-001" />
             </div>
-            <div>
+          </div>
+          
+          <div>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Department</label>
               <input type="text" className="glass-input" value={newStaff.department} onChange={e => setNewStaff({...newStaff, department: e.target.value})} placeholder="e.g. Academics" />
-            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
