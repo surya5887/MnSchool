@@ -49,7 +49,7 @@ const Login: React.FC = () => {
       const normalizedEmail = username.toLowerCase().trim();
 
       if (selectedRole === 'Admin') {
-        const adminQ = query(collection(db, 'admins'), where('email', '==', normalizedEmail));
+        const adminQ = query(collection(db, 'staff'), where('email', '==', normalizedEmail));
         const adminSnap = await getDocs(adminQ);
         if (!adminSnap.empty) {
           const adminDoc = adminSnap.docs[0];
