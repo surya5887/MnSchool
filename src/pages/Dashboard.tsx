@@ -38,7 +38,7 @@ const ChartCard = ({ title, icon: Icon, children, delay }: {title: string, icon:
     <h4 style={{ margin: '0 0 24px 0', color: 'var(--text-main)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
       <Icon size={18} color="var(--primary-color)"/> {title}
     </h4>
-    <div style={{ flex: 1, height: '280px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ flex: 1, minHeight: '280px', width: '100%', position: 'relative' }}>
       {children}
     </div>
   </motion.div>
