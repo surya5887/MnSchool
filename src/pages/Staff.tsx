@@ -153,16 +153,15 @@ const Staff: React.FC = () => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      className="page-container"
-      style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}
+      className="page-container" style={{ paddingTop: '16px', maxWidth: '1400px', margin: '0 auto' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 className="page-title">Staff Directory</h1>
           <p className="page-subtitle" style={{ margin: 0 }}>Manage teachers, admins, and all support staff across the school.</p>
         </div>
-        {userRole === 'Admin' && (
-          <div style={{ display: 'flex', gap: '12px' }}>
+        {['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole) && (
+            <div style={{ display: 'flex', gap: '12px' }}>
             {staffToDelete.length > 0 && (
               <button className="btn-secondary" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setIsDeleteModalOpen(true)}>
                 <Trash2 size={18} /> Delete Selected ({staffToDelete.length})
@@ -251,7 +250,7 @@ const Staff: React.FC = () => {
                   position: 'relative'
               }}
             >
-              {userRole === 'Admin' && staff.id && (
+              {['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole) && staff.id && (
                 <div className="checkbox-container" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10 }}>
                   <input 
                     type="checkbox" 
