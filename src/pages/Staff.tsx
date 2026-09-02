@@ -25,7 +25,10 @@ const ROLE_COLORS: Record<string, string> = {
   'Other': 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)' // Gray
 };
 
-const getRoleColor = (role: string) => ROLE_COLORS[role] || ROLE_COLORS['Other'];
+const getRoleColor = (role: string | undefined | null) => {
+  if (!role) return ROLE_COLORS['Other'];
+  return ROLE_COLORS[role] || ROLE_COLORS['Other'];
+};
 
 const Staff: React.FC = () => {
   const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
@@ -55,9 +58,10 @@ const Staff: React.FC = () => {
   const fetchStaff = async () => {
     try {
       const data = await getStaff();
-      setAllStaff(data);
+      setAllStaff(data || []);
     } catch (error) {
       console.error('Error fetching staff', error);
+      setAllStaff([]);
     }
   };
 
@@ -122,12 +126,27 @@ const Staff: React.FC = () => {
   };
 
   const filteredStaff = useMemo(() => {
+    if (!Array.isArray(allStaff)) return [];
+    
     return allStaff.filter(s => {
-      const matchesTab = activeTab === 'All' || s.role === activeTab;
-      const matchesSearch = (s.name && s.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
-                            (s.customId && s.customId.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                            (s.role && s.role.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchesTab && matchesSearch;
+      try {
+        const matchesTab = activeTab === 'All' || s.role === activeTab;
+        const searchStr = (searchQuery || '').toLowerCase();
+        
+        if (!searchStr) return matchesTab;
+        
+        const safeName = s.name ? String(s.name).toLowerCase() : '';
+        const safeId = s.customId ? String(s.customId).toLowerCase() : '';
+        const safeRole = s.role ? String(s.role).toLowerCase() : '';
+        
+        const matchesSearch = safeName.includes(searchStr) || 
+                              safeId.includes(searchStr) ||
+                              safeRole.includes(searchStr);
+                              
+        return matchesTab && matchesSearch;
+      } catch (e) {
+        return false;
+      }
     });
   }, [allStaff, activeTab, searchQuery]);
 
@@ -193,27 +212,27 @@ const Staff: React.FC = () => {
       {/* Staff Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
         <AnimatePresence>
-          {filteredStaff.map((staff, index) => (
+          {filteredStaff.map((staff) => (
             <motion.div
               layout
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              key={staff.id}
+              key={staff.id || Math.random().toString()}
               className="glass-panel"
               style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', position: 'relative', display: 'flex', flexDirection: 'column' }}
               onClick={(e) => {
                 if ((e.target as HTMLElement).closest('.checkbox-container')) return;
-                navigate(`/staff/${staff.id}`);
+                if (staff.id) navigate(`/staff/${staff.id}`);
               }}
             >
-              {userRole === 'Admin' && (
+              {userRole === 'Admin' && staff.id && (
                 <div className="checkbox-container" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10 }}>
                   <input 
                     type="checkbox" 
                     style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--primary-color)' }}
-                    checked={staffToDelete.includes(staff.id!)}
+                    checked={staffToDelete.includes(staff.id)}
                     onChange={(e) => {
                       if (e.target.checked) setStaffToDelete(prev => [...prev, staff.id!]);
                       else setStaffToDelete(prev => prev.filter(id => id !== staff.id));
@@ -237,18 +256,18 @@ const Staff: React.FC = () => {
                   backgroundImage: staff.photoUrl ? `url(${staff.photoUrl})` : 'none',
                   backgroundSize: 'cover', backgroundPosition: 'center'
                 }}>
-                  {!staff.photoUrl && (staff.name ? staff.name.charAt(0).toUpperCase() : '?')}
+                  {!staff.photoUrl && (staff.name ? String(staff.name).charAt(0).toUpperCase() : '?')}
                 </div>
-                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', textAlign: 'center', fontWeight: 700 }}>{staff.name}</h3>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', textAlign: 'center', fontWeight: 700 }}>{staff.name || 'Unknown'}</h3>
                 <p style={{ margin: 0, opacity: 0.9, fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.5px' }}>
-                  {(staff.role || 'UNASSIGNED').toUpperCase()}
+                  {String(staff.role || 'UNASSIGNED').toUpperCase()}
                 </p>
                 <div style={{
                   position: 'absolute', bottom: '-12px', background: staff.status === 'Active' ? '#10b981' : '#ef4444',
                   color: 'white', padding: '4px 16px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '2px solid white'
                 }}>
-                  {staff.status}
+                  {staff.status || 'Active'}
                 </div>
               </div>
 
@@ -406,7 +425,7 @@ const Staff: React.FC = () => {
         </div>
       </Modal>
 
-      {/* Delete Transaction Modal */}
+      {/* Delete Staff Modal */}
       <Modal isOpen={isDeleteModalOpen} onClose={() => { setIsDeleteModalOpen(false); setStaffToDelete([]); setDeleteError(''); }} title="Delete Staff">
         <form onSubmit={handleDelete} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="alert-warning" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem' }}>
