@@ -68,7 +68,8 @@ export const getStaff = async () => {
   try {
     const q = collection(db, STAFF_COLLECTION);
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as StaffData));
+    const allStaff = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as StaffData));
+    return allStaff.filter(s => s.role !== 'Super Admin');
   } catch (error) {
     console.error("Error fetching staff: ", error);
     throw error;

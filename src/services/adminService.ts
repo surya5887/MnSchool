@@ -80,7 +80,7 @@ export const createDefaultAdminIfNeeded = async () => {
 export const getAllAdmins = async () => {
   const q = query(collection(db, 'staff'), where('role', 'in', ['Admin', 'Principal', 'Manager', 'Super Admin']));
   const snap = await getDocs(q);
-  const admins = snap.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+  const admins = snap.docs.map(doc => ({ id: doc.id, ...doc.data() as any })).filter(a => a.role !== 'Super Admin');
   
   const uniqueEmails = new Set();
   const uniqueAdmins = [];
