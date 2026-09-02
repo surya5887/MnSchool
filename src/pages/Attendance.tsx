@@ -48,8 +48,10 @@ const Attendance: React.FC = () => {
         ]);
         setStudents(studentData);
         setClasses(classData);
+      setLoading(false);
       } catch (error) {
         console.error("Error fetching data", error);
+      setLoading(false);
       } finally {
         
       }

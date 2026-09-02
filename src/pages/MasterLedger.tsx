@@ -62,8 +62,10 @@ const MasterLedger: React.FC = () => {
       const data = await getTransactions({ session });
       data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       setTransactions(data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching transactions', error);
+      setLoading(false);
     }
   };
 

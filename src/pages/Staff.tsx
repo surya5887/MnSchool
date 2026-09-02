@@ -64,8 +64,10 @@ const Staff: React.FC = () => {
 
       const data = await getStaff();
       setAllStaff(data || []);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching staff', error);
+      setLoading(false);
       setAllStaff([]);
     }
   };

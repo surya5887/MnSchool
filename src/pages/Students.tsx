@@ -259,11 +259,7 @@ const Students: React.FC = () => {
           )}
 
           <div className="students-grid" style={{ padding: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
-            {loading ? (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                Loading students...
-              </div>
-            ) : filteredStudents.length === 0 ? (
+            {loading ? <Loader message="Loading students..." /> : filteredStudents.length === 0 ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                 No students found matching your criteria.
               </div>
