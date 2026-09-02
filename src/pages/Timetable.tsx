@@ -265,9 +265,7 @@ const Timetable: React.FC = () => {
                <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
             </div>
           </div>
-        )}
-
-      <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
+        )}<div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
           
           {/* Header Row */}
@@ -428,4 +426,5 @@ const Timetable: React.FC = () => {
 };
 
 export default Timetable;
+
 

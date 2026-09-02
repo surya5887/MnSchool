@@ -131,7 +131,7 @@ const Attendance: React.FC = () => {
     return students.filter(s => {
       const matchStatus = s.status === 'Active' || !s.status;
       const matchClass = s.classId === selectedClass;
-      const matchSection = s.sectionId === selectedSection;
+      const matchSection = (!selectedSection || s.sectionId === selectedSection);
       const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
       const matchSearch = fullName.includes(searchQuery.toLowerCase().trim());
       return matchStatus && matchClass && matchSection && matchSearch;
@@ -180,18 +180,27 @@ const Attendance: React.FC = () => {
       
       <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
         <div className="dashboard-grid">
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Select Class</label>
-            <select className="glass-input" style={{ width: '100%' }} value={selectedClass} onChange={handleClassChange} disabled={role === 'Teacher'}>
-               {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Section</label>
-            <select className="glass-input" style={{ width: '100%' }} value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
-               {uniqueClasses.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
+          {role === 'Teacher' ? (
+              <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', padding: '16px 24px', borderRadius: '12px', color: 'white', boxShadow: '0 4px 6px rgba(16,185,129,0.2)' }}>
+                <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Marking Attendance For</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{authUser.assignedClass || 'No Class'} {authUser.assignedSection ? `- Section ${authUser.assignedSection}` : ''}</div>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Select Class</label>
+                  <select className="glass-input" style={{ width: '100%' }} value={selectedClass} onChange={handleClassChange}>
+                     {uniqueClasses.map(c => <option key={c.className} value={c.className}>{c.className}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Section</label>
+                  <select className="glass-input" style={{ width: '100%' }} value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
+                     {uniqueClasses.find(c => c.className === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </>
+            )}
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)', fontWeight: 600 }}>Date</label>
             <input type="date" className="glass-input" style={{ width: '100%' }} value={date} onChange={(e) => setDate(e.target.value)} />
@@ -319,5 +328,6 @@ const Attendance: React.FC = () => {
 };
 
 export default Attendance;
+
 
 

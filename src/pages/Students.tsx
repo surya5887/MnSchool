@@ -131,7 +131,7 @@ const Students: React.FC = () => {
         (student.admissionNo?.toLowerCase().includes(searchLower));
         
       const matchesClass = selectedClass === 'All' || student.classId === selectedClass;
-      const matchesSection = selectedSection === 'All' || student.sectionId === selectedSection;
+      const matchesSection = (selectedSection === 'All' || !selectedSection) || student.sectionId === selectedSection;
       
       return matchesSearch && matchesClass && matchesSection;
     }).sort((a, b) => {
@@ -191,31 +191,38 @@ const Students: React.FC = () => {
             />
           </div>
           
-          <select 
-            className="glass-input" 
-            style={{ width: '200px', margin: 0 }}
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-              disabled={role === 'Teacher'}
-          >
-            <option value="All">All Classes</option>
-            {sortedClasses.map(c => (
-              <option key={c.id} value={c.className}>{c.className}</option>
-            ))}
-          </select>
-
-          <select 
-            className="glass-input" 
-            style={{ width: '150px', margin: 0 }}
-            value={selectedSection}
-            onChange={(e) => setSelectedSection(e.target.value)}
-            disabled={selectedClass === 'All'}
-          >
-            <option value="All">All Sections</option>
-            {availableSections.map(s => (
-              <option key={s} value={s}>Section {s}</option>
-            ))}
-          </select>
+          {role === 'Teacher' ? (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', padding: '10px 20px', borderRadius: '12px', border: '1px solid #a5b4fc', color: '#3730a3', fontWeight: 700, boxShadow: '0 4px 6px rgba(99,102,241,0.1)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>👩‍🏫 My Class: <span style={{ background: '#3730a3', color: 'white', padding: '2px 8px', borderRadius: '6px', fontSize: '0.9rem' }}>{authUser.assignedClass || 'Not Assigned'}</span></span>
+                {authUser.assignedSection && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '12px' }}>Section: <span style={{ background: '#3730a3', color: 'white', padding: '2px 8px', borderRadius: '6px', fontSize: '0.9rem' }}>{authUser.assignedSection}</span></span>}
+              </div>
+            ) : (
+              <>
+                <select 
+                  className="glass-input" 
+                  style={{ width: '200px', margin: 0 }}
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                >
+                  <option value="All">All Classes</option>
+                  {sortedClasses.map(c => (
+                    <option key={c.id} value={c.className}>{c.className}</option>
+                  ))}
+                </select>
+                <select 
+                  className="glass-input" 
+                  style={{ width: '150px', margin: 0 }}
+                  value={selectedSection}
+                  onChange={(e) => setSelectedSection(e.target.value)}
+                  disabled={selectedClass === 'All'}
+                >
+                  <option value="All">All Sections</option>
+                  {availableSections.map(s => (
+                    <option key={s} value={s}>Section {s}</option>
+                  ))}
+                </select>
+              </>
+            )}
         </div>
 
                   {/* Select All Controls for Admin */}
