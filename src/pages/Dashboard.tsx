@@ -36,7 +36,7 @@ const ChartCard = ({ title, icon: Icon, children, delay }: {title: string, icon:
     style={{ background: 'white', padding: '24px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column' }}
   >
     <h4 style={{ margin: '0 0 24px 0', color: 'var(--text-main)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <Icon size={18} color="var(--primary)"/> {title}
+      <Icon size={18} color="var(--primary-color)"/> {title}
     </h4>
     <div style={{ flex: 1, height: '280px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       {children}
@@ -296,7 +296,7 @@ const Dashboard: React.FC = () => {
       {role === 'Teacher' ? (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-panel" style={{ padding: '32px' }}>
           <div style={{ marginBottom: '32px' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-main)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Clock size={20} color="var(--primary)" /> Today's Attendance ({new Date().toLocaleDateString('en-GB')})</h3>
+            <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-main)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Clock size={20} color="var(--primary-color)" /> Today's Attendance ({new Date().toLocaleDateString('en-GB')})</h3>
             <div className="dashboard-grid">
               <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}><div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>My Students</div><div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{myStudentsCount}</div></div>
               <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}><div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div><div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{presentCount}</div></div>
@@ -316,11 +316,11 @@ const Dashboard: React.FC = () => {
               
               {/* --- DEMOGRAPHICS & ATTENDANCE SECTION --- */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <School size={24} color="var(--primary)" />
+                <School size={24} color="var(--primary-color)" />
                 <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Demographics & Attendance</h3>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
                 <ChartCard title="Today's Attendance" icon={UserCheck} delay={0.6}>
                   {analyticsData.attendanceData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
@@ -366,11 +366,11 @@ const Dashboard: React.FC = () => {
               {/* --- FINANCIAL ANALYTICS SECTION --- */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                 <h3 style={{ margin: 0, fontSize: '1.4rem', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-main)' }}>
-                  <BarChart2 size={24} color="var(--primary)" /> Financial Analytics
+                  <BarChart2 size={24} color="var(--primary-color)" /> Financial Analytics
                 </h3>
-                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.7)', padding: '6px', borderRadius: '12px', border: '1px solid var(--glass-border)', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.7)', padding: '8px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 8px 32px rgba(0,0,0,0.05)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', maxWidth: '100%', gap: '4px' }} className="hide-scrollbar">
                   {['7d', '30d', '2m', '3m', '6m', '1y', 'all'].map(r => (
-                    <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '8px 16px', background: timeRange === r ? 'var(--primary)' : 'transparent', color: timeRange === r ? 'white' : 'var(--text-main)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, transition: 'all 0.2s', fontSize: '0.85rem' }}>{r.toUpperCase()}</button>
+                    <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '8px 16px', background: timeRange === r ? 'var(--primary-gradient)' : 'transparent', color: timeRange === r ? 'white' : 'var(--text-muted)', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, transition: 'all 0.3s ease', fontSize: '0.9rem', whiteSpace: 'nowrap', boxShadow: timeRange === r ? '0 4px 12px rgba(99,102,241,0.3)' : 'none' }}>{r.toUpperCase()}</button>
                   ))}
                 </div>
               </div>
@@ -394,7 +394,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
                 <ChartCard title="Income vs Expense Trend" icon={IndianRupee} delay={0.9}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -425,10 +425,10 @@ const Dashboard: React.FC = () => {
               </div>
 
               {/* --- STAFF & ACTIVITIES SECTION --- */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                    <Shield size={24} color="var(--primary)" />
+                    <Shield size={24} color="var(--primary-color)" />
                     <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Staff Distribution</h3>
                   </div>
                   <div style={{ height: '320px', width: '100%', display: 'flex' }}><ChartCard title="Staff by Role" icon={UserCheck} delay={1.1}>
@@ -443,7 +443,7 @@ const Dashboard: React.FC = () => {
                       </ResponsiveContainer>
                     ) : <div style={{ color: 'var(--text-muted)' }}>No data</div>}
                   </ChartCard></div></div><div><div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                    <Clock size={24} color="var(--primary)" />
+                    <Clock size={24} color="var(--primary-color)" />
                     <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Timeline & Recent Activities</h3>
                   </div>
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }} style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid var(--glass-border)', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', height: '360px', overflowY: 'auto' }}>
