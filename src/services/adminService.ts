@@ -21,6 +21,7 @@ export const createDefaultAdminIfNeeded = async () => {
       for (const oldDoc of oldAdminsSnap.docs) {
         const adminData = oldDoc.data();
         // Check if already in staff
+        if (!adminData.email) continue;
         const staffQ = query(collection(db, 'staff'), where('email', '==', adminData.email));
         const staffSnap = await getDocs(staffQ);
         if (staffSnap.empty) {

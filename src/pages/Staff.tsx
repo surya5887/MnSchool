@@ -56,8 +56,9 @@ const Staff: React.FC = () => {
   const [deleteError, setDeleteError] = useState('');
 
   const fetchStaff = async () => {
-      await createDefaultAdminIfNeeded();
     try {
+      try { await createDefaultAdminIfNeeded(); } catch(e) { console.error("Migration error:", e); }
+
       const data = await getStaff();
       setAllStaff(data || []);
     } catch (error) {
