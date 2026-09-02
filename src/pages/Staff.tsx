@@ -130,7 +130,7 @@ const Staff: React.FC = () => {
     
     return allStaff.filter(s => {
       try {
-        const matchesTab = activeTab === 'All' || s.role === activeTab;
+        const matchesTab = activeTab === 'All' || (activeTab === 'Admin' ? ['Admin', 'Principal', 'Manager'].includes(String(s.role)) : s.role === activeTab);
         const searchStr = (searchQuery || '').toLowerCase();
         
         if (!searchStr) return matchesTab;
@@ -160,7 +160,7 @@ const Staff: React.FC = () => {
           <h1 className="page-title">Staff Directory</h1>
           <p className="page-subtitle" style={{ margin: 0 }}>Manage teachers, admins, and all support staff across the school.</p>
         </div>
-        {['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole) && (
+        {(activeTab === 'Admin' ? userRole === 'Super Admin' : ['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole)) && (
             <div style={{ display: 'flex', gap: '12px' }}>
             {staffToDelete.length > 0 && (
               <button className="btn-secondary" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setIsDeleteModalOpen(true)}>
@@ -235,6 +235,15 @@ const Staff: React.FC = () => {
               whileTap={{ scale: 0.98 }}
               onClick={(e) => {
                 if ((e.target as HTMLElement).closest('.checkbox-container')) return;
+                
+                const isAdminCard = ['Admin', 'Principal', 'Manager', 'Super Admin'].includes(String(staff.role));
+                // Only Super Admin can edit other admins. (Users can always edit themselves, which is handled in Profile, but we can allow navigation if it's their own id)
+                // Actually, let's just restrict navigation.
+                if (isAdminCard && userRole !== 'Super Admin' && staff.id !== authUser.id) {
+                    alert("Only Super Admin can view or edit other Administrator profiles.");
+                    return;
+                }
+                
                 if (staff.id) navigate(`/staff/${staff.id}`);
               }}
               style={{ 
@@ -250,7 +259,7 @@ const Staff: React.FC = () => {
                   position: 'relative'
               }}
             >
-              {['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole) && staff.id && (
+              {(['Admin', 'Principal', 'Manager'].includes(String(staff.role)) ? userRole === 'Super Admin' : ['Principal', 'Manager', 'Super Admin', 'Admin'].includes(userRole)) && staff.id && (
                 <div className="checkbox-container" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10 }}>
                   <input 
                     type="checkbox" 
@@ -346,9 +355,21 @@ const Staff: React.FC = () => {
       <Modal isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} title={`Register New ${activeTab}`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '70vh', overflowY: 'auto', paddingRight: '8px' }}>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Full Name</label>
+          
+            {activeTab === 'Admin' && (
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Admin Role Type</label>
+                <select className="glass-input" value={newStaff.role} onChange={e => setNewStaff({...newStaff, role: e.target.value})} required>
+                  <option value="Admin">Admin</option>
+                  <option value="Principal">Principal</option>
+                  <option value="Manager">Manager</option>
+                </select>
+              </div>
+            )}
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Full Name</label>
               <input type="text" className="glass-input" value={newStaff.name} onChange={e => setNewStaff({...newStaff, name: e.target.value})} required />
             </div>
             <div>

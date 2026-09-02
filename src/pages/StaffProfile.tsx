@@ -268,7 +268,18 @@ const StaffProfile: React.FC = () => {
             {isEditing ? (
               <div className="settings-grid" style={{ gap: '16px' }}>
                 <div><label className="form-label">Name</label><input type="text" className="glass-input" value={editData.name || ''} onChange={e => setEditData({...editData, name: e.target.value})} /></div>
-                <div><label className="form-label">Custom ID</label><input type="text" className="glass-input" value={editData.customId || ''} onChange={e => setEditData({...editData, customId: e.target.value})} /></div>
+                
+              {role === 'Super Admin' && ['Admin', 'Principal', 'Manager'].includes(staff.role) && (
+                <div>
+                  <label className="form-label">Admin Role Type</label>
+                  <select className="glass-input" value={editData.role || ''} onChange={e => setEditData({...editData, role: e.target.value})}>
+                    <option value="Admin">Admin</option>
+                    <option value="Principal">Principal</option>
+                    <option value="Manager">Manager</option>
+                  </select>
+                </div>
+              )}
+              <div><label className="form-label">Custom ID</label><input type="text" className="glass-input" value={editData.customId || ''} onChange={e => setEditData({...editData, customId: e.target.value})} /></div>
                 <div><label className="form-label">Phone / Contact</label><input type="text" className="glass-input" value={editData.phone || ''} onChange={e => setEditData({...editData, phone: e.target.value})} /></div>
                 <div><label className="form-label">Email</label><input type="email" className="glass-input" value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} /></div>
                 <div style={{ gridColumn: '1 / -1' }}><label className="form-label">Address</label><textarea className="glass-input" value={editData.address || ''} onChange={e => setEditData({...editData, address: e.target.value})} rows={2} /></div>
