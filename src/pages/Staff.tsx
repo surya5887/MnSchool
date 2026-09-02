@@ -124,7 +124,7 @@ const Staff: React.FC = () => {
   const filteredStaff = useMemo(() => {
     return allStaff.filter(s => {
       const matchesTab = activeTab === 'All' || s.role === activeTab;
-      const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch = (s.name && s.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
                             (s.customId && s.customId.toLowerCase().includes(searchQuery.toLowerCase())) ||
                             (s.role && s.role.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesTab && matchesSearch;
@@ -237,7 +237,7 @@ const Staff: React.FC = () => {
                   backgroundImage: staff.photoUrl ? `url(${staff.photoUrl})` : 'none',
                   backgroundSize: 'cover', backgroundPosition: 'center'
                 }}>
-                  {!staff.photoUrl && staff.name.charAt(0).toUpperCase()}
+                  {!staff.photoUrl && (staff.name ? staff.name.charAt(0).toUpperCase() : '?')}
                 </div>
                 <h3 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', textAlign: 'center', fontWeight: 700 }}>{staff.name}</h3>
                 <p style={{ margin: 0, opacity: 0.9, fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.5px' }}>

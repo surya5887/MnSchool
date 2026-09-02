@@ -240,7 +240,7 @@ const StaffProfile: React.FC = () => {
               {staff.photoUrl ? (
                 <img src={staff.photoUrl} alt={staff.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span style={{ fontSize: '3rem', color: 'var(--primary)', fontWeight: 600 }}>{staff.name.charAt(0).toUpperCase()}</span>
+                <span style={{ fontSize: '3rem', color: 'var(--primary)', fontWeight: 600 }}>{(staff.name ? staff.name.charAt(0).toUpperCase() : '?')}</span>
               )}
             </div>
             <h2 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', color: 'var(--text-color)' }}>{staff.name}</h2>
