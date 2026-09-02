@@ -182,7 +182,7 @@ const Staff: React.FC = () => {
       {/* Tabs and Search */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px', background: 'var(--glass-bg)', padding: '16px', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
         <div className="hide-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', maxWidth: '100%', paddingBottom: '4px' }}>
-          {ROLES.map(r => (
+          {ROLES.filter(r => r.filter !== 'Admin' || userRole === 'Super Admin').map(r => (
             <button 
               key={r.filter} 
               onClick={() => setActiveTab(r.filter)}
