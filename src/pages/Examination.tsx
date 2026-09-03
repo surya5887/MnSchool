@@ -629,27 +629,29 @@ const Examination: React.FC = () => {
               </select>
             </div>
           )}
-          <div style={{ flex: 1, minWidth: '250px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Search Student</label>
-            <div style={{ position: 'relative' }}>
-              <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input 
-                type="text" 
-                placeholder="Search by name..." 
-                className="glass-input" 
-                style={{ paddingLeft: '40px', width: '100%', margin: 0 }}
-                value={studentSearch}
-                onChange={e => setStudentSearch(e.target.value)}
-              />
+          {(activeTab === 'marks' || activeTab === 'reports' || activeTab === 'certificates') && (
+            <div style={{ flex: 1, minWidth: '250px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Search Student</label>
+              <div style={{ position: 'relative' }}>
+                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input 
+                  type="text" 
+                  placeholder="Search by name or Admission No..." 
+                  className="glass-input" 
+                  style={{ paddingLeft: '40px', width: '100%', margin: 0 }}
+                  value={studentSearch}
+                  onChange={e => setStudentSearch(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-      {(!classFilter && !studentSearch.trim()) ? (
+      {(!classFilter && ((activeTab === 'schedules' || activeTab === 'papers') || !studentSearch.trim())) ? (
         <div className="glass-panel" style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-          <h3>No Class or Student Selected</h3>
-          <p>Please select a Class or search for a student to continue.</p>
+          <h3>{(activeTab === 'schedules' || activeTab === 'papers') ? 'No Class Selected' : 'No Class or Student Selected'}</h3>
+          <p>Please select a Class {(activeTab === 'schedules' || activeTab === 'papers') ? '' : 'or search for a student '}to continue.</p>
         </div>
       ) : (
         <>
