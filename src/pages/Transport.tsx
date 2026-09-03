@@ -21,6 +21,7 @@ const Transport: React.FC = () => {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [viewStudentsForRoute, setViewStudentsForRoute] = useState<string | null>(null);
+  const [routeStudentSearch, setRouteStudentSearch] = useState('');
 
   // Form States
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -294,7 +295,7 @@ const Transport: React.FC = () => {
 
                 {/* Card Footer (Actions) */}
                 <div style={{ padding: '16px 20px', background: 'rgba(0,0,0,0.02)', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <button onClick={() => setViewStudentsForRoute(vehicle.route)} style={{ background: 'none', border: 'none', color: '#3b82f6', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <button onClick={() => { setViewStudentsForRoute(vehicle.route); setRouteStudentSearch(''); }} style={{ background: 'none', border: 'none', color: '#3b82f6', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Users size={16} /> View Students
                   </button>
                   <div style={{ display: 'flex', gap: '8px' }}>

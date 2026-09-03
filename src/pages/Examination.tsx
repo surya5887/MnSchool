@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline } from 'lucide-react';
+import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { saveExamMark, getAllExamMarksForTerm, type ExamMarkData, saveExamSchedule, getExamSchedulesByClass, saveQuestionPaper, getQuestionPapersByClass, type ExamScheduleData, type QuestionPaperData } from '../services/examService';
@@ -28,6 +28,7 @@ const Examination: React.FC = () => {
   const [activeSections, setActiveSections] = useState<string[]>([]);
   const [activeSubjects, setActiveSubjects] = useState<string[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<StudentData[]>([]);
+  const [studentSearch, setStudentSearch] = useState('');
   
   // Navigation State
   const [view, setView] = useState<'main' | 'marks_config' | 'report_config' | 'bulk_report_config' | 'tc_config' | 'cc_config' | 'bc_config' | 'schedule_config' | 'paper_config'>('main');
