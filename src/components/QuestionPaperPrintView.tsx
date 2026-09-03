@@ -87,36 +87,52 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
 
         {/* Sections and Questions */}
         <div style={{ marginTop: '30px' }}>
-          {paperData.sections.map((section, sIdx) => (
-            <div key={sIdx} style={{ marginBottom: '30px' }}>
-              {section.sectionTitle && (
-                <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '16px', margin: '20px 0', textDecoration: 'underline' }}>
-                  {section.sectionTitle}
-                </div>
-              )}
-              
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                  {section.questions.map((q, qIdx) => (
-                    <tr key={qIdx}>
-                      <td style={{ verticalAlign: 'top', width: '40px', padding: '8px 0', fontWeight: 'bold' }}>Q{qIdx + 1}.</td>
-                      <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
-                        <div>{q.text}</div>
-                        {q.type === 'objective' && q.options && (
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
-                            {q.options.map((opt, optIdx) => (
-                              <div key={optIdx}>({['a', 'b', 'c', 'd'][optIdx]}) {opt}</div>
-                            ))}
-                          </div>
-                        )}
-                      </td>
-                      <td style={{ verticalAlign: 'top', width: '50px', padding: '8px 0', textAlign: 'right', fontWeight: 'bold' }}>[{q.marks}]</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
+          {paperData.sections.map((section, sIdx) => {
+            let qCounter = 1;
+            return (
+              <div key={sIdx} style={{ marginBottom: '30px' }}>
+                {section.sectionTitle && (
+                  <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '16px', margin: '20px 0', textDecoration: 'underline' }}>
+                    {section.sectionTitle}
+                  </div>
+                )}
+                
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <tbody>
+                    {section.questions.map((q, qIdx) => {
+                      if (q.type === 'instruction') {
+                        return (
+                          <tr key={qIdx}>
+                            <td colSpan={3} style={{ padding: '12px 0', fontWeight: 'bold' }}>
+                              <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
+                            </td>
+                          </tr>
+                        );
+                      }
+                      
+                      const currentQNum = qCounter++;
+                      return (
+                        <tr key={qIdx}>
+                          <td style={{ verticalAlign: 'top', width: '40px', padding: '8px 0', fontWeight: 'bold' }}>Q{currentQNum}.</td>
+                          <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
+                            <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
+                            {q.type === 'objective' && q.options && (
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+                                {q.options.map((opt, optIdx) => (
+                                  <div key={optIdx}>({['a', 'b', 'c', 'd'][optIdx]}) {opt}</div>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ verticalAlign: 'top', width: '50px', padding: '8px 0', textAlign: 'right', fontWeight: 'bold' }}>[{q.marks}]</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
         </div>
         
         {/* Footer line */}

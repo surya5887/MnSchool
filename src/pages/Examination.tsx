@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2 } from 'lucide-react';
+import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { saveExamMark, getAllExamMarksForTerm, type ExamMarkData, saveExamSchedule, getExamSchedulesByClass, saveQuestionPaper, getQuestionPapersByClass, type ExamScheduleData, type QuestionPaperData } from '../services/examService';
@@ -45,6 +45,29 @@ const Examination: React.FC = () => {
   // Advanced States
   const [scheduleData, setScheduleData] = useState<ExamScheduleData | null>(null);
   const [paperData, setPaperData] = useState<QuestionPaperData | null>(null);
+
+  
+  const applyFormat = (sIdx: number, qIdx: number, tag: string) => {
+    if (!paperData) return;
+    const textarea = document.getElementById(`q-textarea-${sIdx}-${qIdx}`) as HTMLTextAreaElement;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentText = paperData.sections[sIdx].questions[qIdx].text;
+    
+    const selectedText = currentText.substring(start, end);
+    const newText = currentText.substring(0, start) + `<${tag}>${selectedText}</${tag}>` + currentText.substring(end);
+    
+    const newSecs = [...paperData.sections];
+    newSecs[sIdx].questions[qIdx].text = newText;
+    setPaperData({...paperData, sections: newSecs});
+    
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + tag.length + 2, end + tag.length + 2);
+    }, 0);
+  };
 
   const maxTheory = Math.round(maxMarks * 0.8);
   const maxPractical = Math.round(maxMarks * 0.2);
@@ -489,14 +512,23 @@ const Examination: React.FC = () => {
                 </div>
 
                 {section.questions.map((q, qIdx) => (
-                  <div key={qIdx} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', paddingLeft: '24px', borderLeft: '3px solid var(--primary-color)', paddingBottom: '12px' }}>
+                  <div key={qIdx} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px', paddingLeft: '24px', borderLeft: '3px solid var(--primary-color)', paddingBottom: '12px' }}>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                      <span style={{ paddingTop: '8px', fontWeight: 'bold' }}>Q{qIdx+1}.</span>
-                      <textarea className="glass-input" rows={2} style={{ flex: 1, resize: 'vertical' }} value={q.text} onChange={e => {
-                        const newSecs = [...paperData.sections];
-                        newSecs[sIdx].questions[qIdx].text = e.target.value;
-                        setPaperData({...paperData, sections: newSecs});
-                      }} placeholder="Type question here..." />
+                      <span style={{ paddingTop: '8px', fontWeight: 'bold' }}>{q.type === 'instruction' ? 'Info:' : `Q${qIdx+1}.`}</span>
+                      
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-color)', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => applyFormat(sIdx, qIdx, 'b')} title="Bold"><Bold size={14} /></button>
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => applyFormat(sIdx, qIdx, 'i')} title="Italic"><Italic size={14} /></button>
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => applyFormat(sIdx, qIdx, 'u')} title="Underline"><Underline size={14} /></button>
+                        </div>
+                        <textarea id={`q-textarea-${sIdx}-${qIdx}`} className="glass-input" rows={q.type === 'instruction' ? 1 : 2} style={{ resize: 'vertical', width: '100%', fontFamily: 'monospace' }} value={q.text} onChange={e => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[sIdx].questions[qIdx].text = e.target.value;
+                          setPaperData({...paperData, sections: newSecs});
+                        }} placeholder={q.type === 'instruction' ? "Type instruction here (e.g. Attempt any 5 questions)" : "Type question here..."} />
+                      </div>
+
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <select className="glass-input" value={q.type || 'subjective'} onChange={e => {
                           const newSecs = [...paperData.sections];
@@ -508,13 +540,19 @@ const Examination: React.FC = () => {
                         }}>
                           <option value="subjective">Subjective</option>
                           <option value="objective">Objective (MCQ)</option>
+                          <option value="instruction">Instruction Text</option>
                         </select>
-                        <input type="number" className="glass-input" style={{ width: '70px' }} value={q.marks} onChange={e => {
-                          const newSecs = [...paperData.sections];
-                          newSecs[sIdx].questions[qIdx].marks = Number(e.target.value);
-                          setPaperData({...paperData, sections: newSecs});
-                        }} />
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>marks</span>
+                        
+                        {q.type !== 'instruction' && (
+                          <>
+                            <input type="number" className="glass-input" style={{ width: '70px' }} value={q.marks} onChange={e => {
+                              const newSecs = [...paperData.sections];
+                              newSecs[sIdx].questions[qIdx].marks = Number(e.target.value);
+                              setPaperData({...paperData, sections: newSecs});
+                            }} />
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>marks</span>
+                          </>
+                        )}
                         <button className="btn-secondary" style={{ padding: '6px', color: 'var(--danger)' }} onClick={() => {
                           const newSecs = [...paperData.sections];
                           newSecs[sIdx].questions.splice(qIdx, 1);

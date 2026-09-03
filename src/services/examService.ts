@@ -102,7 +102,7 @@ export interface QuestionPaperData {
     questions: {
       text: string;
       marks: number;
-      type?: 'subjective' | 'objective';
+      type?: 'subjective' | 'objective' | 'instruction';
       options?: string[];
     }[];
   }[];
