@@ -29,9 +29,8 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
     }
   };
 
-  const execCommand = (e: React.MouseEvent | React.PointerEvent, cmd: string) => {
-    e.preventDefault(); // Prevent losing focus from the contenteditable
-    document.execCommand(cmd, false, undefined);
+  const execCommand = (cmd: string) => {
+        document.execCommand(cmd, false, undefined);
     if (editorRef.current) {
       const html = editorRef.current.innerHTML;
       lastHtml.current = html;
@@ -72,21 +71,21 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
       <div style={{ display: 'flex', gap: '4px', padding: '6px 8px', borderBottom: '1px solid rgba(0,0,0,0.1)', background: '#f9fafb' }}>
         <button 
           type="button"
-          onPointerDown={e => execCommand(e, 'bold')}
+          onMouseDown={e => { e.preventDefault(); execCommand('bold'); }}
           style={btnStyle}
           className="rich-btn"
           title="Bold"
         ><Bold size={16} /></button>
         <button 
           type="button"
-          onPointerDown={e => execCommand(e, 'italic')}
+          onMouseDown={e => { e.preventDefault(); execCommand('italic'); }}
           style={btnStyle}
           className="rich-btn"
           title="Italic"
         ><Italic size={16} /></button>
         <button 
           type="button"
-          onPointerDown={e => execCommand(e, 'underline')}
+          onMouseDown={e => { e.preventDefault(); execCommand('underline'); }}
           style={btnStyle}
           className="rich-btn"
           title="Underline"
