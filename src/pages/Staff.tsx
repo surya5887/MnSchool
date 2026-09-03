@@ -1,3 +1,4 @@
+import { verifyAdminPassword } from '../services/authService';
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Briefcase, Trash2, Mail, Phone, Search, Users, Shield, GraduationCap, Truck, Settings, Coffee, BookOpen, Clock } from 'lucide-react';
@@ -114,7 +115,8 @@ const Staff: React.FC = () => {
 
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deletePassword !== 'admin@8393') {
+    const isValid = await verifyAdminPassword(deletePassword);
+      if (!isValid) {
       setDeleteError('Invalid admin password');
       return;
     }

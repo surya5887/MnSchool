@@ -1,3 +1,4 @@
+import { verifyAdminPassword } from '../services/authService';
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -81,7 +82,8 @@ const Students: React.FC = () => {
 
   const handleSecureDelete = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deletePassword !== 'admin123') {
+    const isValid = await verifyAdminPassword(deletePassword);
+      if (!isValid) {
       setDeleteError('Incorrect admin password.');
       return;
     }

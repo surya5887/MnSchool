@@ -1,3 +1,4 @@
+import { verifyAdminPassword } from '../services/authService';
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bus, MapPin, Users, Plus, AlertCircle, Trash2, Edit, Save, X, Phone, CheckCircle2, TrendingDown, IndianRupee, FileText, UserCircle2 } from 'lucide-react';
@@ -38,7 +39,8 @@ const Transport: React.FC = () => {
 
   const handleDeleteTxn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminPassword !== 'admin@8393') {
+    const isValid = await verifyAdminPassword(adminPassword);
+      if (!isValid) {
       setPasswordError('Incorrect admin password.');
       return;
     }
@@ -58,7 +60,8 @@ const Transport: React.FC = () => {
 
   const handleEditTxn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminPassword !== 'admin@8393') {
+    const isValid = await verifyAdminPassword(adminPassword);
+      if (!isValid) {
       setPasswordError('Incorrect admin password.');
       return;
     }

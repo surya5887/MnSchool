@@ -1,3 +1,4 @@
+import { verifyAdminPassword } from '../services/authService';
 import React, { useState, useEffect } from 'react';
 import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
@@ -96,7 +97,8 @@ const MasterLedger: React.FC = () => {
 
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deletePassword !== 'admin123') {
+    const isValid = await verifyAdminPassword(deletePassword);
+      if (!isValid) {
       setDeleteError('Incorrect admin password.');
       return;
     }

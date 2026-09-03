@@ -1,3 +1,4 @@
+import { verifyAdminPassword } from '../services/authService';
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -221,7 +222,8 @@ const StudentProfile: React.FC = () => {
 
   const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deleteTxnPassword !== 'admin@8393') {
+    const isValid = await verifyAdminPassword(deleteTxnPassword);
+      if (!isValid) {
       setDeleteTxnError('Incorrect admin password.');
       return;
     }

@@ -1,3 +1,4 @@
+import { verifyAdminPassword } from '../services/authService';
 import React, { useEffect, useState, useRef } from 'react';
 import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -250,7 +251,8 @@ const StudentProfile: React.FC = () => {
   
   const handleEditTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editTxnPassword !== 'admin@8393') {
+    const isValid = await verifyAdminPassword(editTxnPassword);
+      if (!isValid) {
       setEditTxnError('Incorrect admin password.');
       return;
     }
@@ -276,7 +278,8 @@ const StudentProfile: React.FC = () => {
 
 const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deleteTxnPassword !== 'admin@8393') {
+    const isValid = await verifyAdminPassword(deleteTxnPassword);
+      if (!isValid) {
       setDeleteTxnError('Incorrect admin password.');
       return;
     }
