@@ -592,8 +592,8 @@ const NewAdmission: React.FC = () => {
                     <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleInputChange} className="glass-input" required placeholder="e.g. Rahul" />
                   </div>
                   <div>
-                    <label>Last Name *</label>
-                    <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleInputChange} className="glass-input" required placeholder="e.g. Kumar" />
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleInputChange} className="glass-input" placeholder="e.g. Kumar" />
                   </div>
                 </div>
                 <div className="form-grid">
