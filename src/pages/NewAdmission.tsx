@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserPlus, Upload, Save, FileText, Camera, Check, Plus, Trash2, X } from 'lucide-react';
+import { UserPlus, Upload, Save, FileText, Camera, Check, Plus, Trash2, X, Info } from 'lucide-react';
 import { addStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData, getSequenceIndex } from '../services/classService';
 import { getVehicles } from '../services/transportService';
@@ -836,13 +836,32 @@ const NewAdmission: React.FC = () => {
             </div>
             
             {/* Submit Bar */}
-            <div className="glass-panel" style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px', position: 'sticky', bottom: '24px', zIndex: 100, borderTop: '1px solid var(--glass-border)' }}>
-               <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="btn-secondary" style={{ padding: '12px 24px', fontSize: '1.1rem', borderRadius: '12px' }}>
-                 Reset Form
-               </button>
-               <button type="submit" disabled={loading} className="btn-primary hover-scale" style={{ padding: '12px 32px', fontSize: '1.1rem', fontWeight: 700, borderRadius: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 15px rgba(16,185,129,0.2)' }}>
-                 {loading ? 'Saving Records...' : <><Save size={20} /> Enroll Student</>}
-               </button>
+            <div className="glass-panel" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', position: 'sticky', bottom: '24px', zIndex: 100, borderTop: '1px solid var(--glass-border)', flexWrap: 'wrap' }}>
+               
+               {/* Attractive Notice */}
+               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%)', padding: '16px 20px', borderRadius: '16px', border: '1px solid rgba(99, 102, 241, 0.2)', flex: '1 1 300px', minWidth: '300px', boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.1)' }}>
+                 <div style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)' }}>
+                   <Info size={24} />
+                 </div>
+                 <div>
+                   <h4 style={{ margin: '0 0 4px 0', color: '#4f46e5', fontSize: '1.05rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                     Login Instructions <span style={{ background: '#fef08a', color: '#854d0e', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', textTransform: 'uppercase', fontWeight: 800 }}>Important</span>
+                   </h4>
+                   <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: '1.4' }}>
+                     Please provide a valid <strong>Email ID</strong> for the student to enable portal login. 
+                     The default password will automatically be set to their <strong>Date of Birth (DD-MM-YYYY)</strong>.
+                   </p>
+                 </div>
+               </div>
+
+               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                 <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="btn-secondary hover-scale" style={{ padding: '12px 24px', fontSize: '1.1rem', borderRadius: '12px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.05)' }}>
+                   Reset Form
+                 </button>
+                 <button type="submit" disabled={loading} className="btn-primary hover-scale" style={{ padding: '12px 32px', fontSize: '1.1rem', fontWeight: 700, borderRadius: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 15px rgba(16,185,129,0.2)' }}>
+                   {loading ? 'Saving Records...' : <><Save size={20} /> Enroll Student</>}
+                 </button>
+               </div>
             </div>
           </div>
         </div>
