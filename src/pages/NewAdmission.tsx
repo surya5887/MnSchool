@@ -835,33 +835,35 @@ const NewAdmission: React.FC = () => {
               </div>
             </div>
             
-            {/* Submit Bar */}
-            <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', position: 'sticky', bottom: 0, zIndex: 100, background: '#ffffff', borderTop: '1px solid #e5e7eb', boxShadow: '0 -4px 10px rgba(0,0,0,0.05)', flexWrap: 'wrap' }}>
-               
-               {/* Attractive Notice */}
-               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%)', padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.2)', flex: '1 1 300px', minWidth: '300px' }}>
-                 <div style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                   <Info size={20} />
-                 </div>
-                 <div>
-                   <h4 style={{ margin: '0 0 4px 0', color: '#4f46e5', fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                     Login Instructions <span style={{ background: '#fef08a', color: '#854d0e', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '10px', textTransform: 'uppercase', fontWeight: 800 }}>Important</span>
-                   </h4>
-                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#4b5563', lineHeight: '1.4' }}>
-                     <strong>Email ID</strong> is mandatory for student login. 
-                     Default password is <strong>First Name + Birth Year (e.g. RAHUL2015)</strong> in capital letters.
-                   </p>
-                 </div>
-               </div>
+            {/* Submit Bar Dock */}
+            <div style={{ position: 'sticky', bottom: '24px', zIndex: 100, display: 'flex', justifyContent: 'center', width: '100%', marginTop: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px', background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', padding: '16px 24px', borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.6)', boxShadow: '0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)', width: '100%', flexWrap: 'wrap' }}>
+                
+                {/* Attractive Notice */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 350px' }}>
+                  <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: 'white', padding: '12px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(99, 102, 241, 0.25)' }}>
+                    <Info size={24} />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 6px 0', color: '#1e293b', fontSize: '1.05rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+                      Login Information <span style={{ background: '#fef2f2', color: '#ef4444', fontSize: '0.65rem', padding: '4px 10px', borderRadius: '12px', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px', border: '1px solid #fee2e2' }}>Required</span>
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#64748b', lineHeight: '1.4', fontWeight: 500 }}>
+                      <strong>Email ID</strong> is mandatory for student portal access. <br/>Default password is <strong>First Name + Birth Year</strong> (e.g. RAHUL2015).
+                    </p>
+                  </div>
+                </div>
 
-               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                 <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="btn-secondary hover-scale" style={{ padding: '10px 20px', fontSize: '1rem', borderRadius: '10px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.05)' }}>
-                   Reset Form
-                 </button>
-                 <button type="submit" disabled={loading} className="btn-primary hover-scale" style={{ padding: '10px 28px', fontSize: '1rem', fontWeight: 700, borderRadius: '10px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 10px rgba(16,185,129,0.2)' }}>
-                   {loading ? 'Saving...' : <><Save size={18} /> Enroll Student</>}
-                 </button>
-               </div>
+                {/* Buttons */}
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="hover-scale" style={{ padding: '14px 28px', fontSize: '1rem', fontWeight: 700, borderRadius: '16px', color: '#ef4444', background: '#fff', border: '2px solid #fee2e2', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }} onMouseOver={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#fee2e2'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                    Reset Form
+                  </button>
+                  <button type="submit" disabled={loading} className="hover-scale" style={{ padding: '14px 36px', fontSize: '1.05rem', fontWeight: 700, borderRadius: '16px', color: 'white', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16,185,129,0.35)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                    {loading ? 'Saving...' : <><Save size={20} /> Enroll Student</>}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
