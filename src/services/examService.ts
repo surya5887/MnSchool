@@ -91,6 +91,7 @@ export interface ExamScheduleData {
 export interface QuestionPaperData {
   id?: string;
   classId: string;
+  sectionId?: string;
   subject: string;
   examTerm: string;
   timeAllowed: string;
@@ -101,6 +102,8 @@ export interface QuestionPaperData {
     questions: {
       text: string;
       marks: number;
+      type?: 'subjective' | 'objective';
+      options?: string[];
     }[];
   }[];
   createdAt: string;
@@ -145,6 +148,7 @@ export const saveQuestionPaper = async (data: QuestionPaperData) => {
     const q = query(
       collection(db, QUESTION_PAPER_COLLECTION),
       where("classId", "==", data.classId),
+      where("sectionId", "==", data.sectionId || ''),
       where("subject", "==", data.subject),
       where("examTerm", "==", data.examTerm)
     );

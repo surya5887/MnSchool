@@ -49,7 +49,23 @@ export const getClasses = async (): Promise<ClassData[]> => {
       q = query(collection(db, CLASSES_COLLECTION), where("session", "==", activeSession));
     }
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ClassData));
+    let classes = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ClassData));
+      
+      // Smart sort
+      classes.sort((a, b) => {
+        const getRank = (name: string) => {
+          name = name.toUpperCase();
+          if (name.includes('PLAY')) return -4;
+          if (name.includes('NURSERY')) return -3;
+          if (name.includes('L.K.G')) return -2;
+          if (name.includes('U.K.G')) return -1;
+          const match = name.match(/\d+/);
+          if (match) return parseInt(match[0], 10);
+          return 999;
+        };
+        return getRank(a.className) - getRank(b.className);
+      });
+      return classes;
   } catch (error) {
     console.error("Error fetching classes: ", error);
     throw error;

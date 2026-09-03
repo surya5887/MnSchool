@@ -430,7 +430,7 @@ const Examination: React.FC = () => {
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
           <button className="btn-secondary" style={{ padding: '8px 12px' }} onClick={() => setView('main')}><ArrowLeft size={20} /> Back</button>
-          <div><h2 style={{ margin: 0 }}>Question Paper Generator</h2><p style={{ margin: 0, color: 'var(--text-muted)' }}>Class: {classFilter}</p></div>
+          <div><h2 style={{ margin: 0 }}>Question Paper Generator</h2><p style={{ margin: 0, color: 'var(--text-muted)' }}>Class: {classFilter} {sectionFilter}</p></div>
         </div>
         
         <div className="glass-panel" style={{ padding: '24px' }}>
@@ -489,26 +489,55 @@ const Examination: React.FC = () => {
                 </div>
 
                 {section.questions.map((q, qIdx) => (
-                  <div key={qIdx} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '12px', paddingLeft: '24px' }}>
-                    <span style={{ paddingTop: '8px', fontWeight: 'bold' }}>Q{qIdx+1}.</span>
-                    <textarea className="glass-input" rows={2} style={{ flex: 1, resize: 'vertical' }} value={q.text} onChange={e => {
-                      const newSecs = [...paperData.sections];
-                      newSecs[sIdx].questions[qIdx].text = e.target.value;
-                      setPaperData({...paperData, sections: newSecs});
-                    }} placeholder="Type question here..." />
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <input type="number" className="glass-input" style={{ width: '70px' }} value={q.marks} onChange={e => {
+                  <div key={qIdx} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', paddingLeft: '24px', borderLeft: '3px solid var(--primary-color)', paddingBottom: '12px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                      <span style={{ paddingTop: '8px', fontWeight: 'bold' }}>Q{qIdx+1}.</span>
+                      <textarea className="glass-input" rows={2} style={{ flex: 1, resize: 'vertical' }} value={q.text} onChange={e => {
                         const newSecs = [...paperData.sections];
-                        newSecs[sIdx].questions[qIdx].marks = Number(e.target.value);
+                        newSecs[sIdx].questions[qIdx].text = e.target.value;
                         setPaperData({...paperData, sections: newSecs});
-                      }} />
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>marks</span>
-                      <button className="btn-secondary" style={{ padding: '6px', color: 'var(--danger)' }} onClick={() => {
-                        const newSecs = [...paperData.sections];
-                        newSecs[sIdx].questions.splice(qIdx, 1);
-                        setPaperData({...paperData, sections: newSecs});
-                      }}><Trash2 size={14} /></button>
+                      }} placeholder="Type question here..." />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <select className="glass-input" value={q.type || 'subjective'} onChange={e => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[sIdx].questions[qIdx].type = e.target.value as any;
+                          if (e.target.value === 'objective' && !newSecs[sIdx].questions[qIdx].options) {
+                            newSecs[sIdx].questions[qIdx].options = ['', '', '', ''];
+                          }
+                          setPaperData({...paperData, sections: newSecs});
+                        }}>
+                          <option value="subjective">Subjective</option>
+                          <option value="objective">Objective (MCQ)</option>
+                        </select>
+                        <input type="number" className="glass-input" style={{ width: '70px' }} value={q.marks} onChange={e => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[sIdx].questions[qIdx].marks = Number(e.target.value);
+                          setPaperData({...paperData, sections: newSecs});
+                        }} />
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>marks</span>
+                        <button className="btn-secondary" style={{ padding: '6px', color: 'var(--danger)' }} onClick={() => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[sIdx].questions.splice(qIdx, 1);
+                          setPaperData({...paperData, sections: newSecs});
+                        }}><Trash2 size={14} /></button>
+                      </div>
                     </div>
+                    {q.type === 'objective' && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingLeft: '32px' }}>
+                        {['A', 'B', 'C', 'D'].map((optLabel, optIdx) => (
+                          <div key={optIdx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontWeight: 'bold' }}>{optLabel}.</span>
+                            <input type="text" className="glass-input" style={{ flex: 1, padding: '6px 12px' }} value={q.options?.[optIdx] || ''} onChange={e => {
+                              const newSecs = [...paperData.sections];
+                              const opts = newSecs[sIdx].questions[qIdx].options || ['', '', '', ''];
+                              opts[optIdx] = e.target.value;
+                              newSecs[sIdx].questions[qIdx].options = opts;
+                              setPaperData({...paperData, sections: newSecs});
+                            }} placeholder={`Option ${optLabel}`} />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
                 
@@ -564,7 +593,7 @@ const Examination: React.FC = () => {
             {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
           </select>
         </div>
-        {(activeTab === 'marks' || activeTab === 'reports' || activeTab === 'certificates') && (
+        {true && (
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section</label>
             <select className="glass-input" value={sectionFilter} onChange={e => setSectionFilter(e.target.value)} disabled={!classFilter}>
@@ -613,10 +642,11 @@ const Examination: React.FC = () => {
               <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Design premium CBSE-style question papers dynamically.</p>
               <button className="btn-primary" onClick={async () => {
                 const existing = await getQuestionPapersByClass(classFilter);
-                if(existing.length > 0) {
-                   setPaperData(existing[0]); // Load first one for now, ideally user selects from a list
+                const sectionPapers = existing.filter(p => (p.sectionId || '') === sectionFilter);
+                if(sectionPapers.length > 0) {
+                   setPaperData(sectionPapers[0]); // Load first one for now, ideally user selects from a list
                 } else {
-                   setPaperData({ classId: classFilter, subject: activeSubjects[0] || 'English', examTerm: examType, timeAllowed: '3 Hours', maxMarks: 100, generalInstructions: ['All questions are compulsory.', 'Read the questions carefully before answering.'], sections: [{ sectionTitle: 'SECTION A', questions: [{ text: 'Sample Question', marks: 5 }] }], createdAt: new Date().toISOString() });
+                   setPaperData({ classId: classFilter, sectionId: sectionFilter, subject: activeSubjects[0] || 'English', examTerm: examType, timeAllowed: '3 Hours', maxMarks: 100, generalInstructions: ['All questions are compulsory.', 'Read the questions carefully before answering.'], sections: [{ sectionTitle: 'SECTION A', questions: [{ text: 'Sample Question', marks: 5 }] }], createdAt: new Date().toISOString() });
                 }
                 setView('paper_config');
               }}>

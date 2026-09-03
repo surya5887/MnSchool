@@ -61,7 +61,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         <table className="header-table">
           <tbody>
             <tr>
-              <td style={{ textAlign: 'left', width: '33%' }}>Class: {paperData.classId}</td>
+              <td style={{ textAlign: 'left', width: '33%' }}>Class: {paperData.classId} {paperData.sectionId || ''}</td>
               <td style={{ textAlign: 'center', width: '33%', fontSize: '18px', textDecoration: 'underline' }}>{paperData.subject}</td>
               <td style={{ textAlign: 'right', width: '33%' }}>Max Marks: {paperData.maxMarks}</td>
             </tr>
@@ -100,7 +100,16 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                   {section.questions.map((q, qIdx) => (
                     <tr key={qIdx}>
                       <td style={{ verticalAlign: 'top', width: '40px', padding: '8px 0', fontWeight: 'bold' }}>Q{qIdx + 1}.</td>
-                      <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>{q.text}</td>
+                      <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
+                        <div>{q.text}</div>
+                        {q.type === 'objective' && q.options && (
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+                            {q.options.map((opt, optIdx) => (
+                              <div key={optIdx}>({['a', 'b', 'c', 'd'][optIdx]}) {opt}</div>
+                            ))}
+                          </div>
+                        )}
+                      </td>
                       <td style={{ verticalAlign: 'top', width: '50px', padding: '8px 0', textAlign: 'right', fontWeight: 'bold' }}>[{q.marks}]</td>
                     </tr>
                   ))}
