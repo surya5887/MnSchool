@@ -601,30 +601,44 @@ const Examination: React.FC = () => {
         <button className={activeTab === 'certificates' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('certificates')}><ShieldAlert size={18} style={{whiteSpace:'nowrap'}}/> Certificates</button>
       </div>
 
-      <div className="glass-panel" style={{ padding: '20px', marginBottom: '32px', display: 'flex', gap: '24px' }}>
-        <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Class</label>
-          <select className="glass-input" value={classFilter} onChange={handleClassChange}>
-            <option value="">Select Class</option>
-            {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
-          </select>
-        </div>
-        {true && (
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section</label>
-            <select className="glass-input" value={sectionFilter} onChange={e => setSectionFilter(e.target.value)} disabled={!classFilter}>
-              <option value="">All Sections</option>
-              {activeSections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
+        <div className="glass-panel" style={{ padding: '20px', marginBottom: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Class</label>
+            <select className="glass-input" value={classFilter} onChange={handleClassChange}>
+              <option value="">Select Class</option>
+              {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
             </select>
           </div>
-        )}
-      </div>
+          {true && (
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Section</label>
+              <select className="glass-input" value={sectionFilter} onChange={e => setSectionFilter(e.target.value)} disabled={!classFilter}>
+                <option value="">All Sections</option>
+                {activeSections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
+              </select>
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: '250px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Search Student</label>
+            <div style={{ position: 'relative' }}>
+              <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                type="text" 
+                placeholder="Search by name..." 
+                className="glass-input" 
+                style={{ paddingLeft: '40px', width: '100%', margin: 0 }}
+                value={studentSearch}
+                onChange={e => setStudentSearch(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
 
-      {!classFilter ? (
+      {(!classFilter && !studentSearch.trim()) ? (
         <div className="glass-panel" style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-          <h3>No Class Selected</h3>
-          <p>Please select a Class from the dropdown above to continue.</p>
+          <h3>No Class or Student Selected</h3>
+          <p>Please select a Class or search for a student to continue.</p>
         </div>
       ) : (
         <>
