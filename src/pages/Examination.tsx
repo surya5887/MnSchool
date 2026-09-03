@@ -83,16 +83,27 @@ const Examination: React.FC = () => {
   }, [classFilter, classes]);
 
   useEffect(() => {
-    if (!classFilter) {
+    if (!classFilter && !studentSearch.trim()) {
       setFilteredStudents([]); 
       return;
     }
-    let filtered = students.filter(s => s.classId === classFilter);
+    let filtered = students;
+    if (classFilter) {
+      filtered = filtered.filter(s => s.classId === classFilter);
+    }
     if (sectionFilter) {
       filtered = filtered.filter(s => s.sectionId === sectionFilter);
     }
+    if (studentSearch.trim()) {
+      const term = studentSearch.toLowerCase();
+      filtered = filtered.filter(s => 
+        (s.firstName && s.firstName.toLowerCase().includes(term)) || 
+        (s.lastName && s.lastName.toLowerCase().includes(term)) ||
+        (s.admissionNo && s.admissionNo.toLowerCase().includes(term))
+      );
+    }
     setFilteredStudents(filtered);
-  }, [classFilter, sectionFilter, students]);
+  }, [classFilter, sectionFilter, studentSearch, students]);
 
   useEffect(() => {
     if ((view === 'marks_config' || view === 'report_config') && selectedStudent && examType) {
