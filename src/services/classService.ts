@@ -23,8 +23,17 @@ export const CLASS_ORDER = [
 ];
 
 export const getSequenceIndex = (className: string) => {
-  const index = CLASS_ORDER.indexOf(className);
-  return index === -1 ? 999 : index; // Unknown classes go to the bottom
+  if (!className) return 999;
+  let name = className.toUpperCase();
+  if (name.includes('PLAY')) return -4;
+  if (name.includes('NURSERY')) return -3;
+  if (name.includes('L.K.G') || name === 'LKG') return -2;
+  if (name.includes('U.K.G') || name === 'UKG') return -1;
+  const match = name.match(/\d+/);
+  if (match) return parseInt(match[0], 10);
+  
+  const index = CLASS_ORDER.findIndex(c => c.toUpperCase() === name);
+  return index === -1 ? 999 : index;
 };
 
 export const addClass = async (data: Omit<ClassData, 'id'>) => {
@@ -52,19 +61,7 @@ export const getClasses = async (): Promise<ClassData[]> => {
     let classes = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ClassData));
       
       // Smart sort
-      classes.sort((a, b) => {
-        const getRank = (name: string) => {
-          name = name.toUpperCase();
-          if (name.includes('PLAY')) return -4;
-          if (name.includes('NURSERY')) return -3;
-          if (name.includes('L.K.G')) return -2;
-          if (name.includes('U.K.G')) return -1;
-          const match = name.match(/\d+/);
-          if (match) return parseInt(match[0], 10);
-          return 999;
-        };
-        return getRank(a.className) - getRank(b.className);
-      });
+      classes.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
       return classes;
   } catch (error) {
     console.error("Error fetching classes: ", error);
