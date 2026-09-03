@@ -849,29 +849,7 @@ const NewAdmission: React.FC = () => {
       </form>
 
       {/* Modals for Drafts & Success message */}
-      <AnimatePresence>
-        {showDraftsModal && (
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999, background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ background: 'white', width: '90%', maxWidth: '500px', borderRadius: '16px', padding: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0 }}>Saved Drafts</h3>
-                <button onClick={() => setShowDraftsModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
-              </div>
-              <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                {savedDrafts.length === 0 ? <p style={{ color: '#666' }}>No saved drafts.</p> : savedDrafts.map(draft => (
-                  <div key={draft.id} style={{ borderBottom: '1px solid #eee', padding: '12px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <strong>{draft.data.firstName || 'Unknown'} {draft.data.lastName || ''}</strong>
-                      <div style={{ fontSize: '0.8rem', color: '#666' }}>{new Date(draft.timestamp).toLocaleString()}</div>
-                    </div>
-                    <button onClick={() => { setFormData(draft.data); setDraftId(draft.id); setShowDraftsModal(false); }} className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.9rem' }}>Load</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
+      
 
       <AnimatePresence>
         {saved && (
@@ -946,7 +924,7 @@ const NewAdmission: React.FC = () => {
 
       {/* Drafts Modal */}
       {showDraftsModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="glass-panel" style={{ width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
             <button 
               onClick={() => setShowDraftsModal(false)}
