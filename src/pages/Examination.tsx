@@ -11,6 +11,7 @@ import BirthCertificatePrintView from '../components/BirthCertificatePrintView';
 import DateSheetPrintView from '../components/DateSheetPrintView';
 import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
+import RichTextEditor from '../components/RichTextEditor';
 
 const Examination: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
@@ -47,28 +48,7 @@ const Examination: React.FC = () => {
   const [paperData, setPaperData] = useState<QuestionPaperData | null>(null);
 
   
-  const applyFormat = (sIdx: number, qIdx: number, tag: string) => {
-    if (!paperData) return;
-    const textarea = document.getElementById(`q-textarea-${sIdx}-${qIdx}`) as HTMLTextAreaElement;
-    if (!textarea) return;
-    
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const currentText = paperData.sections[sIdx].questions[qIdx].text;
-    
-    const selectedText = currentText.substring(start, end);
-    const newText = currentText.substring(0, start) + `<${tag}>${selectedText}</${tag}>` + currentText.substring(end);
-    
-    const newSecs = [...paperData.sections];
-    newSecs[sIdx].questions[qIdx].text = newText;
-    setPaperData({...paperData, sections: newSecs});
-    
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + tag.length + 2, end + tag.length + 2);
-    }, 0);
-  };
-
+  
   const maxTheory = Math.round(maxMarks * 0.8);
   const maxPractical = Math.round(maxMarks * 0.2);
 
@@ -516,18 +496,15 @@ const Examination: React.FC = () => {
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                       <span style={{ paddingTop: '8px', fontWeight: 'bold' }}>{q.type === 'instruction' ? 'Info:' : `Q${qIdx+1}.`}</span>
                       
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-color)', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
-                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => applyFormat(sIdx, qIdx, 'b')} title="Bold"><Bold size={14} /></button>
-                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => applyFormat(sIdx, qIdx, 'i')} title="Italic"><Italic size={14} /></button>
-                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => applyFormat(sIdx, qIdx, 'u')} title="Underline"><Underline size={14} /></button>
-                        </div>
-                        <textarea id={`q-textarea-${sIdx}-${qIdx}`} className="glass-input" rows={q.type === 'instruction' ? 1 : 2} style={{ resize: 'vertical', width: '100%', fontFamily: 'monospace' }} value={q.text} onChange={e => {
+                      <RichTextEditor 
+                        value={q.text} 
+                        onChange={val => {
                           const newSecs = [...paperData.sections];
-                          newSecs[sIdx].questions[qIdx].text = e.target.value;
+                          newSecs[sIdx].questions[qIdx].text = val;
                           setPaperData({...paperData, sections: newSecs});
-                        }} placeholder={q.type === 'instruction' ? "Type instruction here (e.g. Attempt any 5 questions)" : "Type question here..."} />
-                      </div>
+                        }}
+                        placeholder={q.type === 'instruction' ? "Type instruction here (e.g. Attempt any 5 questions)" : "Type question here..."}
+                      />
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <select className="glass-input" value={q.type || 'subjective'} onChange={e => {
