@@ -347,8 +347,8 @@ const NewAdmission: React.FC = () => {
     }
   };
 
-  const handleSubmit = async () => {
-
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     try {
       // Force uppercase for names before submitting
