@@ -9,7 +9,7 @@ interface DateSheetProps {
 
 const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose }) => {
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 1000, overflowY: 'auto' }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
       <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
         <button className="btn-secondary" onClick={onClose}>
           <ArrowLeft size={20} /> Back
@@ -78,10 +78,14 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             </tr>
           </thead>
           <tbody>
-            {scheduleData.schedule.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((item, idx) => {
-              const dateObj = new Date(item.date);
-              const day = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-              const dateStr = dateObj.toLocaleDateString('en-GB'); // DD/MM/YYYY
+            {[...scheduleData.schedule].sort((a, b) => {
+              if (!a.date) return 1;
+              if (!b.date) return -1;
+              return new Date(a.date).getTime() - new Date(b.date).getTime();
+            }).map((item, idx) => {
+              const dateObj = item.date ? new Date(item.date) : null;
+              const day = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-US', { weekday: 'long' }) : '-';
+              const dateStr = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-GB') : '-'; // DD/MM/YYYY
               return (
                 <tr key={idx}>
                   <td>{dateStr}</td>
