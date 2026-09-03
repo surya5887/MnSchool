@@ -2,8 +2,8 @@ import { verifyAdminPassword } from '../services/authService';
 import React, { useState, useEffect } from 'react';
 import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
-import { Download, TrendingUp, TrendingDown, BookOpen, Plus, Trash2 } from 'lucide-react';
-import { getTransactions, addTransaction, deleteTransaction, type TransactionData } from '../services/financeService';
+import { Download, TrendingUp, TrendingDown, BookOpen, Plus, Trash2, Edit } from 'lucide-react';
+import { getTransactions, addTransaction, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings } from '../services/settingsService';
 import Modal from '../components/Modal';
 
@@ -45,6 +45,10 @@ const MasterLedger: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTxnData, setEditTxnData] = useState<TransactionData | null>(null);
+  const [editPassword, setEditPassword] = useState('');
+  const [editError, setEditError] = useState('');
 
   // Export State
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -113,6 +117,33 @@ const MasterLedger: React.FC = () => {
       fetchData();
     } catch (err) {
       console.error('Error deleting transaction', err);
+    }
+  };
+
+  
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const isValid = await verifyAdminPassword(editPassword);
+    if (!isValid) {
+      setEditError('Incorrect admin password.');
+      return;
+    }
+    if (!editTxnData || !editTxnData.id) return;
+    
+    try {
+      await updateTransaction(editTxnData.id, {
+        amount: Number(editTxnData.amount),
+        description: editTxnData.description,
+        date: editTxnData.date,
+        type: editTxnData.type,
+      });
+      setIsEditModalOpen(false);
+      setEditTxnData(null);
+      setEditPassword('');
+      setEditError('');
+      fetchData();
+    } catch (err) {
+      console.error('Error updating transaction', err);
     }
   };
 
@@ -346,9 +377,14 @@ const MasterLedger: React.FC = () => {
                     {row.amtValue < 0 ? `₹${Math.abs(row.amtValue)}` : '-'}
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    <button className="icon-btn" onClick={() => { setDeleteTxnId(row.id || null); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                      <Trash2 size={16} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                      <button className="icon-btn" onClick={() => { setEditTxnData(row); setIsEditModalOpen(true); }} style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                        <Edit size={16} />
+                      </button>
+                      <button className="icon-btn" onClick={() => { setDeleteTxnId(row.id || null); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -439,6 +475,47 @@ const MasterLedger: React.FC = () => {
             <button type="submit" className="btn-primary" style={{ background: 'var(--danger)' }}>Confirm Delete</button>
           </div>
         </form>
+      </Modal>
+
+    
+      {/* Edit Transaction Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={() => { setIsEditModalOpen(false); setEditTxnData(null); setEditError(''); }} title="Edit Transaction">
+        {editTxnData && (
+          <form onSubmit={handleEdit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px' }}>Type</label>
+                <select className="glass-input" value={editTxnData.type} onChange={e => setEditTxnData({...editTxnData, type: e.target.value as any})}>
+                  <option value="Income">Credit (Income)</option>
+                  <option value="Expense">Debit (Expense)</option>
+                  <option value="Charge">Debit (Charge/Due)</option>
+                  <option value="Discount">Discount</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px' }}>Amount (,1)</label>
+                <input required type="number" min="1" className="glass-input" value={editTxnData.amount} onChange={e => setEditTxnData({...editTxnData, amount: Number(e.target.value)})} />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
+              <input required type="text" className="glass-input" value={editTxnData.description} onChange={e => setEditTxnData({...editTxnData, description: e.target.value})} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
+              <input required type="datetime-local" className="glass-input" value={editTxnData.date ? editTxnData.date.substring(0, 16) : ''} onChange={e => setEditTxnData({...editTxnData, date: e.target.value})} />
+            </div>
+            <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password to Save</label>
+              <input required type="password" className="glass-input" value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="Enter admin password" />
+              {editError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '4px' }}>{editError}</p>}
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'flex-end' }}>
+              <button type="button" className="btn-secondary" onClick={() => setIsEditModalOpen(false)}>Cancel</button>
+              <button type="submit" className="btn-primary" style={{ background: '#d97706' }}>Save Changes</button>
+            </div>
+          </form>
+        )}
       </Modal>
 
     </motion.div>
