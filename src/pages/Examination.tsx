@@ -19,7 +19,7 @@ const Examination: React.FC = () => {
   const [loading, setLoading] = useState(true);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<'marks' | 'reports' | 'certificates' | 'schedules' | 'papers'>('marks');
+  const [activeTab, setActiveTab] = useState<'reports' | 'certificates' | 'schedules' | 'papers'>('reports');
 
   // Main Page Filters
   const [classFilter, setClassFilter] = useState('');
@@ -187,10 +187,10 @@ const Examination: React.FC = () => {
   // --- PRINT VIEWS ---
   if (showPrintView) {
     if (view === 'report_config' && selectedStudent) {
-      return <ReportCardPrintView students={students} marks={printMarks} term={examType} className={classFilter} section={sectionFilter} maxMarks={maxMarks} onClose={() => setShowPrintView(false)} />;
+      return <ReportCardPrintView students={[selectedStudent]} classes={classes} className={classFilter} maxMarks={maxMarks} onClose={() => setShowPrintView(false)} />;
     }
     if (view === 'bulk_report_config') {
-      return <ReportCardPrintView students={filteredStudents} marks={printMarks} term={examType} className={classFilter} section={sectionFilter} maxMarks={maxMarks} onClose={() => setShowPrintView(false)} />;
+      return <ReportCardPrintView students={filteredStudents} classes={classes} className={classFilter} maxMarks={maxMarks} onClose={() => setShowPrintView(false)} />;
     }
     if (view === 'tc_config' && selectedStudent) return <TransferCertificatePrintView student={selectedStudent} className={classFilter} onClose={() => {setShowPrintView(false); setView('main');}} />;
     if (view === 'cc_config' && selectedStudent) return <CharacterCertificatePrintView student={selectedStudent} className={classFilter} onClose={() => {setShowPrintView(false); setView('main');}} />;
@@ -200,79 +200,6 @@ const Examination: React.FC = () => {
   }
 
   // --- SUB-VIEWS ---
-  if (view === 'marks_config' && selectedStudent) {
-    return (
-      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-          <button className="btn-secondary" style={{ padding: '8px 12px' }} onClick={() => setView('main')}>
-            <ArrowLeft size={20} /> Back
-          </button>
-          <div>
-            <h2 style={{ margin: 0 }}>Enter Marks: {selectedStudent.firstName} {selectedStudent.lastName}</h2>
-            <p style={{ margin: 0, color: 'var(--text-muted)' }}>Class: {classFilter} {sectionFilter}</p>
-          </div>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Exam Term</label>
-              <select className="glass-input" value={examType} onChange={e => setExamType(e.target.value)}>
-                <option>Unit Test 1</option>
-                <option>Half Yearly Exam</option>
-                <option>Unit Test 2</option>
-                <option>Annual Exam</option>
-              </select>
-            </div>
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Total Max Marks per Subject</label>
-              <input type="number" value={maxMarks} onChange={e => setMaxMarks(Number(e.target.value))} className="glass-input" />
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ margin: '0 0 24px 0' }}>Subject Marks ({examType} Marks: {maxTheory} / Periodic Test: {maxPractical})</h3>
-          
-          {activeSubjects.length > 0 ? (
-            <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', marginBottom: '16px', color: 'var(--text-muted)', fontWeight: 600, padding: '0 16px' }}>
-                <div>Subject</div>
-                <div>Periodic Test</div>
-                <div>{examType} Marks</div>
-                <div>Total & Grade</div>
-              </div>
-              {activeSubjects.map(subj => {
-                const theory = marksMap[subj]?.theory || 0;
-                const prac = marksMap[subj]?.practical || 0;
-                const total = theory + prac;
-                const grade = calculateGrade(total);
-                return (
-                  <div key={subj} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center', background: 'var(--bg-color)', padding: '12px 16px', borderRadius: '12px', marginBottom: '12px' }}>
-                    <div style={{ fontWeight: 600 }}>{subj}</div>
-                    <div><input type="number" max={maxPractical} min="0" value={prac.toString()} onChange={e => handleMarkChange(subj, 'practical', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
-                    <div><input type="number" max={maxTheory} min="0" value={theory.toString()} onChange={e => handleMarkChange(subj, 'theory', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{total}</span>
-                      <span className={`badge ${(total/maxMarks*100) >= 33 ? 'success' : 'danger'}`}>{grade}</span>
-                    </div>
-                  </div>
-                );
-              })}
-              <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '24px' }}>
-                <button className="btn-primary" style={{ padding: '12px 24px' }} onClick={handleSaveStudentMarks} disabled={isSaving}>
-                  {isSaving ? 'Saving...' : <><Save size={18} style={{ marginRight: '8px' }} /> Save Marks</>}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px' }}>No subjects assigned to this class. Add subjects in Classes & Sections.</div>
-          )}
-        </div>
-      </motion.div>
-    );
-  }
-
   if (view === 'bulk_report_config') {
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
@@ -605,7 +532,7 @@ const Examination: React.FC = () => {
       </div>
 
       <div className="hide-scrollbar" style={{ display: 'flex', gap: '12px', marginBottom: '32px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '16px', overflowX: 'auto' }}>
-        <button className={activeTab === 'marks' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('marks')}><Edit3 size={18} style={{whiteSpace:'nowrap'}}/> Marks Entry</button>
+        
         <button className={activeTab === 'reports' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('reports')}><Award size={18} style={{whiteSpace:'nowrap'}}/> Report Cards</button>
         <button className={activeTab === 'schedules' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('schedules')}><Calendar size={18} style={{whiteSpace:'nowrap'}}/> Schedules</button>
         <button className={activeTab === 'papers' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('papers')}><FileSignature size={18} style={{whiteSpace:'nowrap'}}/> Paper Builder</button>
@@ -629,7 +556,7 @@ const Examination: React.FC = () => {
               </select>
             </div>
           )}
-          {(activeTab === 'marks' || activeTab === 'reports' || activeTab === 'certificates') && (
+          {(activeTab === 'reports' || activeTab === 'certificates') && (
             <div style={{ flex: 1, minWidth: '250px' }}>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Search Student</label>
               <div style={{ position: 'relative' }}>
@@ -699,7 +626,7 @@ const Examination: React.FC = () => {
           )}
 
           {/* Marks, Reports, Certificates use Grid */}
-          {(activeTab === 'marks' || activeTab === 'reports' || activeTab === 'certificates') && (
+          {(activeTab === 'reports' || activeTab === 'certificates') && (
             <>
               <h3 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', color: 'var(--text-main)' }}>
                 Students in {classFilter} {sectionFilter} ({filteredStudents.length})
@@ -732,7 +659,7 @@ const Examination: React.FC = () => {
                           <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Roll No: {student.rollNumber || '-'}</div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '8px' }}>
-                          {activeTab === 'marks' && <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '10px' }} onClick={() => { setSelectedStudent(student); setView('marks_config'); }}><Edit3 size={18} /> Enter Marks</button>}
+                          
                           {activeTab === 'reports' && <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '10px', background: 'linear-gradient(135deg, #10b981, #059669)' }} onClick={() => { setSelectedStudent(student); setView('report_config'); }}><Award size={18} /> Report Card</button>}
                           {activeTab === 'certificates' && (
                             <>

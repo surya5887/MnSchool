@@ -72,6 +72,16 @@ export const getAllExamMarksForTerm = async (examTerm: string) => {
   }
 };
 
+export const getAllExamMarks = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, EXAM_MARKS_COLLECTION));
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ExamMarkData));
+  } catch (error) {
+    console.error("Error fetching all exam marks: ", error);
+    throw error;
+  }
+};
+
 
 const EXAM_SCHEDULE_COLLECTION = 'exam_schedules';
 const QUESTION_PAPER_COLLECTION = 'question_papers';
