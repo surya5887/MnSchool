@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export type AttendanceStatus = 'Present' | 'Absent' | 'Unmarked';
@@ -34,6 +34,23 @@ export const getAttendance = async (date: string, classId: string, sectionId: st
   } catch (error) {
     console.error("Error fetching attendance: ", error);
     return null;
+  }
+};
+
+
+export const getAllAttendanceForClass = async (classId: string, sectionId: string, session: string): Promise<AttendanceRecord[]> => {
+  try {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("classId", "==", classId),
+      where("sectionId", "==", sectionId),
+      where("session", "==", session)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as AttendanceRecord));
+  } catch (error) {
+    console.error("Error fetching class attendance: ", error);
+    return [];
   }
 };
 

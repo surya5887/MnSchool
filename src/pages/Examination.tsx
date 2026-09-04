@@ -118,7 +118,7 @@ const Examination: React.FC = () => {
       };
       fetchMarks();
     }
-  }, [view, selectedStudent, examType]);
+    }, [view, selectedStudent, examType, showPrintView]);
 
   const handleMarkChange = (subject: string, type: 'theory' | 'practical', value: string) => {
     let numVal = parseInt(value, 10);

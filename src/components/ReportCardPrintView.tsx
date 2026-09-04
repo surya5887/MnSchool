@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { StudentData } from '../services/studentService';
 import { getAllExamMarks, saveExamMark, type ExamMarkData } from '../services/examService';
 import { getAllReportCardMeta, saveReportCardMeta, type ReportCardMetaData } from '../services/reportCardService';
+import { getAllAttendanceForClass } from '../services/attendanceService';
 import type { ClassData } from '../services/classService';
 import { ArrowLeft, Printer, Save, Loader } from 'lucide-react';
 
@@ -44,6 +45,14 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
       const allMarks = await getAllExamMarks();
       const allMeta = await getAllReportCardMeta(session);
       
+      const uniqueClassSections = Array.from(new Set(students.map(s => `${s.classId}_${s.sectionId}`)));
+      let allAtt: any[] = [];
+      for (const cs of uniqueClassSections) {
+        const [cId, sId] = cs.split('_');
+        const recs = await getAllAttendanceForClass(cId, sId, session);
+        allAtt = [...allAtt, ...recs];
+      }
+      
       setMarks(allMarks);
       setMeta(allMeta);
 
@@ -51,7 +60,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
       const newLocalMeta: typeof localMeta = {};
 
       students.forEach(student => {
-        const studentClass = classes.find(c => c.id === student.classId);
+        // Fix for synced subjects: Match by className rather than ID, just like Examination.tsx does
+        const studentClass = classes.find(c => c.className === className);
         let subjects = studentClass?.subjects || [];
         if (subjects.length === 0) {
           subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
@@ -72,13 +82,19 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         const m = allMeta.find(x => x.studentId === student.id);
         const todayStr = new Date().toLocaleDateString('en-IN').replace(/\//g, '-');
         
+        // Auto Attendance logic
+        const studentAtt = allAtt.filter(r => r.classId === student.classId && r.sectionId === student.sectionId && r.records[student.id!] !== undefined);
+        const totalDays = studentAtt.length;
+        const presentDays = studentAtt.filter(r => r.records[student.id!] === 'Present').length;
+        const autoAttendance = totalDays > 0 ? `${presentDays}/${totalDays}` : '';
+        
         newLocalMeta[student.id!] = {
           work: m?.workEducation || 'A',
           art: m?.artEducation || 'A',
           health: m?.healthEducation || 'A',
           remarks: m?.teacherRemarks || '', // We will auto-fill in render if empty
           date: m?.issueDate || todayStr,
-          attendance: m?.attendance || ''
+          attendance: m?.attendance || autoAttendance
         };
       });
 
@@ -108,7 +124,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
     setSaving(true);
     try {
       for (const student of students) {
-        const studentClass = classes.find(c => c.id === student.classId);
+        const studentClass = classes.find(c => c.className === className);
         let subjects = studentClass?.subjects || [];
         if (subjects.length === 0) {
           subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
@@ -305,7 +321,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
 
       <div className="report-card-container">
         {students.map((student) => {
-          const studentClass = classes.find(c => c.id === student.classId);
+          const studentClass = classes.find(c => c.className === className);
           let subjects = studentClass?.subjects || [];
           if (subjects.length === 0) {
             subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
