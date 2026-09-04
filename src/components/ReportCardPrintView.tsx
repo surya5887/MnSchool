@@ -431,7 +431,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                     <tr className="total-row">
                       <td className="subj" style={{ textAlign: 'center' }}>Total</td>
                       <td colSpan={6}></td>
-                      <td style={{ fontSize: '16px' }}>{grandTotal}</td>
+                      <td style={{ fontSize: '16px' }}>{grandTotal} / {possibleTotal}</td>
                       <td></td>
                     </tr>
                     <tr className="perc-row">
