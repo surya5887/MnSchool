@@ -234,6 +234,7 @@ const Examination: React.FC = () => {
   }
 
   if (view === 'report_config' && selectedStudent) {
+    const displaySubjects = activeSubjects.length > 0 ? activeSubjects : ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
@@ -242,23 +243,60 @@ const Examination: React.FC = () => {
           </button>
           <div>
             <h2 style={{ margin: 0 }}>Generate Report Card: {selectedStudent.firstName} {selectedStudent.lastName}</h2>
+            <p style={{ margin: 0, color: 'var(--text-muted)' }}>Class: {classFilter} {sectionFilter}</p>
           </div>
         </div>
-        <div className="glass-panel" style={{ padding: '24px', textAlign: 'center' }}>
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '32px' }}>
-            <div style={{ flex: 1, minWidth: '200px', maxWidth: '300px', textAlign: 'left' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Exam Term</label>
+
+        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div style={{ flex: 1, minWidth: '200px', maxWidth: '300px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Term for Marks Entry</label>
               <select className="glass-input" value={examType} onChange={e => setExamType(e.target.value)}>
-                <option>Unit Test 1</option>
-                <option>Half Yearly Exam</option>
-                <option>Unit Test 2</option>
-                <option>Annual Exam</option>
+                <option value="Half Yearly Exam">Half Yearly Exam</option>
+                <option value="Annual Exam">Annual Exam</option>
               </select>
             </div>
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn-primary" style={{ padding: '12px 32px', fontSize: '1.1rem' }} onClick={handlePrintReportCard}>
+                <Printer size={20} style={{ marginRight: '8px' }} /> Preview Full Report Card
+              </button>
+            </div>
           </div>
-          <button className="btn-primary" style={{ padding: '16px 32px', fontSize: '1.2rem' }} onClick={handlePrintReportCard}>
-            <Printer size={24} /> Preview Report Card
-          </button>
+        </div>
+
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <h3 style={{ margin: '0 0 24px 0' }}>Enter Marks for {examType}</h3>
+          
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', marginBottom: '16px', color: 'var(--text-muted)', fontWeight: 600, padding: '0 16px' }}>
+              <div>Subject</div>
+              <div>Periodic Test (Max 20)</div>
+              <div>Term Marks (Max 80)</div>
+              <div>Total & Grade</div>
+            </div>
+            {displaySubjects.map(subj => {
+              const theory = marksMap[subj]?.theory || 0;
+              const prac = marksMap[subj]?.practical || 0;
+              const total = theory + prac;
+              const grade = calculateGrade(total);
+              return (
+                <div key={subj} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center', background: 'var(--bg-color)', padding: '12px 16px', borderRadius: '12px', marginBottom: '12px' }}>
+                  <div style={{ fontWeight: 600 }}>{subj}</div>
+                  <div><input type="number" max={20} min="0" value={prac.toString()} onChange={e => handleMarkChange(subj, 'practical', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
+                  <div><input type="number" max={80} min="0" value={theory.toString()} onChange={e => handleMarkChange(subj, 'theory', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{total}</span>
+                    <span className={`badge ${(total/100*100) >= 33 ? 'success' : 'danger'}`}>{grade}</span>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <button className="btn-primary" style={{ padding: '12px 24px', background: '#10b981' }} onClick={handleSaveStudentMarks} disabled={isSaving}>
+                {isSaving ? 'Saving...' : <><Save size={18} style={{ marginRight: '8px' }} /> Save {examType} Marks</>}
+              </button>
+            </div>
+          </div>
         </div>
       </motion.div>
     );
