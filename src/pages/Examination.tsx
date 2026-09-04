@@ -232,14 +232,14 @@ const Examination: React.FC = () => {
         </div>
 
         <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ margin: '0 0 24px 0' }}>Subject Marks (Theory: {maxTheory} / Practical: {maxPractical})</h3>
+          <h3 style={{ margin: '0 0 24px 0' }}>Subject Marks ({examType} Marks: {maxTheory} / Periodic Test: {maxPractical})</h3>
           
           {activeSubjects.length > 0 ? (
             <div>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', marginBottom: '16px', color: 'var(--text-muted)', fontWeight: 600, padding: '0 16px' }}>
                 <div>Subject</div>
-                <div>Theory</div>
-                <div>Practical</div>
+                <div>Periodic Test</div>
+                <div>{examType} Marks</div>
                 <div>Total & Grade</div>
               </div>
               {activeSubjects.map(subj => {
@@ -250,8 +250,8 @@ const Examination: React.FC = () => {
                 return (
                   <div key={subj} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center', background: 'var(--bg-color)', padding: '12px 16px', borderRadius: '12px', marginBottom: '12px' }}>
                     <div style={{ fontWeight: 600 }}>{subj}</div>
-                    <div><input type="number" max={maxTheory} min="0" value={theory.toString()} onChange={e => handleMarkChange(subj, 'theory', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
                     <div><input type="number" max={maxPractical} min="0" value={prac.toString()} onChange={e => handleMarkChange(subj, 'practical', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
+                    <div><input type="number" max={maxTheory} min="0" value={theory.toString()} onChange={e => handleMarkChange(subj, 'theory', e.target.value)} className="glass-input" style={{ width: '100px', padding: '8px' }}/></div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{total}</span>
                       <span className={`badge ${(total/maxMarks*100) >= 33 ? 'success' : 'danger'}`}>{grade}</span>
