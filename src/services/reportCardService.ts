@@ -12,6 +12,7 @@ export interface ReportCardMetaData {
   healthEducation: string;
   teacherRemarks: string;
   issueDate: string;
+  attendance: string;
 }
 
 export const saveReportCardMeta = async (data: ReportCardMetaData) => {

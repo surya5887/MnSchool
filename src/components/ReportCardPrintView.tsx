@@ -31,10 +31,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
   };
   const session = getCurrentSession();
 
-  // Local state for edits:
-  // We keep a working copy of marks and meta for all students being viewed.
   const [localMarks, setLocalMarks] = useState<Record<string, { halfYearlyTerm: number, halfYearlyPeriodic: number, annualTerm: number, annualPeriodic: number }>>({});
-  const [localMeta, setLocalMeta] = useState<Record<string, { work: string, art: string, health: string, remarks: string, date: string }>>({});
+  const [localMeta, setLocalMeta] = useState<Record<string, { work: string, art: string, health: string, remarks: string, date: string, attendance: string }>>({});
 
   useEffect(() => {
     fetchData();
@@ -54,7 +52,10 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
 
       students.forEach(student => {
         const studentClass = classes.find(c => c.id === student.classId);
-        const subjects = studentClass?.subjects || [];
+        let subjects = studentClass?.subjects || [];
+        if (subjects.length === 0) {
+          subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
+        }
         
         subjects.forEach(subj => {
           const key = `${student.id}_${subj}`;
@@ -69,12 +70,15 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         });
 
         const m = allMeta.find(x => x.studentId === student.id);
-        newLocalMeta[student.id] = {
-          work: m?.workEducation || '',
-          art: m?.artEducation || '',
-          health: m?.healthEducation || '',
-          remarks: m?.teacherRemarks || '',
-          date: m?.issueDate || new Date().toISOString().split('T')[0]
+        const todayStr = new Date().toLocaleDateString('en-IN').replace(/\//g, '-');
+        
+        newLocalMeta[student.id!] = {
+          work: m?.workEducation || 'A',
+          art: m?.artEducation || 'A',
+          health: m?.healthEducation || 'A',
+          remarks: m?.teacherRemarks || '', // We will auto-fill in render if empty
+          date: m?.issueDate || todayStr,
+          attendance: m?.attendance || ''
         };
       });
 
@@ -100,19 +104,20 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
     return 'E';
   };
 
-  const handleSave = async () => {
+  const handleSaveAndPrint = async () => {
     setSaving(true);
     try {
       for (const student of students) {
         const studentClass = classes.find(c => c.id === student.classId);
-        const subjects = studentClass?.subjects || [];
+        let subjects = studentClass?.subjects || [];
+        if (subjects.length === 0) {
+          subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
+        }
         
-        // Save marks
         for (const subj of subjects) {
           const key = `${student.id}_${subj}`;
           const m = localMarks[key];
           if (m) {
-            // Half Yearly
             await saveExamMark({
               studentId: student.id as string,
               examTerm: 'Half Yearly Exam',
@@ -120,7 +125,6 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
               theoryMarks: m.halfYearlyTerm,
               practicalMarks: m.halfYearlyPeriodic
             });
-            // Annual
             await saveExamMark({
               studentId: student.id as string,
               examTerm: 'Annual Exam',
@@ -131,21 +135,43 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
           }
         }
 
-        // Save Meta
-        const mt = localMeta[student.id];
+        const mt = localMeta[student.id!];
         if (mt) {
+          // If remarks were auto-generated but not saved yet, calculate them here
+          let finalRemarks = mt.remarks;
+          if (!finalRemarks) {
+             let grandTotal = 0;
+             let possibleTotal = 0;
+             subjects.forEach(subj => {
+                const k = `${student.id}_${subj}`;
+                const mk = localMarks[k];
+                if(mk) {
+                  grandTotal += mk.halfYearlyPeriodic + mk.halfYearlyTerm + mk.annualPeriodic + mk.annualTerm;
+                  possibleTotal += 200;
+                }
+             });
+             const isPass = possibleTotal > 0 && ((grandTotal/possibleTotal)*100) >= 33;
+             finalRemarks = isPass ? 'EXCELLENT' : 'NEEDS IMPROVEMENT';
+          }
+
           await saveReportCardMeta({
             studentId: student.id as string,
             session,
             workEducation: mt.work,
             artEducation: mt.art,
             healthEducation: mt.health,
-            teacherRemarks: mt.remarks,
-            issueDate: mt.date
+            teacherRemarks: finalRemarks,
+            issueDate: mt.date,
+            attendance: mt.attendance
           });
         }
       }
-      alert('Marks and Report Card details saved successfully!');
+      
+      // Delay slightly so save completes visually before print dialog blocks thread
+      setTimeout(() => {
+        window.print();
+      }, 500);
+
     } catch (err) {
       console.error(err);
       alert('Error saving data.');
@@ -212,7 +238,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
           .rc-table th, .rc-table td.label, .rc-profile td.label, .rc-grading-scale th { -webkit-print-color-adjust: exact; color-adjust: exact; }
           
           /* Hide input styling when printing */
-          input.editable-cell { border: none !important; background: transparent !important; padding: 0 !important; outline: none !important; }
+          input.editable-cell { border: none !important; background: transparent !important; padding: 0 !important; outline: none !important; box-shadow: none !important; }
           input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         }
         
@@ -272,25 +298,40 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
           <ArrowLeft size={18} /> Back
         </button>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={handleSave} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#10b981', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-            {saving ? 'Saving...' : <><Save size={18} /> Save Marks & Data</>}
-          </button>
-          <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#1e3a8a', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-            <Printer size={18} /> Print All
-          </button>
-        </div>
+        <button onClick={handleSaveAndPrint} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#10b981', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+          {saving ? 'Saving...' : <><Printer size={18} /> Save & Print</>}
+        </button>
       </div>
 
       <div className="report-card-container">
         {students.map((student) => {
           const studentClass = classes.find(c => c.id === student.classId);
-          const subjects = studentClass?.subjects || [];
+          let subjects = studentClass?.subjects || [];
+          if (subjects.length === 0) {
+            subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Computer'];
+          }
           
           let grandTotal = 0;
           let possibleTotal = 0;
 
-          const metaData = localMeta[student.id!] || { work: '', art: '', health: '', remarks: '', date: '' };
+          const metaData = localMeta[student.id!] || { work: '', art: '', health: '', remarks: '', date: '', attendance: '' };
+
+          // Pre-calculate pass/fail for remark auto-generation
+          let tempGrandTotal = 0;
+          let tempPossibleTotal = 0;
+          subjects.forEach(subj => {
+             const k = `${student.id}_${subj}`;
+             const mk = localMarks[k];
+             if(mk) {
+                tempGrandTotal += mk.halfYearlyPeriodic + mk.halfYearlyTerm + mk.annualPeriodic + mk.annualTerm;
+                tempPossibleTotal += 200;
+             } else {
+                tempPossibleTotal += 200; // Even if 0 marks entered
+             }
+          });
+          const isPass = tempPossibleTotal > 0 && ((tempGrandTotal/tempPossibleTotal)*100) >= 33;
+          const autoRemark = isPass ? 'EXCELLENT' : 'NEEDS IMPROVEMENT';
+          const displayRemark = metaData.remarks || autoRemark;
 
           return (
             <React.Fragment key={student.id}>
@@ -329,8 +370,11 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                 <div style={{ flexGrow: 1 }}></div>
 
                 <div className="rc-signatures">
-                  <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
-                    Date: <input type="date" className="editable-cell" style={{width: 'auto', display: 'inline-block'}} value={metaData.date} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, date: e.target.value}})} />
+                  <div className="rc-sig-block" style={{ textAlign: 'left', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span>Date:</span> 
+                      <input type="text" className="editable-cell" style={{width: '120px', marginLeft: '10px', textAlign: 'left', borderBottom: '1px solid #000', background: 'transparent'}} value={metaData.date} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, date: e.target.value}})} />
+                    </div>
                   </div>
                   <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Signature of<br/>Class Teacher</div></div>
                   <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Principal<br/>M.N. Public School</div></div>
@@ -358,52 +402,44 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                     </tr>
                   </thead>
                   <tbody>
-                    {subjects.length === 0 ? (
-                      <tr><td colSpan={9} style={{ padding: '20px' }}>No subjects assigned to this class.</td></tr>
-                    ) : (
-                      subjects.map((subj) => {
-                        const key = `${student.id}_${subj}`;
-                        const m = localMarks[key] || { halfYearlyPeriodic: 0, halfYearlyTerm: 0, annualPeriodic: 0, annualTerm: 0 };
-                        
-                        const hyTotal = Number(m.halfYearlyPeriodic) + Number(m.halfYearlyTerm);
-                        const anTotal = Number(m.annualPeriodic) + Number(m.annualTerm);
-                        const rowTotal = hyTotal + anTotal;
-                        
-                        grandTotal += rowTotal;
-                        possibleTotal += 200;
+                    {subjects.map((subj) => {
+                      const key = `${student.id}_${subj}`;
+                      const m = localMarks[key] || { halfYearlyPeriodic: 0, halfYearlyTerm: 0, annualPeriodic: 0, annualTerm: 0 };
+                      
+                      const hyTotal = Number(m.halfYearlyPeriodic) + Number(m.halfYearlyTerm);
+                      const anTotal = Number(m.annualPeriodic) + Number(m.annualTerm);
+                      const rowTotal = hyTotal + anTotal;
+                      
+                      grandTotal += rowTotal;
+                      possibleTotal += 200;
 
-                        return (
-                          <tr key={subj}>
-                            <td className="subj">{subj}</td>
-                            <td><input type="number" min={0} max={20} className="editable-cell" value={m.halfYearlyPeriodic || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, halfYearlyPeriodic: Number(e.target.value)}})} /></td>
-                            <td><input type="number" min={0} max={80} className="editable-cell" value={m.halfYearlyTerm || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, halfYearlyTerm: Number(e.target.value)}})} /></td>
-                            <td style={{ fontWeight: 'bold' }}>{hyTotal || ''}</td>
-                            <td><input type="number" min={0} max={20} className="editable-cell" value={m.annualPeriodic || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, annualPeriodic: Number(e.target.value)}})} /></td>
-                            <td><input type="number" min={0} max={80} className="editable-cell" value={m.annualTerm || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, annualTerm: Number(e.target.value)}})} /></td>
-                            <td style={{ fontWeight: 'bold' }}>{anTotal || ''}</td>
-                            <td style={{ fontWeight: 'bold', fontSize: '15px' }}>{rowTotal || ''}</td>
-                            <td style={{ fontWeight: 'bold', fontSize: '15px' }}>{calculateGrade(rowTotal, 200)}</td>
-                          </tr>
-                        );
-                      })
-                    )}
-                    {subjects.length > 0 && (
-                      <>
-                        <tr className="total-row">
-                          <td className="subj" style={{ textAlign: 'center' }}>Total</td>
-                          <td colSpan={6}></td>
-                          <td style={{ fontSize: '16px' }}>{grandTotal}</td>
-                          <td></td>
+                      return (
+                        <tr key={subj}>
+                          <td className="subj">{subj}</td>
+                          <td><input type="number" min={0} max={20} className="editable-cell" value={m.halfYearlyPeriodic || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, halfYearlyPeriodic: Number(e.target.value)}})} /></td>
+                          <td><input type="number" min={0} max={80} className="editable-cell" value={m.halfYearlyTerm || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, halfYearlyTerm: Number(e.target.value)}})} /></td>
+                          <td style={{ fontWeight: 'bold' }}>{hyTotal || ''}</td>
+                          <td><input type="number" min={0} max={20} className="editable-cell" value={m.annualPeriodic || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, annualPeriodic: Number(e.target.value)}})} /></td>
+                          <td><input type="number" min={0} max={80} className="editable-cell" value={m.annualTerm || ''} onChange={e => setLocalMarks({...localMarks, [key]: {...m, annualTerm: Number(e.target.value)}})} /></td>
+                          <td style={{ fontWeight: 'bold' }}>{anTotal || ''}</td>
+                          <td style={{ fontWeight: 'bold', fontSize: '15px' }}>{rowTotal || ''}</td>
+                          <td style={{ fontWeight: 'bold', fontSize: '15px' }}>{calculateGrade(rowTotal, 200)}</td>
                         </tr>
-                        <tr className="perc-row">
-                          <td className="subj" style={{ textAlign: 'center' }}>Percentage</td>
-                          <td colSpan={6}></td>
-                          <td colSpan={2} style={{ fontSize: '16px', textAlign: 'center' }}>
-                            {possibleTotal > 0 ? ((grandTotal / possibleTotal) * 100).toFixed(2) + '%' : ''}
-                          </td>
-                        </tr>
-                      </>
-                    )}
+                      );
+                    })}
+                    <tr className="total-row">
+                      <td className="subj" style={{ textAlign: 'center' }}>Total</td>
+                      <td colSpan={6}></td>
+                      <td style={{ fontSize: '16px' }}>{grandTotal}</td>
+                      <td></td>
+                    </tr>
+                    <tr className="perc-row">
+                      <td className="subj" style={{ textAlign: 'center' }}>Percentage</td>
+                      <td colSpan={6}></td>
+                      <td colSpan={2} style={{ fontSize: '16px', textAlign: 'center' }}>
+                        {possibleTotal > 0 ? ((grandTotal / possibleTotal) * 100).toFixed(2) + '%' : ''}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
 
@@ -434,16 +470,16 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                   <tbody>
                     <tr>
                       <td className="label">Class Teacher's Remarks</td>
-                      <td><input type="text" className="editable-cell" style={{textAlign:'left', paddingLeft:'10px'}} placeholder="Enter remarks..." value={metaData.remarks} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, remarks: e.target.value}})} /></td>
+                      <td><input type="text" className="editable-cell" style={{textAlign:'left', paddingLeft:'10px'}} placeholder="Enter remarks..." value={displayRemark} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, remarks: e.target.value}})} /></td>
                     </tr>
                     <tr>
                       <td className="label">Attendance</td>
-                      <td>________ / ________</td>
+                      <td><input type="text" className="editable-cell" style={{textAlign:'left', paddingLeft:'10px'}} placeholder="e.g. 150/200" value={metaData.attendance} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, attendance: e.target.value}})} /></td>
                     </tr>
                     <tr>
                       <td className="label">Result</td>
-                      <td className={possibleTotal > 0 && ((grandTotal/possibleTotal)*100) >= 33 ? 'pass-text' : 'fail-text'}>
-                        {possibleTotal > 0 ? (((grandTotal/possibleTotal)*100) >= 33 ? 'PASSED' : 'FAILED') : ''}
+                      <td className={isPass ? 'pass-text' : 'fail-text'} style={{ fontSize: '18px' }}>
+                        {isPass ? 'PASSED' : 'FAILED'}
                       </td>
                     </tr>
                   </tbody>
