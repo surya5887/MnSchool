@@ -370,11 +370,12 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                 <div style={{ flexGrow: 1 }}></div>
 
                 <div className="rc-signatures">
-                  <div className="rc-sig-block" style={{ textAlign: 'left', paddingBottom: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span>Date:</span> 
-                      <input type="text" className="editable-cell" style={{width: '120px', marginLeft: '10px', textAlign: 'left', borderBottom: '1px solid #000', background: 'transparent'}} value={metaData.date} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, date: e.target.value}})} />
+                  <div className="rc-sig-block" style={{ textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '8px' }}>
+                      <span style={{ fontWeight: 'bold' }}>Date:</span> 
+                      <input type="text" className="editable-cell" style={{width: '150px', marginLeft: '10px', textAlign: 'center', borderBottom: '1px solid #000', background: 'transparent'}} value={metaData.date} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, date: e.target.value}})} />
                     </div>
+                    <div style={{ visibility: 'hidden' }}>Line 1<br/>Line 2</div>
                   </div>
                   <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Signature of<br/>Class Teacher</div></div>
                   <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Principal<br/>M.N. Public School</div></div>
