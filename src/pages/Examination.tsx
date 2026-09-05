@@ -669,17 +669,7 @@ const Examination: React.FC = () => {
               <h3 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', color: 'var(--text-main)' }}>
                 Students in {classFilter} {sectionFilter} ({filteredStudents.length})
               </h3>
-              {activeTab === 'reports' && filteredStudents.length > 0 && (
-                <div style={{ marginBottom: '24px' }}>
-                  <button className="btn-primary" style={{ padding: '12px 24px', background: 'linear-gradient(135deg, #10b981, #059669)' }} onClick={async () => {
-                    const allMarks = await getAllExamMarksForTerm(examType);
-                    setPrintMarks(allMarks);
-                    setView('bulk_report_config');
-                  }}>
-                    <Award size={20} style={{ marginRight: '8px' }} /> Generate Report Cards for All Students
-                  </button>
-                </div>
-              )}
+              
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
                 <AnimatePresence>
                   {loading ? (
