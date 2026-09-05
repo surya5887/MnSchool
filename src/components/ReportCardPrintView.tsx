@@ -19,6 +19,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
   const [meta, setMeta] = useState<ReportCardMetaData[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [printMode, setPrintMode] = useState<'both' | 'front' | 'back'>('both');
 
   const maxTheory = Math.round(maxMarks * 0.8);
   const maxPractical = Math.round(maxMarks * 0.2);
@@ -120,7 +121,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
     return 'E';
   };
 
-  const handleSaveAndPrint = async () => {
+  const handleSaveAndPrint = async (mode: 'both' | 'front' | 'back') => {
+    setPrintMode(mode);
     setSaving(true);
     try {
       for (const student of students) {
@@ -266,7 +268,9 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
           body * { visibility: hidden; }
           .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100%; }
           .preview-overlay * { visibility: visible; }
-          .preview-toolbar { display: none !important; }
+                      .preview-toolbar { display: none !important; }
+            ${printMode === 'front' ? '.rc-back-page { display: none !important; }' : ''}
+            ${printMode === 'back' ? '.rc-front-page { display: none !important; }' : ''}
           .report-card-page {
             margin: 0 auto !important; box-shadow: none !important;
             width: 100% !important; max-width: 100% !important;
@@ -336,9 +340,14 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
           <ArrowLeft size={18} /> Back
         </button>
-        <button onClick={handleSaveAndPrint} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#10b981', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-          {saving ? 'Saving...' : <><Printer size={18} /> Save & Print</>}
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+            <button onClick={() => handleSaveAndPrint('front')} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#3b82f6', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+              {saving ? 'Saving...' : <><Printer size={18} /> Print Front</>}
+            </button>
+            <button onClick={() => handleSaveAndPrint('back')} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#f59e0b', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+              {saving ? 'Saving...' : <><Printer size={18} /> Print Back</>}
+            </button>
+          </div>
       </div>
 
       <div className="report-card-container">
