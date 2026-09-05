@@ -87,6 +87,7 @@ const NewAdmission: React.FC = () => {
   const [aadharFile, setAadharFile] = useState<File | null>(null);
   const [tcFile, setTcFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const isSubmitting = useRef(false);
   const [saved, setSaved] = useState(false);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [transportVehicles, setTransportVehicles] = useState<any[]>([]);
@@ -349,6 +350,8 @@ const NewAdmission: React.FC = () => {
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (isSubmitting.current) return;
+    isSubmitting.current = true;
     setLoading(true);
     try {
       // Force uppercase for names before submitting
@@ -429,6 +432,7 @@ const NewAdmission: React.FC = () => {
       alert("Failed to add student. Check console for details.");
     } finally {
       setLoading(false);
+      isSubmitting.current = false;
     }
   };
 
