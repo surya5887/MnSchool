@@ -157,8 +157,8 @@ const Staff: React.FC = () => {
       } catch (e) {
         return false;
       }
-    });
-  }, [allStaff, activeTab, searchQuery]);
+      }).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }, [allStaff, activeTab, searchQuery]);
 
   return (
     <motion.div 
@@ -486,3 +486,4 @@ const Staff: React.FC = () => {
 };
 
 export default Staff;
+
