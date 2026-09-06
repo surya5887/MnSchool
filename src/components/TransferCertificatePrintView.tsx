@@ -90,6 +90,17 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
     window.print();
   };
 
+    let finalWritingDate = formData.writingDate || '';
+  if (finalWritingDate.length > 0 && finalWritingDate.length <= 2 && formData.writingMonth) {
+      let yr = formData.writingYear || String(new Date().getFullYear());
+      if (yr.length === 2) yr = '20' + yr;
+      finalWritingDate = `${finalWritingDate}-${formData.writingMonth}-${yr}`;
+  }
+  if (!finalWritingDate) {
+      const today = new Date();
+      finalWritingDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+  }
+
   return (
     <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 9999, overflowY: 'auto', padding: '24px' }}>
       <style>
@@ -250,28 +261,25 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                  </table>
 
                  {/* FOOTER */}
-                 <div style={{ marginTop: '40px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                    <div style={{ flex: 1 }}>
-                       <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '10px', fontSize: '15px' }}>
-                          <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>Date of Issue</div> 
-                          <input name="writingDate" value={formData.writingDate} onChange={handleChange} className="tc-dotted-input" style={{ width: '50px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} /> 
-                          <div style={{ whiteSpace: 'nowrap', margin: '0 10px', fontWeight: 'bold' }}>Month</div> 
-                          <input name="writingMonth" value={formData.writingMonth} onChange={handleChange} className="tc-dotted-input" style={{ width: '50px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} /> 
-                          <div style={{ whiteSpace: 'nowrap', margin: '0 10px', fontWeight: 'bold' }}>Year: 20</div> 
-                          <input name="writingYear" value={formData.writingYear} onChange={handleChange} className="tc-dotted-input" style={{ width: '50px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} />
-                       </div>
+                 <div style={{ marginTop: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
                        <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '15px' }}>
+                          <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>Date of Issue</div> 
+                          <input name="writingDate" value={finalWritingDate} onChange={handleChange} placeholder="DD-MM-YYYY" className="tc-dotted-input" style={{ width: '110px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} /> 
+                       </div>
+                       <div style={{ width: '250px', borderBottom: '1.5px solid #000' }}></div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                       <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '15px', marginTop: '10px' }}>
                           <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>School Mohalla / Location</div> 
-                          <input name="schoolMohalla" value={formData.schoolMohalla} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, maxWidth: '300px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px' }} />
+                          <input name="schoolMohalla" value={formData.schoolMohalla} onChange={handleChange} className="tc-dotted-input" style={{ width: '180px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px' }} />
+                       </div>
+                       <div style={{ textAlign: 'center', width: '250px' }}>
+                          <div style={{ fontWeight: 'bold', fontSize: '17px', marginTop: '4px' }}>Signature of Principal</div>
+                          <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
                        </div>
                     </div>
-
-                    <div style={{ textAlign: 'center', width: '250px' }}>
-                     <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
-                     <div style={{ fontWeight: 'bold', fontSize: '17px' }}>Signature of Principal</div>
-                     <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
-                  </div>
-               </div>
+                 </div>
                
             </div>
          </div>
