@@ -180,12 +180,24 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             
             <div className="tc-content-z">
                {/* TOP HEADERS */}
-               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold', marginTop: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>Book No <InputLine name="bookNo" value={formData.bookNo} onChange={handleChange} width="80px" /></div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>U-DISE <InputLine name="udise" value={formData.udise} onChange={handleChange} width="120px" /></div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>Recognition No <InputLine name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} width="120px" /></div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>T.C. No <InputLine name="tcNo" value={formData.tcNo} onChange={handleChange} width="80px" /></div>
-               </div>
+               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold', marginTop: '10px', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Book No</span>
+                       <InputLine name="bookNo" value={formData.bookNo} onChange={handleChange} width="100%" />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1.5, marginLeft: '15px' }}>
+                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>U-DISE</span>
+                       <InputLine name="udise" value={formData.udise} onChange={handleChange} width="100%" />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1.5, marginLeft: '15px' }}>
+                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Recognition No</span>
+                       <InputLine name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} width="100%" />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1, marginLeft: '15px' }}>
+                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>T.C. No</span>
+                       <InputLine name="tcNo" value={formData.tcNo} onChange={handleChange} width="100%" />
+                    </div>
+                 </div>
 
                {/* MAIN TITLE & LOGOS */}
                <div style={{ textAlign: 'center', marginTop: '0px', marginBottom: '5px' }}>
