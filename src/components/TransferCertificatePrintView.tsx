@@ -181,21 +181,21 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             <div className="tc-content-z">
                {/* TOP HEADERS */}
                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold', marginTop: '10px', width: '100%' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1, marginRight: '30px' }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Book No</span>
-                       <InputLine name="bookNo" value={formData.bookNo} onChange={handleChange} width="100%" />
+                       <input name="bookNo" value={formData.bookNo} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', flex: 1.5, marginLeft: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1.2, marginRight: '30px' }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>U-DISE</span>
-                       <InputLine name="udise" value={formData.udise} onChange={handleChange} width="100%" />
+                       <input name="udise" value={formData.udise} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', flex: 1.5, marginLeft: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1.4, marginRight: '30px' }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Recognition No</span>
-                       <InputLine name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} width="100%" />
+                       <input name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', flex: 1, marginLeft: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1 }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>T.C. No</span>
-                       <InputLine name="tcNo" value={formData.tcNo} onChange={handleChange} width="100%" />
+                       <input name="tcNo" value={formData.tcNo} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
                  </div>
 
