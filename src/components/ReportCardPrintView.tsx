@@ -314,22 +314,22 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         
         .rc-container { font-family: 'Times New Roman', Times, serif; color: #000; }
 
-          .rc-watermark {
+          
+          img.rc-watermark {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60%;
-            height: 60%;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            opacity: 0.10;
-            z-index: -1;
+            width: 500px;
+            height: 500px;
+            object-fit: contain;
+            opacity: 0.15;
+            z-index: 0;
             pointer-events: none;
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
           }
+
 
         .editable-cell {
           width: 100%; height: 100%; border: 1px solid transparent; text-align: center; font-size: 12px; font-weight: bold; background: #f8fafc; font-family: 'Arial', sans-serif; transition: 0.2s;
@@ -337,7 +337,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .editable-cell:hover, .editable-cell:focus { border-color: #3b82f6; background: #fff; outline: none; }
         
         .rc-front-page, .rc-back-page {
-          background: white; max-width: 1000px; margin: 0 auto 32px auto; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); min-height: 1200px; padding: 50px; display: flex; flex-direction: column;
+          position: relative; z-index: 1; overflow: hidden; background: white; max-width: 1000px; margin: 0 auto 32px auto; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); min-height: 1200px; padding: 50px; display: flex; flex-direction: column;
         }
         .rc-header-flex { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; border-bottom: 4px solid #b91c1c; padding-bottom: 20px; margin-bottom: 40px; }
         .rc-logo-box { flex: 0 0 160px; text-align: center; }
@@ -430,7 +430,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             <React.Fragment key={student.id}>
               {/* PAGE 1: FRONT PAGE */}
               <div className="report-card-page rc-container rc-front-page">
-                  <div className="rc-watermark" style={{ backgroundImage: `url('${settings?.logoUrl || "/images/logo_circular.png"}')` }}></div>
+                  <img className="rc-watermark" src={settings?.logoUrl || "/images/logo_circular.png"} alt="watermark" />
                 <div className="rc-header-flex">
                   <div className="rc-logo-box"><img src={settings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" /></div>
                   <div className="rc-header-text">
@@ -480,7 +480,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
 
               {/* PAGE 2: BACK PAGE */}
               <div className="report-card-page rc-container rc-back-page">
-                  <div className="rc-watermark" style={{ backgroundImage: `url('${settings?.logoUrl || "/images/logo_circular.png"}')` }}></div>
+                  <img className="rc-watermark" src={settings?.logoUrl || "/images/logo_circular.png"} alt="watermark" />
                 <table className="rc-table">
                   <thead>
                     <tr>
