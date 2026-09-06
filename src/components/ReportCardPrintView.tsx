@@ -443,8 +443,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
 
                 <div className="rc-title-section">
                   <div className="rc-session">ACADEMIC SESSION {session}</div>
-                  <div className="rc-report-title">REPORT CARD FOR CLASS {className.toUpperCase()}</div>
-                </div>
+                  </div>
 
                 <div className="rc-profile-wrapper">
                   <div className="rc-profile-title">Student Profile:</div>
@@ -452,6 +451,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                     <tbody>
                       <tr><td className="label">Admission No.</td><td className="val">{student.admissionNo || '-'}</td></tr>
                       <tr><td className="label">Roll No.</td><td className="val">{student.rollNumber || '-'}</td></tr>
+                      <tr><td className="label">Class</td><td className="val">{className}</td></tr>
+                      <tr><td className="label">Section</td><td className="val"><input className="editable-cell" defaultValue={student.section || ""} style={{ textTransform: "uppercase", fontSize: "16px", fontWeight: "bold", width: "100%", background: "transparent", border: "none", outline: "none", textAlign: "left", padding: 0 }} placeholder="-" /></td></tr>
                       <tr><td className="label">Student's Name</td><td className="val">{student.firstName} {student.lastName}</td></tr>
                       <tr><td className="label">Father's Name</td><td className="val">{student.parentName || '-'}</td></tr>
                       <tr><td className="label">Mother's Name</td><td className="val">-</td></tr>
