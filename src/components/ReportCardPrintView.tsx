@@ -283,7 +283,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
               box-sizing: border-box !important;
               page-break-after: always;
               height: auto !important;
-              min-height: 0 !important;
+              min-height: 275mm !important;
               box-shadow: none !important;
               border: none !important;
             }
@@ -301,7 +301,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             /* Hide input styling when printing and fix width issues */
             input.editable-cell { 
               border: none !important; background: transparent !important; padding: 0 !important; outline: none !important; box-shadow: none !important; 
-              min-width: 0 !important; width: 100% !important; font-size: 11px !important; -webkit-appearance: none; appearance: none;
+              min-width: 0 !important; width: 100% !important; font-size: 12px !important; -webkit-appearance: none; appearance: none;
             }
             input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
           }
@@ -319,7 +319,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-logo-box { flex: 0 0 160px; text-align: center; }
         .rc-logo-box img { width: 160px; height: 160px; object-fit: contain; }
         .rc-header-text { flex: 1; text-align: center; padding: 0 10px; }
-        .rc-header-text h1 { font-size: 44px; font-weight: 900; color: #b91c1c; margin: 0 0 10px 0; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        .rc-header-text h1 { font-size: 38px; font-weight: 900; white-space: nowrap; color: #b91c1c; margin: 0 0 10px 0; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
         .rc-header-text h3 { font-size: 16px; color: #1e3a8a; margin: 0 0 8px 0; font-weight: bold; font-family: 'Arial', sans-serif;}
         .rc-header-text p { font-size: 13px; margin: 5px 0; font-weight: bold; color: #000; font-family: 'Arial', sans-serif;}
       
@@ -339,7 +339,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-sig-line { border-top: 1px solid #000; width: 220px; margin-bottom: 8px; }
       
         .rc-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed; }
-        .rc-table th, .rc-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 11px; }
+        .rc-table th, .rc-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 12px; }
         .rc-table th { background-color: #f1f5f9; font-weight: bold; }
         .rc-table td.subj { text-align: left; font-weight: bold; padding-left: 10px; }
         .rc-table tr.total-row td, .rc-table tr.perc-row td { font-weight: bold; background-color: #f8fafc; }
@@ -348,7 +348,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-footer-info td { padding: 8px 15px; border: 1px solid #000; font-size: 13px; font-weight: bold; }
         .rc-footer-info td.label { width: 40%; background-color: #f8fafc; }
       
-        .rc-grading-scale { margin-top: auto; font-size: 11px; font-family: 'Arial', sans-serif;}
+        .rc-grading-scale { margin-top: auto; font-size: 12px; font-family: 'Arial', sans-serif;}
         .rc-grading-scale p { margin: 0 0 10px 0; font-weight: bold; }
         .rc-grading-scale table { width: 100%; border-collapse: collapse; border: 2px solid #000; table-layout: fixed; }
         .rc-grading-scale th, .rc-grading-scale td { border: 1px solid #000; padding: 8px; text-align: center; }
@@ -463,12 +463,12 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                       <th rowSpan={2} style={{ width: '10%' }}>Grade</th>
                     </tr>
                     <tr>
-                      <th >Periodic<br/>Test (20)</th>
-                      <th >Half Yearly<br/>Marks (80)</th>
-                      <th >Marks Obt<br/>(100)</th>
-                      <th >Periodic<br/>Test (20)</th>
-                      <th >Annual<br/>Marks (80)</th>
-                      <th >Marks Obt<br/>(100)</th>
+                      <th >Periodic<br/>(20)</th>
+                      <th >Half Yr.<br/>(80)</th>
+                      <th >Obtained<br/>(100)</th>
+                      <th >Periodic<br/>(20)</th>
+                      <th >Annual<br/>(80)</th>
+                      <th >Obtained<br/>(100)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -500,8 +500,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                     <tr className="total-row">
                       <td className="subj" style={{ textAlign: 'center' }}>Total</td>
                       <td colSpan={6}></td>
-                      <td style={{ fontSize: '16px' }}>{grandTotal} / {possibleTotal}</td>
-                      <td></td>
+                      <td colSpan={2} style={{ fontSize: "15px", fontWeight: "bold" }}>{grandTotal} / {possibleTotal}</td>
                     </tr>
                     <tr className="perc-row">
                       <td className="subj" style={{ textAlign: 'center' }}>Percentage</td>
@@ -517,7 +516,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                   <thead>
                     <tr>
                       <th style={{ textAlign: 'left', width: '85%' }}>Co-Scholastic Areas: [on a five point (A-E) grading scale]</th>
-                      <th style={{ width: '15%' }}>Grade</th>
+                      <th style={{ width: '25%' }}>Grade</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -561,11 +560,11 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                   <p>Instruction: Grading scale for scholastic areas: Grading are awarded on an 8-point grading scale as follows-</p>
                   <div style={{ display: 'flex', gap: '20px' }}>
                     <table style={{ flex: 1 }}>
-                      <thead><tr><th>Marks Range</th><th style={{ width: '15%' }}>Grade</th></tr></thead>
+                      <thead><tr><th>Marks Range</th><th style={{ width: '25%' }}>Grade</th></tr></thead>
                       <tbody><tr><td>91-100</td><td>A1</td></tr><tr><td>81-90</td><td>A2</td></tr><tr><td>71-80</td><td>B1</td></tr><tr><td>61-70</td><td>B2</td></tr></tbody>
                     </table>
                     <table style={{ flex: 1 }}>
-                      <thead><tr><th>Marks Range</th><th style={{ width: '15%' }}>Grade</th></tr></thead>
+                      <thead><tr><th>Marks Range</th><th style={{ width: '25%' }}>Grade</th></tr></thead>
                       <tbody><tr><td>51-60</td><td>C1</td></tr><tr><td>41-50</td><td>C2</td></tr><tr><td>33-40</td><td>D</td></tr><tr><td>32 & Below</td><td>E (Failed)</td></tr></tbody>
                     </table>
                   </div>
