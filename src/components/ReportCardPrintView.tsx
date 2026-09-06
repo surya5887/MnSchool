@@ -339,7 +339,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-front-page, .rc-back-page {
           background: white; max-width: 1000px; margin: 0 auto 32px auto; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); min-height: 1200px; padding: 50px; display: flex; flex-direction: column;
         }
-        .rc-header-flex { display: flex; align-items: center; justify-content: center; border-bottom: 4px solid #b91c1c; padding-bottom: 20px; margin-bottom: 40px; }
+        .rc-header-flex { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; border-bottom: 4px solid #b91c1c; padding-bottom: 20px; margin-bottom: 40px; }
         .rc-logo-box { flex: 0 0 160px; text-align: center; }
         .rc-logo-box img { width: 160px; height: 160px; object-fit: contain; }
         .rc-header-text { flex: 1; text-align: left; padding: 0 10px 0 30px; }
@@ -347,32 +347,32 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-header-text h3 { font-size: 16px; color: #1e3a8a; margin: 0 0 8px 0; font-weight: bold; font-family: 'Arial', sans-serif;}
         .rc-header-text p { font-size: 13px; margin: 5px 0; font-weight: bold; color: #000; font-family: 'Arial', sans-serif;}
       
-        .rc-title-section { text-align: center; margin-bottom: 40px; }
+        .rc-title-section { position: relative; z-index: 1; text-align: center; margin-bottom: 40px; }
         .rc-session { font-size: 18px; font-weight: bold; background: #e2e8f0; border: 2px solid #b91c1c; display: inline-block; padding: 6px 30px; border-radius: 30px; margin-bottom: 15px; font-family: 'Arial', sans-serif; }
         .rc-report-title { font-size: 24px; font-weight: bold; color: #1e3a8a; text-decoration: underline; text-underline-offset: 6px; font-family: 'Arial', sans-serif; text-transform: uppercase; }
       
-        .rc-profile-wrapper { margin-top: 20px; flex-grow: 1; }
+        .rc-profile-wrapper { position: relative; z-index: 1; margin-top: 20px; flex-grow: 1; }
         .rc-profile-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; text-decoration: underline; }
         .rc-profile { width: 100%; border-collapse: collapse; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed; }
         .rc-profile td { padding: 14px 16px; border: 1px solid #000; font-size: 16px; }
         .rc-profile td.label { font-weight: bold; width: 35%; background-color: rgba(248, 250, 252, 0.7); }
         .rc-profile td.val { font-weight: bold; text-transform: uppercase; }
       
-        .rc-signatures { display: flex; justify-content: space-between; align-items: flex-start; padding: 0; font-family: 'Arial', sans-serif; margin-top: 50px;}
+        .rc-signatures { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; padding: 0; font-family: 'Arial', sans-serif; margin-top: 50px;}
         .rc-sig-block { text-align: center; font-size: 14px; font-weight: bold; max-width: 220px; word-wrap: break-word; line-height: 1.3; }
         .rc-sig-line { border-top: 1px solid #000; width: 220px; margin: 18px auto 8px auto; }
       
-        .rc-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed; }
+        .rc-table { position: relative; z-index: 1; width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed; }
         .rc-table th, .rc-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 12px; }
         .rc-table th { background-color: #f1f5f9; font-weight: bold; }
         .rc-table td.subj { text-align: left; font-weight: bold; padding-left: 10px; }
         .rc-table tr.total-row td, .rc-table tr.perc-row td { font-weight: bold; background-color: rgba(248, 250, 252, 0.7); }
       
-        .rc-footer-info { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed;}
+        .rc-footer-info { position: relative; z-index: 1; width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed;}
         .rc-footer-info td { padding: 8px 15px; border: 1px solid #000; font-size: 13px; font-weight: bold; }
         .rc-footer-info td.label { width: 40%; background-color: rgba(248, 250, 252, 0.7); }
       
-        .rc-grading-scale { margin-top: auto; font-size: 12px; font-family: 'Arial', sans-serif;}
+        .rc-grading-scale { position: relative; z-index: 1; margin-top: auto; font-size: 12px; font-family: 'Arial', sans-serif;}
         .rc-grading-scale p { margin: 0 0 10px 0; font-weight: bold; }
         .rc-grading-scale table { width: 100%; border-collapse: collapse; border: 2px solid #000; table-layout: fixed; }
         .rc-grading-scale th, .rc-grading-scale td { border: 1px solid #000; padding: 8px; text-align: center; }
