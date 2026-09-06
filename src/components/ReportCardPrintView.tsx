@@ -265,6 +265,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
     <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 9999, overflowY: 'auto', padding: '24px' }}>
       <style>{`
         @media print {
+            @page { size: A4 portrait; margin: 10mm; }
           body * { visibility: hidden; }
           .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100%; }
           .preview-overlay * { visibility: visible; }
@@ -276,7 +277,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             width: 100% !important; max-width: 100% !important;
             page-break-after: always; padding: 30px !important;
             height: 100vh !important; display: flex; flex-direction: column;
-          }
+           box-sizing: border-box !important;}
           .rc-table th, .rc-table td.label, .rc-profile td.label, .rc-grading-scale th { -webkit-print-color-adjust: exact; color-adjust: exact; }
           
           /* Hide input styling when printing */
@@ -286,7 +287,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         
         .rc-container { font-family: 'Times New Roman', Times, serif; color: #000; }
         .editable-cell {
-          width: 100%; height: 100%; border: 1px solid transparent; text-align: center; font-size: 14px; font-weight: bold; background: #f8fafc; font-family: 'Arial', sans-serif; transition: 0.2s;
+          width: 100%; height: 100%; border: 1px solid transparent; text-align: center; font-size: 12px; font-weight: bold; background: #f8fafc; font-family: 'Arial', sans-serif; transition: 0.2s;
         }
         .editable-cell:hover, .editable-cell:focus { border-color: #3b82f6; background: #fff; outline: none; }
         
@@ -299,7 +300,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-header-text { flex: 1; text-align: center; padding: 0 10px; }
         .rc-header-text h1 { font-size: 44px; font-weight: 900; color: #b91c1c; margin: 0 0 10px 0; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
         .rc-header-text h3 { font-size: 16px; color: #1e3a8a; margin: 0 0 8px 0; font-weight: bold; font-family: 'Arial', sans-serif;}
-        .rc-header-text p { font-size: 15px; margin: 5px 0; font-weight: bold; color: #000; font-family: 'Arial', sans-serif;}
+        .rc-header-text p { font-size: 13px; margin: 5px 0; font-weight: bold; color: #000; font-family: 'Arial', sans-serif;}
       
         .rc-title-section { text-align: center; margin-bottom: 40px; }
         .rc-session { font-size: 18px; font-weight: bold; background: #e2e8f0; border: 2px solid #b91c1c; display: inline-block; padding: 6px 30px; border-radius: 30px; margin-bottom: 15px; font-family: 'Arial', sans-serif; }
@@ -316,17 +317,17 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-sig-block { text-align: center; font-size: 16px; font-weight: bold; }
         .rc-sig-line { border-top: 1px solid #000; width: 220px; margin-bottom: 8px; }
       
-        .rc-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; border: 2px solid #000; font-family: 'Arial', sans-serif; }
-        .rc-table th, .rc-table td { border: 1px solid #000; padding: 10px 4px; text-align: center; font-size: 13px; }
+        .rc-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; }
+        .rc-table th, .rc-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 11px; }
         .rc-table th { background-color: #f1f5f9; font-weight: bold; }
         .rc-table td.subj { text-align: left; font-weight: bold; padding-left: 10px; }
         .rc-table tr.total-row td, .rc-table tr.perc-row td { font-weight: bold; background-color: #f8fafc; }
       
-        .rc-footer-info { width: 100%; border-collapse: collapse; margin-bottom: 40px; border: 2px solid #000; font-family: 'Arial', sans-serif;}
-        .rc-footer-info td { padding: 12px 15px; border: 1px solid #000; font-size: 15px; font-weight: bold; }
+        .rc-footer-info { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif;}
+        .rc-footer-info td { padding: 8px 15px; border: 1px solid #000; font-size: 13px; font-weight: bold; }
         .rc-footer-info td.label { width: 40%; background-color: #f8fafc; }
       
-        .rc-grading-scale { margin-top: auto; font-size: 13px; font-family: 'Arial', sans-serif;}
+        .rc-grading-scale { margin-top: auto; font-size: 11px; font-family: 'Arial', sans-serif;}
         .rc-grading-scale p { margin: 0 0 10px 0; font-weight: bold; }
         .rc-grading-scale table { width: 100%; border-collapse: collapse; border: 2px solid #000; }
         .rc-grading-scale th, .rc-grading-scale td { border: 1px solid #000; padding: 8px; text-align: center; }
