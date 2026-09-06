@@ -265,6 +265,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
     <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 9999, overflowY: 'auto', padding: '24px' }}>
       <style>{`
         @media print {
+            .rc-front-page, .rc-back-page { min-height: auto !important; box-shadow: none !important; margin: 0 !important; max-width: none !important; border: none !important; }
             @page { size: A4 portrait; margin: 10mm; }
           body * { visibility: hidden; }
           .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100%; }
@@ -276,7 +277,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             margin: 0 auto !important; box-shadow: none !important;
             width: 100% !important; max-width: 100% !important;
             page-break-after: always; padding: 30px !important;
-            height: 100vh !important; display: flex; flex-direction: column;
+             display: flex; flex-direction: column;
            box-sizing: border-box !important;}
           .rc-table th, .rc-table td.label, .rc-profile td.label, .rc-grading-scale th { -webkit-print-color-adjust: exact; color-adjust: exact; }
           
@@ -435,19 +436,19 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                 <table className="rc-table">
                   <thead>
                     <tr>
-                      <th rowSpan={2} style={{ textAlign: 'left', width: '18%' }}>Scholastic Areas</th>
+                      <th rowSpan={2} style={{ textAlign: 'left' }}>Scholastic Areas</th>
                       <th colSpan={3}>Half Yearly Examination</th>
                       <th colSpan={3}>Annual Examination</th>
-                      <th rowSpan={2} style={{ width: '8%' }}>Total<br/>(200)</th>
-                      <th rowSpan={2} style={{ width: '8%' }}>Grade</th>
+                      <th rowSpan={2} >Total<br/>(200)</th>
+                      <th rowSpan={2} >Grade</th>
                     </tr>
                     <tr>
-                      <th style={{ width: '9%' }}>Periodic<br/>Test (20)</th>
-                      <th style={{ width: '9%' }}>Half Yearly<br/>Marks (80)</th>
-                      <th style={{ width: '11%' }}>Marks Obt<br/>(100)</th>
-                      <th style={{ width: '9%' }}>Periodic<br/>Test (20)</th>
-                      <th style={{ width: '9%' }}>Annual<br/>Marks (80)</th>
-                      <th style={{ width: '11%' }}>Marks Obt<br/>(100)</th>
+                      <th >Periodic<br/>Test (20)</th>
+                      <th >Half Yearly<br/>Marks (80)</th>
+                      <th >Marks Obt<br/>(100)</th>
+                      <th >Periodic<br/>Test (20)</th>
+                      <th >Annual<br/>Marks (80)</th>
+                      <th >Marks Obt<br/>(100)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -496,7 +497,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                   <thead>
                     <tr>
                       <th style={{ textAlign: 'left' }}>Co-Scholastic Areas: [on a five point (A-E) grading scale]</th>
-                      <th style={{ width: '15%' }}>Grade</th>
+                      <th >Grade</th>
                     </tr>
                   </thead>
                   <tbody>
