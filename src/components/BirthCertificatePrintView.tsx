@@ -20,6 +20,7 @@ const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: 
     style={{
       background: 'transparent',
       border: 'none',
+        flex: width === '100%' ? 1 : 'none',
       borderBottom: '1.5px dotted #000',
       outline: 'none',
       width: width,
@@ -92,21 +93,21 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
                               @media print {
             body * { visibility: hidden; }
             body, html { margin: 0 !important; padding: 0 !important; height: 100% !important; background: white !important; }
-            @page { size: A4 portrait; margin: 10mm; }
+            @page { size: A4 portrait; margin: 0; }
             .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
             .preview-overlay * { visibility: visible; }
             .no-print { display: none !important; }
-            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100% !important; height: 100% !important; min-height: 277mm !important; max-width: none !important; padding: 8px !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
-            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; height: 100% !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important;  margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
             .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-            input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
-            input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
+            input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; border-bottom: 1.5px dotted #000 !important; background: transparent !important; }
+            
           }
            }
             .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 auto !important; width: 100% !important; max-width: none !important; padding: 0 !important; border-width: 4px !important; }
             .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border-width: 1.5px !important; }
-            input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
-            input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
+            input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; border-bottom: 1.5px dotted #000 !important; background: transparent !important; }
+            
             * { overflow: visible !important; }
           }
            }
