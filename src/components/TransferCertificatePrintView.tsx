@@ -23,7 +23,7 @@ const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: 
       borderBottom: '1.5px dotted #000',
       outline: 'none',
       width: width,
-      fontSize: '14px',
+      fontSize: '13.5px',
       fontWeight: 'bold',
       color: '#1a1a1a',
       padding: '0 4px',
@@ -91,15 +91,22 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
     <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 9999, overflowY: 'auto', padding: '24px' }}>
       <style>
         {`
-          @media print {
+                    @media print {
             body * { visibility: hidden; }
-            body, html { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; }
+            body, html { margin: 0 !important; padding: 0 !important; height: 100% !important; background: white !important; }
             @page { size: A4 portrait; margin: 10mm; }
-            .preview-overlay { position: static !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100%; height: 100%; overflow: visible !important; }
+            .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
             .preview-overlay * { visibility: visible; }
             .no-print { display: none !important; }
+            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100% !important; height: 100% !important; min-height: 277mm !important; max-width: none !important; padding: 5px !important; box-sizing: border-box !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 25px !important; border-width: 2px !important; height: 100% !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+            .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+            input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
+            input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
+          }
+           }
             .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 auto !important; width: 100% !important; max-width: none !important; padding: 0 !important; border-width: 4px !important; }
-            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 20px !important; border-width: 1.5px !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border-width: 1.5px !important; }
             input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
             input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
             * { overflow: visible !important; }
@@ -183,25 +190,25 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                </div>
 
                {/* MAIN TITLE & LOGOS */}
-               <div style={{ textAlign: 'center', marginTop: '30px', marginBottom: '30px' }}>
+               <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '15px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
                      <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo Left" />
                      <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
-                        <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '32px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+                        <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '28px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '14.5px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                      </div>
                      
                   </div>
-                  <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '8px 35px', borderRadius: '4px', marginTop: '25px', fontSize: '20px', fontWeight: 'bold', letterSpacing: '1px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
+                  <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '8px 35px', borderRadius: '4px', marginTop: '10px', fontSize: '20px', fontWeight: 'bold', letterSpacing: '1px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
                      LEAVING CERTIFICATE (BASIC SHIKSHA PARISHAD)
                   </div>
                </div>
 
                {/* 2 COLUMN GRID */}
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '14px' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
                   
                   {/* LEFT COLUMN */}
-                  <div>
+                  <div style={{ width: "48%" }}>
                      <div className="tc-field"><div className="tc-label">PEN No.:</div> <InputLine name="pen" value={formData.pen} onChange={handleChange} /></div>
                      <div className="tc-field"><div className="tc-label">1. Name of Student:</div> <InputLine name="studentName" value={formData.studentName} onChange={handleChange} /></div>
                      
@@ -231,7 +238,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                   </div>
 
                   {/* RIGHT COLUMN */}
-                  <div>
+                  <div style={{ width: "48%" }}>
                      <div className="tc-field"><div className="tc-label">APAAR ID:</div> <InputLine name="apaarId" value={formData.apaarId} onChange={handleChange} /></div>
                      
                      <div className="tc-field"><div className="tc-label">10. Date of Striking Off:</div> <InputLine name="dateOfStrikingOff" value={formData.dateOfStrikingOff} onChange={handleChange} /></div>

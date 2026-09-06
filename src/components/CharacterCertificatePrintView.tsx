@@ -80,15 +80,22 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
 
       <style>
         {`
-                    @media print {
+                              @media print {
             body * { visibility: hidden; }
-            body, html { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; }
+            body, html { margin: 0 !important; padding: 0 !important; height: 100% !important; background: white !important; }
             @page { size: A4 portrait; margin: 10mm; }
-            .preview-overlay { position: static !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100%; height: 100%; overflow: visible !important; }
+            .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
             .preview-overlay * { visibility: visible; }
             .no-print { display: none !important; }
+            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100% !important; height: 100% !important; min-height: 277mm !important; max-width: none !important; padding: 5px !important; box-sizing: border-box !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 25px !important; border-width: 2px !important; height: 100% !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+            .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+            input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
+            input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
+          }
+           }
             .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 auto !important; width: 100% !important; max-width: none !important; padding: 0 !important; border-width: 4px !important; }
-            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 20px !important; border-width: 1.5px !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border-width: 1.5px !important; }
             input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
             input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
             * { overflow: visible !important; }
@@ -157,7 +164,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                    </div>
                    
                 </div>
-                <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '10px 40px', borderRadius: '4px', marginTop: '30px', fontSize: '26px', fontWeight: 'bold', letterSpacing: '2px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
+                <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '10px 40px', borderRadius: '4px', marginTop: '15px', fontSize: '26px', fontWeight: 'bold', letterSpacing: '2px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
                    CHARACTER CERTIFICATE
                 </div>
              </div>
