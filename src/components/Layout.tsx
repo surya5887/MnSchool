@@ -23,6 +23,7 @@ const Layout: React.FC = () => {
     fetchNotifications();
   }, [location.pathname]);
   const [activeSession, setActiveSession] = useState(localStorage.getItem('activeSession') || 'Loading...');
+  const [schoolSettings, setSchoolSettings] = useState<any>(null);
   const [billingNotification, setBillingNotification] = useState('');
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -144,6 +145,7 @@ const Layout: React.FC = () => {
     const fetchSessionAndRunBilling = async () => {
       try {
         const settings = await getSchoolSettings();
+        if (settings) { setSchoolSettings(settings); }
         if (settings && settings.activeSession) {
           setActiveSession(settings.activeSession);
           localStorage.setItem('activeSession', settings.activeSession);
@@ -245,7 +247,7 @@ const Layout: React.FC = () => {
         </button>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
-          <img src={settings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+          <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
             <h2 style={{ fontSize: "1.1rem", margin: 0, whiteSpace: "nowrap" }}>MN Public School</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
