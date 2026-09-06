@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 import type { StudentData } from '../services/studentService';
 import { getAllExamMarks, saveExamMark, type ExamMarkData } from '../services/examService';
 import { getAllReportCardMeta, saveReportCardMeta, type ReportCardMetaData } from '../services/reportCardService';
@@ -15,6 +16,7 @@ interface ReportCardProps {
 }
 
 const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, className, maxMarks, onClose }) => {
+  const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
   const [marks, setMarks] = useState<ExamMarkData[]>([]);
   const [meta, setMeta] = useState<ReportCardMetaData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,9 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
 
   const fetchData = async () => {
     setLoading(true);
+      const set = await getSchoolSettings();
+      if(set) setSettings(set);
+
     try {
       const allMarks = await getAllExamMarks();
       const allMeta = await getAllReportCardMeta(session);
@@ -410,10 +415,10 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                 <div className="rc-header-flex">
                   <div className="rc-logo-box"><img src="/images/logo_circular.png" alt="School Logo" /></div>
                   <div className="rc-header-text">
-                    <h1>M.N. PUBLIC SCHOOL</h1>
-                    <h3>Recognition from UP Board (CBSE Pattern for English Medium)</h3>
-                    <p>Email: info@mnpublicschool.com &nbsp;&nbsp;|&nbsp;&nbsp; Mobile No.: 9997125152, 8430707174</p>
-                    <p>Harsoli - 251001, Distt. Muzaffarnagar (U.P.) India</p>
+                    <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+                      <h3>{settings?.recognitionText || 'Recognition from UP Board (CBSE Pattern for English Medium)'}</h3>
+                      <p>Email: {settings?.email || 'info@mnpublicschool.com'} &nbsp;&nbsp;|&nbsp;&nbsp; Mobile No.: {settings?.phone || '9997125152, 8430707174'}</p>
+                      <p>{settings?.address || 'Harsoli - 251001, Distt. Muzaffarnagar (U.P.) India'}</p>
                   </div>
                 </div>
 
@@ -450,7 +455,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                     <div style={{ visibility: 'hidden' }}>Line 1<br/>Line 2</div>
                   </div>
                   <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Signature of<br/>Class Teacher</div></div>
-                  <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Principal<br/>M.N. Public School</div></div>
+                  <div className="rc-sig-block"><div className="rc-sig-line"></div><div>Principal<br/>{settings?.schoolName || "M.N. Public School"}</div></div>
                 </div>
               </div>
 

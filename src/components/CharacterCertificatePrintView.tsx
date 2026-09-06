@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
 import type { StudentData } from '../services/studentService';
 import { ArrowLeft, Printer } from 'lucide-react';
 
@@ -33,6 +34,13 @@ const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: 
 );
 
 const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, onClose }) => {
+  const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
+  useEffect(() => {
+    getSchoolSettings().then(set => {
+      if(set) setSettings(set);
+    });
+  }, []);
+
   const [formData, setFormData] = useState({
     issueDate: new Date().toISOString().split('T')[0],
     character: 'GOOD',
@@ -132,8 +140,8 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
                    <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Left" />
                    <div style={{ textAlign: 'center' }}>
-                      <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>M.N. PUBLIC SCHOOL</h1>
-                      <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA</p>
+                      <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                       <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
                    </div>
                    <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Right" />
