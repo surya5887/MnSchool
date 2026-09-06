@@ -101,7 +101,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
               .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
               .preview-overlay * { visibility: visible; }
               .no-print { display: none !important; }
-              .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 5mm auto !important; width: calc(100vw - 10mm) !important; height: calc(100vh - 10mm) !important; max-height: calc(100vh - 10mm) !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
+              .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
               .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
               .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
@@ -131,7 +131,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
-              opacity: 0.06;
+              opacity: 0.12; pointer-events: none;
               width: 550px;
               height: 550px;
               background-size: contain;
@@ -151,6 +151,12 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                margin-bottom: 6px;
             }
             
+            
+            .tc-details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+            .tc-details-table td { border: 1px solid #000; padding: 4px 8px; vertical-align: middle; }
+            .tc-details-table td.label-col { font-weight: bold; width: 40%; }
+            .tc-details-table input { width: 100%; border: none; background: transparent; outline: none; font-size: 14px; font-family: inherit; font-weight: bold; }
+
             .tc-label, .cc-label, .bc-label {
                font-weight: bold;
                white-space: nowrap;
@@ -170,12 +176,12 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
 
       <div className="tc-container">
          <div className="tc-inner-border">
-            <div className="tc-watermark" style={{ backgroundImage: `url('${settings?.logoUrl || "/images/logo_circular.png"}')` }}></div>
+            <img className="tc-watermark" src={settings?.logoUrl || "/images/logo_circular.png"} alt="Watermark" style={{ objectFit: "contain" }} />
             
             <div className="tc-content-z">
                {/* TOP HEADERS */}
-               <div style={{ display: 'flex', flexDirection: 'column', fontSize: '16px', fontWeight: 'bold' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>Book No <InputLine name="bookNo" value={formData.bookNo} onChange={handleChange} width="80px" /></div>
+               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>Book No <InputLine name="bookNo" value={formData.bookNo} onChange={handleChange} width="80px" /></div>
                   <div style={{ display: 'flex', alignItems: 'center' }}>U-DISE <InputLine name="udise" value={formData.udise} onChange={handleChange} width="120px" /></div>
                   <div style={{ display: 'flex', alignItems: 'center' }}>Recognition No <InputLine name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} width="120px" /></div>
                   <div style={{ display: 'flex', alignItems: 'center' }}>T.C. No <InputLine name="tcNo" value={formData.tcNo} onChange={handleChange} width="80px" /></div>
@@ -197,64 +203,40 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                </div>
 
                {/* 2 COLUMN GRID */}
-               <div style={{ display: 'flex', flexDirection: 'column', fontSize: '16px' }}>
-                  
-                  {/* LEFT COLUMN */}
-                  <div style={{ width: "100%" }}>
-                     <div className="tc-field"><div className="tc-label">PEN No.</div> <InputLine name="pen" value={formData.pen} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">1. Name of Student</div> <InputLine name="studentName" value={formData.studentName} onChange={handleChange} /></div>
-                     
-                     <div style={{ marginBottom: '6px' }}>
-                        <div className="tc-label">2. Date of Birth</div>
-                        <div className="tc-field" style={{ paddingLeft: '20px' }}><div className="tc-label" style={{ minWidth: '90px' }}>In Words</div> <InputLine name="dobWords" value={formData.dobWords} onChange={handleChange} /></div>
-                        <div className="tc-field" style={{ paddingLeft: '20px', marginBottom: '0' }}><div className="tc-label" style={{ minWidth: '90px' }}>In Figures</div> <InputLine name="dobNumbers" value={formData.dobNumbers} onChange={handleChange} /></div>
-                     </div>
+               
+                 <table className="tc-details-table">
+                    <tbody>
+                       <tr><td className="label-col">PEN No.</td><td><input name="pen" value={formData.pen} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">1. Name of Student</td><td><input name="studentName" value={formData.studentName} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">2. Date of Birth (In Words)</td><td><input name="dobWords" value={formData.dobWords} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;(In Figures)</td><td><input name="dobNumbers" value={formData.dobNumbers} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">3. Mother's Name (Smt.)</td><td><input name="motherName" value={formData.motherName} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">4. Father's Name (Shri)</td><td><input name="fatherName" value={formData.fatherName} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">5. Caste / Religion</td><td><input name="casteReligion" value={formData.casteReligion} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">6. Residence / Vill. / Post</td><td><input name="residenceMohalla" value={formData.residenceMohalla} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;Tehsil & District</td><td><input name="tehsilDistrict" value={formData.tehsilDistrict} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">7. Duration of Residence in U.P.</td><td><input name="residenceUp" value={formData.residenceUp} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">8. Date of First Admission</td><td><input name="firstAdmissionDate" value={formData.firstAdmissionDate} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;Admission Register No.</td><td><input name="admissionRegisterNo" value={formData.admissionRegisterNo} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">9. Date of Leaving School</td><td><input name="dateOfLeaving" value={formData.dateOfLeaving} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">APAAR ID</td><td><input name="apaarId" value={formData.apaarId} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">10. Date of Striking Off</td><td><input name="dateOfStrikingOff" value={formData.dateOfStrikingOff} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">11. Reason for Striking Off</td><td><input name="reasonForStrikingOff" value={formData.reasonForStrikingOff} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">12. Character</td><td><input name="character" value={formData.character} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">13. Higher Exam Passed</td><td><input name="higherExamPassed" value={formData.higherExamPassed} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;& Date</td><td><input name="higherExamDate" value={formData.higherExamDate} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">14. Class Removed From</td><td><input name="classRemovedFrom" value={formData.classRemovedFrom} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">15. Language (Hindi/Urdu)</td><td><input name="studentLanguage" value={formData.studentLanguage} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">16. Occupation</td><td><input name="occupation" value={formData.occupation} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">17. Student's Aadhaar No.</td><td><input name="aadhaarNo" value={formData.aadhaarNo} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">18. Status According to Class</td><td><input name="statusByClass" value={formData.statusByClass} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">19. Number of School Days</td><td><input name="schoolOpenDays" value={formData.schoolOpenDays} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">20. Number of Days Present</td><td><input name="presentDays" value={formData.presentDays} onChange={handleChange} /></td></tr>
+                       <tr><td className="label-col">21. Any Other Remarks</td><td><input name="other" value={formData.other} onChange={handleChange} /></td></tr>
+                    </tbody>
+                 </table>
 
-                     <div className="tc-field"><div className="tc-label">3. Mother's Name (Smt.)</div> <InputLine name="motherName" value={formData.motherName} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">4. Father's Name (Shri)</div> <InputLine name="fatherName" value={formData.fatherName} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">5. Caste / Religion</div> <InputLine name="casteReligion" value={formData.casteReligion} onChange={handleChange} /></div>
-                     
-                     <div style={{ marginBottom: '6px' }}>
-                        <div className="tc-field"><div className="tc-label">6. Residence / Vill. / Post</div> <InputLine name="residenceMohalla" value={formData.residenceMohalla} onChange={handleChange} /></div>
-                        <div className="tc-field" style={{ paddingLeft: '20px', marginBottom: '0' }}><div className="tc-label" style={{ minWidth: '120px' }}>Tehsil & District</div> <InputLine name="tehsilDistrict" value={formData.tehsilDistrict} onChange={handleChange} /></div>
-                     </div>
-
-                     <div className="tc-field"><div className="tc-label">7. Duration of Residence in U.P.</div> <InputLine name="residenceUp" value={formData.residenceUp} onChange={handleChange} /></div>
-                     
-                     <div style={{ marginBottom: '6px' }}>
-                        <div className="tc-field"><div className="tc-label">8. Date of First Admission</div> <InputLine name="firstAdmissionDate" value={formData.firstAdmissionDate} onChange={handleChange} /></div>
-                        <div className="tc-field" style={{ paddingLeft: '20px', marginBottom: '0' }}><div className="tc-label" style={{ minWidth: '150px' }}>Admission Register No.</div> <InputLine name="admissionRegisterNo" value={formData.admissionRegisterNo} onChange={handleChange} /></div>
-                     </div>
-
-                     <div className="tc-field"><div className="tc-label">9. Date of Leaving School</div> <InputLine name="dateOfLeaving" value={formData.dateOfLeaving} onChange={handleChange} /></div>
-                  </div>
-
-                  {/* RIGHT COLUMN */}
-                  <div style={{ width: "100%" }}>
-                     <div className="tc-field"><div className="tc-label">APAAR ID</div> <InputLine name="apaarId" value={formData.apaarId} onChange={handleChange} /></div>
-                     
-                     <div className="tc-field"><div className="tc-label">10. Date of Striking Off</div> <InputLine name="dateOfStrikingOff" value={formData.dateOfStrikingOff} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">11. Reason for Striking Off</div> <InputLine name="reasonForStrikingOff" value={formData.reasonForStrikingOff} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">12. Character</div> <InputLine name="character" value={formData.character} onChange={handleChange} /></div>
-                     
-                     <div style={{ marginBottom: '6px' }}>
-                        <div className="tc-field"><div className="tc-label">13. Higher Exam Passed</div> <InputLine name="higherExamPassed" value={formData.higherExamPassed} onChange={handleChange} /></div>
-                        <div className="tc-field" style={{ paddingLeft: '20px', marginBottom: '0' }}><div className="tc-label" style={{ minWidth: '90px' }}>& Date</div> <InputLine name="higherExamDate" value={formData.higherExamDate} onChange={handleChange} /></div>
-                     </div>
-
-                     <div className="tc-field"><div className="tc-label">14. Class Removed From</div> <InputLine name="classRemovedFrom" value={formData.classRemovedFrom} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">15. Language (Hindi/Urdu)</div> <InputLine name="studentLanguage" value={formData.studentLanguage} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">16. Occupation</div> <InputLine name="occupation" value={formData.occupation} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">17. Student's Aadhaar No.</div> <InputLine name="aadhaarNo" value={formData.aadhaarNo} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">18. Status According to Class</div> <InputLine name="statusByClass" value={formData.statusByClass} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">19. Number of School Days</div> <InputLine name="schoolOpenDays" value={formData.schoolOpenDays} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">20. Number of Days Present</div> <InputLine name="presentDays" value={formData.presentDays} onChange={handleChange} /></div>
-                     <div className="tc-field"><div className="tc-label">21. Any Other Remarks</div> <InputLine name="other" value={formData.other} onChange={handleChange} /></div>
-                  </div>
-
-               </div>
-
-               {/* FOOTER */}
+                 {/* FOOTER */}
                <div style={{ marginTop: '50px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div>
                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px', fontSize: '15px' }}>

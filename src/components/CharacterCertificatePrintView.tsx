@@ -90,7 +90,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
               .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
               .preview-overlay * { visibility: visible; }
               .no-print { display: none !important; }
-              .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 5mm auto !important; width: calc(100vw - 10mm) !important; height: calc(100vh - 10mm) !important; max-height: calc(100vh - 10mm) !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
+              .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
               .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
               .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
