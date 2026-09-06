@@ -246,7 +246,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
   if (loading) return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(229, 231, 235, 0.8)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'white', padding: '40px 60px', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', minWidth: '350px' }}>
-         <img src="/images/logo_circular.png" alt="Logo" style={{ width: '80px', height: '80px', animation: 'pulse-slow 2s infinite' }} />
+         <img src={settings?.logoUrl || "/images/logo_circular.png"} alt="Logo" style={{ width: '80px', height: '80px', animation: 'pulse-slow 2s infinite' }} />
          <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#1e3a8a', letterSpacing: '0.5px' }}>Generating Report Card...</div>
          <div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
             <div style={{ width: '50%', height: '100%', background: 'linear-gradient(90deg, #1e3a8a, #b91c1c)', borderRadius: '10px', animation: 'loading-slide 1.5s infinite ease-in-out' }}></div>
@@ -413,7 +413,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
               {/* PAGE 1: FRONT PAGE */}
               <div className="report-card-page rc-container rc-front-page">
                 <div className="rc-header-flex">
-                  <div className="rc-logo-box"><img src="/images/logo_circular.png" alt="School Logo" /></div>
+                  <div className="rc-logo-box"><img src={settings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" /></div>
                   <div className="rc-header-text">
                     <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                       <h3>{settings?.recognitionText || 'Recognition from UP Board (CBSE Pattern for English Medium)'}</h3>

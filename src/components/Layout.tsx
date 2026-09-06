@@ -245,7 +245,7 @@ const Layout: React.FC = () => {
         </button>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
-          <img src="/images/logo_circular.png" alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+          <img src={settings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div>
             <h2 style={{ fontSize: "1.1rem", margin: 0, whiteSpace: "nowrap" }}>MN Public School</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>

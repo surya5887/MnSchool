@@ -115,7 +115,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
             opacity: 0.08;
             width: 550px;
             height: 550px;
-            background-image: url('/images/logo_circular.png');
+            
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -138,7 +138,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
              {/* Header */}
              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
-                   <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Left" />
+                   <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo Left" />
                    <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
                       <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>

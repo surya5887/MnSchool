@@ -1,7 +1,8 @@
 import WhatsAppSetup from './WhatsAppSetup';
 import { getAllAdmins, updateAdminCredentials } from '../services/adminService';
 import { Lock, Edit, Save, X as XIcon, Building2, Phone, Mail, Calendar, User, ShieldCheck, Settings as SettingsIcon, MessageSquare } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import ImageCropperModal from '../components/ImageCropperModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, PenTool, Check } from 'lucide-react';
 import { logAction } from '../services/auditService';
@@ -14,6 +15,27 @@ const SystemSettings: React.FC = () => {
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
   const [newSessionInput, setNewSessionInput] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        setCropImageSrc(reader.result?.toString() || null);
+      });
+      reader.readAsDataURL(file);
+    }
+    // reset input
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const onCropComplete = (croppedBase64: string) => {
+    setSettings(prev => prev ? { ...prev, logoUrl: croppedBase64 } : prev);
+    setCropImageSrc(null);
+  };
+
   const [admins, setAdmins] = useState<any[]>([]);
   const [editingAdmin, setEditingAdmin] = useState<string | null>(null);
   const [editAdminData, setEditAdminData] = useState({ name: '', email: '', password: '' });
@@ -116,6 +138,18 @@ const SystemSettings: React.FC = () => {
                   </h2>
                   
                   <div className="settings-grid" style={{ display: 'grid', gap: '24px' }}>
+                      <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+                        <div>
+                           <img src={settings?.logoUrl || '/images/logo_circular.png'} alt="School Logo" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #e2e8f0' }} />
+                        </div>
+                        <div>
+                           <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: 'var(--text-primary)' }}>School Logo</h3>
+                           <p style={{ margin: '0 0 15px 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>This logo will appear on all certificates and report cards.</p>
+                           <button onClick={() => fileInputRef.current?.click()} style={{ padding: '8px 16px', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Change Logo</button>
+                           <input type="file" ref={fileInputRef} onChange={onFileChange} accept="image/*" style={{ display: 'none' }} />
+                        </div>
+                      </div>
+
                     <div style={{ gridColumn: '1 / -1' }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
                         <PenTool size={16} /> School Name (Appears on Receipts)
@@ -405,6 +439,15 @@ const SystemSettings: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {cropImageSrc && (
+        <ImageCropperModal
+          imageSrc={cropImageSrc}
+          onClose={() => setCropImageSrc(null)}
+          onCropComplete={onCropComplete}
+        />
+      )}
+
     </>
   );
 };
