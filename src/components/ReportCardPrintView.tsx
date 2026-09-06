@@ -341,8 +341,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-profile td.val { font-weight: bold; text-transform: uppercase; }
       
         .rc-signatures { display: flex; justify-content: space-between; align-items: flex-end; padding: 0; font-family: 'Arial', sans-serif; margin-top: 50px;}
-        .rc-sig-block { text-align: center; font-size: 16px; font-weight: bold; }
-        .rc-sig-line { border-top: 1px solid #000; width: 220px; margin-bottom: 8px; }
+        .rc-sig-block { text-align: center; font-size: 14px; font-weight: bold; max-width: 220px; word-wrap: break-word; line-height: 1.3; }
+        .rc-sig-line { border-top: 1px solid #000; width: 220px; margin: 0 auto 8px auto; }
       
         .rc-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed; }
         .rc-table th, .rc-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 12px; }
