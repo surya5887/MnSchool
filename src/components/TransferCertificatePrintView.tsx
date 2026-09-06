@@ -103,7 +103,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
               .no-print { display: none !important; }
               .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
               .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
-              .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+              .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 15px; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
             }
             
@@ -152,10 +152,10 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             }
             
             
-            .tc-details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
-            .tc-details-table td { border: 1px solid #000; padding: 4px 8px; vertical-align: middle; }
-            .tc-details-table td.label-col { font-weight: bold; width: 40%; }
-            .tc-details-table input { width: 100%; border: none; background: transparent; outline: none; font-size: 14px; font-family: inherit; font-weight: bold; }
+            .tc-details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 15px; }
+              .tc-details-table td { border: 1.5px solid #444; padding: 6px 12px; vertical-align: middle; }
+              .tc-details-table td.label-col { font-weight: bold; width: 40%; background-color: rgba(0, 0, 0, 0.03); }
+              .tc-details-table input { width: 100%; border: none; background: transparent; outline: none; font-size: 15px; font-family: inherit; font-weight: bold; color: #000; }
 
             .tc-label, .cc-label, .bc-label {
                font-weight: bold;
@@ -180,7 +180,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             
             <div className="tc-content-z">
                {/* TOP HEADERS */}
-               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold', marginTop: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>Book No <InputLine name="bookNo" value={formData.bookNo} onChange={handleChange} width="80px" /></div>
                   <div style={{ display: 'flex', alignItems: 'center' }}>U-DISE <InputLine name="udise" value={formData.udise} onChange={handleChange} width="120px" /></div>
                   <div style={{ display: 'flex', alignItems: 'center' }}>Recognition No <InputLine name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} width="120px" /></div>
@@ -189,9 +189,9 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
 
                {/* MAIN TITLE & LOGOS */}
                <div style={{ textAlign: 'center', marginTop: '0px', marginBottom: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
-                     <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo Left" />
-                     <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                       <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo" />
+                       <div style={{ textAlign: 'left' }}>
                         <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '28px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '16px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                      </div>
@@ -237,7 +237,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                  </table>
 
                  {/* FOOTER */}
-               <div style={{ marginTop: '50px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+               <div style={{ marginTop: '40px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div>
                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px', fontSize: '15px' }}>
                         <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>Date of Issue</div> 
