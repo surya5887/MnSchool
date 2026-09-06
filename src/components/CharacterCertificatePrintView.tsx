@@ -80,9 +80,20 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
 
       <style>
         {`
-          @media print {
-            .print-hide { display: none !important; }
-            body { background: white; margin: 0; padding: 0; }
+                    @media print {
+            body * { visibility: hidden; }
+            body, html { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; }
+            @page { size: A4 portrait; margin: 10mm; }
+            .preview-overlay { position: static !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100%; height: 100%; overflow: visible !important; }
+            .preview-overlay * { visibility: visible; }
+            .no-print { display: none !important; }
+            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 auto !important; width: 100% !important; max-width: none !important; padding: 0 !important; border-width: 4px !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 20px !important; border-width: 1.5px !important; }
+            input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
+            input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
+            * { overflow: visible !important; }
+          }
+           }
             .certificate-container { margin: 0 auto !important; box-shadow: none !important; width: 100% !important; padding: 20px !important; }
             input.cert-editable { border-color: transparent !important; }
             input.cert-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
