@@ -105,6 +105,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
               .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
               .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 15px; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
+              .tc-dotted-input { border-bottom: 1.5px dotted #000 !important; }
             }
             
             .tc-container, .cc-container, .bc-container {
@@ -152,10 +153,10 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
             }
             
             
-            .tc-details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 15px; }
-              .tc-details-table td { border: 1.5px solid #444; padding: 6px 12px; vertical-align: middle; }
+            .tc-details-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 14.5px; }
+              .tc-details-table td { border: 1.5px solid #444; padding: 5px 8px; vertical-align: middle; }
               .tc-details-table td.label-col { font-weight: bold; width: 40%; background-color: rgba(0, 0, 0, 0.03); }
-              .tc-details-table input { width: 100%; border: none; background: transparent; outline: none; font-size: 15px; font-family: inherit; font-weight: bold; color: #000; }
+              .tc-details-table input { width: 100%; border: none; background: transparent; outline: none; font-size: 14.5px; font-family: inherit; font-weight: bold; color: #000; }
 
             .tc-label, .cc-label, .bc-label {
                font-weight: bold;
@@ -183,33 +184,33 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold', marginTop: '10px', width: '100%' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1, marginRight: '30px' }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Book No</span>
-                       <input name="bookNo" value={formData.bookNo} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
+                       <input name="bookNo" value={formData.bookNo} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1.2, marginRight: '30px' }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>U-DISE</span>
-                       <input name="udise" value={formData.udise} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
+                       <input name="udise" value={formData.udise} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1.4, marginRight: '30px' }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Recognition No</span>
-                       <input name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
+                       <input name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1 }}>
                        <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>T.C. No</span>
-                       <input name="tcNo" value={formData.tcNo} onChange={handleChange} className="tc-editable" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
+                       <input name="tcNo" value={formData.tcNo} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
                     </div>
                  </div>
 
                {/* MAIN TITLE & LOGOS */}
                <div style={{ textAlign: 'center', marginTop: '0px', marginBottom: '5px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-                       <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo" />
+                       <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '90px', height: '90px' }} alt="Logo" />
                        <div style={{ textAlign: 'left' }}>
-                        <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '28px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
-                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '16px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
+                        <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '26px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                      </div>
                      
                   </div>
-                  <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '8px 35px', borderRadius: '4px', marginTop: '15px', fontSize: '20px', fontWeight: 'bold', letterSpacing: '1px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
+                  <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '6px 30px', borderRadius: '4px', marginTop: '12px', fontSize: '18px', fontWeight: 'bold', letterSpacing: '1px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
                      LEAVING CERTIFICATE (BASIC SHIKSHA PARISHAD)
                   </div>
                </div>
@@ -219,6 +220,7 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                  <table className="tc-details-table">
                     <tbody>
                        <tr><td className="label-col">PEN No.</td><td><input name="pen" value={formData.pen} onChange={handleChange} /></td></tr>
+                         <tr><td className="label-col">APAAR ID</td><td><input name="apaarId" value={formData.apaarId} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">1. Name of Student</td><td><input name="studentName" value={formData.studentName} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">2. Date of Birth (In Words)</td><td><input name="dobWords" value={formData.dobWords} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;(In Figures)</td><td><input name="dobNumbers" value={formData.dobNumbers} onChange={handleChange} /></td></tr>
@@ -231,7 +233,6 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                        <tr><td className="label-col">8. Date of First Admission</td><td><input name="firstAdmissionDate" value={formData.firstAdmissionDate} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;Admission Register No.</td><td><input name="admissionRegisterNo" value={formData.admissionRegisterNo} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">9. Date of Leaving School</td><td><input name="dateOfLeaving" value={formData.dateOfLeaving} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">APAAR ID</td><td><input name="apaarId" value={formData.apaarId} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">10. Date of Striking Off</td><td><input name="dateOfStrikingOff" value={formData.dateOfStrikingOff} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">11. Reason for Striking Off</td><td><input name="reasonForStrikingOff" value={formData.reasonForStrikingOff} onChange={handleChange} /></td></tr>
                        <tr><td className="label-col">12. Character</td><td><input name="character" value={formData.character} onChange={handleChange} /></td></tr>
@@ -249,23 +250,23 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                  </table>
 
                  {/* FOOTER */}
-               <div style={{ marginTop: '40px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                  <div>
-                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px', fontSize: '15px' }}>
-                        <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>Date of Issue</div> 
-                        <InputLine name="writingDate" value={formData.writingDate} onChange={handleChange} width="40px" /> 
-                        <div style={{ whiteSpace: 'nowrap', margin: '0 10px', fontWeight: 'bold' }}>Month</div> 
-                        <InputLine name="writingMonth" value={formData.writingMonth} onChange={handleChange} width="40px" /> 
-                        <div style={{ whiteSpace: 'nowrap', margin: '0 10px', fontWeight: 'bold' }}>Year: 20</div> 
-                        <InputLine name="writingYear" value={formData.writingYear} onChange={handleChange} width="40px" />
-                     </div>
-                     <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px' }}>
-                        <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>School Mohalla / Location</div> 
-                        <InputLine name="schoolMohalla" value={formData.schoolMohalla} onChange={handleChange} width="220px" />
-                     </div>
-                  </div>
+                 <div style={{ marginTop: '40px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                    <div style={{ flex: 1 }}>
+                       <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '10px', fontSize: '15px' }}>
+                          <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>Date of Issue</div> 
+                          <input name="writingDate" value={formData.writingDate} onChange={handleChange} className="tc-dotted-input" style={{ width: '50px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} /> 
+                          <div style={{ whiteSpace: 'nowrap', margin: '0 10px', fontWeight: 'bold' }}>Month</div> 
+                          <input name="writingMonth" value={formData.writingMonth} onChange={handleChange} className="tc-dotted-input" style={{ width: '50px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} /> 
+                          <div style={{ whiteSpace: 'nowrap', margin: '0 10px', fontWeight: 'bold' }}>Year: 20</div> 
+                          <input name="writingYear" value={formData.writingYear} onChange={handleChange} className="tc-dotted-input" style={{ width: '50px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} />
+                       </div>
+                       <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '15px' }}>
+                          <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>School Mohalla / Location</div> 
+                          <input name="schoolMohalla" value={formData.schoolMohalla} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, maxWidth: '300px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px' }} />
+                       </div>
+                    </div>
 
-                  <div style={{ textAlign: 'center', width: '250px' }}>
+                    <div style={{ textAlign: 'center', width: '250px' }}>
                      <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
                      <div style={{ fontWeight: 'bold', fontSize: '17px' }}>Signature of Principal</div>
                      <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
