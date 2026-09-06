@@ -125,6 +125,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
     setPrintMode(mode);
     setSaving(true);
     try {
+      const promises: Promise<any>[] = [];
       for (const student of students) {
         const studentClass = classes.find(c => c.className === className);
         let subjects = studentClass?.subjects || [];
@@ -136,26 +137,25 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
           const key = `${student.id}_${subj}`;
           const m = localMarks[key];
           if (m) {
-            await saveExamMark({
+            promises.push(saveExamMark({
               studentId: student.id as string,
               examTerm: 'Half Yearly Exam',
               subject: subj,
               theoryMarks: m.halfYearlyTerm,
               practicalMarks: m.halfYearlyPeriodic
-            });
-            await saveExamMark({
+            }));
+            promises.push(saveExamMark({
               studentId: student.id as string,
               examTerm: 'Annual Exam',
               subject: subj,
               theoryMarks: m.annualTerm,
               practicalMarks: m.annualPeriodic
-            });
+            }));
           }
         }
 
         const mt = localMeta[student.id!];
         if (mt) {
-          // If remarks were auto-generated but not saved yet, calculate them here
           let finalRemarks = mt.remarks;
           if (!finalRemarks) {
              let grandTotal = 0;
@@ -171,8 +171,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
              const isPass = possibleTotal > 0 && ((grandTotal/possibleTotal)*100) >= 33;
              finalRemarks = isPass ? 'EXCELLENT' : 'NEEDS IMPROVEMENT';
           }
-
-          await saveReportCardMeta({
+          promises.push(saveReportCardMeta({
             studentId: student.id as string,
             session,
             workEducation: mt.work,
@@ -181,19 +180,21 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             teacherRemarks: finalRemarks,
             issueDate: mt.date,
             attendance: mt.attendance
-          });
+          }));
         }
       }
       
-      // Delay slightly so save completes visually before print dialog blocks thread
+      await Promise.all(promises);
+      
+      // Extremely short timeout just to allow React state to commit printMode class
       setTimeout(() => {
         window.print();
-      }, 500);
+        setSaving(false);
+      }, 50);
 
     } catch (err) {
       console.error(err);
       alert('Error saving data.');
-    } finally {
       setSaving(false);
     }
   };
@@ -301,7 +302,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             /* Hide input styling when printing and fix width issues */
             input.editable-cell { 
               border: none !important; background: transparent !important; padding: 0 !important; outline: none !important; box-shadow: none !important; 
-              min-width: 0 !important; width: 100% !important; font-size: 12px !important; -webkit-appearance: none; appearance: none;
+              min-width: 0 !important; width: 100% !important; font-size: 13px !important; font-weight: bold !important; color: #000 !important; -webkit-appearance: none; appearance: none;
             }
             input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
           }
@@ -334,7 +335,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-profile td.label { font-weight: bold; width: 35%; background-color: #f8fafc; }
         .rc-profile td.val { font-weight: bold; text-transform: uppercase; }
       
-        .rc-signatures { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 20px; font-family: 'Arial', sans-serif; margin-top: 50px;}
+        .rc-signatures { display: flex; justify-content: space-between; align-items: flex-end; padding: 0; font-family: 'Arial', sans-serif; margin-top: 50px;}
         .rc-sig-block { text-align: center; font-size: 16px; font-weight: bold; }
         .rc-sig-line { border-top: 1px solid #000; width: 220px; margin-bottom: 8px; }
       
@@ -441,8 +442,10 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                 <div className="rc-signatures">
                   <div className="rc-sig-block" style={{ textAlign: 'left' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '8px' }}>
-                      <span style={{ fontWeight: 'bold' }}>Date:</span> 
-                      <input type="text" className="editable-cell" style={{width: '150px', marginLeft: '10px', textAlign: 'center', borderBottom: '1px solid #000', background: 'transparent'}} value={metaData.date} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, date: e.target.value}})} />
+                      <span style={{ fontWeight: 'bold', fontSize: '15px' }}>Date:</span> 
+                        <div style={{ width: '150px', marginLeft: '10px', borderBottom: '1px solid #000' }}>
+                          <input type="text" className="editable-cell" style={{width: '100%', textAlign: 'center', background: 'transparent', border: 'none', outline: 'none', fontSize: '15px', fontWeight: 'bold'}} value={metaData.date} onChange={e => setLocalMeta({...localMeta, [student.id!]: {...metaData, date: e.target.value}})} />
+                        </div>
                     </div>
                     <div style={{ visibility: 'hidden' }}>Line 1<br/>Line 2</div>
                   </div>
