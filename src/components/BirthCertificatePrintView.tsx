@@ -96,8 +96,8 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
             .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
             .preview-overlay * { visibility: visible; }
             .no-print { display: none !important; }
-            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100% !important; height: 100% !important; min-height: 277mm !important; max-width: none !important; padding: 5px !important; box-sizing: border-box !important; }
-            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 25px !important; border-width: 2px !important; height: 100% !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100% !important; height: 100% !important; min-height: 277mm !important; max-width: none !important; padding: 8px !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
+            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; height: 100% !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
             .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
             input.tc-editable, input.cc-editable, input.bc-editable { border-color: transparent !important; background: transparent !important; }
             input.tc-editable[value=""], input.cc-editable[value=""], input.bc-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
@@ -169,7 +169,7 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
                    <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
                       <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
-                      <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
                    </div>
                    
                 </div>
@@ -212,7 +212,7 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
                 <div style={{ textAlign: 'center', width: '250px' }}>
                    <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
                    <div style={{ fontSize: '18px' }}>Signature of Principal</div>
-                   <div style={{ fontSize: '13px', color: '#444' }}>(Seal / Stamp)</div>
+                   <div style={{ fontSize: '14px', color: '#444' }}>(Seal / Stamp)</div>
                 </div>
              </div>
 

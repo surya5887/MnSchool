@@ -1,32 +1,55 @@
 import re
+import os
 
-file_path = 'src/components/ReportCardPrintView.tsx'
-with open(file_path, 'r', encoding='utf-8') as f:
-    content = f.read()
+files_to_patch = [
+    'src/components/TransferCertificatePrintView.tsx',
+    'src/components/CharacterCertificatePrintView.tsx',
+    'src/components/BirthCertificatePrintView.tsx'
+]
 
-# 1. Remove height: 100vh !important;
-content = content.replace("height: 100vh !important;", "")
+for file_path in files_to_patch:
+    if not os.path.exists(file_path):
+        continue
+        
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
 
-# 2. Fix the min-height in print mode by overriding it
-if ".rc-front-page, .rc-back-page { min-height: auto !important; box-shadow: none !important; margin: 0 !important; }" not in content:
-    content = content.replace("@media print {", "@media print {\n            .rc-front-page, .rc-back-page { min-height: auto !important; box-shadow: none !important; margin: 0 !important; max-width: none !important; border: none !important; }")
+    # 1. Change Grid to Flexbox
+    content = content.replace("display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px'", "display: 'flex', justifyContent: 'space-between'")
+    
+    # Add width: 48% to columns
+    content = content.replace("/* LEFT COLUMN */\n                  <div>", "/* LEFT COLUMN */\n                  <div style={{ width: '48%' }}>")
+    content = content.replace("/* LEFT COLUMN */\n                    <div>", "/* LEFT COLUMN */\n                    <div style={{ width: '48%' }}>")
+    content = content.replace("/* RIGHT COLUMN */\n                  <div>", "/* RIGHT COLUMN */\n                  <div style={{ width: '48%' }}>")
+    content = content.replace("/* RIGHT COLUMN */\n                    <div>", "/* RIGHT COLUMN */\n                    <div style={{ width: '48%' }}>")
+    
+    # 2. Reduce font sizes slightly for elegance
+    content = content.replace("fontSize: '14px'", "fontSize: '13.5px'")
+    content = content.replace("fontSize: '32px'", "fontSize: '28px'") # TC
+    content = content.replace("fontSize: '30px'", "fontSize: '26px'") # CC, BC
+    
+    # 3. Reduce padding in print CSS to give more room
+    content = content.replace("padding: 20px !important; border-width: 1.5px !important;", "padding: 15px !important; border-width: 1.5px !important;")
+    
+    # 4. Make sure bottom margin doesn't push it out
+    content = content.replace("marginBottom: '30px'", "marginBottom: '15px'") # Main title margin
+    content = content.replace("marginTop: '30px'", "marginTop: '15px'")
+    content = content.replace("marginTop: '25px'", "marginTop: '10px'") # Subtitle margin
+    
+    # TC Specific fixes
+    if 'TransferCertificate' in file_path:
+        content = content.replace("marginBottom: '50px'", "marginBottom: '20px'")
+        content = content.replace("marginTop: '60px'", "marginTop: '30px'") # Signatures spacing
+        
+    # CC Specific fixes
+    if 'CharacterCertificate' in file_path:
+        content = content.replace("marginTop: '80px'", "marginTop: '40px'")
+        
+    # BC Specific fixes
+    if 'BirthCertificate' in file_path:
+        content = content.replace("marginTop: '80px'", "marginTop: '40px'")
+    
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-# 3. Remove inline width styles from th tags in the scholastic areas table
-content = re.sub(r'style=\{\{\s*textAlign:\s*\'left\',\s*width:\s*\'18%\'\s*\}\}', r"style={{ textAlign: 'left' }}", content)
-content = re.sub(r'style=\{\{\s*width:\s*\'[0-9]+%\'\s*\}\}', "", content)
-# Wait, some might have other styles like width + something else.
-# Looking at the code:
-# <th rowSpan={2} style={{ textAlign: 'left', width: '18%' }}>
-# <th rowSpan={2} style={{ width: '8%' }}>
-# <th style={{ width: '9%' }}>
-# <th style={{ width: '15%' }}>
-
-# We'll just replace the exact strings
-content = content.replace("style={{ width: '8%' }}", "")
-content = content.replace("style={{ width: '9%' }}", "")
-content = content.replace("style={{ width: '11%' }}", "")
-content = content.replace("style={{ width: '15%' }}", "")
-
-with open(file_path, 'w', encoding='utf-8') as f:
-    f.write(content)
-print("CSS and widths patched.")
+print("Certificates layout patched.")

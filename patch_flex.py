@@ -14,10 +14,10 @@ for file_path in files_to_patch:
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Find the div immediately following the column comments and add width 48%
-    content = re.sub(r'(\{\s*/\*\s*(LEFT|RIGHT) COLUMN\s*\*/\s*\}\s*)<div>', r'\1<div style={{ width: "48%" }}>', content)
+    if "flex: width === '100%' ? 1 : 'none'" not in content:
+        content = content.replace("width: width,\n      outline:", "width: width,\n      flex: width === '100%' ? 1 : 'none',\n      outline:")
     
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
-print("Fixed flex column widths")
+print("Fixed InputLine flex.")
