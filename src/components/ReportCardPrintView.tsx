@@ -313,6 +313,24 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
           }
         
         .rc-container { font-family: 'Times New Roman', Times, serif; color: #000; }
+
+          .rc-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.10;
+            z-index: -1;
+            pointer-events: none;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+          }
+
         .editable-cell {
           width: 100%; height: 100%; border: 1px solid transparent; text-align: center; font-size: 12px; font-weight: bold; background: #f8fafc; font-family: 'Arial', sans-serif; transition: 0.2s;
         }
@@ -337,7 +355,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-profile-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; text-decoration: underline; }
         .rc-profile { width: 100%; border-collapse: collapse; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed; }
         .rc-profile td { padding: 14px 16px; border: 1px solid #000; font-size: 16px; }
-        .rc-profile td.label { font-weight: bold; width: 35%; background-color: #f8fafc; }
+        .rc-profile td.label { font-weight: bold; width: 35%; background-color: rgba(248, 250, 252, 0.7); }
         .rc-profile td.val { font-weight: bold; text-transform: uppercase; }
       
         .rc-signatures { display: flex; justify-content: space-between; align-items: flex-start; padding: 0; font-family: 'Arial', sans-serif; margin-top: 50px;}
@@ -348,17 +366,17 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-table th, .rc-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 12px; }
         .rc-table th { background-color: #f1f5f9; font-weight: bold; }
         .rc-table td.subj { text-align: left; font-weight: bold; padding-left: 10px; }
-        .rc-table tr.total-row td, .rc-table tr.perc-row td { font-weight: bold; background-color: #f8fafc; }
+        .rc-table tr.total-row td, .rc-table tr.perc-row td { font-weight: bold; background-color: rgba(248, 250, 252, 0.7); }
       
         .rc-footer-info { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 2px solid #000; font-family: 'Arial', sans-serif; table-layout: fixed;}
         .rc-footer-info td { padding: 8px 15px; border: 1px solid #000; font-size: 13px; font-weight: bold; }
-        .rc-footer-info td.label { width: 40%; background-color: #f8fafc; }
+        .rc-footer-info td.label { width: 40%; background-color: rgba(248, 250, 252, 0.7); }
       
         .rc-grading-scale { margin-top: auto; font-size: 12px; font-family: 'Arial', sans-serif;}
         .rc-grading-scale p { margin: 0 0 10px 0; font-weight: bold; }
         .rc-grading-scale table { width: 100%; border-collapse: collapse; border: 2px solid #000; table-layout: fixed; }
         .rc-grading-scale th, .rc-grading-scale td { border: 1px solid #000; padding: 8px; text-align: center; }
-        .rc-grading-scale th { background-color: #f8fafc; font-weight: bold; }
+        .rc-grading-scale th { background-color: rgba(248, 250, 252, 0.7); font-weight: bold; }
         
         .pass-text { color: #16a34a; font-weight: 900; }
         .fail-text { color: #dc2626; font-weight: 900; }
@@ -412,6 +430,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             <React.Fragment key={student.id}>
               {/* PAGE 1: FRONT PAGE */}
               <div className="report-card-page rc-container rc-front-page">
+                  <div className="rc-watermark" style={{ backgroundImage: `url('${settings?.logoUrl || "/images/logo_circular.png"}')` }}></div>
                 <div className="rc-header-flex">
                   <div className="rc-logo-box"><img src={settings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" /></div>
                   <div className="rc-header-text">
@@ -461,6 +480,7 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
 
               {/* PAGE 2: BACK PAGE */}
               <div className="report-card-page rc-container rc-back-page">
+                  <div className="rc-watermark" style={{ backgroundImage: `url('${settings?.logoUrl || "/images/logo_circular.png"}')` }}></div>
                 <table className="rc-table">
                   <thead>
                     <tr>
