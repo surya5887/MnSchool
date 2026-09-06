@@ -10,29 +10,31 @@ interface BCProps {
 }
 
 const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: any) => (
-  <input 
-    type="text" 
-    name={name} 
-    value={value} 
-    onChange={onChange} 
-    placeholder={placeholder}
-    className="cert-editable"
-    style={{
-      background: 'transparent',
-      border: 'none',
-        flex: width === '100%' ? 1 : 'none',
-      borderBottom: '1.5px dotted #000',
-      outline: 'none',
-      width: width,
-      fontSize: '18px',
-      fontWeight: 'bold',
-      color: '#1a1a1a',
-      padding: '0 4px',
-      fontFamily: 'inherit',
-      display: 'inline-block'
-    }}
-  />
-);
+    <div style={{ display: 'inline-flex', flex: width === '100%' ? 1 : 'none', width: width !== '100%' ? width : 'auto', alignItems: 'flex-end' }}>
+      <input 
+        type="text" 
+        name={name} 
+        value={value} 
+        onChange={onChange} 
+        placeholder={placeholder}
+        className="tc-editable"
+        size={value ? Math.max(String(value).length, 1) : 1}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          fontFamily: 'inherit',
+          padding: '0 4px',
+          color: '#000',
+          minWidth: '20px',
+          maxWidth: '100%'
+        }}
+      />
+      <div style={{ flex: 1, borderBottom: '1.5px dotted #000', marginBottom: '4px', minWidth: '20px' }}></div>
+    </div>
+  );
 
 const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onClose }) => {
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
@@ -89,73 +91,71 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
       </div>
 
       <style>
-        {`
-                              @media print {
-            body * { visibility: hidden; }
-            body, html { margin: 0 !important; padding: 0 !important; height: 100% !important; background: white !important; }
-            @page { size: A4 portrait; margin: 0; }
-            .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
-            .preview-overlay * { visibility: visible; }
-            .no-print { display: none !important; }
-            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
-            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important;  margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
-            .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-            input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; border-bottom: 1.5px dotted #000 !important; background: transparent !important; }
+          {`
+            @media print {
+              body * { visibility: hidden; }
+              body, html { margin: 0 !important; padding: 0 !important; height: 100% !important; background: white !important; }
+              @page { size: A4 portrait; margin: 0; }
+              .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
+              .preview-overlay * { visibility: visible; }
+              .no-print { display: none !important; }
+              .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
+              .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+              .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+              input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
+            }
             
-          }
-           }
-            .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 auto !important; width: 100% !important; max-width: none !important; padding: 0 !important; border-width: 4px !important; }
-            .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border-width: 1.5px !important; }
-            input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; border-bottom: 1.5px dotted #000 !important; background: transparent !important; }
+            .tc-container, .cc-container, .bc-container {
+              font-family: 'Arial', sans-serif;
+              background: white;
+              max-width: 950px;
+              margin: 0 auto;
+              position: relative;
+              color: #000;
+              border: 8px solid #1e3a8a;
+              padding: 8px;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
             
-            * { overflow: visible !important; }
-          }
-           }
-            .certificate-container { margin: 0 auto !important; box-shadow: none !important; width: 100% !important; padding: 20px !important; }
-            input.cert-editable { border-color: transparent !important; }
-            input.cert-editable[value=""] { border-bottom: 1.5px dotted #000 !important; }
-            @page { margin: 1cm; size: A4 portrait; }
-          }
-          .certificate-container {
-            width: 210mm;
-            min-height: 297mm;
-            margin: 2rem auto;
-            background: white;
-            padding: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-            border: 8px solid #1e3a8a;
-          }
-          .cert-inner-border {
-            border: 2px solid #b91c1c;
-            padding: 40px 50px;
-            height: calc(100% - 4px);
-            box-sizing: border-box;
-            position: relative;
-          }
-          .cert-watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.08;
-            width: 550px;
-            height: 550px;
+            .tc-inner-border, .cc-inner-border, .bc-inner-border {
+               border: 2px solid #b91c1c;
+               padding: 40px;
+               height: 100%;
+               position: relative;
+            }
             
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            pointer-events: none;
-            z-index: 1;
-          }
-          .cert-content {
-            position: relative;
-            z-index: 10;
-          }
-        `}
-      </style>
+            .tc-watermark, .cc-watermark, .bc-watermark {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              opacity: 0.06;
+              width: 550px;
+              height: 550px;
+              background-size: contain;
+              background-repeat: no-repeat;
+              background-position: center;
+              z-index: 1;
+            }
+            
+            .tc-content-z, .cc-content-z, .bc-content-z {
+              position: relative;
+              z-index: 10;
+            }
+            
+            .tc-field, .cc-field, .bc-field {
+               display: flex;
+               align-items: flex-end;
+               margin-bottom: 8px;
+            }
+            
+            .tc-label, .cc-label, .bc-label {
+               font-weight: bold;
+               white-space: nowrap;
+               margin-right: 8px;
+            }
+          `}
+        </style>
 
       {/* A4 Print Area */}
       <div className="certificate-container">
@@ -165,12 +165,12 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
           <div className="cert-content">
              {/* Header */}
              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', gap: '8px' }}>
                    <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo Left" />
-                   <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
+                   <div style={{ textAlign: 'center', flex: 1 }}>
                       <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
-                      <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
                    </div>
                    
                 </div>
@@ -213,7 +213,7 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
                 <div style={{ textAlign: 'center', width: '250px' }}>
                    <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
                    <div style={{ fontSize: '18px' }}>Signature of Principal</div>
-                   <div style={{ fontSize: '14px', color: '#444' }}>(Seal / Stamp)</div>
+                   <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
                 </div>
              </div>
 
