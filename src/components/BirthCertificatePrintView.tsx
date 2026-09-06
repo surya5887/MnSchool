@@ -48,6 +48,12 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
     issueDate: new Date().toISOString().split('T')[0],
     admissionNumber: student.admissionNo || '',
     dobWords: ''
+  ,
+    studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim(),
+    fatherName: student.parentName || student.fatherName || '',
+    motherName: student.motherName || '',
+    className: className || '',
+    dobNum: student.dateOfBirth ? student.dateOfBirth.split('-').reverse().join('-') : ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,10 +64,8 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
     window.print();
   };
 
-  const name = `${student.firstName || ''} ${student.lastName || ''}`.trim();
-  const fatherName = student.parentName || student.fatherName || '';
-  const motherName = student.motherName || '';
   
+      
   // Format DOB from YYYY-MM-DD to DD-MM-YYYY
   let dob = '___________';
   if (student.dob) {
@@ -180,43 +184,43 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
                 </div>
              </div>
 
-             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '40px', fontSize: '15px', fontWeight: 'bold' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>Admission No: &nbsp;<input name="admissionNumber" value={formData.admissionNumber} onChange={handleChange} className="tc-dotted-input" style={{ width: '120px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} /></div>
-                <div>Date: {formData.issueDate.split('-').reverse().join('-')}</div>
-             </div>
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', fontSize: '15px', fontWeight: 'bold' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>Admission No. <input name="admissionNumber" value={formData.admissionNumber} onChange={handleChange} className="tc-dotted-input" style={{ width: '120px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '16px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit', marginLeft: '10px' }} /></div>
+                  <div>Date: {formData.issueDate.split('-').reverse().join('-')}</div>
+               </div>
 
-             <div style={{ fontSize: '20px', lineHeight: '2.5', textAlign: 'justify', marginTop: '20px', textIndent: '50px' }}>
-                <p style={{ margin: '0 0 20px 0' }}>
-                   This is to certify from the school records that <strong style={{ textTransform: 'uppercase', color: '#b91c1c' }}>{name}</strong>, 
-                   son/daughter of Shri <strong style={{ textTransform: 'uppercase' }}>{fatherName}</strong> and 
-                   Smt. <strong style={{ textTransform: 'uppercase' }}>{motherName}</strong> is/was a bonafide student of this school.
-                </p>
-                <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
-                   His/Her Date of Birth according to the Admission Register of the school is <strong style={{ fontSize: '22px' }}>{dob}</strong> 
-                   <br/> (in words: <input name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" className="tc-dotted-input" style={{ width: '500px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} />).
-                </p>
-                <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
-                   He/She is/was studying in Class <strong>{className}</strong> at the time of issuing this certificate.
-                </p>
-             </div>
+             <div style={{ fontSize: '20px', lineHeight: '1.8', textAlign: 'justify', marginTop: '10px' }}>
+                  <p style={{ margin: '0 0 15px 0', textIndent: '50px' }}>
+                     This is to certify from the school records that <input name="studentName" value={formData.studentName} onChange={handleChange} size={Math.max(String(formData.studentName || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", color: '#b91c1c', textTransform: 'uppercase' } />, 
+                     son/daughter of Shri <input name="fatherName" value={formData.fatherName} onChange={handleChange} size={Math.max(String(formData.fatherName || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", textTransform: 'uppercase', color: 'inherit' } /> and 
+                     Smt. <input name="motherName" value={formData.motherName} onChange={handleChange} size={Math.max(String(formData.motherName || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", textTransform: 'uppercase', color: 'inherit' } /> is/was a bonafide student of this institution.
+                  </p>
+                  <p style={{ margin: '0 0 15px 0', textIndent: '0' }}>
+                     His/Her Date of Birth according to the Admission Register maintained in the school is recorded as <input name="dobNum" value={formData.dobNum} onChange={handleChange} size={Math.max(String(formData.dobNum || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", fontSize: '22px', color: 'inherit' } /> &nbsp;(in words: <input name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" className="tc-dotted-input" style={{ width: '500px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} />).
+                  </p>
+                  <p style={{ margin: '0 0 15px 0', textIndent: '0' }}>
+                     He/She is/was studying in Class <strong><input name="className" value={formData.className} onChange={handleChange} size={Math.max(String(formData.className || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", color: 'inherit' } /></strong> at the time of issuing this certificate.
+                  </p>
+                  <p style={{ margin: '0 0 15px 0', textIndent: '0' }}>
+                     This certificate is being issued on the request of the parent/guardian for their personal records.
+                  </p>
+               </div>
 
-             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '120px', alignItems: 'flex-end', fontSize: '16px', fontWeight: 'bold' }}>
-                <div style={{ textAlign: 'center', width: '200px' }}>
-                   <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
-                   <div style={{ fontSize: '16px' }}>Prepared By</div>
-                </div>
-                
-                <div style={{ textAlign: 'center', width: '200px' }}>
-                   <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
-                   <div style={{ fontSize: '16px' }}>Checked By</div>
-                </div>
-
-                <div style={{ textAlign: 'center', width: '250px' }}>
-                   <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
-                   <div style={{ fontSize: '18px' }}>Signature of Principal</div>
-                   <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
-                </div>
-             </div>
+             <div style={{ marginTop: '100px', fontWeight: 'bold' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
+                     <div style={{ width: '200px', borderBottom: '1.5px solid #000' }}></div>
+                     <div style={{ width: '200px', borderBottom: '1.5px solid #000' }}></div>
+                     <div style={{ width: '250px', borderBottom: '1.5px solid #000' }}></div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                     <div style={{ textAlign: 'center', width: '200px', fontSize: '16px', marginTop: '4px' }}>Prepared By</div>
+                     <div style={{ textAlign: 'center', width: '200px', fontSize: '16px', marginTop: '4px' }}>Checked By</div>
+                     <div style={{ textAlign: 'center', width: '250px' }}>
+                        <div style={{ fontSize: '18px', marginTop: '4px' }}>Signature of Principal</div>
+                        <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
+                     </div>
+                  </div>
+               </div>
 
           </div>
         </div>

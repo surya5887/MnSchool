@@ -51,6 +51,12 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
     dobWords: '',
     admissionNumber: '',
     place: 'HARSOLI'
+  ,
+    studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim(),
+    fatherName: student.parentName || student.fatherName || '',
+    motherName: student.motherName || '',
+    className: className || '',
+    dobNum: student.dateOfBirth ? student.dateOfBirth.split('-').reverse().join('-') : ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,11 +67,9 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
     window.print();
   };
 
-  const dob = student.dateOfBirth ? student.dateOfBirth.split('-').reverse().join('-') : '';
-  const name = `${student.firstName || ''} ${student.lastName || ''}`.trim();
-  const fatherName = student.parentName || student.fatherName || '';
-  const motherName = student.motherName || '';
-
+  
+  
+    
   return (
     <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
       {/* Action Bar */}
@@ -181,16 +185,16 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
 
              <div style={{ fontSize: '20px', lineHeight: '1.7', textAlign: 'justify', marginTop: '0px' }}>
                 <p style={{ margin: '0 0 12px 0', textIndent: '50px' }}>
-                   This is to certify that <strong style={{ textTransform: 'uppercase', color: '#b91c1c' }}>{name}</strong>, 
-                   son/daughter of Shri <strong style={{ textTransform: 'uppercase' }}>{fatherName}</strong> and 
-                   Smt. <strong style={{ textTransform: 'uppercase' }}>{motherName}</strong> is/was a bonafide student of this institution.
+                   This is to certify that <input name="studentName" value={formData.studentName} onChange={handleChange} size={Math.max(String(formData.studentName || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", color: '#b91c1c', textTransform: 'uppercase' } />, 
+                   son/daughter of Shri <input name="fatherName" value={formData.fatherName} onChange={handleChange} size={Math.max(String(formData.fatherName || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", textTransform: 'uppercase', color: 'inherit' } /> and 
+                   Smt. <input name="motherName" value={formData.motherName} onChange={handleChange} size={Math.max(String(formData.motherName || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", textTransform: 'uppercase', color: 'inherit' } /> is/was a bonafide student of this institution.
                 </p>
                 <p style={{ margin: '0 0 12px 0' }}>
-                   His/Her Date of Birth according to the Admission Register of the school is <strong style={{ fontSize: '22px' }}>{dob}</strong> 
+                   His/Her Date of Birth according to the Admission Register of the school is <input name="dobNum" value={formData.dobNum} onChange={handleChange} size={Math.max(String(formData.dobNum || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", fontSize: '22px', color: 'inherit' } /> 
                    (in words: <input name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" className="tc-dotted-input" style={{ width: '450px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} />).
                 </p>
                 <p style={{ margin: '0 0 12px 0', textIndent: '0' }}>
-                   He/She has passed / is studying in Class <strong style={{ margin: '0 6px' }}>{className}</strong> during the academic session 
+                   He/She has passed / is studying in Class <strong><input name="className" value={formData.className} onChange={handleChange} size={Math.max(String(formData.className || "").length, 4)} style={ border: "none", outline: "none", background: "transparent", fontWeight: "bold", fontFamily: "inherit", padding: 0, textAlign: "center", color: 'inherit' } /></strong> during the academic session 
                    <input name="session" value={formData.session} onChange={handleChange} className="tc-dotted-input" style={{ width: '130px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />.
                 </p>
                 <p style={{ margin: '0 0 12px 0', textIndent: '0' }}>
