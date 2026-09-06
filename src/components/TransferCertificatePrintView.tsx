@@ -180,13 +180,13 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
 
                {/* MAIN TITLE & LOGOS */}
                <div style={{ textAlign: 'center', marginTop: '30px', marginBottom: '30px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
                      <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Left" />
-                     <div style={{ textAlign: 'center' }}>
+                     <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
                         <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '38px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '14.5px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                      </div>
-                     <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Right" />
+                     
                   </div>
                   <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '8px 35px', borderRadius: '4px', marginTop: '25px', fontSize: '20px', fontWeight: 'bold', letterSpacing: '1px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
                      LEAVING CERTIFICATE (BASIC SHIKSHA PARISHAD)

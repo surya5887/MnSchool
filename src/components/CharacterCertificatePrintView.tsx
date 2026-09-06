@@ -137,14 +137,14 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
           <div className="cert-content">
              {/* Header */}
              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
                    <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Left" />
-                   <div style={{ textAlign: 'center' }}>
+                   <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
                       <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                       <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
                    </div>
-                   <img src="/images/logo_circular.png" style={{ width: '100px', height: '100px' }} alt="Logo Right" />
+                   
                 </div>
                 <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '10px 40px', borderRadius: '4px', marginTop: '30px', fontSize: '26px', fontWeight: 'bold', letterSpacing: '2px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
                    CHARACTER CERTIFICATE

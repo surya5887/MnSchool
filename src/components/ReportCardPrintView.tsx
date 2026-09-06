@@ -324,8 +324,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .rc-header-flex { display: flex; align-items: center; justify-content: center; border-bottom: 4px solid #b91c1c; padding-bottom: 20px; margin-bottom: 40px; }
         .rc-logo-box { flex: 0 0 160px; text-align: center; }
         .rc-logo-box img { width: 160px; height: 160px; object-fit: contain; }
-        .rc-header-text { flex: 1; text-align: center; padding: 0 10px; }
-        .rc-header-text h1 { font-size: 38px; font-weight: 900; white-space: nowrap; color: #b91c1c; margin: 0 0 10px 0; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        .rc-header-text { flex: 1; text-align: left; padding: 0 10px 0 30px; }
+        .rc-header-text h1 { font-size: 38px; font-weight: 900;  color: #b91c1c; margin: 0 0 10px 0; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
         .rc-header-text h3 { font-size: 16px; color: #1e3a8a; margin: 0 0 8px 0; font-weight: bold; font-family: 'Arial', sans-serif;}
         .rc-header-text p { font-size: 13px; margin: 5px 0; font-weight: bold; color: #000; font-family: 'Arial', sans-serif;}
       
