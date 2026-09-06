@@ -48,6 +48,8 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
     issueDate: new Date().toISOString().split('T')[0],
     character: 'GOOD',
     session: '2026-2027',
+    dobWords: '',
+    admissionNumber: '',
     place: 'HARSOLI'
   });
 
@@ -59,6 +61,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
     window.print();
   };
 
+  const dob = student.dateOfBirth ? student.dateOfBirth.split('-').reverse().join('-') : '';
   const name = `${student.firstName || ''} ${student.lastName || ''}`.trim();
   const fatherName = student.parentName || student.fatherName || '';
   const motherName = student.motherName || '';
@@ -171,31 +174,35 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                 </div>
              </div>
 
-             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '40px', fontSize: '15px', fontWeight: 'bold' }}>
-                <div></div>
+             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px', fontSize: '15px', fontWeight: 'bold' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>Admission No. <input name="admissionNumber" value={formData.admissionNumber} onChange={handleChange} className="tc-dotted-input" style={{ width: '120px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '16px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit', marginLeft: '10px' }} /></div>
                 <div>Date: {formData.issueDate.split('-').reverse().join('-')}</div>
              </div>
 
-             <div style={{ fontSize: '20px', lineHeight: '2.5', textAlign: 'justify', marginTop: '20px', textIndent: '50px' }}>
-                <p style={{ margin: '0 0 20px 0' }}>
+             <div style={{ fontSize: '20px', lineHeight: '2.5', textAlign: 'justify', marginTop: '20px' }}>
+                <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
                    This is to certify that <strong style={{ textTransform: 'uppercase', color: '#b91c1c' }}>{name}</strong>, 
                    son/daughter of Shri <strong style={{ textTransform: 'uppercase' }}>{fatherName}</strong> and 
                    Smt. <strong style={{ textTransform: 'uppercase' }}>{motherName}</strong> is/was a bonafide student of this institution.
                 </p>
                 <p style={{ margin: '0 0 20px 0' }}>
-                   He/She has passed / is studying in Class <strong>{className}</strong> during the academic session 
-                   &nbsp;<input name="session" value={formData.session} onChange={handleChange} className="tc-dotted-input" style={{ width: '130px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />.
+                   His/Her Date of Birth according to the Admission Register of the school is <strong style={{ fontSize: '22px' }}>{dob}</strong> 
+                   (in words: <input name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" className="tc-dotted-input" style={{ width: '450px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} />).
                 </p>
-                <p style={{ margin: '0 0 20px 0' }}>
+                <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
+                   He/She has passed / is studying in Class <strong style={{ margin: '0 6px' }}>{className}</strong> during the academic session 
+                   <input name="session" value={formData.session} onChange={handleChange} className="tc-dotted-input" style={{ width: '130px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />.
+                </p>
+                <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
                    To the best of my knowledge and belief, he/she bears a 
-                   &nbsp;<input name="character" value={formData.character} onChange={handleChange} className="tc-dotted-input" style={{ width: '160px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />&nbsp; moral character.
+                   <input name="character" value={formData.character} onChange={handleChange} className="tc-dotted-input" style={{ width: '150px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', marginLeft: '8px', marginRight: '8px' }} /> moral character. He/She has not taken part in any activity subversive to the rules of the school.
                 </p>
-                <p style={{ margin: '0', textAlign: 'center', marginTop: '40px', fontStyle: 'italic', fontWeight: 'bold', color: '#1e3a8a' }}>
+                <p style={{ margin: '0', textAlign: 'center', marginTop: '60px', fontStyle: 'italic', fontWeight: 'bold', color: '#1e3a8a', fontSize: '22px' }}>
                    I wish him/her all success in his/her future endeavors.
                 </p>
              </div>
 
-             <div style={{ marginTop: '140px' }}>
+             <div style={{ marginTop: '40px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
                    <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '16px', fontWeight: 'bold' }}>
                       <div style={{ whiteSpace: 'nowrap', marginRight: '10px' }}>Place:</div> 
