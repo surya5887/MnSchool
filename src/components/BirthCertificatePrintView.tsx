@@ -73,19 +73,19 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
   }
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
-      {/* Action Bar (Hidden when printing) */}
-      <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
-        <button className="btn-secondary" onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-          <ArrowLeft size={20} /> Back
+    <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
+      {/* Action Bar */}
+      <div className="no-print" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', maxWidth: '950px', margin: '20px auto 24px auto', background: 'white', padding: '16px 24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+          <ArrowLeft size={18} /> Back
         </button>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginRight: '24px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Issue Date:</label>
-            <input type="date" name="issueDate" value={formData.issueDate} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} />
+            <input type="date" name="issueDate" value={formData.issueDate} onChange={handleChange} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #d1d5db', outline: 'none' }} />
           </div>
           <button onClick={handlePrint} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#3b82f6', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-            <Printer size={20} /> Print Certificate
+            <Printer size={18} /> Print Certificate
           </button>
         </div>
       </div>
@@ -100,7 +100,8 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
               .preview-overlay * { visibility: visible; }
               .no-print { display: none !important; }
               .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
-              .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+              .tc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+              .cc-inner-border, .bc-inner-border { padding: 50px 40px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
               .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
             }
@@ -180,7 +181,7 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
              </div>
 
              <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '40px', fontSize: '15px', fontWeight: 'bold' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>Admission No: &nbsp;<InputLine name="admissionNumber" value={formData.admissionNumber} onChange={handleChange} width="120px" /></div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>Admission No: &nbsp;<input name="admissionNumber" value={formData.admissionNumber} onChange={handleChange} className="tc-dotted-input" style={{ width: '120px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} /></div>
                 <div>Date: {formData.issueDate.split('-').reverse().join('-')}</div>
              </div>
 
@@ -192,7 +193,7 @@ const BirthCertificatePrintView: React.FC<BCProps> = ({ student, className, onCl
                 </p>
                 <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
                    His/Her Date of Birth according to the Admission Register of the school is <strong style={{ fontSize: '22px' }}>{dob}</strong> 
-                   <br/> (in words: <InputLine name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" />).
+                   <br/> (in words: <input name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" className="tc-dotted-input" style={{ width: '500px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} />).
                 </p>
                 <p style={{ margin: '0 0 20px 0', textIndent: '0' }}>
                    He/She is/was studying in Class <strong>{className}</strong> at the time of issuing this certificate.

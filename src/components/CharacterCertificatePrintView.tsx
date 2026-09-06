@@ -64,19 +64,19 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
   const motherName = student.motherName || '';
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
-      {/* Action Bar (Hidden when printing) */}
-      <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
-        <button className="btn-secondary" onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-          <ArrowLeft size={20} /> Back
+    <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
+      {/* Action Bar */}
+      <div className="no-print" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', maxWidth: '950px', margin: '20px auto 24px auto', background: 'white', padding: '16px 24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+          <ArrowLeft size={18} /> Back
         </button>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginRight: '24px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Issue Date:</label>
-            <input type="date" name="issueDate" value={formData.issueDate} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} />
+            <input type="date" name="issueDate" value={formData.issueDate} onChange={handleChange} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #d1d5db', outline: 'none' }} />
           </div>
           <button onClick={handlePrint} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#3b82f6', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-            <Printer size={20} /> Print Certificate
+            <Printer size={18} /> Print Certificate
           </button>
         </div>
       </div>
@@ -91,7 +91,8 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
               .preview-overlay * { visibility: visible; }
               .no-print { display: none !important; }
               .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
-              .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+              .tc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+              .cc-inner-border, .bc-inner-border { padding: 50px 40px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
               .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
             }
@@ -183,26 +184,30 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                 </p>
                 <p style={{ margin: '0 0 20px 0' }}>
                    He/She has passed / is studying in Class <strong>{className}</strong> during the academic session 
-                   &nbsp;<InputLine name="session" value={formData.session} onChange={handleChange} width="140px" />.
+                   &nbsp;<input name="session" value={formData.session} onChange={handleChange} className="tc-dotted-input" style={{ width: '130px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />.
                 </p>
                 <p style={{ margin: '0 0 20px 0' }}>
                    To the best of my knowledge and belief, he/she bears a 
-                   &nbsp;<InputLine name="character" value={formData.character} onChange={handleChange} width="180px" />&nbsp; moral character.
+                   &nbsp;<input name="character" value={formData.character} onChange={handleChange} className="tc-dotted-input" style={{ width: '160px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />&nbsp; moral character.
                 </p>
                 <p style={{ margin: '0', textAlign: 'center', marginTop: '40px', fontStyle: 'italic', fontWeight: 'bold', color: '#1e3a8a' }}>
                    I wish him/her all success in his/her future endeavors.
                 </p>
              </div>
 
-             <div style={{ display: 'flex', flexDirection: 'column', marginTop: '140px', alignItems: 'flex-end', fontSize: '16px', fontWeight: 'bold' }}>
-                <div>
-                   <p style={{ margin: 0, display: 'flex', alignItems: 'center' }}>Place: <InputLine name="place" value={formData.place} onChange={handleChange} width="150px" placeholder="City/Town" /></p>
+             <div style={{ marginTop: '140px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
+                   <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '16px', fontWeight: 'bold' }}>
+                      <div style={{ whiteSpace: 'nowrap', marginRight: '10px' }}>Place:</div> 
+                      <input name="place" value={formData.place} onChange={handleChange} className="tc-dotted-input" style={{ width: '200px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} placeholder="City/Town" /> 
+                   </div>
+                   <div style={{ width: '250px', borderBottom: '1.5px solid #000' }}></div>
                 </div>
-                
-                <div style={{ textAlign: 'center', width: '250px' }}>
-                   <div style={{ borderBottom: '1.5px solid #000', height: '40px', marginBottom: '10px' }}></div>
-                   <div style={{ fontSize: '18px' }}>Signature of Principal</div>
-                   <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+                   <div style={{ textAlign: 'center', width: '250px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '17px', marginTop: '4px' }}>Signature of Principal</div>
+                      <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
+                   </div>
                 </div>
              </div>
 
