@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+// { useState, useEffect } from 'react';
 import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { AlertCircle, IndianRupee, MessageCircle, Phone, Search, CheckCircle2 } from 'lucide-react';
@@ -18,6 +20,7 @@ interface Defaulter {
 }
 
 const DefaultersList: React.FC = () => {
+  const navigate = useNavigate();
   const [defaulters, setDefaulters] = useState<Defaulter[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -219,7 +222,14 @@ const DefaultersList: React.FC = () => {
                             {d.student.firstName[0]}
                           </div>
                           <div>
-                            <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '1.15rem', letterSpacing: '-0.3px' }}>{d.student.firstName} {d.student.lastName}</div>
+                            <div 
+                                onClick={() => navigate(`/student/${d.student.id}`)}
+                                style={{ fontWeight: 700, color: '#1e293b', fontSize: '1.15rem', letterSpacing: '-0.3px', cursor: 'pointer', textDecoration: 'none' }}
+                                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                              >
+                                {d.student.firstName} {d.student.lastName}
+                              </div>
                             <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span style={{ background: '#f1f5f9', padding: '2px 10px', borderRadius: '20px', color: '#475569', fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.5px' }}>{d.className}</span>
                               <span style={{ opacity: 0.7 }}>Roll: {d.student.rollNumber || 'N/A'}</span>
