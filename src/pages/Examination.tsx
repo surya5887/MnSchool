@@ -5,6 +5,7 @@ import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { saveExamMark, getAllExamMarksForTerm, type ExamMarkData, saveExamSchedule, getExamSchedulesByClass, saveQuestionPaper, getQuestionPapersByClass, type ExamScheduleData, type QuestionPaperData } from '../services/examService';
 import ReportCardPrintView from '../components/ReportCardPrintView';
+import DocumentBuilder from '../components/DocumentBuilder';
 import TransferCertificatePrintView from '../components/TransferCertificatePrintView';
 import CharacterCertificatePrintView from '../components/CharacterCertificatePrintView';
 import BirthCertificatePrintView from '../components/BirthCertificatePrintView';
@@ -19,7 +20,7 @@ const Examination: React.FC = () => {
   const [loading, setLoading] = useState(true);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<'reports' | 'certificates' | 'schedules' | 'papers'>('reports');
+  const [activeTab, setActiveTab] = useState<'reports' | 'certificates' | 'schedules' | 'papers' | 'doc_builder'>('reports');
 
   // Main Page Filters
   const [classFilter, setClassFilter] = useState('');
@@ -575,9 +576,11 @@ const Examination: React.FC = () => {
         <button className={activeTab === 'schedules' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('schedules')}><Calendar size={18} style={{whiteSpace:'nowrap'}}/> Schedules</button>
         <button className={activeTab === 'papers' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('papers')}><FileSignature size={18} style={{whiteSpace:'nowrap'}}/> Paper Builder</button>
         <button className={activeTab === 'certificates' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('certificates')}><ShieldAlert size={18} style={{whiteSpace:'nowrap'}}/> Certificates</button>
+          <button className={activeTab === 'doc_builder' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('doc_builder')}><FileText size={18} style={{whiteSpace:'nowrap'}}/> Custom Docs</button>
       </div>
 
-        <div className="glass-panel" style={{ padding: '20px', marginBottom: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+        {activeTab !== 'doc_builder' && (
+        <><div className="glass-panel" style={{ padding: '20px', marginBottom: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '200px' }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Class</label>
             <select className="glass-input" value={classFilter} onChange={handleClassChange}>
@@ -714,6 +717,8 @@ const Examination: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      </>)}
+      {activeTab === 'doc_builder' && <DocumentBuilder />}
     </motion.div>
   );
 };
