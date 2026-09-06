@@ -95,7 +95,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
               .no-print { display: none !important; }
               .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
               .tc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
-              .cc-inner-border, .bc-inner-border { padding: 100px 40px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
+              .cc-inner-border, .bc-inner-border { padding: 80px 40px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
               .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
               input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
             }
@@ -165,7 +165,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                        <div style={{ textAlign: 'left' }}>
                       <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '26px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
-                      <p style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
+                      {settings?.recognitionText && <p style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#444' }}>{settings.recognitionText}</p>}
                    </div>
                    
                 </div>
@@ -174,26 +174,26 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                 </div>
              </div>
 
-             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px', fontSize: '15px', fontWeight: 'bold' }}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '15px', fontWeight: 'bold' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>Admission No. <input name="admissionNumber" value={formData.admissionNumber} onChange={handleChange} className="tc-dotted-input" style={{ width: '120px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '16px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit', marginLeft: '10px' }} /></div>
                 <div>Date: {formData.issueDate.split('-').reverse().join('-')}</div>
              </div>
 
-             <div style={{ fontSize: '20px', lineHeight: '2.0', textAlign: 'justify', marginTop: '20px' }}>
-                <p style={{ margin: '0 0 20px 0', textIndent: '50px' }}>
+             <div style={{ fontSize: '20px', lineHeight: '1.7', textAlign: 'justify', marginTop: '0px' }}>
+                <p style={{ margin: '0 0 12px 0', textIndent: '50px' }}>
                    This is to certify that <strong style={{ textTransform: 'uppercase', color: '#b91c1c' }}>{name}</strong>, 
                    son/daughter of Shri <strong style={{ textTransform: 'uppercase' }}>{fatherName}</strong> and 
                    Smt. <strong style={{ textTransform: 'uppercase' }}>{motherName}</strong> is/was a bonafide student of this institution.
                 </p>
-                <p style={{ margin: '0 0 20px 0' }}>
+                <p style={{ margin: '0 0 12px 0' }}>
                    His/Her Date of Birth according to the Admission Register of the school is <strong style={{ fontSize: '22px' }}>{dob}</strong> 
                    (in words: <input name="dobWords" value={formData.dobWords} onChange={handleChange} placeholder="e.g. Fifteenth of August Two Thousand and Ten" className="tc-dotted-input" style={{ width: '450px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '18px', padding: '0 4px', textAlign: 'left', fontFamily: 'inherit' }} />).
                 </p>
-                <p style={{ margin: '0 0 20px 0', textIndent: '50px' }}>
+                <p style={{ margin: '0 0 12px 0', textIndent: '0' }}>
                    He/She has passed / is studying in Class <strong style={{ margin: '0 6px' }}>{className}</strong> during the academic session 
                    <input name="session" value={formData.session} onChange={handleChange} className="tc-dotted-input" style={{ width: '130px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', fontFamily: 'inherit' }} />.
                 </p>
-                <p style={{ margin: '0 0 20px 0', textIndent: '50px' }}>
+                <p style={{ margin: '0 0 12px 0', textIndent: '0' }}>
                    To the best of my knowledge and belief, he/she bears a 
                    <input name="character" value={formData.character} onChange={handleChange} className="tc-dotted-input" style={{ width: '150px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '20px', padding: '0 4px', textAlign: 'center', marginLeft: '8px', marginRight: '8px' }} /> moral character. He/She has not taken part in any activity subversive to the rules of the school.
                 </p>
