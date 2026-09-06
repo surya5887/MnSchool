@@ -149,17 +149,17 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
         </style>
 
       {/* A4 Print Area */}
-      <div className="certificate-container">
-        <div className="cert-inner-border">
-          <div className="cert-watermark"></div>
+      <div className="cc-container">
+        <div className="cc-inner-border">
+          <img className="cc-watermark" src={settings?.logoUrl || "/images/logo_circular.png"} alt="Watermark" style={{ objectFit: "contain" }} />
           
-          <div className="cert-content">
+          <div className="cc-content-z">
              {/* Header */}
              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', alignItems: 'center', justifyContent: 'flex-start', gap: '24px' }}>
-                   <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '100px', height: '100px' }} alt="Logo Left" />
-                   <div style={{ textAlign: 'left', flex: 1, paddingLeft: '20px' }}>
-                      <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '42px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                       <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '90px', height: '90px' }} alt="Logo" />
+                       <div style={{ textAlign: 'left' }}>
+                      <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '26px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                           <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
                       <p style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#444' }}>Affiliated to CBSE, New Delhi</p>
                    </div>
