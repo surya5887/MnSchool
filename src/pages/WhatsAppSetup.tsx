@@ -71,7 +71,42 @@ const WhatsAppSetup: React.FC = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ padding: '30px' }}>
+      <style>
+        {`
+          .whatsapp-panel {
+            padding: 30px;
+          }
+          .whatsapp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+          }
+          .whatsapp-qr-box {
+            padding: 48px 32px;
+            min-height: 400px;
+          }
+          .whatsapp-qr-inner {
+            padding: 32px;
+          }
+          @media (max-width: 768px) {
+            .whatsapp-panel {
+              padding: 16px !important;
+            }
+            .whatsapp-grid {
+              grid-template-columns: 1fr !important;
+              gap: 24px !important;
+            }
+            .whatsapp-qr-box {
+              padding: 32px 16px !important;
+              min-height: 300px !important;
+            }
+            .whatsapp-qr-inner {
+              padding: 24px 16px !important;
+            }
+          }
+        `}
+      </style>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel whatsapp-panel">
         
         {/* Header Section */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '24px' }}>
@@ -87,7 +122,7 @@ const WhatsAppSetup: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '40px' }}>
+        <div className="whatsapp-grid">
           
           {/* Instructions Column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -126,7 +161,7 @@ const WhatsAppSetup: React.FC = () => {
           </div>
 
           {/* Action Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'white', padding: '48px 32px', borderRadius: '24px', minHeight: '400px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
+          <div className="whatsapp-qr-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
             
             {/* Background Decoration */}
             <div style={{ position: 'absolute', top: -50, right: -50, opacity: 0.03, pointerEvents: 'none' }}>
@@ -204,7 +239,7 @@ const WhatsAppSetup: React.FC = () => {
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)' }} onClick={() => setShowPasswordModal(false)} />
             
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} style={{ background: 'white', padding: '32px', borderRadius: '24px', width: '100%', maxWidth: '400px', zIndex: 1, boxShadow: '0 25px 50px rgba(0,0,0,0.15)' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="whatsapp-qr-inner" style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '400px', zIndex: 1, boxShadow: '0 25px 50px rgba(0,0,0,0.15)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                 <div style={{ background: '#f1f5f9', padding: '10px', borderRadius: '12px', color: '#334155' }}>
                   <Lock size={24} />
