@@ -330,15 +330,15 @@ const DocumentBuilder: React.FC = () => {
 
             <div style={{ width: '1px', height: '24px', background: '#cbd5e1', margin: '0 4px' }}></div>
             
-            <button onClick={() => execCmd('bold')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Bold"><Bold size={18} /></button>
-            <button onClick={() => execCmd('italic')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Italic"><Italic size={18} /></button>
-            <button onClick={() => execCmd('underline')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Underline"><Underline size={18} /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCmd('bold')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Bold"><Bold size={18} /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCmd('italic')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Italic"><Italic size={18} /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCmd('underline')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Underline"><Underline size={18} /></button>
             
             <div style={{ width: '1px', height: '24px', background: '#cbd5e1', margin: '0 4px' }}></div>
             
-            <button onClick={() => execCmd('justifyLeft')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Align Left"><AlignLeft size={18} /></button>
-            <button onClick={() => execCmd('justifyCenter')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Align Center"><AlignCenter size={18} /></button>
-            <button onClick={() => execCmd('justifyRight')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Align Right"><AlignRight size={18} /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCmd('justifyLeft')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Align Left"><AlignLeft size={18} /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCmd('justifyCenter')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Align Center"><AlignCenter size={18} /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCmd('justifyRight')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }} title="Align Right"><AlignRight size={18} /></button>
             
             <div style={{ width: '1px', height: '24px', background: '#cbd5e1', margin: '0 4px' }}></div>
             
