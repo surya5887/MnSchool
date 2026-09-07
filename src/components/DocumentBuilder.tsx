@@ -24,6 +24,29 @@ const FONTS = [
   "Comic Sans MS", "Arial Black", "Palatino Linotype", "Lucida Sans Unicode"
 ];
 
+
+const MemoizedEditor = React.memo<{ el: DocElement, printing: boolean }>(({ el, printing }) => {
+    return (
+        <div 
+            id={`editor-${el.id}`}
+            contentEditable="true"
+            suppressContentEditableWarning
+            style={{ 
+                outline: 'none', 
+                userSelect: 'text',
+                WebkitUserSelect: 'text',
+                cursor: printing ? 'default' : 'text', 
+                pointerEvents: 'auto', 
+                minWidth: '100px', 
+                minHeight: '24px', 
+                fontSize: '18px', 
+                fontFamily: 'Arial, sans-serif'
+            }}
+            dangerouslySetInnerHTML={{ __html: el.content || 'Click to edit text' }}
+        />
+    );
+}, () => true); // NEVER re-render
+
 const DraggableElement: React.FC<{
     el: DocElement,
     printing: boolean,
@@ -72,7 +95,16 @@ const DraggableElement: React.FC<{
     return (
         <div
             id={`draggable-wrapper-${el.id}`}
-            onClick={(e) => { e.stopPropagation(); setSelectedId(el.id); }}
+            onClick={(e) => { e.stopPropagation(); if (el.type !== 'text') setSelectedId(el.id); }}
+            onFocus={(e) => {
+                if (el.type === 'text') setSelectedId(el.id);
+            }}
+            onBlur={(e) => {
+                if (el.type === 'text') {
+                    const newElements = elements.map(e_inner => e_inner.id === el.id ? { ...e_inner, content: (e.target as HTMLElement).innerHTML } : e_inner);
+                    setElements(newElements);
+                }
+            }}
             style={{
                 position: 'absolute',
                 top: el.y,
@@ -107,28 +139,7 @@ const DraggableElement: React.FC<{
             )}
 
             {el.type === 'text' ? (
-                <div 
-                    id={`editor-${el.id}`}
-                    contentEditable={!printing}
-                    suppressContentEditableWarning
-                    onFocus={() => setSelectedId(el.id)}
-                    style={{ 
-                        outline: 'none', 
-                        userSelect: 'text',
-                        WebkitUserSelect: 'text',
-                        cursor: printing ? 'default' : 'text', 
-                        width: '100%',
-                        height: '100%',
-                        minWidth: '100px', 
-                        fontSize: '18px', 
-                        fontFamily: 'Arial, sans-serif'
-                    }}
-                    dangerouslySetInnerHTML={{ __html: initialContent.current }}
-                    onBlur={(e) => {
-                        const newElements = elements.map(e_inner => e_inner.id === el.id ? { ...e_inner, content: e.currentTarget.innerHTML } : e_inner);
-                        setElements(newElements);
-                    }}
-                />
+                <MemoizedEditor el={el} printing={printing} />
             ) : (
                 <div style={{ width: '100%', height: '100%', borderRadius: el.shape === 'circle' ? '50%' : '0', overflow: 'hidden' }}>
                     <img src={el.src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} draggable={false} />
