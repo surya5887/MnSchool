@@ -757,3 +757,50 @@ tr:hover {
     height: 16px !important;
   }
 }
+
+/* Marks Grid Styles */
+.marks-grid-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 0 16px;
+}
+.marks-grid-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: center;
+  background: var(--bg-color);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.marks-input {
+  width: 100px;
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .marks-grid-header {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+  }
+  .marks-grid-row {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 12px 8px;
+    font-size: 0.85rem;
+  }
+  .marks-input {
+    width: 100%;
+    min-width: 40px;
+    max-width: 70px;
+    padding: 6px;
+    font-size: 0.9rem;
+  }
+}
