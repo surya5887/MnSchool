@@ -80,7 +80,6 @@ const DraggableElement: React.FC<{
                     contentEditable={!printing}
                     suppressContentEditableWarning
                     onFocus={() => setSelectedId(el.id)}
-                    onPointerDown={(e) => e.stopPropagation()}
                     style={{ 
                         outline: 'none', 
                         userSelect: 'text',
@@ -93,11 +92,10 @@ const DraggableElement: React.FC<{
                         fontFamily: 'Arial, sans-serif'
                     }}
                     dangerouslySetInnerHTML={{ __html: initialContent.current }}
-                    onInput={(e) => {
+                    onBlur={(e) => {
                         const newElements = elements.map(e_inner => e_inner.id === el.id ? { ...e_inner, content: e.currentTarget.innerHTML } : e_inner);
                         setElements(newElements);
                     }}
-                    
                 />
             ) : (
                 <div style={{ width: '100%', height: '100%', borderRadius: el.shape === 'circle' ? '50%' : '0', overflow: 'hidden' }}>
