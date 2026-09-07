@@ -34,8 +34,9 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           @media print {
             .print-hide { display: none !important; }
             body, html { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; }
-            * { overflow: visible !important; }
-            .print-wrapper { position: static !important; overflow: visible !important; background: white !important; display: block !important; }
+            body * { visibility: hidden; }
+            .print-wrapper { position: absolute !important; left: 0 !important; top: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; display: block !important; }
+            .print-wrapper * { visibility: visible; }
             @page { margin: 10mm; size: A4 portrait; }
             
             .sheet-container {
