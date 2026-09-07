@@ -456,13 +456,13 @@ const Examination: React.FC = () => {
 
             {paperData?.sections.map((section, sIdx) => (
               <div key={sIdx} style={{ background: 'var(--bg-color)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--glass-border)' }}>
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-                  <input type="text" className="glass-input" style={{ flex: 1, fontWeight: 'bold' }} value={section.sectionTitle} onChange={e => {
+                <div className="section-header-row" style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input type="text" className="glass-input" style={{ flex: 1, minWidth: '150px', fontWeight: 'bold', width: '100%' }} value={section.sectionTitle} onChange={e => {
                     const newSecs = [...paperData.sections];
                     newSecs[sIdx].sectionTitle = e.target.value;
                     setPaperData({...paperData, sections: newSecs});
                   }} placeholder="Section Title (e.g. SECTION A: OBJECTIVE)" />
-                  <button className="btn-secondary" style={{ color: 'var(--danger)' }} onClick={() => {
+                  <button className="btn-secondary" style={{ color: 'var(--danger)', width: 'auto', flexShrink: 0, padding: '10px 14px', marginBottom: 0 }} onClick={() => {
                     const newSecs = [...paperData.sections];
                     newSecs.splice(sIdx, 1);
                     setPaperData({...paperData, sections: newSecs});
@@ -508,7 +508,7 @@ const Examination: React.FC = () => {
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>marks</span>
                           </>
                         )}
-                        <button className="btn-secondary" style={{ padding: '6px', color: 'var(--danger)' }} onClick={() => {
+                        <button className="btn-secondary" style={{ padding: "6px", color: "var(--danger)", width: "auto", marginBottom: 0 }} onClick={() => {
                           const newSecs = [...paperData.sections];
                           newSecs[sIdx].questions.splice(qIdx, 1);
                           setPaperData({...paperData, sections: newSecs});
