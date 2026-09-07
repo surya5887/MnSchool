@@ -56,15 +56,20 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
               width: 800px !important;
               max-width: 800px !important;
               min-height: 1130px !important;
+              height: max-content !important;
               margin: 2rem auto;
+              margin-bottom: 100px !important;
               background: white;
               padding: 40px;
+              padding-bottom: 80px !important;
               box-shadow: 0 10px 25px rgba(0,0,0,0.1);
               position: relative;
               box-sizing: border-box;
               font-family: 'Times New Roman', serif;
               font-size: 14px;
               color: #000;
+              display: flex !important;
+              flex-direction: column !important;
             }
           }
           
