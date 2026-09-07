@@ -33,6 +33,7 @@ const DraggableElement: React.FC<{
     setElements: (els: DocElement[]) => void
 }> = ({ el, printing, selectedId, setSelectedId, elements, setElements }) => {
     const controls = useDragControls();
+    const initialContent = useRef(el.content || 'Click to edit text');
     
     return (
         <motion.div
@@ -79,8 +80,11 @@ const DraggableElement: React.FC<{
                     contentEditable={!printing}
                     suppressContentEditableWarning
                     onFocus={() => setSelectedId(el.id)}
+                    onPointerDown={(e) => e.stopPropagation()}
                     style={{ 
                         outline: 'none', 
+                        userSelect: 'text',
+                        WebkitUserSelect: 'text',
                         cursor: printing ? 'default' : 'text', 
                         width: '100%',
                         height: '100%',
@@ -88,11 +92,12 @@ const DraggableElement: React.FC<{
                         fontSize: '18px', 
                         fontFamily: 'Arial, sans-serif'
                     }}
-                    dangerouslySetInnerHTML={{ __html: el.content || 'Click to edit text' }}
-                    onBlur={(e) => {
+                    dangerouslySetInnerHTML={{ __html: initialContent.current }}
+                    onInput={(e) => {
                         const newElements = elements.map(e_inner => e_inner.id === el.id ? { ...e_inner, content: e.currentTarget.innerHTML } : e_inner);
                         setElements(newElements);
                     }}
+                    
                 />
             ) : (
                 <div style={{ width: '100%', height: '100%', borderRadius: el.shape === 'circle' ? '50%' : '0', overflow: 'hidden' }}>
