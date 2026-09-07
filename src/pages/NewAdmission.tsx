@@ -844,7 +844,7 @@ const NewAdmission: React.FC = () => {
                 <div className="submit-dock">
                   
                   {/* Attractive Notice */}
-                  <div className="submit-notice-container" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 350px' }}>
+                  <div className="submit-notice-container" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 auto' }}>
                     <div className="submit-notice-icon">
                       <Info size={24} />
                     </div>

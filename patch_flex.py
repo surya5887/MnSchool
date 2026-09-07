@@ -1,23 +1,17 @@
 import re
-import os
 
-files_to_patch = [
-    'src/components/TransferCertificatePrintView.tsx',
-    'src/components/CharacterCertificatePrintView.tsx',
-    'src/components/BirthCertificatePrintView.tsx'
-]
+file_path = 'src/pages/NewAdmission.tsx'
 
-for file_path in files_to_patch:
-    if not os.path.exists(file_path):
-        continue
-        
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
 
-    if "flex: width === '100%' ? 1 : 'none'" not in content:
-        content = content.replace("width: width,\n      outline:", "width: width,\n      flex: width === '100%' ? 1 : 'none',\n      outline:")
-    
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
+# Replace flex: '1 1 350px' with nothing or '1 1 auto' or just remove it
+old_div = "<div className=\"submit-notice-container\" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 350px' }}>"
+new_div = "<div className=\"submit-notice-container\" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 auto' }}>"
 
-print("Fixed InputLine flex.")
+content = content.replace(old_div, new_div)
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print("Updated flex basis.")

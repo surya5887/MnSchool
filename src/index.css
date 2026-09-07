@@ -719,6 +719,7 @@ tr:hover {
   }
   .submit-notice-container {
     gap: 10px !important;
+    flex: none !important;
   }
   .submit-notice-icon {
     display: none !important;
