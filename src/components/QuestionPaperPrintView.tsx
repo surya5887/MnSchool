@@ -27,7 +27,15 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
             body * { visibility: hidden; }
             .print-wrapper { position: absolute !important; left: 0 !important; top: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; display: block !important; }
             .print-wrapper * { visibility: visible; }
-            @page { margin: 10mm; size: A4 portrait; }
+            @page { 
+              margin: 15mm; 
+              size: A4 portrait; 
+              @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: Arial, sans-serif;
+                font-size: 10pt;
+              }
+            }
             
             .paper-container {
               margin: 0 auto !important;
@@ -128,7 +136,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
             return (
               <div key={sIdx} style={{ marginBottom: '30px' }}>
                 {section.sectionTitle && (
-                  <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '16px', margin: '20px 0', textDecoration: 'underline' }}>
+                  <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '16px', margin: '20px 0', textDecoration: 'underline', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
                     {section.sectionTitle}
                   </div>
                 )}
@@ -138,7 +146,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                     {section.questions.map((q, qIdx) => {
                       if (q.type === 'instruction') {
                         return (
-                          <tr key={qIdx}>
+                          <tr key={qIdx} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                             <td colSpan={3} style={{ padding: '12px 0', fontWeight: 'bold' }}>
                               <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
                             </td>
@@ -148,7 +156,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                       
                       const currentQNum = qCounter++;
                       return (
-                        <tr key={qIdx}>
+                        <tr key={qIdx} style={{ pageBreakInside: "avoid", breakInside: "avoid" }}>
                           <td style={{ verticalAlign: 'top', width: '40px', padding: '8px 0', fontWeight: 'bold' }}>Q{currentQNum}.</td>
                           <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
                             <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
