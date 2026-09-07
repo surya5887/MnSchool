@@ -52,7 +52,7 @@ const DraggableElement: React.FC<{
                 minHeight: '20px',
                 zIndex: selectedId === el.id ? 10 : 1,
                 resize: printing ? 'none' : 'both',
-                overflow: 'hidden',
+                overflow: el.type === 'image' ? 'hidden' : 'visible',
                 width: el.width || 'auto',
                 height: el.height || 'auto'
             }}
