@@ -650,9 +650,8 @@ tr:hover {
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: #ffffff;
+  /* Removed blur to prevent text bleed-through */
   padding: 16px 24px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -711,7 +710,8 @@ tr:hover {
     margin-top: 16px !important;
   }
   .submit-dock {
-    padding: 12px !important;
+    padding: 16px !important;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.1) !important;
     gap: 12px !important;
     border-radius: 16px !important;
     flex-direction: column;
