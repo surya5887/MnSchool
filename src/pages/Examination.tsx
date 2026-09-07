@@ -331,8 +331,8 @@ const Examination: React.FC = () => {
         
         <div className="glass-panel" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', gap: '24px', marginBottom: '24px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Exam Term</label>
+            <div style={{ flex: "1 1 120px" }}>
+                <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Exam Term</label>
               <select className="glass-input" value={scheduleData?.examTerm || examType} onChange={e => setScheduleData(prev => prev ? {...prev, examTerm: e.target.value} : null)}>
                 <option>Unit Test 1</option>
                 <option>Half Yearly Exam</option>
@@ -417,25 +417,25 @@ const Examination: React.FC = () => {
         <div className="glass-panel" style={{ padding: '24px' }}>
           {/* Header Info */}
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Exam Term</label>
+            <div style={{ flex: "1 1 120px" }}>
+                <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Exam Term</label>
               <select className="glass-input" value={paperData?.examTerm || examType} onChange={e => setPaperData(prev => prev ? {...prev, examTerm: e.target.value} : null)}>
                 <option>Unit Test 1</option><option>Half Yearly Exam</option><option>Unit Test 2</option><option>Annual Exam</option>
               </select>
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Subject</label>
+            <div style={{ flex: "1 1 120px" }}>
+                <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Subject</label>
               <select className="glass-input" value={paperData?.subject || ''} onChange={e => setPaperData(prev => prev ? {...prev, subject: e.target.value} : null)}>
                 <option value="">Select Subject</option>
                 {activeSubjects.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
-            <div style={{ width: '150px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Time Allowed</label>
+            <div style={{ flex: "1 1 120px" }}>
+                <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Time Allowed</label>
               <input type="text" className="glass-input" value={paperData?.timeAllowed || '3 Hours'} onChange={e => setPaperData(prev => prev ? {...prev, timeAllowed: e.target.value} : null)} />
             </div>
-            <div style={{ width: '120px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Max Marks</label>
+            <div style={{ flex: "1 1 120px" }}>
+                <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Max Marks</label>
               <input type="number" className="glass-input" value={paperData?.maxMarks || 100} onChange={e => setPaperData(prev => prev ? {...prev, maxMarks: Number(e.target.value)} : null)} />
             </div>
           </div>
@@ -471,10 +471,10 @@ const Examination: React.FC = () => {
 
                 {section.questions.map((q, qIdx) => (
                   <div key={qIdx} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px', paddingLeft: '24px', borderLeft: '3px solid var(--primary-color)', paddingBottom: '12px' }}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                      <span style={{ paddingTop: '8px', fontWeight: 'bold' }}>{q.type === 'instruction' ? 'Info:' : `Q${qIdx+1}.`}</span>
+                    <div className="question-row" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                      <span className="question-label" style={{ paddingTop: '8px', fontWeight: 'bold' }}>{q.type === 'instruction' ? 'Info:' : `Q${qIdx+1}.`}</span>
                       
-                      <RichTextEditor 
+                      <div style={{ flex: 1, minWidth: '150px', width: '100%' }}><RichTextEditor 
                         value={q.text} 
                         onChange={val => {
                           const newSecs = [...paperData.sections];
@@ -482,9 +482,9 @@ const Examination: React.FC = () => {
                           setPaperData({...paperData, sections: newSecs});
                         }}
                         placeholder={q.type === 'instruction' ? "Type instruction here (e.g. Attempt any 5 questions)" : "Type question here..."}
-                      />
+                      /></div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="question-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <select className="glass-input" value={q.type || 'subjective'} onChange={e => {
                           const newSecs = [...paperData.sections];
                           newSecs[sIdx].questions[qIdx].type = e.target.value as any;

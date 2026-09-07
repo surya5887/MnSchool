@@ -834,3 +834,23 @@ tr:hover {
     padding: 10px;
   }
 }
+
+/* Paper Builder Responsive Styles */
+@media (max-width: 768px) {
+  .question-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .question-label {
+    padding-top: 0 !important;
+    margin-bottom: 4px;
+  }
+  .question-actions {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 8px;
+    background: rgba(0,0,0,0.02);
+    padding: 8px;
+    border-radius: 8px;
+  }
+}
