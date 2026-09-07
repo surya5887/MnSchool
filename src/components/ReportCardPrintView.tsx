@@ -281,18 +281,18 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
             ${printMode === 'front' ? '.rc-back-page { display: none !important; }' : ''}
             ${printMode === 'back' ? '.rc-front-page { display: none !important; }' : ''}
             
-            .report-card-page {
-              margin: 0 !important;
-              padding: 0 !important;
-              width: 100% !important;
-              max-width: 100% !important;
-              box-sizing: border-box !important;
-              page-break-after: always;
-              height: auto !important;
-              min-height: 275mm !important;
-              box-shadow: none !important;
-              border: none !important;
-            }
+                          .report-card-page {
+                margin: 0 auto !important;
+                padding: 0 !important;
+                width: 800px !important;
+                max-width: 800px !important;
+                box-sizing: border-box !important;
+                page-break-after: always;
+                height: auto !important;
+                min-height: 1130px !important;
+                box-shadow: none !important;
+                border: none !important;
+              }
             
             .rc-table, .rc-profile, .rc-footer-info, .rc-grading-scale table {
               width: 100% !important;
