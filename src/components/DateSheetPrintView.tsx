@@ -37,17 +37,50 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             * { overflow: visible !important; }
             .print-wrapper { position: static !important; overflow: visible !important; background: white !important; display: block !important; }
             @page { margin: 10mm; size: A4 portrait; }
+            
+            .sheet-container {
+              margin: 0 auto !important;
+              padding: 40px !important;
+              width: 800px !important;
+              max-width: 800px !important;
+              box-sizing: border-box !important;
+              page-break-after: always !important;
+              height: auto !important;
+              min-height: 1130px !important;
+              box-shadow: none !important;
+              border: none !important;
+            }
           }
-          .sheet-container {
-            width: 210mm;
-            min-height: 297mm;
-            margin: 2rem auto;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
+          
+          @media screen {
+            .sheet-container {
+              width: 800px !important;
+              max-width: 800px !important;
+              min-height: 1130px !important;
+              margin: 2rem auto;
+              background: white;
+              padding: 40px;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+              position: relative;
+              box-sizing: border-box;
+              font-family: Arial, sans-serif;
+            }
+          }
+          
+          @media screen and (max-width: 768px) {
+            .print-wrapper {
+              overflow-x: auto !important;
+              width: 100% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+            }
+            .sheet-container {
+              zoom: 0.45;
+              -moz-transform: scale(0.45);
+              -moz-transform-origin: top center;
+              margin: 1rem auto;
+            }
           }
           .schedule-table {
             width: 100%;
