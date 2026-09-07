@@ -861,10 +861,10 @@ const NewAdmission: React.FC = () => {
                   {/* Buttons */}
                   <div className="submit-buttons">
                     <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="hover-scale reset-btn" style={{ padding: '14px 28px', fontSize: '1rem', fontWeight: 700, borderRadius: '16px', color: '#ef4444', background: '#fff', border: '2px solid #fee2e2', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }} onMouseOver={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#fee2e2'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                      Reset
+                      Reset Form
                     </button>
                     <button type="submit" disabled={loading} className="hover-scale submit-btn" style={{ padding: '14px 36px', fontSize: '1.05rem', fontWeight: 700, borderRadius: '16px', color: 'white', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16,185,129,0.35)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                      {loading ? 'Saving...' : <><Save size={20} /> Enroll</>}
+                      {loading ? 'Saving...' : <><Save size={20} /> Enroll Student</>}
                     </button>
                   </div>
                 </div>
