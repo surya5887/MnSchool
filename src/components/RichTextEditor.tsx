@@ -13,9 +13,9 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
   const [isFocused, setIsFocused] = useState(false);
   const lastHtml = useRef(value);
 
-  // Only update innerHTML if the value changed externally (not from our own typing)
+  // Set initial value on mount, and update if value changes externally
   useEffect(() => {
-    if (editorRef.current && value !== lastHtml.current) {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value;
       lastHtml.current = value;
     }
