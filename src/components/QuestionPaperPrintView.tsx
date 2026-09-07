@@ -9,7 +9,7 @@ interface QuestionPaperProps {
 
 const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose }) => {
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
+    <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
       <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
         <button className="btn-secondary" onClick={onClose}>
           <ArrowLeft size={20} /> Back
@@ -23,21 +23,57 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         {`
           @media print {
             .print-hide { display: none !important; }
-            body { background: white; margin: 0; padding: 0; }
-            @page { margin: 1.5cm; size: A4 portrait; }
+            body, html { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; }
+            body * { visibility: hidden; }
+            .print-wrapper { position: absolute !important; left: 0 !important; top: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; display: block !important; }
+            .print-wrapper * { visibility: visible; }
+            @page { margin: 10mm; size: A4 portrait; }
+            
+            .paper-container {
+              margin: 0 auto !important;
+              padding: 40px !important;
+              width: 800px !important;
+              max-width: 800px !important;
+              box-sizing: border-box !important;
+              page-break-after: always !important;
+              height: auto !important;
+              min-height: 1130px !important;
+              box-shadow: none !important;
+              border: none !important;
+            }
           }
-          .paper-container {
-            width: 210mm;
-            min-height: 297mm;
-            margin: 2rem auto;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
-            font-family: 'Times New Roman', serif;
-            font-size: 14px;
-            color: #000;
+          
+          @media screen {
+            .paper-container {
+              width: 800px !important;
+              max-width: 800px !important;
+              min-height: 1130px !important;
+              margin: 2rem auto;
+              background: white;
+              padding: 40px;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+              position: relative;
+              box-sizing: border-box;
+              font-family: 'Times New Roman', serif;
+              font-size: 14px;
+              color: #000;
+            }
+          }
+          
+          @media screen and (max-width: 768px) {
+            .print-wrapper {
+              overflow-x: auto !important;
+              width: 100% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+            }
+            .paper-container {
+              zoom: 0.45;
+              -moz-transform: scale(0.45);
+              -moz-transform-origin: top center;
+              margin: 1rem auto;
+            }
           }
           .header-table {
             width: 100%;
