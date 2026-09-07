@@ -356,13 +356,13 @@ const Examination: React.FC = () => {
                   const newSched = [...scheduleData.schedule];
                   newSched[idx].date = e.target.value;
                   setScheduleData({...scheduleData, schedule: newSched});
-                }} className="glass-input" style={{ flex: 1 }} />
+                }} className="glass-input schedule-input" />
                 
                 <select value={item.subject} onChange={e => {
                   const newSched = [...scheduleData.schedule];
                   newSched[idx].subject = e.target.value;
                   setScheduleData({...scheduleData, schedule: newSched});
-                }} className="glass-input" style={{ flex: 1 }}>
+                }} className="glass-input schedule-input">
                   <option value="">Select Subject</option>
                   {activeSubjects.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
@@ -371,13 +371,13 @@ const Examination: React.FC = () => {
                   const newSched = [...scheduleData.schedule];
                   newSched[idx].startTime = e.target.value;
                   setScheduleData({...scheduleData, schedule: newSched});
-                }} className="glass-input" style={{ width: '120px' }} />
+                }} className="glass-input schedule-input" />
                 
                 <input type="text" placeholder="End Time" value={item.endTime} onChange={e => {
                   const newSched = [...scheduleData.schedule];
                   newSched[idx].endTime = e.target.value;
                   setScheduleData({...scheduleData, schedule: newSched});
-                }} className="glass-input" style={{ width: '120px' }} />
+                }} className="glass-input schedule-input" />
 
                 <button className="btn-secondary" style={{ padding: '8px', color: 'var(--danger)' }} onClick={() => {
                   const newSched = [...scheduleData.schedule];
