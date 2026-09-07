@@ -32,16 +32,46 @@ const DraggableElement: React.FC<{
     elements: DocElement[],
     setElements: (els: DocElement[]) => void
 }> = ({ el, printing, selectedId, setSelectedId, elements, setElements }) => {
-    const controls = useDragControls();
     const initialContent = useRef(el.content || 'Click to edit text');
     
+    // Custom drag logic
+    const isDragging = useRef(false);
+    const startPos = useRef({x: 0, y: 0});
+    const currentPos = useRef({x: el.x, y: el.y});
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        if (printing) return;
+        isDragging.current = true;
+        startPos.current = { x: e.clientX, y: e.clientY };
+        e.currentTarget.setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+        if (!isDragging.current) return;
+        const dx = e.clientX - startPos.current.x;
+        const dy = e.clientY - startPos.current.y;
+        currentPos.current = { x: currentPos.current.x + dx, y: currentPos.current.y + dy };
+        startPos.current = { x: e.clientX, y: e.clientY };
+        
+        const node = document.getElementById(`draggable-wrapper-${el.id}`);
+        if (node) {
+            node.style.left = `${currentPos.current.x}px`;
+            node.style.top = `${currentPos.current.y}px`;
+        }
+    };
+
+    const handlePointerUp = (e: React.PointerEvent) => {
+        if (!isDragging.current) return;
+        isDragging.current = false;
+        e.currentTarget.releasePointerCapture(e.pointerId);
+        
+        const newElements = elements.map(e_inner => e_inner.id === el.id ? { ...e_inner, x: currentPos.current.x, y: currentPos.current.y } : e_inner);
+        setElements(newElements);
+    };
+
     return (
-        <motion.div
-            key={el.id}
-            drag={!printing}
-            dragMomentum={false}
-            dragListener={false}
-            dragControls={controls}
+        <div
+            id={`draggable-wrapper-${el.id}`}
             onClick={(e) => { e.stopPropagation(); setSelectedId(el.id); }}
             style={{
                 position: 'absolute',
@@ -58,7 +88,7 @@ const DraggableElement: React.FC<{
                 height: el.height || 'auto'
             }}
             onMouseUp={(e) => {
-                if (selectedId === el.id && !printing) {
+                if (selectedId === el.id && !printing && !isDragging.current) {
                     const newElements = elements.map(e_inner => e_inner.id === el.id ? { ...e_inner, width: e.currentTarget.style.width, height: e.currentTarget.style.height } : e_inner);
                     setElements(newElements);
                 }
@@ -67,8 +97,10 @@ const DraggableElement: React.FC<{
             {/* Drag Handle */}
             {!printing && selectedId === el.id && (
                 <div 
-                    onPointerDown={(e) => controls.start(e)}
-                    style={{ position: 'absolute', top: '-24px', left: '-2px', background: '#3b82f6', color: 'white', padding: '2px 8px', borderRadius: '4px 4px 0 0', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'grab', fontSize: '12px', userSelect: 'none', zIndex: 20 }}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    style={{ position: 'absolute', top: '-24px', left: '-2px', background: '#3b82f6', color: 'white', padding: '2px 8px', borderRadius: '4px 4px 0 0', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'grab', fontSize: '12px', userSelect: 'none', zIndex: 20, touchAction: 'none' }}
                 >
                     <Move size={14} /> Drag
                 </div>
@@ -107,7 +139,7 @@ const DraggableElement: React.FC<{
             {!printing && selectedId === el.id && (
                 <div style={{ position: 'absolute', bottom: 0, right: 0, width: '12px', height: '12px', background: '#3b82f6', pointerEvents: 'none', clipPath: 'polygon(100% 0, 0 100%, 100% 100%)' }}></div>
             )}
-        </motion.div>
+        </div>
     );
 };
 
