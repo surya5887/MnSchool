@@ -337,12 +337,23 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
         .editable-cell:hover, .editable-cell:focus { border-color: #3b82f6; background: #fff; outline: none; }
         
         .rc-front-page, .rc-back-page {
-          position: relative; z-index: 1; overflow: hidden; background: white; width: 800px; max-width: none; margin: 0 auto 32px auto; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); min-height: 1130px; padding: 50px; display: flex; flex-direction: column;
+          position: relative; z-index: 1; overflow: hidden; background: white; max-width: 1000px; margin: 0 auto 32px auto; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); min-height: 1200px; padding: 50px; display: flex; flex-direction: column;
         }
-        @media (max-width: 768px) {
+
+        /* Screen-only overrides to prevent squishing on any device before printing */
+        @media screen {
           .rc-front-page, .rc-back-page {
-            zoom: 0.45; /* Zooms out so 800px fits on mobile screens natively */
-            -moz-transform: scale(0.45); /* Fallback for Firefox */
+            width: 800px !important;
+            max-width: 800px !important;
+            min-height: 1130px !important;
+          }
+        }
+
+        /* Mobile specific zoom-out, only applied on screen, never on print */
+        @media screen and (max-width: 768px) {
+          .rc-front-page, .rc-back-page {
+            zoom: 0.45;
+            -moz-transform: scale(0.45);
             -moz-transform-origin: top center;
           }
           .report-card-container {
