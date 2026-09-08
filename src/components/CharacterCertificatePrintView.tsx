@@ -153,6 +153,23 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                white-space: nowrap;
                margin-right: 8px;
             }
+              @media screen and (max-width: 768px) {
+                .preview-overlay {
+                  overflow-x: auto !important;
+                  width: 100% !important;
+                  display: flex !important;
+                  flex-direction: column !important;
+                  align-items: center !important;
+                }
+                .tc-container, .cc-container, .bc-container {
+                  zoom: 0.45;
+                  -moz-transform: scale(0.45);
+                  -moz-transform-origin: top center;
+                  margin: 1rem auto;
+                  margin-bottom: 60px !important;
+                }
+              }
+
           `}
         </style>
 
