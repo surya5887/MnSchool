@@ -233,13 +233,47 @@ const Timetable: React.FC = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="timetable-print-wrapper">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { size: landscape; margin: 10mm; }
+          .timetable-print-wrapper {
+             position: absolute !important;
+             left: 0 !important;
+             top: 0 !important;
+             width: 100vw !important;
+             height: auto !important;
+             background: white !important;
+             padding: 20px !important;
+             box-sizing: border-box !important;
+             transform: scale(0.9);
+             transform-origin: top left;
+          }
+          .timetable-print-wrapper, .timetable-print-wrapper * {
+             visibility: visible !important;
+          }
+          .no-print {
+             display: none !important;
+          }
+          .print-only {
+             display: block !important;
+          }
+          .timetable-add-cell, .assign-hint {
+             display: none !important;
+          }
+          /* Make print background colors work */
+          .timetable-print-wrapper * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+          }
+        }
+      `}} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
           <h1 className="page-title"><Clock size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Class Timetable</h1>
           <p className="page-subtitle">Visually manage and print daily schedules for teachers and students.</p>
         </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div className="no-print" style={{ display: 'flex', gap: '16px' }}>
           <button className="btn-secondary" onClick={() => window.print()}><Printer size={18} /> Print Routine</button>
         </div>
       </div>
@@ -256,7 +290,8 @@ const Timetable: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <div className="glass-panel no-print" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
+              <h2 style={{ display: "none", fontSize: "1.2rem", fontWeight: "bold", margin: 0 }} className="print-only">Routine For: {classFilter || "All Classes"}</h2>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
               <select className="glass-input" value={classFilter} onChange={handleClassChange}>
