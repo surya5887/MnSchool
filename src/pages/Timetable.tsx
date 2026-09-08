@@ -236,7 +236,7 @@ const Timetable: React.FC = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="timetable-print-wrapper">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          @page { size: portrait; margin: 10mm; }
+          @page { size: landscape; margin: 10mm; }
           .timetable-print-wrapper {
              position: absolute !important;
              left: 0 !important;
@@ -246,7 +246,7 @@ const Timetable: React.FC = () => {
              background: white !important;
              padding: 20px !important;
              box-sizing: border-box !important;
-             transform: scale(0.9);
+             transform: scale(1); width: 100% !important;
              transform-origin: top left;
           }
           .timetable-print-wrapper, .timetable-print-wrapper * {
@@ -260,6 +260,8 @@ const Timetable: React.FC = () => {
           }
                     .timetable-grid {
              grid-template-columns: 100px repeat(${periods.length}, 1fr) !important;
+             min-width: 0 !important;
+             width: 100% !important;
           }
                     .holiday-cell {
               grid-column: span ${periods.length} !important;
