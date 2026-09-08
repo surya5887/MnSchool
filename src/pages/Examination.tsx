@@ -616,7 +616,7 @@ const Examination: React.FC = () => {
           )}
         </div>
 
-      {(!classFilter && ((activeTab === 'schedules' && scheduleMode === 'class_wise') || activeTab === 'papers') || (!classFilter && activeTab !== 'schedules' && activeTab !== 'papers' && !studentSearch.trim())) ? (
+      {(!classFilter && activeTab === 'papers' || (!classFilter && activeTab !== 'schedules' && activeTab !== 'papers' && !studentSearch.trim())) ? (
         <div className="glass-panel" style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
           <h3>{(activeTab === 'schedules' || activeTab === 'papers') ? 'No Class Selected' : 'No Class or Student Selected'}</h3>
@@ -626,25 +626,55 @@ const Examination: React.FC = () => {
         <>
           {/* Schedules Tab */}
           {activeTab === 'schedules' && (
-            <div className="glass-panel" style={{ padding: '32px', textAlign: 'center' }}>
-              <Calendar size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-              <h3>Manage Exam Schedules for {classFilter}</h3>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Create and print date sheets for upcoming examinations.</p>
-              <button className="btn-primary" onClick={async () => {
-                const existing = await getExamSchedulesByClass(classFilter);
-                // If there's an existing schedule for the current term, load it, otherwise create empty
-                const termSched = existing.find(s => s.examTerm === examType);
-                if(termSched) {
-                  setScheduleData(termSched);
-                } else {
-                  setScheduleData({ classId: classFilter, examTerm: examType, schedule: activeSubjects.map(s => ({ subject: s, date: '', startTime: '09:00 AM', endTime: '12:00 PM' })) });
-                }
-                setView('schedule_config');
-              }}>
-                <Calendar size={20} style={{ marginRight: '8px' }} /> Configure Date Sheet
-              </button>
-            </div>
-          )}
+              <div className="glass-panel" style={{ padding: '32px', textAlign: 'center' }}>
+                <Calendar size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+                <h3>Manage Exam Schedules</h3>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px' }}>
+                  <button 
+                    className={scheduleMode === 'class_wise' ? 'btn-primary' : 'btn-secondary'} 
+                    onClick={() => setScheduleMode('class_wise')}
+                    style={{ padding: '8px 24px', borderRadius: '8px' }}>
+                    Class-Wise
+                  </button>
+                  <button 
+                    className={scheduleMode === 'combined' ? 'btn-primary' : 'btn-secondary'} 
+                    onClick={() => setScheduleMode('combined')}
+                    style={{ padding: '8px 24px', borderRadius: '8px' }}>
+                    Combined
+                  </button>
+                </div>
+
+                {scheduleMode === 'class_wise' ? (
+                  <>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Create and print individual date sheets for {classFilter || 'selected class'}.</p>
+                    <button className="btn-primary" disabled={!classFilter} onClick={async () => {
+                      if (!classFilter) return;
+                      const existing = await getExamSchedulesByClass(classFilter);
+                      const termSched = existing.find(s => s.examTerm === examType);
+                      if(termSched) {
+                        setScheduleData(termSched);
+                      } else {
+                        setScheduleData({ classId: classFilter, examTerm: examType, schedule: activeSubjects.map(s => ({ subject: s, date: '', startTime: '09:00 AM', endTime: '12:00 PM' })) });
+                      }
+                      setView('schedule_config');
+                    }}>
+                      <Calendar size={20} style={{ marginRight: '8px' }} /> {classFilter ? 'Configure Date Sheet' : 'Select a Class First'}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Generate a Master Date Sheet containing all classes for {examType}.</p>
+                    <button className="btn-primary" onClick={() => {
+                      setScheduleData({ classId: 'MASTER', examTerm: examType, schedule: [] });
+                      setShowPrintView(true);
+                    }}>
+                      <Printer size={20} style={{ marginRight: '8px' }} /> Print Master Date Sheet
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
 
           {/* Papers Tab */}
           {activeTab === 'papers' && (

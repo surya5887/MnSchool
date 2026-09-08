@@ -12,7 +12,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
   const [allSchedules, setAllSchedules] = useState<ExamScheduleData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'combined' | 'class'>('combined');
+  const [viewMode, setViewMode] = useState<'combined' | 'class'>(scheduleData.classId === 'MASTER' ? 'combined' : 'class');
 
   const engRules = [
     `${scheduleData.examTerm.toUpperCase()} EXAM will start soon.`,
@@ -96,18 +96,20 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           <ArrowLeft size={20} /> Back
         </button>
         
-        <div style={{ display: 'flex', gap: '8px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
-          <button 
-            onClick={() => setViewMode('class')}
-            style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: viewMode === 'class' ? 'white' : 'transparent', boxShadow: viewMode === 'class' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', fontWeight: viewMode === 'class' ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s' }}>
-            Class Wise
-          </button>
-          <button 
-            onClick={() => setViewMode('combined')}
-            style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: viewMode === 'combined' ? 'white' : 'transparent', boxShadow: viewMode === 'combined' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', fontWeight: viewMode === 'combined' ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s' }}>
-            Combined
-          </button>
-        </div>
+        {scheduleData.classId !== 'MASTER' && (
+          <div style={{ display: 'flex', gap: '8px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+            <button 
+              onClick={() => setViewMode('class')}
+              style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: viewMode === 'class' ? 'white' : 'transparent', boxShadow: viewMode === 'class' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', fontWeight: viewMode === 'class' ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s' }}>
+              Class Wise
+            </button>
+            <button 
+              onClick={() => setViewMode('combined')}
+              style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: viewMode === 'combined' ? 'white' : 'transparent', boxShadow: viewMode === 'combined' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', fontWeight: viewMode === 'combined' ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s' }}>
+              Combined
+            </button>
+          </div>
+        )}
 
         <button className="btn-primary" onClick={() => window.print()}>
           <Printer size={20} /> Print Date Sheet
