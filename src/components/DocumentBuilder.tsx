@@ -302,7 +302,7 @@ const DocumentBuilder: React.FC = () => {
         style={{ 
             width: '794px', 
             height: '1123px', 
-            flexShrink: 0, background: bgImage ? (printing ? 'transparent' : `url(${bgImage}) center/cover no-repeat`) : 'white',
+            flexShrink: 0, background: bgImage ? `url(${bgImage}) center/cover no-repeat` : 'white',
             position: printing ? 'absolute' : 'relative',
             left: 0,
             top: 0,
@@ -411,11 +411,19 @@ const DocumentBuilder: React.FC = () => {
       {isPrinting && createPortal(renderCanvasContent(true), document.body)}
 
       <style dangerouslySetInnerHTML={{__html: `
-        @media print {
-            body > :not(.print-portal) { display: none !important; }
-            body { margin: 0; padding: 0; background: white; }
-            @page { size: A4 portrait; margin: 0; }
-        }
+                  @media print {
+              body > :not(.print-portal) { display: none !important; }
+              body { margin: 0; padding: 0; background: white; }
+              .print-portal { 
+                  position: absolute !important; 
+                  left: 0 !important; 
+                  top: 0 !important; 
+                  -webkit-print-color-adjust: exact !important; 
+                  print-color-adjust: exact !important; 
+              }
+              .print-portal, .print-portal * { visibility: visible !important; }
+              @page { size: A4 portrait; margin: 0; }
+          }
       `}} />
     </div>
   );
