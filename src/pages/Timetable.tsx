@@ -236,7 +236,7 @@ const Timetable: React.FC = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="timetable-print-wrapper">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          @page { size: landscape; margin: 10mm; }
+          @page { size: portrait; margin: 10mm; }
           .timetable-print-wrapper {
              position: absolute !important;
              left: 0 !important;
@@ -262,12 +262,7 @@ const Timetable: React.FC = () => {
              grid-template-columns: 100px repeat(${periods.length}, 1fr) !important;
           }
                     .holiday-cell {
-              grid-column: span ${periods.length + 1};
-          }
-          @media print {
-              .holiday-cell {
-                  grid-column: span ${periods.length} !important;
-              }
+              grid-column: span ${periods.length} !important;
           }
           .timetable-add-cell, .assign-hint {
              display: none !important;
@@ -354,7 +349,7 @@ const Timetable: React.FC = () => {
               </div>
               
               {day.isHoliday ? (
-                 <div className="holiday-cell" style={{ background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                 <div className="holiday-cell" style={{ gridColumn: `span ${periods.length + 1}`, background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
                    Holiday / Off-Day
                  </div>
               ) : (
