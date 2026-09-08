@@ -12,8 +12,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
   const [allSchedules, setAllSchedules] = useState<ExamScheduleData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'combined' | 'class'>('combined');
 
-  // Default instructions similar to the photo
   const engRules = [
     `${scheduleData.examTerm.toUpperCase()} EXAM will start soon.`,
     "Exam timing 8:00 am to 11:00 am.",
@@ -34,12 +34,11 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
         const set = await getSchoolSettings();
         if (set) setSettings(set);
         
-        // Fetch all schedules for this exam term to build the master matrix
         if (scheduleData.examTerm) {
           const schedules = await getExamSchedulesByTerm(scheduleData.examTerm);
           setAllSchedules(schedules);
         } else {
-          setAllSchedules([scheduleData]); // Fallback
+          setAllSchedules([scheduleData]);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -50,7 +49,6 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
     fetchData();
   }, [scheduleData.examTerm]);
 
-  // Aggregate Data for Matrix
   const uniqueDatesSet = new Set<string>();
   allSchedules.forEach(sched => {
     sched.schedule.forEach(item => {
@@ -58,10 +56,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
     });
   });
   
-  // Sort dates chronologically
   const sortedDates = Array.from(uniqueDatesSet).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
   
-  // Sort classes (Very basic heuristic to keep numbers ordered if possible)
   const sortedClasses = [...new Set(allSchedules.map(s => s.classId))].sort((a, b) => {
     const numA = parseInt(a.replace(/[^0-9]/g, '')) || 999;
     const numB = parseInt(b.replace(/[^0-9]/g, '')) || 999;
@@ -90,12 +86,29 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
     );
   }
 
+  // Pre-sort scheduleData.schedule if needed
+  const classSortedSchedule = [...scheduleData.schedule].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
   return (
     <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
       <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
         <button className="btn-secondary" onClick={onClose}>
           <ArrowLeft size={20} /> Back
         </button>
+        
+        <div style={{ display: 'flex', gap: '8px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+          <button 
+            onClick={() => setViewMode('class')}
+            style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: viewMode === 'class' ? 'white' : 'transparent', boxShadow: viewMode === 'class' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', fontWeight: viewMode === 'class' ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s' }}>
+            Class Wise
+          </button>
+          <button 
+            onClick={() => setViewMode('combined')}
+            style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: viewMode === 'combined' ? 'white' : 'transparent', boxShadow: viewMode === 'combined' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', fontWeight: viewMode === 'combined' ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s' }}>
+            Combined
+          </button>
+        </div>
+
         <button className="btn-primary" onClick={() => window.print()}>
           <Printer size={20} /> Print Date Sheet
         </button>
@@ -129,7 +142,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
 
           .ds-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
           .ds-header-left { flex: 1; text-align: center; padding-top: 15px; }
-          .ds-header-left h1 { font-size: 24px; font-weight: bold; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px; }
+          .ds-header-left h1 { font-size: 26px; font-weight: bold; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px; color: #1e3a8a; }
           .ds-header-left h2 { font-size: 16px; text-transform: uppercase; margin: 0; font-weight: bold; letter-spacing: 0.5px; }
           
           .ds-header-right { 
@@ -142,69 +155,114 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           }
           .ds-header-right div { border-bottom: 1px dotted #999; margin-bottom: 4px; padding-bottom: 2px; }
 
-          table.ds-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; }
-          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 6px 4px; }
-          table.ds-table th { font-weight: bold; font-size: 11px; }
+          table.ds-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 13px; }
+          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 8px 4px; }
+          table.ds-table th { font-weight: bold; font-size: 12px; background: #f9fafb; }
           
           .ds-rules-container { display: flex; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 20px; }
           .ds-rule-box { flex: 1; border: 1px solid #000; padding: 10px; }
           .ds-rule-box h3 { margin: 0 0 8px 0; font-size: 13px; font-weight: bold; text-decoration: underline; }
           .ds-rule-box p { margin: 0 0 4px 0; line-height: 1.4; }
+          
+          .ds-class-wise-header {
+            text-align: center;
+            border-bottom: 2px solid #b91c1c;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+          }
+          .ds-class-wise-header h1 { font-size: 32px; font-weight: 900; color: #b91c1c; margin: 0 0 5px 0; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: 1px; }
         `}
       </style>
 
       <div className="ds-container">
-        {/* Header Section */}
-        <div className="ds-header">
-          <div className="ds-header-left">
-            <h1>{settings?.name || 'THE SKYLAND SCHOOL SHAHPUR'}</h1>
-            <h2>{scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)</h2>
-          </div>
-          
-          <div className="ds-header-right">
-            <div>Name: ................................................</div>
-            <div>Father's name: Mr. ...........................</div>
-            <div>Class: ................................................</div>
-            <div style={{borderBottom: 'none'}}>Fee balance: ..................... till SEP 2026.</div>
-          </div>
-        </div>
+        
+        {viewMode === 'combined' ? (
+          <>
+            <div className="ds-header">
+              <div className="ds-header-left">
+                <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+                <h2>{scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)</h2>
+              </div>
+              
+              <div className="ds-header-right">
+                <div>Name: ................................................</div>
+                <div>Father's name: Mr. ...........................</div>
+                <div>Class: ................................................</div>
+                <div style={{borderBottom: 'none'}}>Fee balance: ..................... till SEP 2026.</div>
+              </div>
+            </div>
 
-        {/* Matrix Table Section */}
-        <table className="ds-table">
-          <thead>
-            <tr>
-              <th style={{width: '120px'}}>
-                <div style={{borderBottom: '1px solid #000', paddingBottom: '2px'}}>CLASS &rarr;</div>
-                <div style={{paddingTop: '2px'}}>DATES/DAY &darr;</div>
-              </th>
-              {sortedClasses.map(c => (
-                <th key={c}>{c}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sortedDates.map((date, idx) => (
-              <tr key={idx}>
-                <td style={{fontWeight: 'bold', fontSize: '11px', textAlign: 'left', paddingLeft: '8px'}}>
-                  {formatDate(date)}<br/>
-                  {getDayOfWeek(date)}
-                </td>
-                {sortedClasses.map(classId => {
-                  // Find subject for this class on this date
-                  const classSched = allSchedules.find(s => s.classId === classId);
-                  const subjectItem = classSched?.schedule.find(item => item.date === date);
-                  return (
-                    <td key={classId} style={{ fontWeight: subjectItem?.subject ? 'bold' : 'normal' }}>
-                      {subjectItem?.subject ? subjectItem.subject.toUpperCase() : '-'}
+            <table className="ds-table">
+              <thead>
+                <tr>
+                  <th style={{width: '120px', background: 'transparent'}}>
+                    <div style={{borderBottom: '1px solid #000', paddingBottom: '2px'}}>CLASS &rarr;</div>
+                    <div style={{paddingTop: '2px'}}>DATES/DAY &darr;</div>
+                  </th>
+                  {sortedClasses.map(c => (
+                    <th key={c} style={{background: 'transparent'}}>{c}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {sortedDates.map((date, idx) => (
+                  <tr key={idx}>
+                    <td style={{fontWeight: 'bold', fontSize: '12px', textAlign: 'left', paddingLeft: '8px'}}>
+                      {formatDate(date)}<br/>
+                      {getDayOfWeek(date)}
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    {sortedClasses.map(classId => {
+                      const classSched = allSchedules.find(s => s.classId === classId);
+                      const subjectItem = classSched?.schedule.find(item => item.date === date);
+                      return (
+                        <td key={classId} style={{ fontWeight: subjectItem?.subject ? 'bold' : 'normal' }}>
+                          {subjectItem?.subject ? subjectItem.subject.toUpperCase() : '-'}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <>
+            {/* Class Wise View Layout */}
+            <div className="ds-class-wise-header">
+              <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
+              <p style={{margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold'}}>{settings?.recognitionText}</p>
+              <h2 style={{ fontSize: '20px', textTransform: 'uppercase', margin: '0', color: '#1e3a8a', textDecoration: 'underline' }}>
+                {scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)
+              </h2>
+              <h3 style={{ fontSize: '18px', margin: '10px 0 0 0', color: '#333' }}>Class: {scheduleData.classId}</h3>
+            </div>
+            
+            <table className="ds-table" style={{ fontSize: '14px' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '10px', width: '60px' }}>S.NO</th>
+                  <th style={{ padding: '10px' }}>DATE / DAY</th>
+                  <th style={{ padding: '10px' }}>SUBJECT</th>
+                  <th style={{ padding: '10px' }}>TIMING</th>
+                </tr>
+              </thead>
+              <tbody>
+                {classSortedSchedule.map((item, idx) => (
+                  <tr key={idx}>
+                    <td style={{ padding: '10px', fontWeight: 'bold' }}>{idx + 1}</td>
+                    <td style={{ padding: '10px', textAlign: 'left', paddingLeft: '20px', fontWeight: 'bold' }}>
+                      {formatDate(item.date)} ({getDayOfWeek(item.date)})
+                    </td>
+                    <td style={{ padding: '10px', fontWeight: 'bold' }}>{item.subject.toUpperCase()}</td>
+                    <td style={{ padding: '10px' }}>{item.startTime} to {item.endTime}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
 
-        {/* Footer Rules Section */}
+        {/* Footer Rules Section (Always present) */}
         <div className="ds-rules-container">
           <div className="ds-rule-box">
             <h3>Rules & Regulations-</h3>
