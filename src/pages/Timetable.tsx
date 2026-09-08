@@ -258,6 +258,9 @@ const Timetable: React.FC = () => {
           .print-only {
              display: block !important;
           }
+                    .timetable-grid {
+             grid-template-columns: 100px repeat(${periods.length}, 1fr) !important;
+          }
           .timetable-add-cell, .assign-hint {
              display: none !important;
           }
@@ -303,7 +306,7 @@ const Timetable: React.FC = () => {
             </div>
           </div>
         )}<div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
+        <div className="timetable-grid" style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
           
           {/* Header Row */}
           <div style={{ fontWeight: 600, color: 'var(--text-muted)', padding: '12px', textAlign: 'center' }}>Day</div>
