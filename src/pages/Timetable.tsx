@@ -299,10 +299,6 @@ const Timetable: React.FC = () => {
           </div>
         ) : (
           <div className="glass-panel no-print" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-              <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
-                <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>M.N. PUBLIC SCHOOL</h1>
-                <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class {classFilter || "All"} - Time Table</h2>
-              </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
               <select className="glass-input" value={classFilter} onChange={handleClassChange}>
@@ -313,7 +309,12 @@ const Timetable: React.FC = () => {
                <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
             </div>
           </div>
-        )}<div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
+        )}
+        <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
+          <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>M.N. PUBLIC SCHOOL</h1>
+          <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class {classFilter || "All"} - Time Table</h2>
+        </div>
+        <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
         <div className="timetable-grid" style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
           
           {/* Header Row */}
