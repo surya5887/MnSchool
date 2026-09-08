@@ -10,7 +10,7 @@ interface TCProps {
 }
 
 const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: any) => (
-    <div style={{ display: 'inline-flex', flex: width === '100%' ? 1 : 'none', width: width !== '100%' ? width : 'auto', alignItems: 'flex-end' }}>
+    <div style={{ display: 'inline-flex', flex: width === '100%' ? 1 : 'none', width: width !== '100%' ? width : 'auto', alignItems: 'flex-end', marginLeft: '8px' }}>
       <input 
         type="text" 
         name={name} 
@@ -24,15 +24,14 @@ const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: 
           border: 'none',
           outline: 'none',
           fontSize: '16px',
-          fontWeight: 'bold',
           fontFamily: 'inherit',
           padding: '0 4px',
           color: '#000',
-          minWidth: '20px',
+          minWidth: '50px',
           maxWidth: '100%'
         }}
       />
-      <div style={{ flex: 1, borderBottom: '1.5px dotted #000', marginBottom: '4px', minWidth: '20px' }}></div>
+      <div style={{ flex: 1, borderBottom: '1px solid #000', marginBottom: '4px', minWidth: '20px' }}></div>
     </div>
   );
 
@@ -45,260 +44,193 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
   }, []);
 
   const [formData, setFormData] = useState({
-    bookNo: '',
-    tcNo: '',
-    udise: '09020302404',
-    recognitionNo: '',
-    pen: '',
+    admissionNo: student.admissionNo || '',
     studentName: `${student.firstName} ${student.lastName || ''}`.trim(),
-    dobWords: '',
-    dobNumbers: student.dob || '',
     motherName: '',
     fatherName: student.parentName || '',
-    casteReligion: '',
-    residenceMohalla: '',
-    tehsilDistrict: '',
-    residenceUp: 'Since Birth',
-    firstAdmissionDate: '',
-    admissionRegisterNo: student.admissionNo || '',
-    dateOfLeaving: '',
-    apaarId: '',
-    dateOfStrikingOff: '',
-    reasonForStrikingOff: '',
-    character: 'Good',
-    higherExamPassed: '',
-    higherExamDate: '',
-    classRemovedFrom: className || '',
-    studentLanguage: 'Hindi',
-    occupation: '',
+    admissionDate: '',
+    dobNumbers: student.dob || '',
+    dobWords: '',
+    lastClass: className || '',
+    annualExam: `${className || ''} PASS`,
+    subjects: 'ENGLISH, MATHS, SCIENCE, S.S.T., HINDI',
+    qualifiedPromotion: 'YES',
+    result: 'PASS',
+    conduct: 'GOOD',
+    issueDate: new Date().toLocaleDateString('en-GB').replace(/\//g, '-'),
+    reasonLeaving: 'NA',
+    remarks: student.pen ? `PEN : ${student.pen}` : '',
     aadhaarNo: student.aadharNumber || '',
-    statusByClass: '',
-    schoolOpenDays: '',
-    presentDays: '',
-    other: '',
-    writingDate: new Date().toLocaleDateString('en-GB').split('/')[0],
-    writingMonth: new Date().toLocaleDateString('en-GB').split('/')[1],
-    writingYear: new Date().toLocaleDateString('en-GB').split('/')[2].slice(-2),
-    schoolMohalla: 'HARSOLI'
+    preparedBy: '',
+    checkedBy: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-    let finalWritingDate = formData.writingDate || '';
-  if (finalWritingDate.length > 0 && finalWritingDate.length <= 2 && formData.writingMonth) {
-      let yr = formData.writingYear || String(new Date().getFullYear());
-      if (yr.length === 2) yr = '20' + yr;
-      finalWritingDate = `${finalWritingDate}-${formData.writingMonth}-${yr}`;
-  }
-  if (!finalWritingDate) {
-      const today = new Date();
-      finalWritingDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-  }
 
   return (
-    <div className="preview-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 9999, overflowY: 'auto', padding: '24px' }}>
-      <style>
-          {`
-            @media print {
-              body * { visibility: hidden; }
-              body, html { margin: 0 !important; padding: 0 !important; height: 100% !important; background: white !important; }
-              @page { size: A4 portrait; margin: 0; }
-              .preview-overlay { position: absolute !important; left: 0; top: 0; background: white !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; }
-              .preview-overlay * { visibility: visible; }
-              .no-print { display: none !important; }
-              .tc-container, .cc-container, .bc-container { box-shadow: none !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; max-height: 100vh !important; max-width: none !important; padding: 0 !important; box-sizing: border-box !important; border: 8px solid #1e3a8a !important; }
-              .tc-inner-border, .cc-inner-border, .bc-inner-border { padding: 15px !important; border: 2px solid #b91c1c !important; margin: 4px !important; height: calc(100vh - 24px) !important; box-sizing: border-box !important; display: flex; flex-direction: column; }
-              .tc-content-z, .cc-content-z, .bc-content-z { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 15px; }
-              input.tc-editable, input.cc-editable, input.bc-editable { border: none !important; background: transparent !important; }
-              .tc-dotted-input { border-bottom: 1.5px dotted #000 !important; }
-            }
-            
-            .tc-container, .cc-container, .bc-container {
-              font-family: 'Arial', sans-serif;
-              background: white;
-              max-width: 950px;
-              margin: 0 auto;
-              position: relative;
-              color: #000;
-              border: 8px solid #1e3a8a;
-              padding: 8px;
-              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            }
-            
-            .tc-inner-border, .cc-inner-border, .bc-inner-border {
-               border: 2px solid #b91c1c;
-               padding: 40px;
-               height: 100%;
-               position: relative;
-            }
-            
-            .tc-watermark, .cc-watermark, .bc-watermark {
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              opacity: 0.12; pointer-events: none;
-              width: 550px;
-              height: 550px;
-              background-size: contain;
-              background-repeat: no-repeat;
-              background-position: center;
-              z-index: 1;
-            }
-            
-            .tc-content-z, .cc-content-z, .bc-content-z {
-              position: relative;
-              z-index: 10;
-            }
-            
-            .tc-field, .cc-field, .bc-field {
-               display: flex;
-               align-items: flex-end;
-               margin-bottom: 6px;
-            }
-            
-            
-            .tc-details-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 14.5px; }
-              .tc-details-table td { border: 1.5px solid #444; padding: 5px 8px; vertical-align: middle; }
-              .tc-details-table td.label-col { font-weight: bold; width: 40%; background-color: rgba(0, 0, 0, 0.03); }
-              .tc-details-table input { width: 100%; border: none; background: transparent; outline: none; font-size: 14.5px; font-family: inherit; font-weight: bold; color: #000; }
-
-            .tc-label, .cc-label, .bc-label {
-               font-weight: bold;
-               white-space: nowrap;
-               margin-right: 8px;
-            }
-              @media screen and (max-width: 768px) {
-                .preview-overlay {
-                  overflow-x: auto !important;
-                  width: 100% !important;
-                  display: flex !important;
-                  flex-direction: column !important;
-                  align-items: center !important;
-                }
-                .tc-container, .cc-container, .bc-container {
-                  zoom: 0.45;
-                  -moz-transform: scale(0.45);
-                  -moz-transform-origin: top center;
-                  margin: 1rem auto;
-                  margin-bottom: 60px !important;
-                }
-              }
-
-          `}
-        </style>
-
-      <div className="no-print" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', maxWidth: '950px', margin: '0 auto 24px auto', background: 'white', padding: '16px 24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-        <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', border: '1px solid #d1d5db', background: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-          <ArrowLeft size={18} /> Back
-        </button>
-        <button onClick={handlePrint} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 24px', border: 'none', background: '#3b82f6', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-          <Printer size={18} /> Print TC
-        </button>
+    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f1f5f9' }}>
+      {/* TOOLBAR */}
+      <div className="sticky top-0 z-50 bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center no-print">
+         <div className="flex items-center gap-4">
+            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+               <ArrowLeft size={24} className="text-slate-600" />
+            </button>
+            <h2 className="text-xl font-bold text-slate-800">Transfer Certificate Preview</h2>
+         </div>
+         <button onClick={() => window.print()} className="btn-primary flex items-center gap-2">
+            <Printer size={20} /> Print TC
+         </button>
       </div>
 
-      <div className="tc-container">
-         <div className="tc-inner-border">
-            <img className="tc-watermark" src={settings?.logoUrl || "/images/logo_circular.png"} alt="Watermark" style={{ objectFit: "contain" }} />
+      <div className="p-8 flex justify-center pb-24">
+         <div className="bg-white shadow-xl paper-container" style={{ width: '210mm', minHeight: '297mm', background: 'white', position: 'relative' }}>
+            <style dangerouslySetInnerHTML={{__html: `
+               @media print {
+                  body { margin: 0; padding: 0; background: white; }
+                  body * { visibility: hidden; }
+                  .paper-container { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 15mm !important; box-shadow: none !important; }
+                  .paper-container * { visibility: visible !important; }
+                  .no-print { display: none !important; }
+                  @page { size: A4 portrait; margin: 0; }
+               }
+               @media screen and (max-width: 768px) {
+                  .paper-container {
+                      zoom: 0.45;
+                  }
+               }
+               .tc-row { display: flex; align-items: flex-end; margin-bottom: 24px; font-size: 16px; color: #333; }
+               .tc-label { white-space: nowrap; }
+               input.tc-editable { font-family: 'Times New Roman', serif; font-size: 17px !important; text-transform: uppercase; }
+            `}} />
             
-            <div className="tc-content-z">
-               {/* TOP HEADERS */}
-               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', fontSize: '14px', fontWeight: 'bold', marginTop: '10px', width: '100%' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1, marginRight: '30px' }}>
-                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Book No</span>
-                       <input name="bookNo" value={formData.bookNo} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1.2, marginRight: '30px' }}>
-                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>U-DISE</span>
-                       <input name="udise" value={formData.udise} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1.4, marginRight: '30px' }}>
-                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>Recognition No</span>
-                       <input name="recognitionNo" value={formData.recognitionNo} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', flex: 1 }}>
-                       <span style={{ whiteSpace: 'nowrap', marginRight: '8px' }}>T.C. No</span>
-                       <input name="tcNo" value={formData.tcNo} onChange={handleChange} className="tc-dotted-input" style={{ flex: 1, border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '14px', padding: '0 4px', width: '10px' }} />
-                    </div>
-                 </div>
-
-               {/* MAIN TITLE & LOGOS */}
-               <div style={{ textAlign: 'center', marginTop: '0px', marginBottom: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-                       <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '90px', height: '90px' }} alt="Logo" />
-                       <div style={{ textAlign: 'left' }}>
-                        <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '26px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
-                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
-                            {settings?.recognitionText && <p style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#444' }}>{settings.recognitionText}</p>}
+            <div style={{ padding: '20px' }}>
+                {/* HEADER */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #ccc', paddingBottom: '16px', gap: '20px', marginBottom: '30px' }}>
+                     {settings?.logo && (
+                        <img src={settings.logo} alt="School Logo" style={{ width: '90px', height: '90px', objectFit: 'contain' }} />
+                     )}
+                     <div style={{ textAlign: 'center' }}>
+                         <h1 style={{ margin: '0', fontSize: '28px', color: '#111', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '1px' }}>{settings?.name || 'M.N. PUBLIC SCHOOL'}</h1>
+                          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#444' }}>{settings?.address ? settings.address : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
+                          <p style={{ margin: '2px 0 0 0', fontSize: '14px', color: '#444' }}>Contact: {settings?.phone || '8447537369 / 9873872786'}</p>
+                          {settings?.recognitionText && <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#444', fontWeight: 'bold' }}>{settings.recognitionText}</p>}
                      </div>
-                     
-                  </div>
-                  <div style={{ background: '#1e3a8a', color: 'white', display: 'inline-block', padding: '6px 30px', borderRadius: '4px', marginTop: '12px', fontSize: '18px', fontWeight: 'bold', letterSpacing: '1px', boxShadow: '2px 2px 0px rgba(0,0,0,0.2)' }}>
-                     LEAVING CERTIFICATE (BASIC SHIKSHA PARISHAD)
-                  </div>
-               </div>
+                </div>
 
-               {/* 2 COLUMN GRID */}
-               
-                 <table className="tc-details-table">
-                    <tbody>
-                       <tr><td className="label-col">PEN No.</td><td><input name="pen" value={formData.pen} onChange={handleChange} /></td></tr>
-                         <tr><td className="label-col">APAAR ID</td><td><input name="apaarId" value={formData.apaarId} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">1. Name of Student</td><td><input name="studentName" value={formData.studentName} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">2. Date of Birth (In Words)</td><td><input name="dobWords" value={formData.dobWords} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;(In Figures)</td><td><input name="dobNumbers" value={formData.dobNumbers} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">3. Mother's Name (Smt.)</td><td><input name="motherName" value={formData.motherName} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">4. Father's Name (Shri)</td><td><input name="fatherName" value={formData.fatherName} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">5. Caste / Religion</td><td><input name="casteReligion" value={formData.casteReligion} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">6. Residence / Vill. / Post</td><td><input name="residenceMohalla" value={formData.residenceMohalla} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;Tehsil & District</td><td><input name="tehsilDistrict" value={formData.tehsilDistrict} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">7. Duration of Residence in U.P.</td><td><input name="residenceUp" value={formData.residenceUp} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">8. Date of First Admission</td><td><input name="firstAdmissionDate" value={formData.firstAdmissionDate} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;Admission Register No.</td><td><input name="admissionRegisterNo" value={formData.admissionRegisterNo} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">9. Date of Leaving School</td><td><input name="dateOfLeaving" value={formData.dateOfLeaving} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">10. Date of Striking Off</td><td><input name="dateOfStrikingOff" value={formData.dateOfStrikingOff} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">11. Reason for Striking Off</td><td><input name="reasonForStrikingOff" value={formData.reasonForStrikingOff} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">12. Character</td><td><input name="character" value={formData.character} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">13. Higher Exam Passed</td><td><input name="higherExamPassed" value={formData.higherExamPassed} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">&nbsp;&nbsp;&nbsp;&nbsp;& Date</td><td><input name="higherExamDate" value={formData.higherExamDate} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">14. Class Removed From</td><td><input name="classRemovedFrom" value={formData.classRemovedFrom} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">15. Language (Hindi/Urdu)</td><td><input name="studentLanguage" value={formData.studentLanguage} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">16. Occupation</td><td><input name="occupation" value={formData.occupation} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">17. Student's Aadhaar No.</td><td><input name="aadhaarNo" value={formData.aadhaarNo} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">18. Status According to Class</td><td><input name="statusByClass" value={formData.statusByClass} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">19. Number of School Days</td><td><input name="schoolOpenDays" value={formData.schoolOpenDays} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">20. Number of Days Present</td><td><input name="presentDays" value={formData.presentDays} onChange={handleChange} /></td></tr>
-                       <tr><td className="label-col">21. Any Other Remarks</td><td><input name="other" value={formData.other} onChange={handleChange} /></td></tr>
-                    </tbody>
-                 </table>
+                {/* TITLE */}
+                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 'bold', textDecoration: 'underline', letterSpacing: '1px' }}>TRANSFER CERTIFICATE</h2>
+                </div>
 
-                 {/* FOOTER */}
-                 <div style={{ marginTop: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
-                       <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '15px' }}>
-                          <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>Date of Issue</div> 
-                          <input name="writingDate" value={finalWritingDate} onChange={handleChange} placeholder="DD-MM-YYYY" className="tc-dotted-input" style={{ width: '110px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px', textAlign: 'center' }} /> 
-                       </div>
-                       <div style={{ width: '250px', borderBottom: '1.5px solid #000' }}></div>
+                {/* CONTENT */}
+                <div style={{ padding: '0 20px', fontFamily: 'Arial, sans-serif' }}>
+                    <div className="tc-row">
+                        <span className="tc-label">1. Admission No:</span>
+                        <InputLine name="admissionNo" value={formData.admissionNo} onChange={handleChange} />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                       <div style={{ display: 'flex', alignItems: 'flex-end', fontSize: '15px', marginTop: '10px' }}>
-                          <div style={{ whiteSpace: 'nowrap', marginRight: '10px', fontWeight: 'bold' }}>School Mohalla / Location</div> 
-                          <input name="schoolMohalla" value={formData.schoolMohalla} onChange={handleChange} className="tc-dotted-input" style={{ width: '180px', border: 'none', borderBottom: '1.5px dotted #000', outline: 'none', background: 'transparent', fontWeight: 'bold', fontSize: '15px', padding: '0 4px' }} />
-                       </div>
-                       <div style={{ textAlign: 'center', width: '250px' }}>
-                          <div style={{ fontWeight: 'bold', fontSize: '17px', marginTop: '4px' }}>Signature of Principal</div>
-                          <div style={{ fontSize: '16px', color: '#444' }}>(Seal / Stamp)</div>
-                       </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">2. Name of Pupil:</span>
+                        <InputLine name="studentName" value={formData.studentName} onChange={handleChange} />
                     </div>
-                 </div>
-               
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">3. Mother's Name:</span>
+                        <InputLine name="motherName" value={formData.motherName} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">4. Father's/Guardian's Name:</span>
+                        <InputLine name="fatherName" value={formData.fatherName} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">5. Date of Admission in the School:</span>
+                        <InputLine name="admissionDate" value={formData.admissionDate} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row" style={{ marginBottom: '8px' }}>
+                        <span className="tc-label">6. Date of Birth</span>
+                        <InputLine name="dobNumbers" value={formData.dobNumbers} onChange={handleChange} />
+                    </div>
+                    <div className="tc-row" style={{ paddingLeft: '20px' }}>
+                        <span className="tc-label">(In Words):</span>
+                        <InputLine name="dobWords" value={formData.dobWords} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">7. Class in which the pupil last studied:</span>
+                        <InputLine name="lastClass" value={formData.lastClass} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">8. School/Board Annual Examination last taken with result:</span>
+                        <InputLine name="annualExam" value={formData.annualExam} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">9. Subjects Studied:</span>
+                        <InputLine name="subjects" value={formData.subjects} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">10. Whether qualified for promotion to the higher class:</span>
+                        <InputLine name="qualifiedPromotion" value={formData.qualifiedPromotion} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">11. Result:</span>
+                        <InputLine name="result" value={formData.result} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">12. General conduct:</span>
+                        <InputLine name="conduct" value={formData.conduct} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">13. Date of issue of certificate:</span>
+                        <InputLine name="issueDate" value={formData.issueDate} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">14. Reasons for leaving the school:</span>
+                        <InputLine name="reasonLeaving" value={formData.reasonLeaving} onChange={handleChange} />
+                    </div>
+                    
+                    <div className="tc-row">
+                        <span className="tc-label">15. Any other remarks:</span>
+                        <InputLine name="remarks" value={formData.remarks} onChange={handleChange} />
+                    </div>
+
+                    <div className="tc-row">
+                        <span className="tc-label">16. Aadhaar No:</span>
+                        <InputLine name="aadhaarNo" value={formData.aadhaarNo} onChange={handleChange} />
+                    </div>
+                </div>
+
+                {/* FOOTER */}
+                <div style={{ marginTop: '60px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontFamily: 'Arial, sans-serif', fontSize: '16px', color: '#333' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        <span style={{ marginRight: '8px' }}>Prepared by:</span>
+                        <input type="text" name="preparedBy" value={formData.preparedBy} onChange={handleChange} style={{ width: '150px', border: 'none', borderBottom: '1px solid #000', outline: 'none', background: 'transparent', textAlign: 'center', fontSize: '16px', fontFamily: 'inherit' }} />
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        <span style={{ marginRight: '8px' }}>Checked by:</span>
+                        <input type="text" name="checkedBy" value={formData.checkedBy} onChange={handleChange} style={{ width: '150px', border: 'none', borderBottom: '1px solid #000', outline: 'none', background: 'transparent', textAlign: 'center', fontSize: '16px', fontFamily: 'inherit' }} />
+                    </div>
+                </div>
+
+                <div style={{ marginTop: '40px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontFamily: 'Arial, sans-serif', fontSize: '16px', color: '#333' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        <span style={{ marginRight: '8px' }}>Principal's Signature with Seal:</span>
+                        <div style={{ width: '200px', borderBottom: '1px solid #000' }}></div>
+                    </div>
+                </div>
             </div>
          </div>
       </div>
