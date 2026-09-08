@@ -280,7 +280,7 @@ const Timetable: React.FC = () => {
         }
       `}} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-        <div>
+        <div className="no-print">
           <h1 className="page-title"><Clock size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Class Timetable</h1>
           <p className="page-subtitle">Visually manage and print daily schedules for teachers and students.</p>
         </div>
@@ -302,7 +302,10 @@ const Timetable: React.FC = () => {
           </div>
         ) : (
           <div className="glass-panel no-print" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-              <h2 style={{ display: "none", fontSize: "1.2rem", fontWeight: "bold", margin: 0 }} className="print-only">Routine For: {classFilter || "All Classes"}</h2>
+              <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
+                <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>M.N. PUBLIC SCHOOL</h1>
+                <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class {classFilter || "All"} - Time Table</h2>
+              </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
               <select className="glass-input" value={classFilter} onChange={handleClassChange}>
