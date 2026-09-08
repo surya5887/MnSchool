@@ -302,7 +302,7 @@ const DocumentBuilder: React.FC = () => {
         style={{ 
             width: '794px', 
             height: '1123px', 
-            background: bgImage ? (printing ? 'transparent' : `url(${bgImage}) center/cover no-repeat`) : 'white',
+            flexShrink: 0, background: bgImage ? (printing ? 'transparent' : `url(${bgImage}) center/cover no-repeat`) : 'white',
             position: printing ? 'absolute' : 'relative',
             left: 0,
             top: 0,
@@ -402,11 +402,11 @@ const DocumentBuilder: React.FC = () => {
         <button className="btn-primary" onClick={handlePrint} style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}><Printer size={18} /> Print Form</button>
       </div>
 
-      <div ref={containerRef} className="builder-container no-print" style={{ width: '100%', overflow: 'hidden', display: 'flex', background: '#f1f5f9', padding: '20px', borderRadius: '12px' }}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            {renderCanvasContent(false)}
-          </div>
-      </div>
+      <div ref={containerRef} className="builder-container no-print" style={{ width: "100%", overflow: "hidden", display: "flex", background: "#f1f5f9", padding: "20px", borderRadius: "12px", justifyContent: "center" }}>
+            <div style={{ width: 794 * scale, height: 1123 * scale, position: "relative" }}>
+              {renderCanvasContent(false)}
+            </div>
+        </div>
 
       {isPrinting && createPortal(renderCanvasContent(true), document.body)}
 
