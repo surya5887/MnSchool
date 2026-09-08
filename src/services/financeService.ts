@@ -19,6 +19,7 @@ export interface TransactionData {
   createdAt?: string;
   editedAt?: string;
   session?: string;
+  receiptNo?: number;
 }
 
 export const addTransaction = async (data: TransactionData) => {
@@ -28,6 +29,23 @@ export const addTransaction = async (data: TransactionData) => {
     if (activeSession && !data.session) {
       data.session = activeSession;
     }
+    
+    // Auto-generate sequential receipt number for Payments
+    if (data.type === 'Payment') {
+      const q = query(
+        collection(db, TRANSACTIONS_COLLECTION),
+        where("type", "==", "Payment"),
+        where("session", "==", data.session)
+      );
+      const snapshot = await getDocs(q);
+      let maxNo = 0;
+      snapshot.forEach(doc => {
+        const rNo = doc.data().receiptNo || 0;
+        if (rNo > maxNo) maxNo = rNo;
+      });
+      data.receiptNo = maxNo + 1;
+    }
+
     const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), data as any);
     await autoLog(data.type === "Charge" ? `Generated Due/Charge of ₹${data.amount}` : `Processed ${data.type} of ₹${data.amount}`);
     return docRef.id;

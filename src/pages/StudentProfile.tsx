@@ -1033,7 +1033,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <FeeReceiptPrintView 
           student={student} 
           transaction={printTransaction} 
-          classNameStr={studentClass?.className || 'Unknown'} 
+          classNameStr={studentClass?.className || student.classId || 'Unknown'} 
         />
       )}
     </motion.div>
