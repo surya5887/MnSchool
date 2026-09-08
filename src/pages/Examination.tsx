@@ -47,6 +47,7 @@ const Examination: React.FC = () => {
 
   // Advanced States
   const [scheduleData, setScheduleData] = useState<ExamScheduleData | null>(null);
+  const [scheduleMode, setScheduleMode] = useState<'class_wise' | 'combined'>('class_wise');
   const [paperData, setPaperData] = useState<QuestionPaperData | null>(null);
 
   
@@ -579,7 +580,7 @@ const Examination: React.FC = () => {
           <button className={activeTab === 'doc_builder' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('doc_builder')}><FileText size={18} style={{whiteSpace:'nowrap'}}/> Custom Docs</button>
       </div>
 
-        {activeTab !== 'doc_builder' && (
+        {activeTab !== 'doc_builder' && !(activeTab === 'schedules' && scheduleMode === 'combined') && (
         <><div className="glass-panel" style={{ padding: '20px', marginBottom: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '200px' }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Class</label>
@@ -615,7 +616,7 @@ const Examination: React.FC = () => {
           )}
         </div>
 
-      {(!classFilter && ((activeTab === 'schedules' || activeTab === 'papers') || !studentSearch.trim())) ? (
+      {(!classFilter && ((activeTab === 'schedules' && scheduleMode === 'class_wise') || activeTab === 'papers') || (!classFilter && activeTab !== 'schedules' && activeTab !== 'papers' && !studentSearch.trim())) ? (
         <div className="glass-panel" style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)' }}>
           <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
           <h3>{(activeTab === 'schedules' || activeTab === 'papers') ? 'No Class Selected' : 'No Class or Student Selected'}</h3>

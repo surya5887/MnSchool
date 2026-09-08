@@ -184,7 +184,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                 <h2>{scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)</h2>
               </div>
               
-              <div className="ds-header-right">
+              <div className="ds-header-right" contentEditable suppressContentEditableWarning>
                 <div>Name: ................................................</div>
                 <div>Father's name: Mr. ...........................</div>
                 <div>Class: ................................................</div>
@@ -200,7 +200,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                     <div style={{paddingTop: '2px'}}>DATES/DAY &darr;</div>
                   </th>
                   {sortedClasses.map(c => (
-                    <th key={c} style={{background: 'transparent'}}>{c}</th>
+                    <th key={c} style={{background: 'transparent'}} contentEditable suppressContentEditableWarning>{c}</th>
                   ))}
                 </tr>
               </thead>
@@ -231,7 +231,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             <div className="ds-class-wise-header">
               <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
               <p style={{margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold'}}>{settings?.recognitionText}</p>
-              <h2 style={{ fontSize: '20px', textTransform: 'uppercase', margin: '0', color: '#1e3a8a', textDecoration: 'underline' }}>
+              <h2 style={{ fontSize: '20px', textTransform: 'uppercase', margin: '0', color: '#1e3a8a', textDecoration: 'underline' }} contentEditable suppressContentEditableWarning>
                 {scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)
               </h2>
               <h3 style={{ fontSize: '18px', margin: '10px 0 0 0', color: '#333' }}>Class: {scheduleData.classId}</h3>
@@ -250,11 +250,11 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                 {classSortedSchedule.map((item, idx) => (
                   <tr key={idx}>
                     <td style={{ padding: '10px', fontWeight: 'bold' }}>{idx + 1}</td>
-                    <td style={{ padding: '10px', textAlign: 'left', paddingLeft: '20px', fontWeight: 'bold' }}>
+                    <td style={{ padding: '10px', textAlign: 'left', paddingLeft: '20px', fontWeight: 'bold' }} contentEditable suppressContentEditableWarning>
                       {formatDate(item.date)} ({getDayOfWeek(item.date)})
                     </td>
-                    <td style={{ padding: '10px', fontWeight: 'bold' }}>{item.subject.toUpperCase()}</td>
-                    <td style={{ padding: '10px' }}>{item.startTime} to {item.endTime}</td>
+                    <td style={{ padding: '10px', fontWeight: 'bold' }} contentEditable suppressContentEditableWarning>{item.subject.toUpperCase()}</td>
+                    <td style={{ padding: '10px' }} contentEditable suppressContentEditableWarning>{item.startTime} to {item.endTime}</td>
                   </tr>
                 ))}
               </tbody>
@@ -264,14 +264,14 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
 
         {/* Footer Rules Section (Always present) */}
         <div className="ds-rules-container">
-          <div className="ds-rule-box">
+          <div className="ds-rule-box" contentEditable suppressContentEditableWarning>
             <h3>Rules & Regulations-</h3>
             {engRules.map((rule, i) => (
               <p key={i}><strong>{i+1}.</strong> {rule}</p>
             ))}
           </div>
           
-          <div className="ds-rule-box">
+          <div className="ds-rule-box" contentEditable suppressContentEditableWarning>
             <h3>नियम व शर्तें-</h3>
             {hinRules.map((rule, i) => (
               <p key={i}><strong>{i+1}.</strong> {rule}</p>
