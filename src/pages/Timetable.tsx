@@ -261,6 +261,14 @@ const Timetable: React.FC = () => {
                     .timetable-grid {
              grid-template-columns: 100px repeat(${periods.length}, 1fr) !important;
           }
+                    .holiday-cell {
+              grid-column: span ${periods.length + 1};
+          }
+          @media print {
+              .holiday-cell {
+                  grid-column: span ${periods.length} !important;
+              }
+          }
           .timetable-add-cell, .assign-hint {
              display: none !important;
           }
@@ -343,7 +351,7 @@ const Timetable: React.FC = () => {
               </div>
               
               {day.isHoliday ? (
-                 <div style={{ gridColumn: `span ${periods.length + 1}`, background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                 <div className="holiday-cell" style={{ background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
                    Holiday / Off-Day
                  </div>
               ) : (
@@ -370,7 +378,7 @@ const Timetable: React.FC = () => {
                       </div>
                     )
                   })}
-                  <div></div> {/* Empty cell under the + Period button */}
+                  <div className="no-print"></div> {/* Empty cell under the + Period button */}
                 </>
               )}
             </React.Fragment>
