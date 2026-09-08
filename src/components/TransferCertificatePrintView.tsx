@@ -23,7 +23,7 @@ const InputLine = ({ name, value, onChange, width = '100%', placeholder = '' }: 
           background: 'transparent',
           border: 'none',
           outline: 'none',
-          fontSize: '16px',
+          fontSize: '14.5px',
           fontFamily: 'inherit',
           padding: '0 4px',
           color: '#000',
@@ -101,22 +101,21 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                       zoom: 0.45;
                   }
                }
-               .tc-row { display: flex; align-items: flex-end; margin-bottom: 24px; font-size: 16px; color: #333; }
+               .tc-row { display: flex; align-items: flex-end; margin-bottom: 14px; font-size: 14.5px; color: #333; }
                .tc-label { white-space: nowrap; }
-               input.tc-editable { font-family: 'Times New Roman', serif; font-size: 17px !important; text-transform: uppercase; }
+               input.tc-editable { font-family: 'Times New Roman', serif; font-size: 15px !important; text-transform: uppercase; }
             `}} />
             
             <div style={{ padding: '20px' }}>
                 {/* HEADER */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #ccc', paddingBottom: '16px', gap: '20px', marginBottom: '30px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '2px solid #1e3a8a', paddingBottom: '16px', gap: '20px', marginBottom: '30px' }}>
                      {settings?.logo && (
-                        <img src={settings.logo} alt="School Logo" style={{ width: '90px', height: '90px', objectFit: 'contain' }} />
+                        <img src={settings.logo} alt="School Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
                      )}
                      <div style={{ textAlign: 'center' }}>
-                         <h1 style={{ margin: '0', fontSize: '28px', color: '#111', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '1px' }}>{settings?.name || 'M.N. PUBLIC SCHOOL'}</h1>
-                          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#444' }}>{settings?.address ? settings.address : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
-                          <p style={{ margin: '2px 0 0 0', fontSize: '14px', color: '#444' }}>Contact: {settings?.phone || '8447537369 / 9873872786'}</p>
-                          {settings?.recognitionText && <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#444', fontWeight: 'bold' }}>{settings.recognitionText}</p>}
+                         <h1 style={{ margin: '0', fontSize: '32px', color: '#1e3a8a', textTransform: 'uppercase', fontWeight: '900', letterSpacing: '1px' }}>{settings?.name || 'M.N. PUBLIC SCHOOL'}</h1>
+                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
+                            {settings?.recognitionText && <p style={{ margin: '4px 0 0 0', fontSize: '14.5px', color: '#444' }}>{settings.recognitionText}</p>}
                      </div>
                 </div>
 
@@ -213,19 +212,19 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                 </div>
 
                 {/* FOOTER */}
-                <div style={{ marginTop: '60px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontFamily: 'Arial, sans-serif', fontSize: '16px', color: '#333' }}>
+                <div style={{ marginTop: '60px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontFamily: 'Arial, sans-serif', fontSize: '14.5px', color: '#333' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <span style={{ marginRight: '8px' }}>Prepared by:</span>
-                        <input type="text" name="preparedBy" value={formData.preparedBy} onChange={handleChange} style={{ width: '150px', border: 'none', borderBottom: '1px solid #000', outline: 'none', background: 'transparent', textAlign: 'center', fontSize: '16px', fontFamily: 'inherit' }} />
+                        <input type="text" name="preparedBy" value={formData.preparedBy} onChange={handleChange} style={{ width: '150px', border: 'none', borderBottom: '1px solid #000', outline: 'none', background: 'transparent', textAlign: 'center', fontSize: '14.5px', fontFamily: 'inherit' }} />
                     </div>
                     
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <span style={{ marginRight: '8px' }}>Checked by:</span>
-                        <input type="text" name="checkedBy" value={formData.checkedBy} onChange={handleChange} style={{ width: '150px', border: 'none', borderBottom: '1px solid #000', outline: 'none', background: 'transparent', textAlign: 'center', fontSize: '16px', fontFamily: 'inherit' }} />
+                        <input type="text" name="checkedBy" value={formData.checkedBy} onChange={handleChange} style={{ width: '150px', border: 'none', borderBottom: '1px solid #000', outline: 'none', background: 'transparent', textAlign: 'center', fontSize: '14.5px', fontFamily: 'inherit' }} />
                     </div>
                 </div>
 
-                <div style={{ marginTop: '40px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontFamily: 'Arial, sans-serif', fontSize: '16px', color: '#333' }}>
+                <div style={{ marginTop: '40px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontFamily: 'Arial, sans-serif', fontSize: '14.5px', color: '#333' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <span style={{ marginRight: '8px' }}>Principal's Signature with Seal:</span>
                         <div style={{ width: '200px', borderBottom: '1px solid #000' }}></div>
