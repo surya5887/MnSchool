@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getSchoolSettings, type SchoolSettingsData } from '../services/settingsService';
-import { ArrowLeft, Printer } from 'lucide-react';
-import type { ExamScheduleData } from '../services/examService';
+import { ArrowLeft, Printer, Loader } from 'lucide-react';
+import { getExamSchedulesByTerm, type ExamScheduleData } from '../services/examService';
 
 interface DateSheetProps {
   scheduleData: ExamScheduleData;
@@ -10,13 +10,85 @@ interface DateSheetProps {
 
 const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose }) => {
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
-  const [instructions, setInstructions] = useState("Students must report to the examination hall 15 minutes before the commencement of the exam.\nUse of unfair means will result in strict disciplinary action.\nMobile phones, smartwatches, or any electronic gadgets are strictly prohibited.\nBring your own stationery items. Borrowing is not allowed during the exam.");
+  const [allSchedules, setAllSchedules] = useState<ExamScheduleData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Default instructions similar to the photo
+  const engRules = [
+    `${scheduleData.examTerm.toUpperCase()} EXAM will start soon.`,
+    "Exam timing 8:00 am to 11:00 am.",
+    "All guardians are required to clear all the dues till SEP 2026 before examination otherwise the school will not allow your ward to appear in exam.",
+    "Teacher parents meeting will be held soon."
+  ];
+
+  const hinRules = [
+    `विद्यालय में ${scheduleData.examTerm.toUpperCase()} EXAM जल्द शुरू हो रहे हैं।`,
+    "परीक्षा समय सुबह 8:00 से 11:00 तक।",
+    "सभी अभिभावकों से अनुरोध है कि अपना सितंबर माह 2026 तक का बकाया शुल्क परीक्षा से पूर्व विद्यालय में जमा कराये।",
+    "Exam Copies शिक्षक अभिभावक मीटिंग में दिखाई जाएंगी।"
+  ];
 
   useEffect(() => {
-    getSchoolSettings().then(set => {
-      if (set) setSettings(set);
+    const fetchData = async () => {
+      try {
+        const set = await getSchoolSettings();
+        if (set) setSettings(set);
+        
+        // Fetch all schedules for this exam term to build the master matrix
+        if (scheduleData.examTerm) {
+          const schedules = await getExamSchedulesByTerm(scheduleData.examTerm);
+          setAllSchedules(schedules);
+        } else {
+          setAllSchedules([scheduleData]); // Fallback
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [scheduleData.examTerm]);
+
+  // Aggregate Data for Matrix
+  const uniqueDatesSet = new Set<string>();
+  allSchedules.forEach(sched => {
+    sched.schedule.forEach(item => {
+      if (item.date) uniqueDatesSet.add(item.date);
     });
-  }, []);
+  });
+  
+  // Sort dates chronologically
+  const sortedDates = Array.from(uniqueDatesSet).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  
+  // Sort classes (Very basic heuristic to keep numbers ordered if possible)
+  const sortedClasses = [...new Set(allSchedules.map(s => s.classId))].sort((a, b) => {
+    const numA = parseInt(a.replace(/[^0-9]/g, '')) || 999;
+    const numB = parseInt(b.replace(/[^0-9]/g, '')) || 999;
+    if (numA !== numB) return numA - numB;
+    return a.localeCompare(b);
+  });
+
+  const getDayOfWeek = (dateString: string) => {
+    const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return '';
+    return days[d.getDay()];
+  };
+
+  const formatDate = (dateString: string) => {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="print-wrapper" style={{ position: 'fixed', inset: 0, background: '#e5e7eb', zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loader className="animate-spin" size={48} color="var(--primary)" />
+      </div>
+    );
+  }
 
   return (
     <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
@@ -37,138 +109,118 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             body * { visibility: hidden; }
             .print-wrapper { position: absolute !important; left: 0 !important; top: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; display: block !important; }
             .print-wrapper * { visibility: visible; }
-            @page { margin: 10mm; size: A4 portrait; }
-            
-            .sheet-container {
-              margin: 0 auto !important;
-              padding: 40px !important;
-              width: 800px !important;
-              max-width: 800px !important;
-              box-sizing: border-box !important;
-              page-break-after: always !important;
-              height: auto !important;
-              min-height: 1130px !important;
-              box-shadow: none !important;
-              border: none !important;
-            }
+            @page { margin: 8mm; size: A4 portrait; }
           }
           
-          @media screen {
-            .sheet-container {
-              width: 800px !important;
-              max-width: 800px !important;
-              min-height: 1130px !important;
-              margin: 2rem auto;
-              background: white;
-              padding: 40px;
-              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-              position: relative;
-              box-sizing: border-box;
-              font-family: Arial, sans-serif;
-            }
+          .ds-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 20px auto;
+            padding: 10mm;
+            box-sizing: border-box;
+            color: black;
+            font-family: 'Times New Roman', Times, serif;
           }
+
+          @media print {
+            .ds-container { margin: 0; width: 100%; min-height: 100%; box-shadow: none; border: none; }
+          }
+
+          .ds-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+          .ds-header-left { flex: 1; text-align: center; padding-top: 15px; }
+          .ds-header-left h1 { font-size: 24px; font-weight: bold; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px; }
+          .ds-header-left h2 { font-size: 16px; text-transform: uppercase; margin: 0; font-weight: bold; letter-spacing: 0.5px; }
           
-          @media screen and (max-width: 768px) {
-            .print-wrapper {
-              overflow-x: auto !important;
-              width: 100% !important;
-              display: flex !important;
-              flex-direction: column !important;
-              align-items: center !important;
-            }
-            .sheet-container {
-              zoom: 0.45;
-              -moz-transform: scale(0.45);
-              -moz-transform-origin: top center;
-              margin: 1rem auto;
-            }
+          .ds-header-right { 
+            width: 250px; 
+            border: 1px solid #000; 
+            padding: 8px; 
+            font-size: 13px; 
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
           }
-          .schedule-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-          }
-          .schedule-table th, .schedule-table td {
-            border: 1px solid #000;
-            padding: 12px;
-            text-align: center;
-          }
-          .schedule-table th {
-            background-color: #f3f4f6 !important;
-            -webkit-print-color-adjust: exact;
-            color-adjust: exact;
-            font-weight: bold;
-          }
+          .ds-header-right div { border-bottom: 1px dotted #999; margin-bottom: 4px; padding-bottom: 2px; }
+
+          table.ds-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; }
+          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 6px 4px; }
+          table.ds-table th { font-weight: bold; font-size: 11px; }
+          
+          .ds-rules-container { display: flex; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 20px; }
+          .ds-rule-box { flex: 1; border: 1px solid #000; padding: 10px; }
+          .ds-rule-box h3 { margin: 0 0 8px 0; font-size: 13px; font-weight: bold; text-decoration: underline; }
+          .ds-rule-box p { margin: 0 0 4px 0; line-height: 1.4; }
         `}
       </style>
 
-      <div className="sheet-container">
-        <div style={{ textAlign: 'center', borderBottom: '3px solid #1e3a8a', paddingBottom: '20px', marginBottom: '30px' }}>
-          <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', color: '#b91c1c', textTransform: 'uppercase', fontFamily: "'Arial Black', Impact, sans-serif" }}>{settings?.schoolName}</h1>
-          <p style={{ margin: '0 0 5px 0', fontSize: '14px', color: '#1e3a8a', fontWeight: 'bold' }}>{settings?.recognitionText}</p>
-          <h2 style={{ margin: '20px 0 0 0', fontSize: '22px', textDecoration: 'underline' }}>EXAMINATION DATE SHEET</h2>
+      <div className="ds-container">
+        {/* Header Section */}
+        <div className="ds-header">
+          <div className="ds-header-left">
+            <h1>{settings?.name || 'THE SKYLAND SCHOOL SHAHPUR'}</h1>
+            <h2>{scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)</h2>
+          </div>
+          
+          <div className="ds-header-right">
+            <div>Name: ................................................</div>
+            <div>Father's name: Mr. ...........................</div>
+            <div>Class: ................................................</div>
+            <div style={{borderBottom: 'none'}}>Fee balance: ..................... till SEP 2026.</div>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '16px', fontWeight: 'bold' }}>
-          <div>Exam Term: <span style={{ color: '#1e3a8a' }}>{scheduleData.examTerm}</span></div>
-          <div>Class: <span style={{ color: '#1e3a8a' }}>{scheduleData.classId}</span></div>
-        </div>
-
-        <table className="schedule-table">
+        {/* Matrix Table Section */}
+        <table className="ds-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Day</th>
-              <th>Subject</th>
-              <th>Timings</th>
+              <th style={{width: '120px'}}>
+                <div style={{borderBottom: '1px solid #000', paddingBottom: '2px'}}>CLASS &rarr;</div>
+                <div style={{paddingTop: '2px'}}>DATES/DAY &darr;</div>
+              </th>
+              {sortedClasses.map(c => (
+                <th key={c}>{c}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {[...scheduleData.schedule].sort((a, b) => {
-              if (!a.date) return 1;
-              if (!b.date) return -1;
-              return new Date(a.date).getTime() - new Date(b.date).getTime();
-            }).map((item, idx) => {
-              const dateObj = item.date ? new Date(item.date) : null;
-              const day = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-US', { weekday: 'long' }) : '-';
-              const dateStr = dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-GB') : '-'; // DD/MM/YYYY
-              return (
-                <tr key={idx}>
-                  <td>{dateStr}</td>
-                  <td>{day}</td>
-                  <td style={{ fontWeight: 'bold' }}>{item.subject}</td>
-                  <td>{item.startTime} - {item.endTime}</td>
-                </tr>
-              );
-            })}
+            {sortedDates.map((date, idx) => (
+              <tr key={idx}>
+                <td style={{fontWeight: 'bold', fontSize: '11px', textAlign: 'left', paddingLeft: '8px'}}>
+                  {formatDate(date)}<br/>
+                  {getDayOfWeek(date)}
+                </td>
+                {sortedClasses.map(classId => {
+                  // Find subject for this class on this date
+                  const classSched = allSchedules.find(s => s.classId === classId);
+                  const subjectItem = classSched?.schedule.find(item => item.date === date);
+                  return (
+                    <td key={classId} style={{ fontWeight: subjectItem?.subject ? 'bold' : 'normal' }}>
+                      {subjectItem?.subject ? subjectItem.subject.toUpperCase() : '-'}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
 
-        <div style={{ marginTop: '50px', fontSize: '14px', lineHeight: '1.6' }}>
-          <p style={{ fontWeight: 'bold', textDecoration: 'underline' }}>General Instructions for Students:</p>
-          <textarea
-            style={{ width: '100%', minHeight: '120px', border: '1px dashed #ccc', padding: '10px', fontSize: '14px', fontFamily: 'inherit', resize: 'vertical', marginTop: '10px' }}
-            className="editable-instructions"
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-          />
-          <style>{`
-            @media print {
-               .editable-instructions { border: none !important; resize: none !important; overflow: hidden !important; background: transparent !important; }
-            }
-          `}</style>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '100px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ borderBottom: '1px solid #000', width: '150px', marginBottom: '8px' }}></div>
-            <p style={{ margin: 0, fontWeight: 'bold' }}>Class Teacher</p>
+        {/* Footer Rules Section */}
+        <div className="ds-rules-container">
+          <div className="ds-rule-box">
+            <h3>Rules & Regulations-</h3>
+            {engRules.map((rule, i) => (
+              <p key={i}><strong>{i+1}.</strong> {rule}</p>
+            ))}
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ borderBottom: '1px solid #000', width: '150px', marginBottom: '8px' }}></div>
-            <p style={{ margin: 0, fontWeight: 'bold' }}>Principal</p>
+          
+          <div className="ds-rule-box">
+            <h3>नियम व शर्तें-</h3>
+            {hinRules.map((rule, i) => (
+              <p key={i}><strong>{i+1}.</strong> {rule}</p>
+            ))}
           </div>
         </div>
+        
       </div>
     </div>
   );

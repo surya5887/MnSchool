@@ -191,3 +191,14 @@ export const getQuestionPapersByClass = async (classId: string) => {
     throw error;
   }
 };
+
+export const getExamSchedulesByTerm = async (examTerm: string) => {
+  try {
+    const q = query(collection(db, EXAM_SCHEDULE_COLLECTION), where("examTerm", "==", examTerm));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ExamScheduleData));
+  } catch (error) {
+    console.error("Error fetching schedules by term: ", error);
+    return [];
+  }
+};
