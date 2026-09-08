@@ -302,7 +302,7 @@ const DocumentBuilder: React.FC = () => {
         style={{ 
             width: '794px', 
             height: '1123px', 
-            flexShrink: 0, background: bgImage ? `url(${bgImage}) center/cover no-repeat` : 'white',
+            flexShrink: 0, background: bgImage ? (printing ? 'transparent' : `url(${bgImage}) center/cover no-repeat`) : 'white',
             position: printing ? 'absolute' : 'relative',
             left: 0,
             top: 0,
