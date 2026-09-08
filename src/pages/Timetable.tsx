@@ -13,7 +13,7 @@ const Timetable: React.FC = () => {
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const [assignment, setAssignment] = useState({
     day: '',
     periodIndex: 0,
@@ -22,15 +22,15 @@ const Timetable: React.FC = () => {
   });
   const [editingEntryExists, setEditingEntryExists] = useState(false);
 
-  const [days, setDays] = useState<{name: string, isHoliday: boolean}[]>([
-    {name: 'Monday', isHoliday: false}, 
-    {name: 'Tuesday', isHoliday: false}, 
-    {name: 'Wednesday', isHoliday: false}, 
-    {name: 'Thursday', isHoliday: false}, 
-    {name: 'Friday', isHoliday: false}, 
-    {name: 'Saturday', isHoliday: false}
+  const [days, setDays] = useState<{ name: string, isHoliday: boolean }[]>([
+    { name: 'Monday', isHoliday: false },
+    { name: 'Tuesday', isHoliday: false },
+    { name: 'Wednesday', isHoliday: false },
+    { name: 'Thursday', isHoliday: false },
+    { name: 'Friday', isHoliday: false },
+    { name: 'Saturday', isHoliday: false }
   ]);
-  const [periods, setPeriods] = useState<{name: string, isBreak: boolean}[]>([
+  const [periods, setPeriods] = useState<{ name: string, isBreak: boolean }[]>([
     { name: 'P1 (08:00)', isBreak: false },
     { name: 'P2 (08:45)', isBreak: false },
     { name: 'P3 (09:30)', isBreak: false },
@@ -58,7 +58,7 @@ const Timetable: React.FC = () => {
       setTimetable(data);
       if (structure) {
         // Map string days to object for backward compatibility
-        const mappedDays = structure.days.map((d: any) => 
+        const mappedDays = structure.days.map((d: any) =>
           typeof d === 'string' ? { name: d, isHoliday: false } : d
         );
         setDays(mappedDays);
@@ -66,12 +66,12 @@ const Timetable: React.FC = () => {
       } else {
         // Defaults
         setDays([
-          {name: 'Monday', isHoliday: false}, 
-          {name: 'Tuesday', isHoliday: false}, 
-          {name: 'Wednesday', isHoliday: false}, 
-          {name: 'Thursday', isHoliday: false}, 
-          {name: 'Friday', isHoliday: false}, 
-          {name: 'Saturday', isHoliday: false}
+          { name: 'Monday', isHoliday: false },
+          { name: 'Tuesday', isHoliday: false },
+          { name: 'Wednesday', isHoliday: false },
+          { name: 'Thursday', isHoliday: false },
+          { name: 'Friday', isHoliday: false },
+          { name: 'Saturday', isHoliday: false }
         ]);
         setPeriods([
           { name: 'P1 (08:00)', isBreak: false },
@@ -95,11 +95,11 @@ const Timetable: React.FC = () => {
         setClasses(classData);
         if (classData.length > 0) {
           let defaultClass = classData[0].className;
-            if (role === 'Teacher') {
-              const myClassByMapping = classData.find(c => c.classTeacher === authUser.name);
-              const isValidAssigned = authUser.assignedClass && classData.some(c => c.className === authUser.assignedClass);
-              defaultClass = isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || '');
-            }
+          if (role === 'Teacher') {
+            const myClassByMapping = classData.find(c => c.classTeacher === authUser.name);
+            const isValidAssigned = authUser.assignedClass && classData.some(c => c.className === authUser.assignedClass);
+            defaultClass = isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || '');
+          }
           setClassFilter(defaultClass);
           fetchTimetableAndStructure(defaultClass);
         }
@@ -141,7 +141,7 @@ const Timetable: React.FC = () => {
     }
   };
 
-  const saveStructure = async (newDays: {name: string, isHoliday: boolean}[], newPeriods: {name: string, isBreak: boolean}[]) => {
+  const saveStructure = async (newDays: { name: string, isHoliday: boolean }[], newPeriods: { name: string, isBreak: boolean }[]) => {
     try {
       await saveTimetableStructure(classFilter, { days: newDays, periods: newPeriods });
     } catch (error) {
@@ -234,7 +234,8 @@ const Timetable: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="timetable-print-wrapper">
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @media print {
           @page { size: landscape; margin: 10mm; }
           .timetable-print-wrapper {
@@ -278,7 +279,7 @@ const Timetable: React.FC = () => {
       `}} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div className="no-print">
-          <h1 className="page-title"><Clock size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Class Timetable</h1>
+          <h1 className="page-title"><Clock size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }} /> Class Timetable</h1>
           <p className="page-subtitle">Visually manage and print daily schedules for teachers and students.</p>
         </div>
         <div className="no-print" style={{ display: 'flex', gap: '16px' }}>
@@ -287,62 +288,62 @@ const Timetable: React.FC = () => {
       </div>
 
       {role === 'Teacher' ? (
-          <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(245,158,11,0.2)' }}>
-            <div>
-              <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Viewing Timetable For</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Class {(authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass) ? authUser.assignedClass : (classes.find(c => c.classTeacher === authUser.name)?.className || authUser.assignedClass || 'Not Assigned'))}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Class Teacher</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{authUser.name}</div>
-            </div>
+        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(245,158,11,0.2)' }}>
+          <div>
+            <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Viewing Timetable For</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Class {(authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass) ? authUser.assignedClass : (classes.find(c => c.classTeacher === authUser.name)?.className || authUser.assignedClass || 'Not Assigned'))}</div>
           </div>
-        ) : (
-          <div className="glass-panel no-print" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
-              <select className="glass-input" value={classFilter} onChange={handleClassChange}>
-                {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
-              </select>
-            </div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
-               <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
-            </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Class Teacher</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{authUser.name}</div>
           </div>
-        )}
-        <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
-          <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>M.N. PUBLIC SCHOOL</h1>
-          <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class {classFilter || "All"} - Time Table</h2>
         </div>
-        <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
+      ) : (
+        <div className="glass-panel no-print" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
+            <select className="glass-input" value={classFilter} onChange={handleClassChange}>
+              {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+            </select>
+          </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
+          </div>
+        </div>
+      )}
+      <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
+        <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>M.N. PUBLIC SCHOOL</h1>
+        <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class: {classFilter || "All"} - Time Table</h2>
+      </div>
+      <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
         <div className="timetable-grid" style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
-          
+
           {/* Header Row */}
           <div style={{ fontWeight: 600, color: 'var(--text-muted)', padding: '12px', textAlign: 'center' }}>Day</div>
           {periods.map((p, i) => (
-             <div 
-                key={i} 
-                onClick={() => handleEditPeriod(i)}
-                className="timetable-header-cell"
-                style={{ background: p.isBreak ? 'transparent' : 'rgba(99, 102, 241, 0.1)', color: p.isBreak ? 'var(--text-muted)' : 'var(--primary)', fontWeight: 600, padding: '12px', textAlign: 'center', borderRadius: '8px', cursor: 'pointer', transition: 'var(--transition)' }}
-                title="Click to Edit Period"
-             >
-               {p.name}
-             </div>
+            <div
+              key={i}
+              onClick={() => handleEditPeriod(i)}
+              className="timetable-header-cell"
+              style={{ background: p.isBreak ? 'transparent' : 'rgba(99, 102, 241, 0.1)', color: p.isBreak ? 'var(--text-muted)' : 'var(--primary)', fontWeight: 600, padding: '12px', textAlign: 'center', borderRadius: '8px', cursor: 'pointer', transition: 'var(--transition)' }}
+              title="Click to Edit Period"
+            >
+              {p.name}
+            </div>
           ))}
-          <div 
-             onClick={handleAddPeriod}
-             className="timetable-add-cell"
-             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
-             title="Add Period"
+          <div
+            onClick={handleAddPeriod}
+            className="timetable-add-cell"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
+            title="Add Period"
           >
-             <Plus size={20} />
+            <Plus size={20} />
           </div>
 
           {/* Timetable Rows */}
           {days.map((day, dIndex) => (
             <React.Fragment key={dIndex}>
-              <div 
+              <div
                 onClick={() => handleEditDay(dIndex)}
                 className="timetable-header-cell"
                 style={{ fontWeight: 600, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: day.isHoliday ? 'rgba(255, 99, 132, 0.1)' : 'rgba(255,255,255,0.4)', color: day.isHoliday ? 'var(--danger)' : 'inherit', borderRadius: '8px', cursor: 'pointer' }}
@@ -350,24 +351,24 @@ const Timetable: React.FC = () => {
               >
                 {day.name}
               </div>
-              
+
               {day.isHoliday ? (
-                 <div className="holiday-cell" style={{ gridColumn: `span ${periods.length + 1}`, background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                   Holiday / Off-Day
-                 </div>
+                <div className="holiday-cell" style={{ gridColumn: `span ${periods.length + 1}`, background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                  Holiday / Off-Day
+                </div>
               ) : (
                 <>
                   {periods.map((p, i) => {
                     if (p.isBreak) {
-                       return <div key={`${day.name}-${i}`} style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '8px' }}></div>;
+                      return <div key={`${day.name}-${i}`} style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '8px' }}></div>;
                     }
-                    
+
                     const entry = timetable.find(t => t.day === day.name && t.periodIndex === i);
 
                     return (
-                      <div 
-                        key={`${day.name}-${i}`} 
-                        className="glass-card timetable-cell" 
+                      <div
+                        key={`${day.name}-${i}`}
+                        className="glass-card timetable-cell"
                         style={{ padding: '12px', textAlign: 'center', position: 'relative', border: '1px solid var(--glass-border)', cursor: 'pointer', transition: 'var(--transition)' }}
                         onClick={() => handleCellClick(day.name, i, entry)}
                       >
@@ -386,7 +387,7 @@ const Timetable: React.FC = () => {
           ))}
 
           {/* Add Day Row */}
-          <div 
+          <div
             onClick={handleAddDay}
             className="timetable-add-cell"
             style={{ fontWeight: 600, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
@@ -404,14 +405,14 @@ const Timetable: React.FC = () => {
         <form onSubmit={handleAssign} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Subject</label>
-            <select required className="glass-input" value={assignment.subject} onChange={e => setAssignment({...assignment, subject: e.target.value})}>
+            <select required className="glass-input" value={assignment.subject} onChange={e => setAssignment({ ...assignment, subject: e.target.value })}>
               <option value="">-- Select Subject --</option>
               {classes.find(c => c.className === classFilter)?.subjects.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Teacher Initials / Name</label>
-            <input required type="text" className="glass-input" value={assignment.teacher} onChange={e => setAssignment({...assignment, teacher: e.target.value})} placeholder="e.g. S.M." />
+            <input required type="text" className="glass-input" value={assignment.teacher} onChange={e => setAssignment({ ...assignment, teacher: e.target.value })} placeholder="e.g. S.M." />
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'space-between' }}>
             {editingEntryExists ? (
@@ -430,10 +431,10 @@ const Timetable: React.FC = () => {
         <form onSubmit={handleSavePeriod} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Period Name</label>
-            <input required type="text" className="glass-input" value={periodFormData.name} onChange={e => setPeriodFormData({...periodFormData, name: e.target.value})} placeholder="e.g. P1 (08:00)" />
+            <input required type="text" className="glass-input" value={periodFormData.name} onChange={e => setPeriodFormData({ ...periodFormData, name: e.target.value })} placeholder="e.g. P1 (08:00)" />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input type="checkbox" id="isBreak" checked={periodFormData.isBreak} onChange={e => setPeriodFormData({...periodFormData, isBreak: e.target.checked})} />
+            <input type="checkbox" id="isBreak" checked={periodFormData.isBreak} onChange={e => setPeriodFormData({ ...periodFormData, isBreak: e.target.checked })} />
             <label htmlFor="isBreak">This is a Break period (No assignments allowed)</label>
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'space-between' }}>
@@ -453,10 +454,10 @@ const Timetable: React.FC = () => {
         <form onSubmit={handleSaveDay} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Day Name</label>
-            <input required type="text" className="glass-input" value={dayFormData.name} onChange={e => setDayFormData({...dayFormData, name: e.target.value})} placeholder="e.g. Sunday" />
+            <input required type="text" className="glass-input" value={dayFormData.name} onChange={e => setDayFormData({ ...dayFormData, name: e.target.value })} placeholder="e.g. Sunday" />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input type="checkbox" id="isHoliday" checked={dayFormData.isHoliday} onChange={e => setDayFormData({...dayFormData, isHoliday: e.target.checked})} />
+            <input type="checkbox" id="isHoliday" checked={dayFormData.isHoliday} onChange={e => setDayFormData({ ...dayFormData, isHoliday: e.target.checked })} />
             <label htmlFor="isHoliday">This is a Holiday / Off-Day</label>
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'space-between' }}>

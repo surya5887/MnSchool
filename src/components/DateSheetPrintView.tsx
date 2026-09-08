@@ -104,8 +104,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
 
       <div className="sheet-container">
         <div style={{ textAlign: 'center', borderBottom: '3px solid #1e3a8a', paddingBottom: '20px', marginBottom: '30px' }}>
-          <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', color: '#b91c1c', textTransform: 'uppercase', fontFamily: "'Arial Black', Impact, sans-serif" }}>{settings?.schoolName || 'MN Public School'}</h1>
-          <p style={{ margin: '0 0 5px 0', fontSize: '14px', color: '#1e3a8a', fontWeight: 'bold' }}>{settings?.recognitionText || 'Affiliated to CBSE, New Delhi'}</p>
+          <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', color: '#b91c1c', textTransform: 'uppercase', fontFamily: "'Arial Black', Impact, sans-serif" }}>{settings?.schoolName}</h1>
+          <p style={{ margin: '0 0 5px 0', fontSize: '14px', color: '#1e3a8a', fontWeight: 'bold' }}>{settings?.recognitionText}</p>
           <h2 style={{ margin: '20px 0 0 0', fontSize: '22px', textDecoration: 'underline' }}>EXAMINATION DATE SHEET</h2>
         </div>
 
@@ -146,8 +146,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
 
         <div style={{ marginTop: '50px', fontSize: '14px', lineHeight: '1.6' }}>
           <p style={{ fontWeight: 'bold', textDecoration: 'underline' }}>General Instructions for Students:</p>
-          <textarea 
-            style={{ width: '100%', minHeight: '120px', border: '1px dashed #ccc', padding: '10px', fontSize: '14px', fontFamily: 'inherit', resize: 'vertical', marginTop: '10px' }} 
+          <textarea
+            style={{ width: '100%', minHeight: '120px', border: '1px dashed #ccc', padding: '10px', fontSize: '14px', fontFamily: 'inherit', resize: 'vertical', marginTop: '10px' }}
             className="editable-instructions"
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}

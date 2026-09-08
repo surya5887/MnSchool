@@ -148,13 +148,18 @@ const Students: React.FC = () => {
       
       return matchesSearch && matchesClass && matchesSection;
     }).sort((a, b) => {
-      const rollA = Number(a.rollNumber) || 0;
-      const rollB = Number(b.rollNumber) || 0;
-      if (rollA === 0 && rollB === 0) return 0;
-      if (rollA === 0) return 1;
-      if (rollB === 0) return -1;
-      return rollA - rollB;
-    });
+        if (selectedClass === 'All') {
+           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+           return dateB - dateA;
+        } else {
+           const nameA = (a.firstName || '').toLowerCase();
+           const nameB = (b.firstName || '').toLowerCase();
+           if (nameA < nameB) return -1;
+           if (nameA > nameB) return 1;
+           return 0;
+        }
+      });
   }, [students, searchTerm, selectedClass, selectedSection, role, teacherFallback]);
 
   return (
