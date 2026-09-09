@@ -180,9 +180,13 @@ const MasterScheduleConfig: React.FC<Props> = ({ examTerm, allClasses, onBack, o
         <button className="btn-primary" onClick={handleSave} disabled={isSaving}>
           <Save size={20} style={{ marginRight: '8px' }} /> {isSaving ? 'Saving...' : 'Save Master Schedule'}
         </button>
-        <button className="btn-secondary" onClick={() => {
+        <button className="btn-secondary" onClick={async () => {
+          setIsSaving(true);
           const schedule = rows.map(r => ({ date: r.date, startTime: '', endTime: '', subject: JSON.stringify({ classes: masterClasses, subjects: r.subjects }) }));
-          onPreview({ classId: 'MASTER', examTerm, schedule });
+          const data: ExamScheduleData = { classId: 'MASTER', examTerm, schedule };
+          await saveExamSchedule(data);
+          setIsSaving(false);
+          onPreview(data);
         }}>
           <Printer size={20} style={{ marginRight: '8px' }} /> Preview & Print
         </button>

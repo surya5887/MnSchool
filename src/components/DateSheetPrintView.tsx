@@ -34,9 +34,12 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
         const set = await getSchoolSettings();
         if (set) setSettings(set);
         
-        if (scheduleData.examTerm) {
+        if (scheduleData.classId === 'MASTER') {
+           setAllSchedules([scheduleData]);
+        } else if (scheduleData.examTerm) {
           const schedules = await getExamSchedulesByTerm(scheduleData.examTerm);
-          setAllSchedules(schedules);
+          // Filter out any MASTER schedules from the class-wise fetch just in case
+          setAllSchedules(schedules.filter(s => s.classId !== 'MASTER'));
         } else {
           setAllSchedules([scheduleData]);
         }
@@ -47,23 +50,36 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
       }
     };
     fetchData();
-  }, [scheduleData.examTerm]);
+  }, [scheduleData]);
 
-  const uniqueDatesSet = new Set<string>();
-  allSchedules.forEach(sched => {
-    sched.schedule.forEach(item => {
-      if (item.date) uniqueDatesSet.add(item.date);
+  let sortedDates: string[] = [];
+  let sortedClasses: string[] = [];
+  
+  if (scheduleData.classId === 'MASTER') {
+     if (scheduleData.schedule && scheduleData.schedule.length > 0) {
+        try {
+           const firstRow = JSON.parse(scheduleData.schedule[0].subject);
+           sortedClasses = firstRow.classes || [];
+           sortedDates = scheduleData.schedule.map(s => s.date).filter(Boolean).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        } catch(e) {}
+     }
+  } else {
+    const uniqueDatesSet = new Set<string>();
+    allSchedules.forEach(sched => {
+      sched.schedule.forEach(item => {
+        if (item.date) uniqueDatesSet.add(item.date);
+      });
     });
-  });
-  
-  const sortedDates = Array.from(uniqueDatesSet).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-  
-  const sortedClasses = [...new Set(allSchedules.map(s => s.classId))].sort((a, b) => {
-    const numA = parseInt(a.replace(/[^0-9]/g, '')) || 999;
-    const numB = parseInt(b.replace(/[^0-9]/g, '')) || 999;
-    if (numA !== numB) return numA - numB;
-    return a.localeCompare(b);
-  });
+    
+    sortedDates = Array.from(uniqueDatesSet).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    
+    sortedClasses = [...new Set(allSchedules.map(s => s.classId))].sort((a, b) => {
+      const numA = parseInt(a.replace(/[^0-9]/g, '')) || 999;
+      const numB = parseInt(b.replace(/[^0-9]/g, '')) || 999;
+      if (numA !== numB) return numA - numB;
+      return a.localeCompare(b);
+    });
+  }
 
   const getDayOfWeek = (dateString: string) => {
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
@@ -214,11 +230,23 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                       {getDayOfWeek(date)}
                     </td>
                     {sortedClasses.map(classId => {
-                      const classSched = allSchedules.find(s => s.classId === classId);
-                      const subjectItem = classSched?.schedule.find(item => item.date === date);
+                      let subjectName = '';
+                      if (scheduleData.classId === 'MASTER') {
+                         const row = scheduleData.schedule.find(s => s.date === date);
+                         if (row) {
+                           try {
+                             const parsed = JSON.parse(row.subject);
+                             subjectName = parsed.subjects[classId] || '';
+                           } catch(e) {}
+                         }
+                      } else {
+                         const classSched = allSchedules.find(s => s.classId === classId);
+                         const subjectItem = classSched?.schedule.find(item => item.date === date);
+                         subjectName = subjectItem?.subject || '';
+                      }
                       return (
-                        <td key={classId} style={{ fontWeight: subjectItem?.subject ? 'bold' : 'normal' }}>
-                          {subjectItem?.subject ? subjectItem.subject.toUpperCase() : '-'}
+                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal' }} contentEditable suppressContentEditableWarning>
+                          {subjectName ? subjectName.toUpperCase() : '-'}
                         </td>
                       );
                     })}
