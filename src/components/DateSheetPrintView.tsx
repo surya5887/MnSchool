@@ -186,7 +186,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           .ds-header-left h2 { font-size: 16px; text-transform: uppercase; margin: 0; font-weight: bold; letter-spacing: 0.5px; }
           
           .ds-header-right { 
-            width: 250px; 
+            width: 380px; 
             border: 1px solid #000; 
             padding: 8px; 
             font-size: 13px; 
@@ -221,14 +221,14 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             <div className="ds-header">
               <div className="ds-header-left">
                 <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
-                <h2>{scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)</h2>
+                <h2>{scheduleData.examTerm.toUpperCase().replace(' EXAM', '')} EXAM DATE SHEET ({settings?.activeSession || '2026-27'})</h2>
               </div>
               
               <div className="ds-header-right" contentEditable suppressContentEditableWarning>
-                <div>Name: ................................................</div>
-                <div>Father's name: Mr. ...........................</div>
-                <div>Class: ................................................</div>
-                <div style={{borderBottom: 'none'}}>Fee balance: ..................... till SEP 2026.</div>
+                <div>Name: ..................................................................................</div>
+                <div>Father's name: Mr. .........................................................</div>
+                <div>Class: ..................................................................................</div>
+                <div style={{borderBottom: 'none'}}>Fee balance: .................................... till SEP {(settings?.activeSession || '2026-27').split('-')[0]}.</div>
               </div>
             </div>
 
@@ -284,7 +284,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
               <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
               <p style={{margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold'}}>{settings?.recognitionText}</p>
               <h2 style={{ fontSize: '20px', textTransform: 'uppercase', margin: '0', color: '#1e3a8a', textDecoration: 'underline' }} contentEditable suppressContentEditableWarning>
-                {scheduleData.examTerm.toUpperCase()} EXAM DATE SHEET (2026-27)
+                {scheduleData.examTerm.toUpperCase().replace(' EXAM', '')} EXAM DATE SHEET ({settings?.activeSession || '2026-27'})
               </h2>
               <h3 style={{ fontSize: '18px', margin: '10px 0 0 0', color: '#333' }}>Class: {scheduleData.classId}</h3>
             </div>
