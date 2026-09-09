@@ -94,6 +94,28 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
     return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
   };
 
+  const toRoman = (className: string) => {
+    const map: Record<string, string> = {
+      'PLAY': 'PLAY',
+      'NURSERY': 'NUR',
+      'L.K.G.': 'LKG',
+      'U.K.G.': 'UKG',
+      'FIRST (1st)': 'I',
+      'SECOND (2nd)': 'II',
+      'THIRD (3rd)': 'III',
+      'FOURTH (4th)': 'IV',
+      'FIFTH (5th)': 'V',
+      'SIXTH (6th)': 'VI',
+      'SEVENTH (7th)': 'VII',
+      'EIGHTH (8th)': 'VIII',
+      'NINTH (9th)': 'IX',
+      'TENTH (10th)': 'X',
+      'ELEVENTH (11th)': 'XI',
+      'TWELFTH (12th)': 'XII'
+    };
+    return map[className] || className.split(' ')[0]; // Fallback to first word if custom
+  };
+
   if (loading) {
     return (
       <div className="print-wrapper" style={{ position: 'fixed', inset: 0, background: '#e5e7eb', zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -140,15 +162,15 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             body * { visibility: hidden; }
             .print-wrapper { position: absolute !important; left: 0 !important; top: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; display: block !important; }
             .print-wrapper * { visibility: visible; }
-            @page { margin: 8mm; size: A4 portrait; }
+            @page { margin: 4mm; size: ${viewMode === 'combined' ? 'A4 landscape' : 'A4 portrait'}; }
           }
           
           .ds-container {
-            width: 210mm;
-            min-height: 297mm;
+            width: ${viewMode === 'combined' ? '297mm' : '210mm'};
+            min-height: ${viewMode === 'combined' ? '210mm' : '297mm'};
             background: white;
             margin: 20px auto;
-            padding: 10mm;
+            padding: 4mm;
             box-sizing: border-box;
             color: black;
             font-family: 'Times New Roman', Times, serif;
@@ -173,8 +195,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           }
           .ds-header-right div { border-bottom: 1px dotted #999; margin-bottom: 4px; padding-bottom: 2px; }
 
-          table.ds-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 13px; }
-          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 8px 4px; }
+          table.ds-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; }
+          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 4px 2px; }
           table.ds-table th { font-weight: bold; font-size: 12px; background: #f9fafb; }
           
           .ds-rules-container { display: flex; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 20px; }
@@ -218,7 +240,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                     <div style={{paddingTop: '2px'}}>DATES/DAY &darr;</div>
                   </th>
                   {sortedClasses.map(c => (
-                    <th key={c} style={{background: 'transparent'}} contentEditable suppressContentEditableWarning>{c}</th>
+                    <th key={c} style={{background: 'transparent', padding: '4px 2px'}} contentEditable suppressContentEditableWarning>{toRoman(c)}</th>
                   ))}
                 </tr>
               </thead>
