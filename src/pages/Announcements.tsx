@@ -32,6 +32,7 @@ const Announcements: React.FC = () => {
   // Settings for templates
   const [settings, setSettings] = useState<SchoolSettingsData | null>(null);
   const [feeTemplate, setFeeTemplate] = useState('');
+  const [receiptTemplate, setReceiptTemplate] = useState('');
   const [isSavingTemplate, setIsSavingTemplate] = useState(false);
   const templateRef = useRef<HTMLTextAreaElement>(null);
 
@@ -63,6 +64,11 @@ useEffect(() => {
       } else {
         setFeeTemplate(defaultTemplate);
       }
+      if (data && data.feeReceiptTemplate) {
+        setReceiptTemplate(data.feeReceiptTemplate);
+      } else {
+        setReceiptTemplate(`Dear Parent,\nWe have received a fee payment of Rs. {{amount}} for your ward {{name}}.\nPlease find the attached receipt.\nThank you.\nMN Public School`);
+      }
     };
     loadSettings();
   }, []);
@@ -70,7 +76,7 @@ useEffect(() => {
   const saveTemplate = async () => {
     if (!settings) return;
     setIsSavingTemplate(true);
-    await saveSchoolSettings({ ...settings, feeReminderTemplate: feeTemplate });
+    await saveSchoolSettings({ ...settings, feeReminderTemplate: feeTemplate, feeReceiptTemplate: receiptTemplate });
     setIsSavingTemplate(false);
     toast.success('Fee Reminder Template Saved!');
   };
@@ -477,12 +483,12 @@ useEffect(() => {
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
           <button 
             onClick={saveTemplate} 
-            disabled={isSavingTemplate || feeTemplate === settings?.feeReminderTemplate}
+            disabled={isSavingTemplate || (feeTemplate === settings?.feeReminderTemplate && receiptTemplate === settings?.feeReceiptTemplate)}
             style={{ 
-              padding: '12px 28px', background: (isSavingTemplate || feeTemplate === settings?.feeReminderTemplate) ? '#f1f5f9' : '#0f172a',
-              color: (isSavingTemplate || feeTemplate === settings?.feeReminderTemplate) ? '#94a3b8' : 'white', 
+              padding: '12px 28px', background: (isSavingTemplate || (feeTemplate === settings?.feeReminderTemplate && receiptTemplate === settings?.feeReceiptTemplate)) ? '#f1f5f9' : '#0f172a',
+              color: (isSavingTemplate || (feeTemplate === settings?.feeReminderTemplate && receiptTemplate === settings?.feeReceiptTemplate)) ? '#94a3b8' : 'white', 
               border: 'none', borderRadius: '14px', fontWeight: 600, fontSize: '1rem',
-              cursor: (isSavingTemplate || feeTemplate === settings?.feeReminderTemplate) ? 'default' : 'pointer',
+              cursor: (isSavingTemplate || (feeTemplate === settings?.feeReminderTemplate && receiptTemplate === settings?.feeReceiptTemplate)) ? 'default' : 'pointer',
               transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >

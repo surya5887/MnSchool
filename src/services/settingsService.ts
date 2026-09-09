@@ -20,6 +20,7 @@ export interface SchoolSettingsData {
   academicSessions?: string[];
   activeSession?: string;
   feeReminderTemplate?: string;
+  feeReceiptTemplate?: string;
   lastBillingMonth?: string;
 }
 

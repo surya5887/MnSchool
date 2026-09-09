@@ -8,6 +8,8 @@ import { getStudentById, updateStudent, type StudentData } from '../services/stu
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import FeeReceiptPrintView from '../components/FeeReceiptPrintView';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import Cropper from 'react-easy-crop';
 import { getTransactions, addTransaction, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
@@ -128,6 +130,8 @@ const StudentProfile: React.FC = () => {
   // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
   const [printTransaction, setPrintTransaction] = useState<any>(null);
+  const receiptPdfRef = useRef<HTMLDivElement>(null);
+  const [pdfTransaction, setPdfTransaction] = useState<any>(null);
   const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: getISTDateTimeLocalString() });
 
 

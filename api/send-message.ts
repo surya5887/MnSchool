@@ -1,12 +1,13 @@
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
 import { useFirebaseAuthState } from './useFirebaseAuthState.js';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 export const maxDuration = 60; // Extend Vercel timeout to 60 seconds
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
   
-  const { phone, message, sessionId = 'school_erp' } = req.body;
+  const { phone, message, base64Pdf, pdfName, sessionId = 'school_erp' } = req.body;
   
   if (!phone || !message) {
     return res.status(400).json({ error: 'Phone and message required' });
@@ -15,12 +16,16 @@ export default async function handler(req: any, res: any) {
   try {
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
+    // Setup proxy if WA_PROXY_URL is defined in Vercel
+    const proxyAgent = process.env.WA_PROXY_URL ? new HttpsProxyAgent(process.env.WA_PROXY_URL) : undefined;
+
     // We only want to connect, send, and disconnect immediately.
     const sock = makeWASocket({
       auth: state,
       printQRInTerminal: false,
       syncFullHistory: false, // very important for speed!
-      generateHighQualityLinkPreview: false
+      generateHighQualityLinkPreview: false,
+      agent: proxyAgent as any
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -49,7 +54,21 @@ export default async function handler(req: any, res: any) {
     // Format phone number for WhatsApp (e.g., 919876543210@s.whatsapp.net)
     const formattedPhone = `${phone}@s.whatsapp.net`;
     
-    await sock.sendMessage(formattedPhone, { text: message });
+    // SAFE TIME: Random delay between 2 to 6 seconds to prevent ban
+    const safeDelay = Math.floor(Math.random() * 4000) + 2000;
+    await new Promise(resolve => setTimeout(resolve, safeDelay));
+
+    if (base64Pdf) {
+      const buffer = Buffer.from(base64Pdf.split(',')[1] || base64Pdf, 'base64');
+      await sock.sendMessage(formattedPhone, { 
+        document: buffer, 
+        mimetype: 'application/pdf', 
+        fileName: pdfName || 'Receipt.pdf',
+        caption: message 
+      });
+    } else {
+      await sock.sendMessage(formattedPhone, { text: message });
+    }
     
     // Disconnect so Vercel can sleep
     sock.ws.close();
