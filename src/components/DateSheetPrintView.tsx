@@ -180,8 +180,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             .ds-container { margin: 0; width: 100%; min-height: 100%; box-shadow: none; border: none; }
           }
 
-          .ds-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-          .ds-header-left { flex: 1; text-align: center; padding-top: 15px; }
+          .ds-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+          .ds-header-left { flex: 1; text-align: center; padding-top: 5px; }
           .ds-header-left h1 { font-size: 26px; font-weight: bold; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px; color: #1e3a8a; }
           .ds-header-left h2 { font-size: 16px; text-transform: uppercase; margin: 0; font-weight: bold; letter-spacing: 0.5px; }
           
@@ -195,14 +195,14 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           }
           .ds-header-right div { border-bottom: 1px dotted #999; margin-bottom: 4px; padding-bottom: 2px; }
 
-          table.ds-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; }
+          table.ds-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 10px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; }
           table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 4px 2px; word-wrap: break-word; overflow-wrap: anywhere; word-break: break-all; white-space: normal; hyphens: auto; }
           table.ds-table th { font-weight: bold; font-size: 12px; background: #f9fafb; }
           
-          .ds-rules-container { display: flex; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 20px; }
-          .ds-rule-box { flex: 1; border: 1px solid #000; padding: 10px; }
-          .ds-rule-box h3 { margin: 0 0 8px 0; font-size: 13px; font-weight: bold; text-decoration: underline; }
-          .ds-rule-box p { margin: 0 0 4px 0; line-height: 1.4; }
+          .ds-rules-container { display: flex; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 10px; }
+          .ds-rule-box { flex: 1; border: 1px solid #000; padding: 6px; }
+          .ds-rule-box h3 { margin: 0 0 4px 0; font-size: 13px; font-weight: bold; text-decoration: underline; }
+          .ds-rule-box p { margin: 0 0 2px 0; line-height: 1.2; font-size: 11px; }
           
           .ds-class-wise-header {
             text-align: center;
@@ -236,8 +236,8 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
               <thead>
                 <tr>
                   <th style={{width: '150px', background: 'transparent', textAlign: 'center'}}>
-                    <div style={{borderBottom: '1px solid #000', paddingBottom: '4px', fontSize: '13px'}}>CLASS &rarr;</div>
-                    <div style={{paddingTop: '4px', fontSize: '13px'}}>DATES/DAY &darr;</div>
+                    <div style={{borderBottom: '1px solid #000', paddingBottom: '2px', fontSize: '13px'}}>CLASS &rarr;</div>
+                    <div style={{paddingTop: '2px', fontSize: '13px'}}>DATES/DAY &darr;</div>
                   </th>
                   {sortedClasses.map(c => (
                     <th key={c} style={{background: 'transparent', padding: '4px 2px', textAlign: 'center'}} contentEditable suppressContentEditableWarning>{toRoman(c)}</th>
@@ -247,7 +247,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
               <tbody>
                 {sortedDates.map((date, idx) => (
                   <tr key={idx}>
-                    <td style={{fontWeight: 'bold', fontSize: '14px', textAlign: 'center', padding: '6px 4px'}}>
+                    <td style={{fontWeight: 'bold', fontSize: '14px', textAlign: 'center', padding: '2px 2px'}}>
                       {formatDate(date)}<br/>
                       {getDayOfWeek(date)}
                     </td>
@@ -267,7 +267,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                          subjectName = subjectItem?.subject || '';
                       }
                       return (
-                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal', textAlign: 'center', fontSize: '11px', padding: '4px 1px' }} contentEditable suppressContentEditableWarning>
+                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal', textAlign: 'center', fontSize: '11px', padding: '1px 1px' }} contentEditable suppressContentEditableWarning>
                           {subjectName ? subjectName.toUpperCase() : '-'}
                         </td>
                       );
