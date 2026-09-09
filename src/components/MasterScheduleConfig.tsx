@@ -72,6 +72,14 @@ const MasterScheduleConfig: React.FC<Props> = ({ examTerm, allClasses, onBack, o
     setRows(newRows);
   };
 
+  const getDayOfWeek = (dateString: string) => {
+    if (!dateString) return '';
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return '';
+    return days[d.getDay()];
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     const schedule = rows.map(r => ({
@@ -134,9 +142,9 @@ const MasterScheduleConfig: React.FC<Props> = ({ examTerm, allClasses, onBack, o
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', padding: '12px', borderBottom: '2px solid #eee', width: '150px' }}>Date</th>
+              <th style={{ textAlign: 'left', padding: '12px', borderBottom: '2px solid #eee', minWidth: '160px' }}>Date</th>
               {masterClasses.map(c => (
-                <th key={c} style={{ textAlign: 'center', padding: '12px', borderBottom: '2px solid #eee' }}>{c}</th>
+                <th key={c} style={{ textAlign: 'center', padding: '12px', borderBottom: '2px solid #eee', minWidth: '140px' }}>{c}</th>
               ))}
               <th style={{ padding: '12px', borderBottom: '2px solid #eee', width: '60px' }}></th>
             </tr>
@@ -144,11 +152,14 @@ const MasterScheduleConfig: React.FC<Props> = ({ examTerm, allClasses, onBack, o
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                <td style={{ padding: '8px', borderBottom: '1px solid #eee', verticalAlign: 'top' }}>
                   <input type="date" className="glass-input" style={{ width: '100%', margin: 0 }} value={row.date} onChange={e => updateDate(i, e.target.value)} />
+                  <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', fontWeight: 500 }}>
+                    {getDayOfWeek(row.date)}
+                  </div>
                 </td>
                 {masterClasses.map(c => (
-                  <td key={c} style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                  <td key={c} style={{ padding: '8px', borderBottom: '1px solid #eee', verticalAlign: 'top' }}>
                     <input type="text" className="glass-input" style={{ width: '100%', margin: 0, textAlign: 'center' }} placeholder="Subject" value={row.subjects[c] || ''} onChange={e => updateSubject(i, c, e.target.value)} />
                   </td>
                 ))}

@@ -198,7 +198,7 @@ const Examination: React.FC = () => {
     if (view === 'tc_config' && selectedStudent) return <TransferCertificatePrintView student={selectedStudent} className={classFilter} onClose={() => {setShowPrintView(false); setView('main');}} />;
     if (view === 'cc_config' && selectedStudent) return <CharacterCertificatePrintView student={selectedStudent} className={classFilter} onClose={() => {setShowPrintView(false); setView('main');}} />;
     if (view === 'bc_config' && selectedStudent) return <BirthCertificatePrintView student={selectedStudent} className={classFilter} onClose={() => {setShowPrintView(false); setView('main');}} />;
-    if (view === 'schedule_config' && scheduleData) return <DateSheetPrintView scheduleData={scheduleData} onClose={() => setShowPrintView(false)} />;
+    if ((view === 'schedule_config' || view === 'master_schedule_config') && scheduleData) return <DateSheetPrintView scheduleData={scheduleData} onClose={() => setShowPrintView(false)} />;
     if (view === 'paper_config' && paperData) return <QuestionPaperPrintView paperData={paperData} onClose={() => setShowPrintView(false)} />;
   }
 
