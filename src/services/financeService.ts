@@ -31,10 +31,11 @@ export const addTransaction = async (data: TransactionData) => {
     }
     
     // Auto-generate sequential receipt number for Payments
-    if (data.type === 'Payment') {
+    if (data.type === 'Income' && data.category === 'Fee Collection') {
       const q = query(
         collection(db, TRANSACTIONS_COLLECTION),
-        where("type", "==", "Payment"),
+        where("type", "==", "Income"),
+        where("category", "==", "Fee Collection"),
         where("session", "==", data.session)
       );
       const snapshot = await getDocs(q);
