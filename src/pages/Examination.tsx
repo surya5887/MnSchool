@@ -10,6 +10,7 @@ import TransferCertificatePrintView from '../components/TransferCertificatePrint
 import CharacterCertificatePrintView from '../components/CharacterCertificatePrintView';
 import BirthCertificatePrintView from '../components/BirthCertificatePrintView';
 import DateSheetPrintView from '../components/DateSheetPrintView';
+import MasterScheduleConfig from '../components/MasterScheduleConfig';
 import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
@@ -407,6 +408,18 @@ const Examination: React.FC = () => {
   }
 
   // --- PAPER CONFIG VIEW ---
+  if (view === 'master_schedule_config') {
+    return <MasterScheduleConfig 
+      examTerm={examType} 
+      allClasses={classes} 
+      onBack={() => setView('main')} 
+      onPreview={(data) => {
+        setScheduleData(data);
+        setShowPrintView(true);
+      }} 
+    />;
+  }
+
   if (view === 'paper_config') {
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
