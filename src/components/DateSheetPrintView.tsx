@@ -196,7 +196,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
           .ds-header-right div { border-bottom: 1px dotted #999; margin-bottom: 4px; padding-bottom: 2px; }
 
           table.ds-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; }
-          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 4px 2px; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; }
+          table.ds-table th, table.ds-table td { border: 1px solid #000; padding: 4px 2px; word-wrap: break-word; overflow-wrap: anywhere; word-break: break-all; white-space: normal; hyphens: auto; }
           table.ds-table th { font-weight: bold; font-size: 12px; background: #f9fafb; }
           
           .ds-rules-container { display: flex; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 20px; }
@@ -267,7 +267,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                          subjectName = subjectItem?.subject || '';
                       }
                       return (
-                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal', textAlign: 'center' }} contentEditable suppressContentEditableWarning>
+                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal', textAlign: 'center', fontSize: '11px', padding: '4px 1px' }} contentEditable suppressContentEditableWarning>
                           {subjectName ? subjectName.toUpperCase() : '-'}
                         </td>
                       );
