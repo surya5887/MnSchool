@@ -235,19 +235,19 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
             <table className="ds-table">
               <thead>
                 <tr>
-                  <th style={{width: '120px', background: 'transparent'}}>
-                    <div style={{borderBottom: '1px solid #000', paddingBottom: '2px'}}>CLASS &rarr;</div>
-                    <div style={{paddingTop: '2px'}}>DATES/DAY &darr;</div>
+                  <th style={{width: '150px', background: 'transparent', textAlign: 'center'}}>
+                    <div style={{borderBottom: '1px solid #000', paddingBottom: '4px', fontSize: '13px'}}>CLASS &rarr;</div>
+                    <div style={{paddingTop: '4px', fontSize: '13px'}}>DATES/DAY &darr;</div>
                   </th>
                   {sortedClasses.map(c => (
-                    <th key={c} style={{background: 'transparent', padding: '4px 2px'}} contentEditable suppressContentEditableWarning>{toRoman(c)}</th>
+                    <th key={c} style={{background: 'transparent', padding: '4px 2px', textAlign: 'center'}} contentEditable suppressContentEditableWarning>{toRoman(c)}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {sortedDates.map((date, idx) => (
                   <tr key={idx}>
-                    <td style={{fontWeight: 'bold', fontSize: '12px', textAlign: 'left', paddingLeft: '8px'}}>
+                    <td style={{fontWeight: 'bold', fontSize: '14px', textAlign: 'center', padding: '6px 4px'}}>
                       {formatDate(date)}<br/>
                       {getDayOfWeek(date)}
                     </td>
@@ -267,7 +267,7 @@ const DateSheetPrintView: React.FC<DateSheetProps> = ({ scheduleData, onClose })
                          subjectName = subjectItem?.subject || '';
                       }
                       return (
-                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal' }} contentEditable suppressContentEditableWarning>
+                        <td key={classId} style={{ fontWeight: subjectName ? 'bold' : 'normal', textAlign: 'center' }} contentEditable suppressContentEditableWarning>
                           {subjectName ? subjectName.toUpperCase() : '-'}
                         </td>
                       );
