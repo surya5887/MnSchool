@@ -682,11 +682,9 @@ const Examination: React.FC = () => {
                   <>
                     <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Generate a Master Date Sheet containing all classes for {examType}.</p>
                     <button className="btn-primary" onClick={() => {
-                      setScheduleData({ classId: 'MASTER', examTerm: examType, schedule: [] });
-                      setView('schedule_config');
-                      setShowPrintView(true);
+                      setView('master_schedule_config');
                     }}>
-                      <Printer size={20} style={{ marginRight: '8px' }} /> Print Master Date Sheet
+                      <Printer size={20} style={{ marginRight: '8px' }} /> Configure Master Date Sheet
                     </button>
                   </>
                 )}
