@@ -98,12 +98,14 @@ const DefaultersList: React.FC = () => {
     getSchoolSettings().then(data => setSettings(data));
   }, []);
 
-  const filteredDefaulters = defaulters.filter(d => 
-    d.student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (d.student.lastName && d.student.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    d.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (d.student.parentPhone && d.student.parentPhone.includes(searchTerm))
-  );
+  const filteredDefaulters = defaulters.filter(d => {
+    const searchLower = (searchTerm || '').toLowerCase();
+    const firstMatch = d.student?.firstName?.toLowerCase()?.includes(searchLower);
+    const lastMatch = d.student?.lastName?.toLowerCase()?.includes(searchLower);
+    const classMatch = d.className?.toLowerCase()?.includes(searchLower);
+    const phoneMatch = d.student?.parentPhone?.includes(searchTerm) || d.student?.primaryPhone?.includes(searchTerm) || d.student?.phone?.includes(searchTerm);
+    return firstMatch || lastMatch || classMatch || phoneMatch;
+  });
 
     const [sendingWa, setSendingWa] = useState<string | null>(null);
 
@@ -159,14 +161,14 @@ const DefaultersList: React.FC = () => {
   
   const handleExport = () => {
     const dataToExport = filteredDefaulters.map(d => ({
-      'Admission No': d.student.admissionNumber || '',
-      'Roll No': d.student.rollNumber || '',
-      'Student Name': `${d.student.firstName} ${d.student.lastName}`.trim(),
-      'Class': d.className || d.student.classId || '',
-      'Section': d.student.sectionId || '',
-      'Pending Amount (₹)': d.totalDue,
-      'Father Name': d.student.fatherName || '',
-      'Phone': d.student.primaryPhone || ''
+      'Admission No': d.student?.admissionNo || d.student?.admissionNumber || '',
+      'Roll No': d.student?.rollNumber || '',
+      'Student Name': `${d.student?.firstName || ''} ${d.student?.lastName || ''}`.trim(),
+      'Class': d.className || d.student?.classId || '',
+      'Section': d.student?.sectionId || '',
+      'Pending Amount (₹)': d.totalDue || 0,
+      'Father Name': d.student?.fatherName || '',
+      'Phone': d.student?.phone || d.student?.primaryPhone || d.student?.parentPhone || ''
     }));
     exportToCSV(dataToExport, `Fee_Defaulters_List`);
   };
