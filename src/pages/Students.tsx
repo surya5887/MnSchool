@@ -133,8 +133,8 @@ const Students: React.FC = () => {
     return students.filter(student => {
       // Role Restriction
       if (role === 'Teacher') {
-          if (teacherFallback.class && student.classId !== teacherFallback.class) return false;
-          if (teacherFallback.section && student.sectionId !== teacherFallback.section) return false;
+          if (teacherFallback.class) { const tfC = classes.find(c => c.id === teacherFallback.class || c.className === teacherFallback.class); if (!tfC || (student.classId !== tfC.id && (!student.classId || !tfC.className || student.classId.trim().toLowerCase() !== tfC.className.trim().toLowerCase()))) return false; }
+          if (teacherFallback.section && (student.sectionId || '').trim().toLowerCase() !== (teacherFallback.section || '').trim().toLowerCase()) return false;
         }
       
       const searchLower = searchTerm.toLowerCase();

@@ -154,13 +154,13 @@ const Classes: React.FC = () => {
               // Ensure there's at least one section to map over, fallback to 'A' if empty
               const sections = c.sections && c.sections.length > 0 ? c.sections : ['A'];
               return sections.map(section => {
-                const studentCount = students.filter(s => s.classId === c.className && s.sectionId === section).length;
+                const studentCount = students.filter(s => (s.classId === c.id || (s.classId && c.className && s.classId.trim().toLowerCase() === c.className.trim().toLowerCase())) && (s.sectionId || '').trim().toLowerCase() === (section || '').trim().toLowerCase()).length;
                 return (
                   <motion.div
                     key={`${c.id}-${section}`}
                     whileHover={{ scale: 1.02, translateY: -4 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate(`/classes/${c.id}`)}
+                    onClick={() => navigate(`/classes/${c.id}?section=${section}`)}
                     style={{ 
                       display: 'flex', 
                       flexDirection: 'column', 

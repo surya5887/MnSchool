@@ -27,7 +27,7 @@ const ClassDetails: React.FC = () => {
           }
           const students = await getStudents();
           // Filter students who are active and in this class
-          const classStudents = students.filter(s => s.classId === cls.className);
+          const classStudents = students.filter(s => s.classId === cls.id || (s.classId && cls.className && s.classId.trim().toLowerCase() === cls.className.trim().toLowerCase()));
           setAllStudents(classStudents);
         }
       } catch (error) {
@@ -96,7 +96,7 @@ const ClassDetails: React.FC = () => {
                   transition: 'all 0.2s ease'
                 }}
               >
-                Section {sec} ({allStudents.filter(s => s.sectionId === sec).length})
+                Section {sec} ({allStudents.filter(s => (s.sectionId || '').trim().toLowerCase() === (sec || '').trim().toLowerCase()).length})
               </button>
             ))
           )}
