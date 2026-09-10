@@ -1,7 +1,13 @@
 import { collection, addDoc, getDocs, getDoc, query, deleteDoc, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
+
 const CLASSES_COLLECTION = 'school_classes';
+
+let cachedClasses: ClassData[] | null = null;
+let lastClassFetch = 0;
+const CLASS_CACHE_TTL = 5 * 60 * 1000;
+
 
 export interface ClassData {
   id?: string;
@@ -52,8 +58,12 @@ export const addClass = async (data: Omit<ClassData, 'id'>) => {
 
 export const getClasses = async (): Promise<ClassData[]> => {
   try {
-    let q = query(collection(db, CLASSES_COLLECTION));
     const activeSession = localStorage.getItem('activeSession');
+    if (cachedClasses && (Date.now() - lastClassFetch < CLASS_CACHE_TTL)) {
+       return activeSession ? cachedClasses.filter(c => c.session === activeSession) : cachedClasses;
+    }
+
+    let q = query(collection(db, CLASSES_COLLECTION));
     if (activeSession) {
       q = query(collection(db, CLASSES_COLLECTION), where("session", "==", activeSession));
     }

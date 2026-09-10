@@ -3,7 +3,13 @@ import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, 
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
 
+
 const STUDENTS_COLLECTION = 'students';
+
+let cachedStudents: StudentData[] | null = null;
+let lastFetchTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 
 export interface StudentData {
   id?: string;

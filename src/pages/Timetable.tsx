@@ -303,11 +303,11 @@ const Timetable: React.FC = () => {
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
             <select className="glass-input" value={classFilter} onChange={handleClassChange}>
-              {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+              {classes.map(c => <option key={c.id} value={c.id}>{c.className} - {c.sections?.[0] || ''}</option>)}
             </select>
           </div>
           <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
-            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.className === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Class Teacher: <strong>{classes.find(c => c.id === classFilter)?.classTeacher || 'Not Assigned'}</strong></div>
           </div>
         </div>
       )}
@@ -407,7 +407,7 @@ const Timetable: React.FC = () => {
             <label style={{ display: 'block', marginBottom: '8px' }}>Subject</label>
             <select required className="glass-input" value={assignment.subject} onChange={e => setAssignment({ ...assignment, subject: e.target.value })}>
               <option value="">-- Select Subject --</option>
-              {classes.find(c => c.className === classFilter)?.subjects.map(s => <option key={s} value={s}>{s}</option>)}
+              {classes.find(c => c.id === classFilter)?.subjects.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div>

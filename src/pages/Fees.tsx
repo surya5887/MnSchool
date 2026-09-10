@@ -53,7 +53,7 @@ const Fees: React.FC = () => {
   
   let totalPendingFees = 0;
   students.forEach(student => {
-    const studentClass = classes.find(c => c.id === student.classId);
+    const studentClass = classes.find(c => c.id === student.classId || (c.className && student.classId && c.className.trim().toLowerCase() === student.classId.trim().toLowerCase()));
     let baseFeeTotal = 0;
     if (studentClass && studentClass.fees) {
       baseFeeTotal = studentClass.fees.reduce((sum, f) => sum + f.amount, 0);
@@ -71,7 +71,7 @@ const Fees: React.FC = () => {
 
   let foundStudentPendingDues = 0;
   if (foundStudent) {
-    const studentClass = classes.find(c => c.id === foundStudent.classId);
+    const studentClass = classes.find(c => c.id === foundStudent.classId || (c.className && foundStudent.classId && c.className.trim().toLowerCase() === foundStudent.classId.trim().toLowerCase()));
     let baseFeeTotal = 0;
     if (studentClass && studentClass.fees) {
       baseFeeTotal = studentClass.fees.reduce((sum, f) => sum + f.amount, 0);

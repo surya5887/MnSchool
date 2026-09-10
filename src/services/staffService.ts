@@ -3,7 +3,13 @@ import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc } from '
 import { db } from '../lib/firebase';
 import bcrypt from 'bcryptjs';
 
+
 const STAFF_COLLECTION = 'staff';
+
+let cachedStaff: StaffData[] | null = null;
+let lastStaffFetch = 0;
+const STAFF_CACHE_TTL = 5 * 60 * 1000;
+
 
 export interface StaffData {
   id?: string;
@@ -66,9 +72,14 @@ export const addStaff = async (staffData: StaffData) => {
 
 export const getStaff = async () => {
   try {
+    if (cachedStaff && (Date.now() - lastStaffFetch < STAFF_CACHE_TTL)) {
+      return cachedStaff.filter(s => s.role !== 'Super Admin');
+    }
     const q = collection(db, STAFF_COLLECTION);
     const querySnapshot = await getDocs(q);
     const allStaff = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as StaffData));
+    cachedStaff = allStaff;
+    lastStaffFetch = Date.now();
     return allStaff.filter(s => s.role !== 'Super Admin');
   } catch (error) {
     console.error("Error fetching staff: ", error);
