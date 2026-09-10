@@ -48,7 +48,9 @@ const ClassDetails: React.FC = () => {
   }
 
   // Filter students for the active section
-  const sectionStudents = allStudents.filter(s => (s.sectionId || '').trim().toLowerCase() === (activeSection || '').trim().toLowerCase());
+  const activeSecName = (classData.sections && classData.sections.length > 0) ? classData.sections[0] : '';
+  const sectionStudents = allStudents.filter(s => (s.sectionId || '').trim().toLowerCase() === activeSecName.trim().toLowerCase())
+    .sort((a, b) => (Number(a.rollNumber) || 0) - (Number(b.rollNumber) || 0));
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -67,7 +69,7 @@ const ClassDetails: React.FC = () => {
               <Users size={24} />
             </div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{allStudents.length}</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{sectionStudents.length}</div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Students</div>
             </div>
           </div>
@@ -75,38 +77,11 @@ const ClassDetails: React.FC = () => {
       </div>
 
       <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
-        {/* Section Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.2)' }}>
-          {classData.sections.length === 0 ? (
-            <div style={{ padding: '16px 24px', color: 'var(--text-muted)' }}>No sections defined.</div>
-          ) : (
-            classData.sections.map(sec => (
-              <button
-                key={sec}
-                onClick={() => setActiveSection(sec)}
-                style={{
-                  flex: 1,
-                  padding: '16px',
-                  background: activeSection === sec ? 'rgba(255,255,255,0.7)' : 'transparent',
-                  border: 'none',
-                  borderBottom: activeSection === sec ? '3px solid var(--primary-color)' : '3px solid transparent',
-                  fontWeight: activeSection === sec ? 700 : 500,
-                  color: activeSection === sec ? 'var(--primary-color)' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                Section {sec} ({allStudents.filter(s => (s.sectionId || '').trim().toLowerCase() === (sec || '').trim().toLowerCase()).length})
-              </button>
-            ))
-          )}
-        </div>
-
         {/* Students Table */}
         <div className="students-grid" style={{ padding: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
             {sectionStudents.length === 0 ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                No students found in Section {activeSection}.
+                No students found in this section.
               </div>
             ) : sectionStudents.map((student, idx) => (
               <motion.div 

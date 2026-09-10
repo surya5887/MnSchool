@@ -14,6 +14,9 @@ const Classes: React.FC = () => {
   const [isClassModalOpen, setClassModalOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
+  const [classToDelete, setClassToDelete] = useState<string | null>(null);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
   const [staffList, setStaffList] = useState<StaffData[]>([]);
   const [students, setStudents] = useState<StudentData[]>([]);
 
@@ -108,15 +111,28 @@ const Classes: React.FC = () => {
     }
   };
 
-  const handleDeleteClass = async (e: React.MouseEvent, id: string) => {
+  const handleDeleteClass = (e: React.MouseEvent, id: string) => {
     e.stopPropagation(); // Prevent row click
-    if (window.confirm("Are you sure you want to delete this class? This will not automatically delete its students.")) {
+    setClassToDelete(id);
+    setDeletePassword('');
+    setDeleteError('');
+  };
+
+  const confirmDeleteClass = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (deletePassword === 'admin123') {
       try {
-        await deleteClass(id);
-        fetchData();
+        if (classToDelete) {
+          await deleteClass(classToDelete);
+          fetchData();
+        }
+        setClassToDelete(null);
       } catch (error) {
         console.error("Error deleting class", error);
+        setDeleteError('Failed to delete class.');
       }
+    } else {
+      setDeleteError('Incorrect password! Deletion cancelled.');
     }
   };
 
