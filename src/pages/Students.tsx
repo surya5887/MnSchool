@@ -148,7 +148,12 @@ const Students: React.FC = () => {
         (student.lastName?.toLowerCase().includes(searchLower)) ||
         (student.admissionNo?.toLowerCase().includes(searchLower));
         
-      const matchesClass = selectedClass === 'All' || student.classId === selectedClass;
+      const matchesClass = selectedClass === 'All' || (() => {
+      // Find all class document IDs that have the selected class name
+      const matchingClassIds = classes.filter(c => c.className === selectedClass).map(c => c.id);
+      // Student matches if their classId is one of the matching IDs, OR if it's the legacy string name
+      return matchingClassIds.includes(student.classId) || (student.classId && student.classId.trim().toLowerCase() === selectedClass.trim().toLowerCase());
+    })();
       const matchesSection = (selectedSection === 'All' || !selectedSection) || student.sectionId === selectedSection;
       
       return matchesSearch && matchesClass && matchesSection;
