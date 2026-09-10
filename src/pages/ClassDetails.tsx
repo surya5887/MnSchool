@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Loader from '../components/Loader';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Users, Eye } from 'lucide-react';
 import { getClassById, type ClassData } from '../services/classService';
@@ -9,6 +9,7 @@ import { getStudents, type StudentData } from '../services/studentService';
 const ClassDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [classData, setClassData] = useState<ClassData | null>(null);
   const [allStudents, setAllStudents] = useState<StudentData[]>([]);
   const [loading, setLoading] = useState(true);

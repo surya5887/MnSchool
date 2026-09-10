@@ -206,7 +206,7 @@ const NewAdmission: React.FC = () => {
         if (data.length > 0 && !formData.classId) {
           setFormData(prev => ({
             ...prev, 
-            classId: data[0].className,
+            classId: data[0].id || data[0].className,
             sectionId: data[0].sections[0] || ''
           }));
         }
@@ -534,7 +534,7 @@ const NewAdmission: React.FC = () => {
                   <label>Section *</label>
                   <select name="sectionId" value={formData.sectionId || ''} onChange={handleInputChange} className="glass-input" required disabled={!formData.classId}>
                     <option value="">Select Section</option>
-                    {uniqueClasses.find(c => c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                    {uniqueClasses.find(c => c.id === formData.classId || c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>

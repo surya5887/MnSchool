@@ -310,7 +310,7 @@ const Students: React.FC = () => {
                   )}
                   
                   <Link to={['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) ? `/student/${student.id}` : '#'} style={{ textDecoration: 'none' }}>
-                    <img src={`https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '42px', height: '42px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} />
+                    <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=random`} alt="" style={{ width: '42px', height: '42px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', objectFit: 'cover' }} />
                   </Link>
                   
                   <div style={{ flex: 1, paddingRight: '24px', minWidth: 0 }}>
