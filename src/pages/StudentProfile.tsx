@@ -164,7 +164,7 @@ const StudentProfile: React.FC = () => {
           setEditData(studentData);
           
           const classes = await getClasses();
-          const cls = classes.find(c => c.id === studentData.classId || c.className === studentData.classId);
+          const cls = classes.find(c => c.id === studentData.classId || (c.className && studentData.classId && c.className.trim().toLowerCase() === studentData.classId.trim().toLowerCase()));
           if (cls) setStudentClass(cls);
 
           const txns = await getTransactions({ studentId: id });

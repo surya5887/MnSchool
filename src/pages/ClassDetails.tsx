@@ -48,7 +48,7 @@ const ClassDetails: React.FC = () => {
   }
 
   // Filter students for the active section
-  const sectionStudents = allStudents.filter(s => s.sectionId === activeSection);
+  const sectionStudents = allStudents.filter(s => (s.sectionId || '').trim().toLowerCase() === (activeSection || '').trim().toLowerCase());
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
