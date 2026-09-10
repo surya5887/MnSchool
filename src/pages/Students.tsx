@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Plus, Trash2, Eye } from 'lucide-react';
 import { getStudents, deleteStudent, type StudentData } from '../services/studentService';
+import { exportToCSV } from '../utils/exportUtils';
+import { Download } from 'lucide-react';
 import { getClasses, addClass, type ClassData, getSequenceIndex } from '../services/classService';
 import Modal from '../components/Modal';
 import Loader from '../components/Loader';
@@ -172,6 +174,28 @@ const Students: React.FC = () => {
       });
   }, [students, searchTerm, selectedClass, selectedSection, role, teacherFallback]);
 
+  
+  const handleExport = () => {
+    const dataToExport = filteredStudents.map(s => {
+      const clsName = classes.find(c => c.id === s.classId || c.className === s.classId)?.className || s.classId || '';
+      return {
+        'Admission No': s.admissionNumber || '',
+        'Roll No': s.rollNumber || '',
+        'First Name': s.firstName || '',
+        'Last Name': s.lastName || '',
+        'Gender': s.gender || '',
+        'Date of Birth': s.dob || '',
+        'Class': clsName,
+        'Section': s.sectionId || '',
+        'Status': s.status || 'Active',
+        'Father Name': s.fatherName || '',
+        'Mother Name': s.motherName || '',
+        'Phone Number': s.primaryPhone || ''
+      };
+    });
+    exportToCSV(dataToExport, `Students_Directory_${selectedClass === 'All' ? 'All' : selectedClass}`);
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex-responsive" style={{ marginBottom: "32px" }}>
@@ -207,7 +231,11 @@ const Students: React.FC = () => {
               <Trash2 size={18} /> Delete Selected ({selectedStudents.length})
             </button>
           )}
-          <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
+          
+            <button onClick={handleExport} className="btn-secondary" style={{ height: '48px', padding: '0 24px' }}>
+              <Download size={20} /> Export
+            </button>
+            <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
             <Search size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
               type="text" 

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { CalendarCheck, Save, Search, Download, CheckCircle, XCircle, Circle } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData, getSequenceIndex } from '../services/classService';
+import { exportToCSV } from '../utils/exportUtils';
+import { getAllAttendanceForClass } from '../services/attendanceService';
 import { getAttendance, saveAttendance, type AttendanceStatus } from '../services/attendanceService';
 
 const Attendance: React.FC = () => {
@@ -180,6 +182,55 @@ const Attendance: React.FC = () => {
       </motion.div>
     );
   }
+
+  
+  const handleExportMonthly = async () => {
+    if (!selectedClass || !selectedSection) {
+      alert("Please select a class and section first.");
+      return;
+    }
+    const currentMonth = date.substring(0, 7); // YYYY-MM
+    const allRecords = await getAllAttendanceForClass(
+      classes.find(c => c.className === selectedClass && (c.sections || []).includes(selectedSection))?.id || selectedClass,
+      selectedSection,
+      activeSession
+    );
+    
+    // Filter records by selected month (based on current date picker value)
+    const monthRecords = allRecords.filter(r => r.date.startsWith(currentMonth));
+    if (monthRecords.length === 0) {
+      alert(`No attendance records found for ${currentMonth}`);
+      return;
+    }
+    
+    // Get all days in that month that have records
+    const daysWithRecords = monthRecords.map(r => r.date).sort();
+    
+    const dataToExport = filteredStudents.map(s => {
+      const row: any = {
+        'Roll No': s.rollNumber || '',
+        'Name': `${s.firstName} ${s.lastName}`.trim(),
+        'Class': `${selectedClass} - ${selectedSection}`
+      };
+      
+      let presentCount = 0;
+      let totalCount = daysWithRecords.length;
+      
+      daysWithRecords.forEach(d => {
+        const recordForDay = monthRecords.find(r => r.date === d);
+        const status = recordForDay?.records[s.id!] || 'Unmarked';
+        row[d] = status;
+        if (status === 'Present') presentCount++;
+      });
+      
+      row['Total Present'] = presentCount;
+      row['Total Days'] = totalCount;
+      row['Attendance %'] = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) + '%' : '0%';
+      return row;
+    });
+    
+    exportToCSV(dataToExport, `Attendance_${selectedClass}_${selectedSection}_${currentMonth}`);
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

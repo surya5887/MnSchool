@@ -160,6 +160,23 @@ const Staff: React.FC = () => {
       }).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     }, [allStaff, activeTab, searchQuery]);
 
+  
+  const handleExport = () => {
+    const dataToExport = filteredStaff.map(s => ({
+      'ID': s.customId || '',
+      'Name': s.name || '',
+      'Role': s.role || '',
+      'Department': s.department || '',
+      'Subject': s.subject || '',
+      'Assigned Class': s.assignedClass || '',
+      'Phone': s.phone || '',
+      'Email': s.email || '',
+      'Status': s.status || 'Active',
+      'Base Salary': s.salary || 0
+    }));
+    exportToCSV(dataToExport, `Staff_Directory_${activeTab}`);
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -206,7 +223,11 @@ const Staff: React.FC = () => {
             </button>
           ))}
         </div>
-        <div style={{ position: 'relative', minWidth: '250px', flex: '1 1 auto', maxWidth: '400px' }}>
+        
+          <button onClick={handleExport} className="btn-secondary" style={{ height: '48px', padding: '0 24px' }}>
+            <Download size={20} /> Export
+          </button>
+          <div style={{ position: 'relative', minWidth: '250px', flex: '1 1 auto', maxWidth: '400px' }}>
           <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input 
             type="text" 

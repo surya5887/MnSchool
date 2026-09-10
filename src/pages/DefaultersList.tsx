@@ -153,6 +153,22 @@ const DefaultersList: React.FC = () => {
     setSendingWa(null);
   };
 
+  
+  const handleExport = () => {
+    const dataToExport = filteredDefaulters.map(d => ({
+      'Admission No': d.student.admissionNumber || '',
+      'Roll No': d.student.rollNumber || '',
+      'Student Name': `${d.student.firstName} ${d.student.lastName}`.trim(),
+      'Class': classes.find(c => c.id === d.student.classId || c.className === d.student.classId)?.className || d.student.classId || '',
+      'Section': d.student.sectionId || '',
+      'Pending Amount (₹)': d.pendingAmount,
+      'Last Paid Date': d.lastPaidDate ? new Date(d.lastPaidDate).toLocaleDateString() : 'Never',
+      'Father Name': d.student.fatherName || '',
+      'Phone': d.student.primaryPhone || ''
+    }));
+    exportToCSV(dataToExport, `Fee_Defaulters_List`);
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
@@ -173,6 +189,10 @@ const DefaultersList: React.FC = () => {
 
       <div className="glass-panel" style={{ marginTop: '24px' }}>
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
+          
+          <button onClick={handleExport} className="btn-secondary" style={{ height: '48px', padding: '0 24px', flexShrink: 0 }}>
+            <Download size={20} /> Export
+          </button>
           <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
             <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
