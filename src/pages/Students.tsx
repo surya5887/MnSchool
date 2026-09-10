@@ -109,8 +109,13 @@ const Students: React.FC = () => {
 
   const availableSections = useMemo(() => {
     if (selectedClass === 'All') return [];
-    const cls = classes.find(c => c.className === selectedClass);
-    return cls ? cls.sections : [];
+    const sectionsSet = new Set<string>();
+    classes.forEach(c => {
+      if (c.className === selectedClass) {
+        c.sections.forEach(s => sectionsSet.add(s));
+      }
+    });
+    return Array.from(sectionsSet).sort();
   }, [selectedClass, classes]);
 
   useEffect(() => {

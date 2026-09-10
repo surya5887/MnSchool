@@ -48,7 +48,8 @@ const ClassDetails: React.FC = () => {
   }
 
   // Filter students for the active section
-  const activeSecName = (classData.sections && classData.sections.length > 0) ? classData.sections[0] : '';
+  const urlSection = searchParams.get('section');
+  const activeSecName = urlSection || ((classData.sections && classData.sections.length > 0) ? classData.sections[0] : '');
   const sectionStudents = allStudents.filter(s => (s.sectionId || '').trim().toLowerCase() === activeSecName.trim().toLowerCase())
     .sort((a, b) => (Number(a.rollNumber) || 0) - (Number(b.rollNumber) || 0));
 
@@ -60,7 +61,7 @@ const ClassDetails: React.FC = () => {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <h1 className="page-title">Class {classData.className}</h1>
+          <h1 className="page-title">Class {classData.className} - Section {activeSecName}</h1>
           <p className="page-subtitle">Class Teacher: {classData.classTeacher || 'Not Assigned'}</p>
         </div>
         <div style={{ display: 'flex', gap: '24px' }}>
