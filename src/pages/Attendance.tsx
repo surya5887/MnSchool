@@ -255,7 +255,7 @@ const Attendance: React.FC = () => {
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {saving && <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Saving...</span>}
-          <button className="btn-secondary">
+          <button className="btn-secondary" onClick={() => setIsExportModalOpen(true)}>
             <Download size={18} /> Export Monthly Report
           </button>
         </div>
