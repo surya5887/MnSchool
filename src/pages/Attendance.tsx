@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Loader from '../components/Loader';
+import Modal from '../components/Modal';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Save, Search, Download, CheckCircle, XCircle, Circle } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
@@ -24,6 +25,10 @@ const Attendance: React.FC = () => {
   // Map of studentId -> AttendanceStatus ('Present' | 'Absent' | 'Unmarked')
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
   const [saving, setSaving] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportClass, setExportClass] = useState('');
+  const [exportSection, setExportSection] = useState('');
+  const [exportMonth, setExportMonth] = useState(new Date().toISOString().substring(0, 7));
   const [loading, setLoading] = useState(true);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -185,15 +190,15 @@ const Attendance: React.FC = () => {
 
   
   const handleExportMonthly = async () => {
-    if (!selectedClass || !selectedSection) {
-      alert("Please select a class and section first.");
+    if (!exportClass || !exportSection || !exportMonth) {
+      alert("Please select Class, Section, and Month.");
       return;
     }
-    const currentMonth = date.substring(0, 7); // YYYY-MM
+    const currentMonth = exportMonth; // YYYY-MM
     const activeSession = localStorage.getItem('activeSession') || '2026-2027';
     const allRecords = await getAllAttendanceForClass(
-      classes.find(c => c.className === selectedClass && (c.sections || []).includes(selectedSection))?.id || selectedClass,
-      selectedSection,
+      classes.find(c => c.className === exportClass && (c.sections || []).includes(exportSection))?.id || exportClass,
+      exportSection,
       activeSession
     );
     
@@ -205,13 +210,20 @@ const Attendance: React.FC = () => {
     }
     
     // Get all days in that month that have records
-    const daysWithRecords = monthRecords.map(r => r.date).sort();
+    const daysWithRecords = Array.from(new Set(monthRecords.map(r => r.date))).sort();
     
-    const dataToExport = filteredStudents.map(s => {
+    // Filter students for the exported class
+    const exportStudents = students.filter(s => {
+      const tfC = classes.find(c => c.className === exportClass);
+      return (s.classId === tfC?.id || s.classId === exportClass) && s.sectionId === exportSection;
+    });
+    
+    const dataToExport = exportStudents.map(s => {
       const row: any = {
+        'Admission No': s.admissionNo || '',
         'Roll No': s.rollNumber || '',
         'Name': `${s.firstName} ${s.lastName}`.trim(),
-        'Class': `${selectedClass} - ${selectedSection}`
+        'Class': `${exportClass} - ${exportSection}`
       };
       
       let presentCount = 0;
@@ -228,9 +240,10 @@ const Attendance: React.FC = () => {
       row['Total Days'] = totalCount;
       row['Attendance %'] = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) + '%' : '0%';
       return row;
-    });
+    }).sort((a, b) => (a['Roll No'] || 0) - (b['Roll No'] || 0));
     
-    exportToCSV(dataToExport, `Attendance_${selectedClass}_${selectedSection}_${currentMonth}`);
+    exportToCSV(dataToExport, `Attendance_${exportClass}_${exportSection}_${currentMonth}`);
+    setIsExportModalOpen(false);
   };
 
   return (
