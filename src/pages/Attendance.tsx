@@ -190,6 +190,7 @@ const Attendance: React.FC = () => {
       return;
     }
     const currentMonth = date.substring(0, 7); // YYYY-MM
+    const activeSession = localStorage.getItem('activeSession') || '2026-2027';
     const allRecords = await getAllAttendanceForClass(
       classes.find(c => c.className === selectedClass && (c.sections || []).includes(selectedSection))?.id || selectedClass,
       selectedSection,

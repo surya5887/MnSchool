@@ -3,6 +3,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Briefcase, Trash2, Mail, Phone, Search, Users, Shield, GraduationCap, Truck, Settings, Coffee, BookOpen, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { exportToCSV } from '../utils/exportUtils';
+import { Download } from 'lucide-react';
 import { getStaff, addStaff, deleteStaff, type StaffData } from '../services/staffService';
 import { uploadImageToCloudinary, uploadFileToCloudinary } from '../lib/cloudinary';
 import Modal from '../components/Modal';

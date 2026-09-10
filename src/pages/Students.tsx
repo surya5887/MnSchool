@@ -179,7 +179,7 @@ const Students: React.FC = () => {
     const dataToExport = filteredStudents.map(s => {
       const clsName = classes.find(c => c.id === s.classId || c.className === s.classId)?.className || s.classId || '';
       return {
-        'Admission No': s.admissionNumber || '',
+        'Admission No': s.admissionNo || '',
         'Roll No': s.rollNumber || '',
         'First Name': s.firstName || '',
         'Last Name': s.lastName || '',
@@ -190,10 +190,10 @@ const Students: React.FC = () => {
         'Status': s.status || 'Active',
         'Father Name': s.fatherName || '',
         'Mother Name': s.motherName || '',
-        'Phone Number': s.primaryPhone || ''
+        'Phone Number': s.phone || ''
       };
     });
-    exportToCSV(dataToExport, `Students_Directory_${selectedClass === 'All' ? 'All' : selectedClass}`);
+    exportToCSV(dataToExport.sort((a, b) => a['Class'].localeCompare(b['Class']) || a['Section'].localeCompare(b['Section']) || (a['Roll No'] || 0) - (b['Roll No'] || 0)), `Students_Directory_${selectedClass === 'All' ? 'All' : selectedClass}`);
   };
 
   return (

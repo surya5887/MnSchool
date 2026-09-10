@@ -159,10 +159,9 @@ const DefaultersList: React.FC = () => {
       'Admission No': d.student.admissionNumber || '',
       'Roll No': d.student.rollNumber || '',
       'Student Name': `${d.student.firstName} ${d.student.lastName}`.trim(),
-      'Class': classes.find(c => c.id === d.student.classId || c.className === d.student.classId)?.className || d.student.classId || '',
+      'Class': d.className || d.student.classId || '',
       'Section': d.student.sectionId || '',
-      'Pending Amount (₹)': d.pendingAmount,
-      'Last Paid Date': d.lastPaidDate ? new Date(d.lastPaidDate).toLocaleDateString() : 'Never',
+      'Pending Amount (₹)': d.totalDue,
       'Father Name': d.student.fatherName || '',
       'Phone': d.student.primaryPhone || ''
     }));
