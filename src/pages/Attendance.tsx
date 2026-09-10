@@ -33,11 +33,13 @@ const Attendance: React.FC = () => {
         existing = { className: c.className, sections: [] };
         list.push(existing);
       }
-      c.sections.forEach(s => {
-        if (!existing?.sections.includes(s)) existing?.sections.push(s);
-      });
+      if (c.sections) {
+        c.sections.forEach(s => {
+          if (!existing.sections.includes(s)) existing.sections.push(s);
+        });
+      }
     });
-    return list.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+    return list.sort((a, b) => a.className.localeCompare(b.className));
   }, [classes]);
 
   useEffect(() => {
@@ -129,7 +131,7 @@ const Attendance: React.FC = () => {
     try {
       await saveAttendance({
         date,
-        classId: selectedClass,
+        classId: classes.find(c => c.className === selectedClass && (c.sections || []).includes(selectedSection))?.id || selectedClass,
         sectionId: selectedSection,
         session: activeSession,
         records: recordsToSave
@@ -144,7 +146,10 @@ const Attendance: React.FC = () => {
   const activeStudents = useMemo(() => {
     return students.filter(s => {
       const matchStatus = s.status === 'Active' || !s.status;
-      const matchClass = s.classId === selectedClass;
+      const matchClass = (() => {
+        const matchingClassIds = classes.filter(c => c.className === selectedClass).map(c => c.id);
+        return matchingClassIds.includes(s.classId) || (s.classId && s.classId.trim().toLowerCase() === selectedClass.trim().toLowerCase());
+      })();
       const matchSection = (!selectedSection || s.sectionId === selectedSection);
       const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
       const matchSearch = fullName.includes(searchQuery.toLowerCase().trim());

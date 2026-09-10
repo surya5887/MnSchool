@@ -331,7 +331,7 @@ const Students: React.FC = () => {
                     </Link>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '0.65rem', background: '#e0e7ff', color: '#4338ca', padding: '3px 8px', borderRadius: '6px', fontWeight: 700 }}>
-                        {student.classId}-{student.sectionId}
+                        {classes.find(c => c.id === student.classId || c.className === student.classId)?.className || student.classId}-{student.sectionId}
                       </span>
                       <span style={{ fontSize: '0.65rem', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#15803d' : '#b91c1c', padding: '3px 8px', borderRadius: '6px', fontWeight: 700 }}>
                         {student.status || 'Active'}

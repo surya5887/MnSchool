@@ -92,7 +92,7 @@ const Examination: React.FC = () => {
     }
     let filtered = students;
     if (classFilter) {
-      filtered = filtered.filter(s => s.classId === classFilter);
+      filtered = filtered.filter(s => (() => { const matchingIds = classes.filter(c => c.className === classFilter).map(c => c.id); return matchingIds.includes(s.classId) || (s.classId && s.classId.trim().toLowerCase() === classFilter.trim().toLowerCase()); })());
     }
     if (sectionFilter) {
       filtered = filtered.filter(s => s.sectionId === sectionFilter);

@@ -268,7 +268,7 @@ const Dashboard: React.FC = () => {
 
   // Teacher Logic
   const teacherFallback = { class: authUser.assignedClass || '', section: authUser.assignedSection || '' };
-  const myStudentsList = students.filter(s => s.classId === teacherFallback.class && (!teacherFallback.section || s.sectionId === teacherFallback.section) && s.status !== 'Inactive');
+  const myStudentsList = students.filter(s => (() => { const tfC = classes.find(c => c.id === teacherFallback.class || c.className === teacherFallback.class); return tfC ? (s.classId === tfC.id || (s.classId && s.classId.trim().toLowerCase() === tfC.className.trim().toLowerCase())) : false; })() && (!teacherFallback.section || s.sectionId === teacherFallback.section) && s.status !== 'Inactive');
   const myStudentsCount = myStudentsList.length;
   const presentCount = myStudentsList.filter(s => s.id && todayAttendance[s.id] === 'Present').length;
   const absentCount = myStudentsList.filter(s => s.id && todayAttendance[s.id] === 'Absent').length;
