@@ -238,14 +238,30 @@ const NewAdmission: React.FC = () => {
   }, []);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedClassName = e.target.value;
-    const selectedClass = uniqueClasses.find(c => c.className === selectedClassName);
-    setFormData(prev => ({
-      ...prev,
-      classId: selectedClassName,
-      sectionId: selectedClass?.sections[0] || ''
-    }));
-  };
+      const selectedClassName = e.target.value;
+      const selectedClass = uniqueClasses.find(c => c.className === selectedClassName);
+      const defaultSection = selectedClass?.sections[0] || '';
+      const specificClass = classes.find(c => c.className === selectedClassName && (c.sections || []).includes(defaultSection));
+      
+      setFormData(prev => ({
+        ...prev,
+        classId: specificClass?.id || selectedClassName,
+        sectionId: defaultSection
+      }));
+    };
+    
+    const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedSection = e.target.value;
+      const currentClassDoc = classes.find(c => c.id === formData.classId || c.className === formData.classId);
+      const className = currentClassDoc?.className || formData.classId;
+      const specificClass = classes.find(c => c.className === className && (c.sections || []).includes(selectedSection));
+      
+      setFormData(prev => ({
+        ...prev,
+        classId: specificClass?.id || className,
+        sectionId: selectedSection
+      }));
+    };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     let { name, value } = e.target;
@@ -532,9 +548,9 @@ const NewAdmission: React.FC = () => {
                 </div>
                 <div>
                   <label>Section *</label>
-                  <select name="sectionId" value={formData.sectionId || ''} onChange={handleInputChange} className="glass-input" required disabled={!formData.classId}>
+                  <select name="sectionId" value={formData.sectionId || ''} onChange={handleSectionChange} className="glass-input" required disabled={!formData.classId}>
                     <option value="">Select Section</option>
-                    {uniqueClasses.find(c => c.id === formData.classId || c.className === formData.classId)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                    {uniqueClasses.find(c => c.className === (classes.find(x => x.id === formData.classId)?.className || formData.classId))?.sections.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
