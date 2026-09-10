@@ -66,7 +66,7 @@ const Classes: React.FC = () => {
     setEditingClassId(c.id || null);
     setNewClassData({
       className: c.className,
-      sections: c.sections.join(', '),
+      sections: c.sections[0] || '',
       subjects: c.subjects.join(', '),
       classTeacher: c.classTeacher,
       feeName: c.fees && c.fees.length > 0 ? c.fees[0].feeName : 'Monthly Tuition',
@@ -79,15 +79,17 @@ const Classes: React.FC = () => {
   const handleSaveClass = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const dataToSave = {
-        className: newClassData.className,
-        order: classes.length + 1,
-        sections: newClassData.sections.split(',').map(s => s.trim()).filter(s => s),
-        subjects: newClassData.subjects.split(',').map(s => s.trim()).filter(s => s),
-        classTeacher: newClassData.classTeacher,
-        monthlyBaseFee: Number(newClassData.monthlyBaseFee) || 1000,
-        fees: newClassData.feeAmount ? [{ feeName: newClassData.feeName, amount: Number(newClassData.feeAmount) }] : []
-      };
+      const activeSession = localStorage.getItem('activeSession') || '2026-2027';
+        const dataToSave = {
+          className: newClassData.className.trim(),
+          order: classes.length + 1,
+          sections: [newClassData.sections.trim()],
+          subjects: newClassData.subjects.split(',').map(s => s.trim()).filter(s => s),
+          classTeacher: newClassData.classTeacher,
+          monthlyBaseFee: Number(newClassData.monthlyBaseFee) || 1000,
+          fees: [{ feeName: 'Monthly Tuition', amount: Number(newClassData.monthlyBaseFee) || 1000 }],
+          session: activeSession
+        };
 
       if (editingClassId) {
         await updateClass(editingClassId, dataToSave);
@@ -252,50 +254,45 @@ const Classes: React.FC = () => {
 
         <Modal isOpen={isClassModalOpen} onClose={() => setClassModalOpen(false)} title={editingClassId ? "Edit Class" : "Add New Class"}>
         <form onSubmit={handleSaveClass} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Class Name</label>
-            <input required type="text" className="glass-input" value={newClassData.className} onChange={e => setNewClassData({...newClassData, className: e.target.value})} placeholder="e.g. 10th" />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Monthly Base Fee (₹)</label>
-            <input required type="number" className="glass-input" value={newClassData.monthlyBaseFee} onChange={e => setNewClassData({...newClassData, monthlyBaseFee: Number(e.target.value)})} placeholder="e.g. 1500" />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Sections (comma-separated)</label>
-            <input required type="text" className="glass-input" value={newClassData.sections} onChange={e => setNewClassData({...newClassData, sections: e.target.value})} placeholder="e.g. A, B, C" />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Subjects (comma-separated)</label>
-            <input type="text" className="glass-input" value={newClassData.subjects} onChange={e => setNewClassData({...newClassData, subjects: e.target.value})} placeholder="e.g. English, Math, Science" />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Class Teacher</label>
-            <select 
-              className="glass-input" 
-              value={newClassData.classTeacher} 
-              onChange={e => setNewClassData({...newClassData, classTeacher: e.target.value})}
-            >
-              <option value="">Select a Teacher</option>
-              {staffList.map(staff => (
-                <option key={staff.id} value={staff.name}>{staff.name}</option>
-              ))}
-            </select>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Base Fee Name</label>
-              <input required type="text" className="glass-input" value={newClassData.feeName} onChange={e => setNewClassData({...newClassData, feeName: e.target.value})} placeholder="e.g. Monthly Tuition" />
+              <label style={{ display: 'block', marginBottom: '8px' }}>Class Name</label>
+              <input required type="text" className="glass-input" value={newClassData.className} onChange={e => setNewClassData({...newClassData, className: e.target.value.toUpperCase()})} placeholder="e.g. 10TH" />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
-              <input required type="number" className="glass-input" value={newClassData.feeAmount} onChange={e => setNewClassData({...newClassData, feeAmount: e.target.value})} placeholder="e.g. 2500" />
+              <label style={{ display: 'block', marginBottom: '8px' }}>Section</label>
+              <select required className="glass-input" value={newClassData.sections || ''} onChange={e => setNewClassData({...newClassData, sections: e.target.value})}>
+                <option value="">Select Section</option>
+                {['A','B','C','D','E','F','G','H','I','J'].map(sec => (
+                  <option key={sec} value={sec}>{sec}</option>
+                ))}
+              </select>
             </div>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button type="button" className="btn-secondary" onClick={() => setClassModalOpen(false)}>Cancel</button>
-            <button type="submit" className="btn-primary">{editingClassId ? "Update Class" : "Save Class"}</button>
-          </div>
-        </form>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Monthly Base Fee (₹)</label>
+              <input required type="number" className="glass-input" value={newClassData.monthlyBaseFee} onChange={e => setNewClassData({...newClassData, monthlyBaseFee: Number(e.target.value)})} placeholder="e.g. 1000" />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Subjects (comma-separated)</label>
+              <input type="text" className="glass-input" value={newClassData.subjects} onChange={e => setNewClassData({...newClassData, subjects: e.target.value})} placeholder="e.g. English, Math, Science" />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Class Teacher</label>
+              <select 
+                className="glass-input" 
+                value={newClassData.classTeacher} 
+                onChange={e => setNewClassData({...newClassData, classTeacher: e.target.value})}
+              >
+                <option value="">Select a Teacher</option>
+                {staffList.map(staff => (
+                  <option key={staff.id} value={staff.name}>{staff.name}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button type="button" className="btn-secondary" onClick={() => setClassModalOpen(false)}>Cancel</button>
+              <button type="submit" className="btn-primary">{editingClassId ? "Update Class" : "Save Class"}</button>
+            </div>
+          </form>
       </Modal>
 
       <AnimatePresence>
