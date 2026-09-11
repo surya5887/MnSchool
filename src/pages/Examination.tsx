@@ -16,6 +16,8 @@ import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
 
 const Examination: React.FC = () => {
+  const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
+  const role = authUser.role || '';
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [students, setStudents] = useState<StudentData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,9 +230,11 @@ const Examination: React.FC = () => {
               </select>
             </div>
           </div>
-          <button className="btn-primary" style={{ padding: '16px 32px', fontSize: '1.2rem' }} onClick={handlePrintReportCard}>
-            <Printer size={24} /> Preview All Report Cards
-          </button>
+          {role !== 'Teacher' && (
+            <button className="btn-primary" style={{ padding: '16px 32px', fontSize: '1.2rem' }} onClick={handlePrintReportCard}>
+              <Printer size={24} /> Preview All Report Cards
+            </button>
+          )}
         </div>
       </motion.div>
     );
@@ -260,9 +264,11 @@ const Examination: React.FC = () => {
               </select>
             </div>
             <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn-primary" style={{ padding: '12px 32px', fontSize: '1.1rem' }} onClick={handlePrintReportCard}>
-                <Printer size={20} style={{ marginRight: '8px' }} /> Preview Full Report Card
-              </button>
+              {role !== 'Teacher' && (
+                <button className="btn-primary" style={{ padding: '12px 32px', fontSize: '1.1rem' }} onClick={handlePrintReportCard}>
+                  <Printer size={20} style={{ marginRight: '8px' }} /> Preview Full Report Card
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -587,10 +593,14 @@ const Examination: React.FC = () => {
       <div className="hide-scrollbar" style={{ display: 'flex', gap: '12px', marginBottom: '32px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '16px', overflowX: 'auto' }}>
         
         <button className={activeTab === 'reports' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('reports')}><Award size={18} style={{whiteSpace:'nowrap'}}/> Report Cards</button>
-        <button className={activeTab === 'schedules' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('schedules')}><Calendar size={18} style={{whiteSpace:'nowrap'}}/> Schedules</button>
+        {role !== 'Teacher' && <button className={activeTab === 'schedules' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('schedules')}><Calendar size={18} style={{whiteSpace:'nowrap'}}/> Schedules</button>}
         <button className={activeTab === 'papers' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('papers')}><FileSignature size={18} style={{whiteSpace:'nowrap'}}/> Paper Builder</button>
-        <button className={activeTab === 'certificates' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('certificates')}><ShieldAlert size={18} style={{whiteSpace:'nowrap'}}/> Certificates</button>
-          <button className={activeTab === 'doc_builder' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('doc_builder')}><FileText size={18} style={{whiteSpace:'nowrap'}}/> Custom Docs</button>
+        {role !== 'Teacher' && (
+          <>
+            <button className={activeTab === 'certificates' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('certificates')}><ShieldAlert size={18} style={{whiteSpace:'nowrap'}}/> Certificates</button>
+            <button className={activeTab === 'doc_builder' ? 'btn-primary' : 'btn-secondary'} onClick={() => setActiveTab('doc_builder')}><FileText size={18} style={{whiteSpace:'nowrap'}}/> Custom Docs</button>
+          </>
+        )}
       </div>
 
         {activeTab !== 'doc_builder' && (
