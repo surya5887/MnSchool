@@ -4,6 +4,8 @@ import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { Download, TrendingUp, TrendingDown, BookOpen, Plus, Trash2, Edit } from 'lucide-react';
 import { getTransactions, addTransaction, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
+import { getStudents, type StudentData } from '../services/studentService';
+import { getClasses, type ClassData } from '../services/classService';
 import { getSchoolSettings } from '../services/settingsService';
 import Modal from '../components/Modal';
 
@@ -22,6 +24,8 @@ const MasterLedger: React.FC = () => {
   const [session, setSession] = useState(localStorage.getItem('activeSession') || '2023-2024');
   const [academicSessions, setAcademicSessions] = useState<string[]>([localStorage.getItem('activeSession') || '2023-2024']);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [students, setStudents] = useState<StudentData[]>([]);
+  const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterMonth, setFilterMonth] = useState('All');
   
@@ -64,9 +68,15 @@ const MasterLedger: React.FC = () => {
         if (!session) setSession(settings.academicSessions[0] || '2023-2024');
       }
       
-      const data = await getTransactions({ session });
+      const [data, stData, clData] = await Promise.all([
+        getTransactions({ session }),
+        getStudents(),
+        getClasses()
+      ]);
       data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       setTransactions(data);
+      setStudents(stData);
+      setClasses(clData);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching transactions', error);
@@ -77,6 +87,21 @@ const MasterLedger: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [session]);
+
+  const getExtendedDescription = (row: TransactionData) => {
+    let desc = row.description;
+    if (row.studentId) {
+      const student = students.find(s => s.id === row.studentId);
+      if (student) {
+        const studentClass = classes.find(c => c.id === student.classId || c.className === student.classId);
+        const className = studentClass ? studentClass.className : student.classId;
+        const section = student.sectionId ? `-${student.sectionId}` : '';
+        const rollNo = student.rollNumber ? ` (Roll: ${student.rollNumber})` : '';
+        desc = `${desc} - ${student.firstName} ${student.lastName} [${className}${section}]${rollNo}`;
+      }
+    }
+    return desc;
+  };
 
   const handleAddEntry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,7 +206,8 @@ const MasterLedger: React.FC = () => {
       const credit = t.type === 'Income' || t.type === 'Discount' ? t.amount : 0;
       const debit = t.type === 'Expense' || t.type === 'Charge' ? t.amount : 0;
       
-      const desc = t.description ? `"${t.description.replace(/"/g, '""')}"` : "";
+      const extDesc = getExtendedDescription(t);
+      const desc = extDesc ? `"${extDesc.replace(/"/g, '""')}"` : "";
       const cat = t.category ? `"${t.category.replace(/"/g, '""')}"` : "";
       
       return [dateStr, timeStr, t.type, cat, desc, credit, debit].join(",");
@@ -368,7 +394,7 @@ const MasterLedger: React.FC = () => {
                     {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td style={{ fontWeight: 500 }}>
-                    {row.description}
+                    {getExtendedDescription(row)}
                   </td>
                   <td style={{ textAlign: 'right', color: 'var(--success)', fontWeight: 600 }}>
                     {row.amtValue > 0 ? `₹${row.amtValue}` : '-'}
