@@ -467,12 +467,16 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <div onClick={() => setActiveTab('profile')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'profile' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'profile' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <User size={18} /> Profile Overview
         </div>
-        <div onClick={() => setActiveTab('finance')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'finance' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'finance' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <IndianRupee size={18} /> Financial Ledger
-        </div>
-        <div onClick={() => setActiveTab('documents')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'documents' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'documents' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <FileText size={18} /> Documents
-        </div>
+        {role !== 'Teacher' && (
+          <div onClick={() => setActiveTab('finance')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'finance' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'finance' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <IndianRupee size={18} /> Financial Ledger
+          </div>
+        )}
+        {role !== 'Teacher' && (
+          <div onClick={() => setActiveTab('documents')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'documents' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'documents' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FileText size={18} /> Documents
+          </div>
+        )}
       </div>
 
       {/* TAB CONTENT: PROFILE */}
