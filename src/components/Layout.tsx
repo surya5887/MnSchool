@@ -299,6 +299,7 @@ const Layout: React.FC = () => {
               <NavLink to="/attendance" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><CalendarCheck size={20} /> Daily Attendance</NavLink>
               <NavLink to="/timetable" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Clock size={20} /> Class Timetable</NavLink>
               <NavLink to="/students" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><Users size={20} /> Students Directory</NavLink>
+              <NavLink to="/exam" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><FileText size={20} /> Exams & Results</NavLink>
               <NavLink to={`/staff/${authUser.id}`} style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}><User size={20} /> My Profile & Ledger</NavLink>
             </>
           )}
