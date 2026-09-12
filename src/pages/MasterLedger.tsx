@@ -409,7 +409,7 @@ const MasterLedger: React.FC = () => {
         </div>
 
         <div className="glass-table-container">
-          <table style={{ width: '100%', minWidth: '600px' }}>
+          <table style={{ width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: '40px', textAlign: 'center' }}>
@@ -458,7 +458,7 @@ const MasterLedger: React.FC = () => {
                     {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td style={{ fontWeight: 500 }}>
-                    <div style={{ whiteSpace: 'normal', wordBreak: 'break-word', minWidth: '200px' }}>{row.description}</div>
+                    <div style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{row.description}</div>
                     {row.studentId && (() => {
                       const student = students.find(s => s.id === row.studentId);
                       if (student) {
