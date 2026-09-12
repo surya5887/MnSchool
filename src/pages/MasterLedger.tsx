@@ -426,11 +426,11 @@ const MasterLedger: React.FC = () => {
                       }}
                     />
                   </th>
-                  <th style={{ whiteSpace: 'nowrap' }}>Date</th>
+                  <th style={{ whiteSpace: 'normal' }}>Date</th>
                 <th>Description</th>
-                <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Credit (In)</th>
-                <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Debit (Out)</th>
-                <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Actions</th>
+                <th style={{ textAlign: 'right', whiteSpace: 'normal' }}>Credit (In)</th>
+                <th style={{ textAlign: 'right', whiteSpace: 'normal' }}>Debit (Out)</th>
+                <th style={{ textAlign: 'center', whiteSpace: 'normal' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -454,7 +454,7 @@ const MasterLedger: React.FC = () => {
                       }}
                     />
                   </td>
-                  <td style={{ fontSize: '0.9rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                  <td style={{ fontSize: '0.9rem', color: 'var(--text-muted)', whiteSpace: 'normal' }}>
                     {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td style={{ fontWeight: 500 }}>
