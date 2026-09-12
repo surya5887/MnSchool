@@ -391,7 +391,18 @@ const MasterLedger: React.FC = () => {
                value={endDate} 
                onChange={e => { setEndDate(e.target.value); setFilterMonth('All'); }} 
              />
-             <button className="btn-primary" onClick={() => setIsAddEntryOpen(true)}>
+             
+               {selectedIds.length > 0 && (
+                 <button 
+                   className="btn-primary" 
+                   style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}
+                   onClick={() => setIsBulkDeleteModalOpen(true)}
+                 >
+                   <Trash2 size={16}/> Delete Selected ({selectedIds.length})
+                 </button>
+               )}
+               <button className="btn-primary" onClick={() => setIsAddEntryOpen(true)}>
+
                <Plus size={16}/> Add Entry
              </button>
            </div>
@@ -401,7 +412,21 @@ const MasterLedger: React.FC = () => {
           <table style={{ width: '100%', minWidth: '600px' }}>
             <thead>
               <tr>
-                <th style={{ whiteSpace: 'nowrap' }}>Date</th>
+                <th style={{ width: '40px', textAlign: 'center' }}>
+                    <input 
+                      type="checkbox" 
+                      style={{ cursor: 'pointer' }}
+                      checked={displayedRows.length > 0 && selectedIds.length === displayedRows.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedIds(displayedRows.map(r => r.id as string));
+                        } else {
+                          setSelectedIds([]);
+                        }
+                      }}
+                    />
+                  </th>
+                  <th style={{ whiteSpace: 'nowrap' }}>Date</th>
                 <th>Description</th>
                 <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Credit (In)</th>
                 <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Debit (Out)</th>
