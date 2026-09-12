@@ -524,7 +524,7 @@ const MasterLedger: React.FC = () => {
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button className="icon-btn" onClick={() => { setEditTxnData(row); setIsEditModalOpen(true); }} style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                      <Edit2 size={16} />
+                      <Edit size={16} />
                     </button>
                     <button className="icon-btn" onClick={() => { setDeleteTxnId(row.id as string); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                       <Trash2 size={16} />
