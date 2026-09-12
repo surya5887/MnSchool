@@ -20,9 +20,7 @@ export default async function handler(req: any, res: any) {
       auth: state,
       printQRInTerminal: false,
       syncFullHistory: false, // very important for speed!
-      generateHighQualityLinkPreview: false,
-      agent: proxyAgent as any
-    });
+      generateHighQualityLinkPreview: false,});
 
     sock.ev.on('creds.update', saveCreds);
 
