@@ -16,7 +16,7 @@ export default async function handler(req: any, res: any) {
 
     const proxyAgent = process.env.WA_PROXY_URL ? new HttpsProxyAgent(process.env.WA_PROXY_URL) : undefined;
     const sock = makeWASocket({
-      agent: proxyAgent as any,
+      ...(proxyAgent ? { agent: proxyAgent } : {}),
       auth: state,
       printQRInTerminal: false,
       syncFullHistory: false
