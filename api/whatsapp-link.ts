@@ -66,7 +66,8 @@ export default async function handler(req: any, res: any) {
           }
         } else if (connection === 'open') {
           isConnected = true;
-          sendEvent({ status: 'success', message: 'WhatsApp Connected Successfully!' });
+          const phone = sock.user?.id ? '+' + sock.user.id.split(':')[0].split('@')[0] : '';
+          sendEvent({ status: 'success', message: 'WhatsApp Connected Successfully!', number: phone });
           
           setTimeout(() => {
             sock.end(undefined);
