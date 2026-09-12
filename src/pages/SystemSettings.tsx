@@ -73,7 +73,7 @@ const SystemSettings: React.FC = () => {
     { id: 'core', label: 'Core Setup', desc: 'School details & academic session', icon: <Building2 size={20} /> },
     { id: 'rbac', label: 'Roles & Permissions', desc: 'System access & restrictions', icon: <ShieldCheck size={20} /> },
     ...(authUser.role === 'Super Admin' ? [{ id: 'credentials', label: 'System Credentials', desc: 'Manage email & passwords', icon: <Lock size={20} /> }] : [])
-  , { id: 'whatsapp', label: 'WhatsApp API', desc: 'Serverless Automation', icon: <MessageSquare size={20} /> }
+  , { id: 'whatsapp', label: 'WhatsApp API', desc: 'Messaging & Alerts', icon: <MessageSquare size={20} /> }
     ];
     return (
       <>
