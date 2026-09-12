@@ -35,6 +35,7 @@ export default async function handler(req: any, res: any) {
 
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
+    const proxyAgent = process.env.WA_PROXY_URL ? new HttpsProxyAgent(process.env.WA_PROXY_URL) : undefined;
     let sock = makeWASocket({
       agent: proxyAgent as any,
       auth: state,
