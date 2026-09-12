@@ -68,6 +68,7 @@ const WhatsAppSetup: React.FC = () => {
           setLoading(false);
         } else if (data.status === 'success') {
           setConnected(true);
+          if (data.number) setConnectedNumber(data.number);
           setLoading(false);
           setQrCode(null);
           source.close();
@@ -199,6 +200,14 @@ const WhatsAppSetup: React.FC = () => {
                 </div>
                 <h3 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '1.4rem' }}>Successfully Linked</h3>
                 <p style={{ color: '#64748b', margin: '0 0 24px 0', fontSize: '0.95rem' }}>Your WhatsApp account is active and ready to automate notifications.</p>
+                
+                {connectedNumber && (
+                  <div style={{ display: 'inline-block', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 16px', borderRadius: '20px', color: '#166534', fontWeight: 600, marginBottom: '24px' }}>
+                    Connected to {connectedNumber}
+                  </div>
+                )}
+
+                <br />
                 <button className="btn-secondary" onClick={() => setShowPasswordModal(true)} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569' }}>
                   Link a Different Number
                 </button>
