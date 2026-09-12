@@ -46,6 +46,8 @@ const MasterLedger: React.FC = () => {
 
   // Delete State
   const [deleteTxnId, setDeleteTxnId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
@@ -121,6 +123,29 @@ const MasterLedger: React.FC = () => {
       fetchData();
     } catch (err) {
       console.error('Error adding entry', err);
+    }
+  };
+
+  
+  const handleBulkDelete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const isValid = await verifyAdminPassword(deletePassword);
+    if (!isValid) {
+      setDeleteError('Incorrect admin password.');
+      return;
+    }
+    
+    try {
+      for (const id of selectedIds) {
+        await deleteTransaction(id);
+      }
+      setIsBulkDeleteModalOpen(false);
+      setSelectedIds([]);
+      setDeletePassword('');
+      setDeleteError('');
+      fetchData();
+    } catch (err) {
+      console.error('Error bulk deleting transactions', err);
     }
   };
 
@@ -386,7 +411,7 @@ const MasterLedger: React.FC = () => {
             <tbody>
               {loading ? <Loader message="Loading ledger..." /> : displayedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No records found.</td>
+                  <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No records found.</td>
                 </tr>
               ) : displayedRows.map((row) => (
                 <tr key={row.id}>
@@ -419,7 +444,33 @@ const MasterLedger: React.FC = () => {
         </div>
       </div>
 
-      {/* Export Modal */}
+      
+        {/* Bulk Delete Modal */}
+        <Modal isOpen={isBulkDeleteModalOpen} onClose={() => { setIsBulkDeleteModalOpen(false); setDeletePassword(''); setDeleteError(''); }} title="Confirm Bulk Delete">
+          <form onSubmit={handleBulkDelete} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <p style={{ color: 'var(--danger)', fontWeight: 600, margin: 0 }}>
+              Warning: You are about to delete {selectedIds.length} records. This action cannot be undone.
+            </p>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password to Confirm</label>
+              <input 
+                type="password" 
+                required
+                className="glass-input" 
+                value={deletePassword} 
+                onChange={e => { setDeletePassword(e.target.value); setDeleteError(''); }} 
+                placeholder="Enter password" 
+              />
+              {deleteError && <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginTop: '8px' }}>{deleteError}</p>}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
+              <button type="button" className="glass-button" onClick={() => { setIsBulkDeleteModalOpen(false); setDeletePassword(''); setDeleteError(''); }}>Cancel</button>
+              <button type="submit" className="glass-button" style={{ background: 'var(--danger)', color: 'white', border: 'none' }}>Confirm Delete</button>
+            </div>
+          </form>
+        </Modal>
+
+        {/* Export Modal */}
       <Modal isOpen={isExportModalOpen} onClose={() => setIsExportModalOpen(false)} title="Export Master Ledger">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
