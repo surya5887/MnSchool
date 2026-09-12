@@ -1,7 +1,5 @@
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
 import { useFirebaseAuthState } from './useFirebaseAuthState.js';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-
 export const maxDuration = 60; // Extend Vercel timeout to 60 seconds
 
 export default async function handler(req: any, res: any) {
@@ -17,8 +15,6 @@ export default async function handler(req: any, res: any) {
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
     // Setup proxy if WA_PROXY_URL is defined in Vercel
-    const proxyAgent = process.env.WA_PROXY_URL ? new HttpsProxyAgent(process.env.WA_PROXY_URL) : undefined;
-
     // We only want to connect, send, and disconnect immediately.
     const sock = makeWASocket({
       auth: state,

@@ -1,5 +1,4 @@
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 import { collection, getDocs, deleteDoc } from 'firebase/firestore';
 import { dbNode as db } from './firebase-node.js';
@@ -35,16 +34,13 @@ export default async function handler(req: any, res: any) {
 
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
-    const proxyAgent = process.env.WA_PROXY_URL ? new HttpsProxyAgent(process.env.WA_PROXY_URL) : undefined;
-    const sockOpts: any = {
+    let sock = makeWASocket({
       auth: state,
       printQRInTerminal: false,
       syncFullHistory: false,
       generateHighQualityLinkPreview: false,
       browser: ['MN Public School ERP', 'Chrome', '1.0.0']
-    };
-    if (proxyAgent) sockOpts.agent = proxyAgent;
-    let sock = makeWASocket(sockOpts);
+    });
 
     sock.ev.on('creds.update', saveCreds);
 
