@@ -41,7 +41,13 @@ const Announcements: React.FC = () => {
     setError('');
     try {
       const response = await fetch('/api/whatsapp-groups');
-      const data = await response.json();
+      const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error('WhatsApp service is not connected. Please setup WhatsApp in System Settings.');
+        }
       if (!response.ok) throw new Error(data.error || 'Failed to fetch groups');
       setGroups(data.groups || []);
     } catch (err: any) {
@@ -114,7 +120,13 @@ useEffect(() => {
         if (lastWord && /^[a-zA-Z]+$/.test(lastWord)) {
           try {
             const res = await fetch(`https://inputtools.google.com/request?text=${lastWord}&itc=hi-t-i0-und&num=1`);
-            const data = await res.json();
+            const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error('WhatsApp service is not connected. Please setup WhatsApp in System Settings.');
+        }
             if (data[0] === 'SUCCESS' && data[1][0][1][0]) {
               words[lastWordIndex] = data[1][0][1][0];
               const newText = words.join('');
@@ -156,7 +168,13 @@ useEffect(() => {
         })
       });
 
-      const data = await response.json();
+      const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error('WhatsApp service is not connected. Please setup WhatsApp in System Settings.');
+        }
       
       if (!response.ok) {
         throw new Error(data.error || 'Failed to send messages');
