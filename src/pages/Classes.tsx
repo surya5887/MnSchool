@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { getClasses, type ClassData, getSequenceIndex, addClass, updateClass, deleteClass } from '../services/classService';
 import { getStaff, type StaffData } from '../services/staffService';
 import { getStudents, type StudentData } from '../services/studentService';
+import { verifyAdminPassword } from '../services/authService';
 import Modal from '../components/Modal';
 
 const Classes: React.FC = () => {
@@ -120,7 +121,8 @@ const Classes: React.FC = () => {
 
   const confirmDeleteClass = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deletePassword === 'admin123') {
+    const isValid = await verifyAdminPassword(deletePassword);
+    if (isValid) {
       try {
         if (classToDelete) {
           await deleteClass(classToDelete);
