@@ -293,22 +293,37 @@ const Classes: React.FC = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Class Teacher</label>
-              <select 
-                className="glass-input" 
-                value={newClassData.classTeacher} 
-                onChange={e => setNewClassData({...newClassData, classTeacher: e.target.value})}
-              >
-                <option value="">Select a Teacher</option>
-                {staffList.map(staff => (
-                  <option key={staff.id} value={staff.name}>{staff.name}</option>
-                ))}
-              </select>
+                <select 
+                  className="glass-input" 
+                  value={newClassData.classTeacher} 
+                  onChange={e => setNewClassData({...newClassData, classTeacher: e.target.value})}
+                >
+                  <option value="">Select a Teacher</option>
+                  {staffList.filter(s => s.role === 'Teacher' || s.role === 'Principal' || s.role === 'Vice Principal').map(staff => (
+                    <option key={staff.id} value={staff.name}>{staff.name}</option>
+                  ))}
+                </select>
             </div>
             <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
               <button type="button" className="btn-secondary" onClick={() => setClassModalOpen(false)}>Cancel</button>
               <button type="submit" className="btn-primary">{editingClassId ? "Update Class" : "Save Class"}</button>
             </div>
           </form>
+      </Modal>
+
+      <Modal isOpen={!!classToDelete} onClose={() => setClassToDelete(null)} title="Confirm Deletion">
+        <form onSubmit={confirmDeleteClass} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>Are you sure you want to delete this class? This action cannot be undone.</p>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>Admin Password</label>
+            <input type="password" value={deletePassword} onChange={e => setDeletePassword(e.target.value)} placeholder="Enter admin password to confirm" style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', outline: 'none' }} required />
+            {deleteError && <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginTop: '8px' }}>{deleteError}</p>}
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+            <button type="button" className="btn-secondary" onClick={() => setClassToDelete(null)}>Cancel</button>
+            <button type="submit" className="btn-primary" style={{ background: 'var(--danger)' }}>Delete Class</button>
+          </div>
+        </form>
       </Modal>
 
       <AnimatePresence>
