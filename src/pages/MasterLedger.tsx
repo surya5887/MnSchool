@@ -440,6 +440,20 @@ const MasterLedger: React.FC = () => {
                 </tr>
               ) : displayedRows.map((row) => (
                 <tr key={row.id}>
+                  <td style={{ textAlign: 'center' }}>
+                    <input 
+                      type="checkbox"
+                      style={{ cursor: 'pointer' }}
+                      checked={selectedIds.includes(row.id as string)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedIds(prev => [...prev, row.id as string]);
+                        } else {
+                          setSelectedIds(prev => prev.filter(id => id !== row.id));
+                        }
+                      }}
+                    />
+                  </td>
                   <td style={{ fontSize: '0.9rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                     {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
