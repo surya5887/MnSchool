@@ -83,7 +83,7 @@ export const runAutomatedBilling = async () => {
             description: `${monthName} ${currentYear} Base Fee`,
             studentId: student.id,
             chargeType: 'Base Fee'
-          });
+          }, true);
 
           let currentBalance = studentBalances.get(student.id) || 0;
           currentBalance += baseFee;
@@ -100,7 +100,7 @@ export const runAutomatedBilling = async () => {
                 description: `${monthName} ${currentYear} Transport/Bus Fee`,
                 studentId: student.id,
                 chargeType: 'Transport Fee'
-              });
+              }, true);
               currentBalance += tFee;
             }
           }

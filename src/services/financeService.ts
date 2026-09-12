@@ -22,7 +22,7 @@ export interface TransactionData {
   receiptNo?: number;
 }
 
-export const addTransaction = async (data: TransactionData) => {
+export const addTransaction = async (data: TransactionData, isAuto: boolean = false) => {
   try {
     data.createdAt = new Date().toISOString();
     const activeSession = localStorage.getItem('activeSession');
@@ -48,7 +48,7 @@ export const addTransaction = async (data: TransactionData) => {
     }
 
     const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), data as any);
-    await autoLog(data.type === "Charge" ? `Generated Due/Charge of ₹${data.amount}` : `Processed ${data.type} of ₹${data.amount}`);
+    await autoLog(data.type === "Charge" ? `Generated Due/Charge of ₹${data.amount}` : `Processed ${data.type} of ₹${data.amount}`, 'Success', isAuto);
     return docRef.id;
   } catch (error) {
     console.error("Error adding transaction: ", error);
