@@ -458,7 +458,22 @@ const MasterLedger: React.FC = () => {
                     {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td style={{ fontWeight: 500 }}>
-                    {getExtendedDescription(row)}
+                    <div style={{ whiteSpace: 'normal', wordBreak: 'break-word', minWidth: '200px' }}>{row.description}</div>
+                    {row.studentId && (() => {
+                      const student = students.find(s => s.id === row.studentId);
+                      if (student) {
+                        const studentClass = classes.find(c => c.id === student.classId || c.className === student.classId);
+                        const className = studentClass ? studentClass.className : student.classId;
+                        const section = student.sectionId ? `-${student.sectionId}` : '';
+                        const rollNo = student.rollNumber ? `(Roll: ${student.rollNumber})` : '';
+                        return (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--primary-color)', marginTop: '4px', fontWeight: 700, opacity: 0.9 }}>
+                            {student.firstName} {student.lastName} <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>[{className}{section}] {rollNo}</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </td>
                   <td style={{ textAlign: 'right', color: 'var(--success)', fontWeight: 600 }}>
                     {row.amtValue > 0 ? `₹${row.amtValue}` : '-'}
