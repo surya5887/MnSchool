@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QrCode, Lock, CheckCircle2, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -14,7 +16,31 @@ const WhatsAppSetup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
   const [connected, setConnected] = useState(false);
+  const [connectedNumber, setConnectedNumber] = useState<string | null>(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        const docRef = doc(db, 'whatsapp_auth', 'school_erp_creds');
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const dataStr = snap.data().data;
+          if (dataStr) {
+            const parsed = JSON.parse(dataStr);
+            if (parsed && parsed.me && parsed.me.id) {
+               const number = parsed.me.id.split(':')[0].split('@')[0];
+               setConnectedNumber('+' + number);
+               setConnected(true);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error checking whatsapp connection:", err);
+      }
+    };
+    checkConnection();
+  }, []);
   
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
