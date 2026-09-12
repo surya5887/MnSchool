@@ -22,17 +22,12 @@ const WhatsAppSetup: React.FC = () => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const docRef = doc(db, 'whatsapp_auth', 'school_erp_creds');
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-          const dataStr = snap.data().data;
-          if (dataStr) {
-            const parsed = JSON.parse(dataStr);
-            if (parsed && parsed.me && parsed.me.id) {
-               const number = parsed.me.id.split(':')[0].split('@')[0];
-               setConnectedNumber('+' + number);
-               setConnected(true);
-            }
+        const res = await fetch('/api/whatsapp-status');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.connected && data.number) {
+            setConnectedNumber(data.number);
+            setConnected(true);
           }
         }
       } catch (err) {
