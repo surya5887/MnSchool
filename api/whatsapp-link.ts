@@ -34,46 +34,50 @@ export default async function handler(req: any, res: any) {
 
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
-    let sock = makeWASocket({
-      auth: state,
-      printQRInTerminal: false,
-      syncFullHistory: false,
-      generateHighQualityLinkPreview: false,
-      browser: ['MN Public School ERP', 'Chrome', '1.0.0']
-    });
-
-    sock.ev.on('creds.update', saveCreds);
-
     let isConnected = false;
+    let sock: any = null;
 
-    sock.ev.on('connection.update', (update) => {
-      const { connection, lastDisconnect, qr } = update;
-      
-      if (qr) {
-        sendEvent({ status: 'qr', qr });
-      }
+    async function connectToWA() {
+      sock = makeWASocket({
+        auth: state,
+        printQRInTerminal: false,
+        syncFullHistory: false,
+        generateHighQualityLinkPreview: false,
+        browser: ['MN Public School ERP', 'Chrome', '1.0.0']
+      });
 
-      if (connection === 'close') {
-        const shouldReconnect = (lastDisconnect?.error as any)?.output?.statusCode !== DisconnectReason.loggedOut;
-        if (shouldReconnect) {
-          sendEvent({ status: 'info', message: 'Connection dropped, please refresh...' });
-        } else {
-          sendEvent({ status: 'error', message: 'Logged out. Please generate QR again.' });
-        }
-        res.end();
-      } else if (connection === 'open') {
-        isConnected = true;
-        sendEvent({ status: 'success', message: 'WhatsApp Connected Successfully!' });
+      sock.ev.on('creds.update', saveCreds);
+
+      sock.ev.on('connection.update', (update: any) => {
+        const { connection, lastDisconnect, qr } = update;
         
-        // Wait just a moment to ensure creds are saved before disconnecting
-        setTimeout(() => {
-          sock.end(undefined); // Close connection gracefully
-          res.end();
-        }, 3000);
-      }
-    });
+        if (qr) {
+          sendEvent({ status: 'qr', qr });
+        }
 
-    // Cleanup if client closes connection
+        if (connection === 'close') {
+          const shouldReconnect = (lastDisconnect?.error as any)?.output?.statusCode !== DisconnectReason.loggedOut;
+          if (shouldReconnect) {
+            sendEvent({ status: 'info', message: 'Finalizing pairing, please wait...' });
+            connectToWA(); // Internal reconnect without closing SSE
+          } else {
+            sendEvent({ status: 'error', message: 'Logged out. Please generate QR again.' });
+            res.end();
+          }
+        } else if (connection === 'open') {
+          isConnected = true;
+          sendEvent({ status: 'success', message: 'WhatsApp Connected Successfully!' });
+          
+          setTimeout(() => {
+            sock.end(undefined);
+            res.end();
+          }, 3000);
+        }
+      });
+    }
+
+    connectToWA();
+
     req.on('close', () => {
       if (!isConnected && sock) {
         sock.end(undefined);
