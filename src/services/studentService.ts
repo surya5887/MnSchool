@@ -64,6 +64,7 @@ export interface StudentData {
 
 export const addStudent = async (studentData: StudentData) => {
   try {
+    cachedStudents = null; // Invalidate cache
     studentData.createdAt = new Date().toISOString();
     studentData.status = studentData.status || 'Active';
     
@@ -99,23 +100,37 @@ export const addStudent = async (studentData: StudentData) => {
 
 export const getStudents = async (filters?: { classId?: string; sectionId?: string }) => {
   try {
+    const activeSession = localStorage.getItem('activeSession');
+    
+    if (cachedStudents && (Date.now() - lastFetchTime < CACHE_TTL)) {
+      let result = activeSession ? cachedStudents.filter(s => s.session === activeSession) : cachedStudents;
+      if (filters?.classId) result = result.filter(s => s.classId === filters.classId);
+      if (filters?.sectionId) result = result.filter(s => s.sectionId === filters.sectionId);
+      return result;
+    }
+
     let q = collection(db, STUDENTS_COLLECTION);
     const conditions = [];
     
-    const activeSession = localStorage.getItem('activeSession');
     if (activeSession) {
       conditions.push(where("session", "==", activeSession));
     }
-
-    if (filters?.classId) conditions.push(where("classId", "==", filters.classId));
-    if (filters?.sectionId) conditions.push(where("sectionId", "==", filters.sectionId));
     
     if (conditions.length > 0) {
       q = query(q, ...conditions) as any;
     }
     
     const querySnapshot = await getDocs(q as any);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as StudentData));
+    const allStudents = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as StudentData));
+    
+    cachedStudents = allStudents;
+    lastFetchTime = Date.now();
+    
+    let result = allStudents;
+    if (filters?.classId) result = result.filter(s => s.classId === filters.classId);
+    if (filters?.sectionId) result = result.filter(s => s.sectionId === filters.sectionId);
+    
+    return result;
   } catch (error) {
     console.error("Error fetching students: ", error);
     throw error;
@@ -139,6 +154,7 @@ export const getStudentById = async (id: string) => {
 
 export const updateStudent = async (id: string, updateData: Partial<StudentData>) => {
   try {
+    cachedStudents = null; // Invalidate cache
     if (updateData.password && !updateData.password.startsWith('$2a$') && !updateData.password.startsWith('$2b$')) {
       updateData.password = bcrypt.hashSync(updateData.password, 10);
     }
@@ -152,6 +168,7 @@ export const updateStudent = async (id: string, updateData: Partial<StudentData>
 
 export const deleteStudent = async (id: string) => {
   try {
+    cachedStudents = null; // Invalidate cache
     const docRef = doc(db, STUDENTS_COLLECTION, id);
     await deleteDoc(docRef);
   } catch (error) {

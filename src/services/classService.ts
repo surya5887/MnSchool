@@ -44,6 +44,7 @@ export const getSequenceIndex = (className: string) => {
 
 export const addClass = async (data: Omit<ClassData, 'id'>) => {
   try {
+    cachedClasses = null; // Invalidate cache
     const activeSession = localStorage.getItem('activeSession');
     if (activeSession && !data.session) {
       data.session = activeSession;
@@ -90,6 +91,10 @@ export const getClasses = async (): Promise<ClassData[]> => {
 
     // Smart sort
     classes.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+    
+    cachedClasses = classes;
+    lastClassFetch = Date.now();
+    
     return classes;
   } catch (error) {
     console.error("Error fetching classes: ", error);
@@ -99,6 +104,7 @@ export const getClasses = async (): Promise<ClassData[]> => {
 
 export const deleteClass = async (docId: string) => {
   try {
+    cachedClasses = null; // Invalidate cache
     await deleteDoc(doc(db, CLASSES_COLLECTION, docId));
   } catch (error) {
     console.error("Error deleting class: ", error);
@@ -108,6 +114,7 @@ export const deleteClass = async (docId: string) => {
 
 export const updateClass = async (id: string, data: Partial<ClassData>) => {
   try {
+    cachedClasses = null; // Invalidate cache
     const docRef = doc(db, CLASSES_COLLECTION, id);
     await updateDoc(docRef, data);
   } catch (error) {

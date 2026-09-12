@@ -46,6 +46,7 @@ export interface StaffData {
 
 export const addStaff = async (staffData: StaffData) => {
   try {
+    cachedStaff = null;
     staffData.createdAt = new Date().toISOString();
     staffData.salaryStatus = staffData.salaryStatus || 'Pending';
     
@@ -89,6 +90,7 @@ export const getStaff = async () => {
 
 export const updateStaffStatus = async (id: string, status: StaffData['status']) => {
   try {
+    cachedStaff = null;
     const docRef = doc(db, STAFF_COLLECTION, id);
     await updateDoc(docRef, { status });
   } catch (error) {
@@ -99,6 +101,7 @@ export const updateStaffStatus = async (id: string, status: StaffData['status'])
 
 export const updateStaffSalaryStatus = async (id: string, salaryStatus: 'Paid' | 'Pending') => {
   try {
+    cachedStaff = null;
     const docRef = doc(db, STAFF_COLLECTION, id);
     await updateDoc(docRef, { salaryStatus });
   } catch (error) {
@@ -109,6 +112,7 @@ export const updateStaffSalaryStatus = async (id: string, salaryStatus: 'Paid' |
 
 export const updateStaff = async (id: string, staffData: Partial<StaffData>) => {
   try {
+    cachedStaff = null;
     if (staffData.password && !staffData.password.startsWith('$2a$') && !staffData.password.startsWith('$2b$')) {
       staffData.password = bcrypt.hashSync(staffData.password, 10);
     }
@@ -136,6 +140,7 @@ export const getStaffById = async (id: string): Promise<StaffData | null> => {
 
 export const deleteStaff = async (id: string) => {
   try {
+    cachedStaff = null;
     const docRef = doc(db, STAFF_COLLECTION, id);
     await deleteDoc(docRef);
   } catch (error) {
