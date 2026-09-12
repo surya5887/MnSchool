@@ -197,8 +197,12 @@ const Dashboard: React.FC = () => {
     // Class Distribution
     const classCountMap = new Map();
     activeStudents.forEach(s => {
-      const cls = s.classId || 'Unassigned';
-      classCountMap.set(cls, (classCountMap.get(cls) || 0) + 1);
+      let clsName = 'Unassigned';
+      if (s.classId) {
+        const foundCls = classes.find(c => c.id === s.classId || c.className === s.classId);
+        clsName = foundCls ? foundCls.className : s.classId;
+      }
+      classCountMap.set(clsName, (classCountMap.get(clsName) || 0) + 1);
     });
     const classDistData = Array.from(classCountMap.entries()).map(([k, v]) => ({ name: k, Students: v })).sort((a, b) => b.Students - a.Students).slice(0, 8); // Top 8 classes
 
