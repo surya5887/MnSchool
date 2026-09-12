@@ -1,4 +1,5 @@
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 import { collection, getDocs, deleteDoc } from 'firebase/firestore';
 import { dbNode as db } from './firebase-node.js';
@@ -35,6 +36,7 @@ export default async function handler(req: any, res: any) {
     const { state, saveCreds } = await useFirebaseAuthState(sessionId);
     
     let sock = makeWASocket({
+      agent: proxyAgent as any,
       auth: state,
       printQRInTerminal: false,
       syncFullHistory: false,

@@ -1,4 +1,5 @@
 import makeWASocket, { DisconnectReason, delay } from '@whiskeysockets/baileys';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { useFirebaseAuthState } from './useFirebaseAuthState.js';
 
 export const maxDuration = 60; // Max timeout
@@ -19,7 +20,9 @@ export default async function handler(req: any, res: any) {
       return res.status(401).json({ error: 'WhatsApp not connected.' });
     }
 
+    const proxyAgent = process.env.WA_PROXY_URL ? new HttpsProxyAgent(process.env.WA_PROXY_URL) : undefined;
     const sock = makeWASocket({
+      agent: proxyAgent as any,
       auth: state,
       printQRInTerminal: false,
       syncFullHistory: false,
