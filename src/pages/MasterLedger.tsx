@@ -409,7 +409,8 @@ const MasterLedger: React.FC = () => {
         </div>
 
         <div className="glass-table-container">
-          <table style={{ width: '100%' }}>
+          <div className="desktop-table-view">
+            <table style={{ width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: '40px', textAlign: 'center' }}>
@@ -495,7 +496,75 @@ const MasterLedger: React.FC = () => {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+          </div>
+
+          <div className="mobile-card-view">
+            {loading ? <Loader message="Loading ledger..." /> : displayedRows.length === 0 ? (
+              <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No records found.</div>
+            ) : displayedRows.map((row) => (
+              <div key={row.id} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <input 
+                      type="checkbox"
+                      style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
+                      checked={selectedIds.includes(row.id as string)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedIds(prev => [...prev, row.id as string]);
+                        } else {
+                          setSelectedIds(prev => prev.filter(id => id !== row.id));
+                        }
+                      }}
+                    />
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      {new Date(row.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="icon-btn" onClick={() => { setEditTxnData(row); setIsEditModalOpen(true); }} style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                      <Edit2 size={16} />
+                    </button>
+                    <button className="icon-btn" onClick={() => { setDeleteTxnId(row.id as string); setIsDeleteModalOpen(true); }} style={{ color: 'var(--danger)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ fontWeight: 500, fontSize: '1rem', marginTop: '4px' }}>
+                  {row.description}
+                </div>
+                
+                {row.studentId && (() => {
+                  const student = students.find(s => s.id === row.studentId);
+                  if (student) {
+                    const studentClass = classes.find(c => c.id === student.classId || c.className === student.classId);
+                    const className = studentClass ? studentClass.className : student.classId;
+                    const section = student.sectionId ? `-${student.sectionId}` : '';
+                    const rollNo = student.rollNumber ? `(Roll: ${student.rollNumber})` : '';
+                    return (
+                      <div style={{ fontSize: '0.85rem', color: 'var(--primary-color)', fontWeight: 700, opacity: 0.9 }}>
+                        {student.firstName} {student.lastName} <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>[{className}{section}] {rollNo}</span>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--glass-border)' }}>
+                  <div>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block' }}>Credit (In)</span>
+                    <span style={{ color: 'var(--success)', fontWeight: 700, fontSize: '1.1rem' }}>{row.amtValue > 0 ? `₹${row.amtValue}` : '-'}</span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block' }}>Debit (Out)</span>
+                    <span style={{ color: 'var(--danger)', fontWeight: 700, fontSize: '1.1rem' }}>{row.amtValue < 0 ? `₹${Math.abs(row.amtValue)}` : '-'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
       </div>
 
       

@@ -854,3 +854,12 @@ tr:hover {
     border-radius: 8px;
   }
 }
+
+@media (max-width: 768px) {
+  .desktop-table-view { display: none !important; }
+  .mobile-card-view { display: flex !important; flex-direction: column; gap: 12px; }
+}
+@media (min-width: 769px) {
+  .desktop-table-view { display: block; }
+  .mobile-card-view { display: none !important; }
+}
