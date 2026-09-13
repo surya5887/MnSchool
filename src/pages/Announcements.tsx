@@ -180,13 +180,13 @@ useEffect(() => {
         throw new Error(data.error || 'Failed to send messages');
       }
 
-      toast.success(
-        <div>
-          <b>Broadcast Complete!</b>
-          <p style={{ margin: '4px 0 0', fontSize: '0.9em' }}>Delivered to {data.sentCount} out of {data.totalCount} groups.</p>
-        </div>,
-        { id: loadingToast, duration: 5000, icon: '??' }
-      );
+        toast.success(
+          <div>
+            <b>Broadcast Complete!</b>
+            <p style={{ margin: '4px 0 0', fontSize: '0.9em' }}>Delivered to {data.sent || 0} out of {data.total || 0} groups.</p>
+          </div>,
+          { id: loadingToast, duration: 5000 }
+        );
       
       setMessage('');
       setSelectedGroups([]);
