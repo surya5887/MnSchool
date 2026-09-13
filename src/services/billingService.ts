@@ -2,10 +2,16 @@ import { getStudents, updateStudent } from './studentService';
 import { getClasses } from './classService';
 import { getVehicles } from './transportService';
 import { addTransaction, getTransactions } from './financeService';
-
+import { getSchoolSettings } from './settingsService';
 
 export const runAutomatedBilling = async () => {
   try {
+    const settings = await getSchoolSettings();
+    const isAutoFee = settings?.autoFeeEnabled ?? false;
+    const isAutoTransport = settings?.autoTransportFeeEnabled ?? false;
+
+    if (!isAutoFee && !isAutoTransport) return 0;
+
     const [students, classes, vehicles, txns] = await Promise.all([
       getStudents(),
       getClasses(),
@@ -65,8 +71,10 @@ export const runAutomatedBilling = async () => {
       }
 
       // --- 1. BASE FEE LOGIC ---
-            if (!billedMonths.includes(currentMonthKey)) {
+      if (!billedMonths.includes(currentMonthKey)) {
         let baseFee = classMap.get(student.classId) || 0;
+        let generated = false;
+        let currentBalance = studentBalances.get(student.id) || 0;
         
         // Apply discount if any
         if (baseFee > 0 && student.discountPercent && student.discountPercent > 0) {
@@ -74,7 +82,7 @@ export const runAutomatedBilling = async () => {
           baseFee = Math.max(0, baseFee - discount);
         }
         
-        if (baseFee > 0) {
+        if (baseFee > 0 && isAutoFee) {
           await addTransaction({
             type: 'Charge',
             category: 'Monthly Fee',
@@ -84,31 +92,32 @@ export const runAutomatedBilling = async () => {
             studentId: student.id,
             chargeType: 'Base Fee'
           }, true);
-
-          let currentBalance = studentBalances.get(student.id) || 0;
           currentBalance += baseFee;
+          generated = true;
+        }
 
-          // Process Transport Fee if applicable
-          if (student.transportRoute && student.transportRoute !== 'Not Required' && student.transportRoute !== '') {
-            const tFee = transportMap.get(student.transportRoute) || 0;
-            if (tFee > 0) {
-              await addTransaction({
-                type: 'Charge',
-                category: 'Transport Fee',
-                amount: tFee,
-                date: today.toISOString(),
-                description: `${monthName} ${currentYear} Transport/Bus Fee`,
-                studentId: student.id,
-                chargeType: 'Transport Fee'
-              }, true);
-              currentBalance += tFee;
-            }
+        // Process Transport Fee if applicable
+        if (student.transportRoute && student.transportRoute !== 'Not Required' && student.transportRoute !== '' && isAutoTransport) {
+          const tFee = transportMap.get(student.transportRoute) || 0;
+          if (tFee > 0) {
+            await addTransaction({
+              type: 'Charge',
+              category: 'Transport Fee',
+              amount: tFee,
+              date: today.toISOString(),
+              description: `${monthName} ${currentYear} Transport/Bus Fee`,
+              studentId: student.id,
+              chargeType: 'Transport Fee'
+            }, true);
+            currentBalance += tFee;
+            generated = true;
           }
+        }
 
+        if (generated) {
           const updatedBilledMonths = [...billedMonths, currentMonthKey];
           await updateStudent(student.id, { billedMonths: updatedBilledMonths });
           generatedCount++;
-                    
           studentBalances.set(student.id, currentBalance);
         }
       }

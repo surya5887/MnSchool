@@ -61,6 +61,22 @@ const Dashboard: React.FC = () => {
 
   const [timeRange, setTimeRange] = useState('30d');
 
+  const handleToggleAutoFee = async () => {
+    if (!settings) return;
+    const newVal = !(settings.autoFeeEnabled ?? false);
+    const updated = { ...settings, autoFeeEnabled: newVal };
+    setSettings(updated);
+    await saveSchoolSettings(updated);
+  };
+
+  const handleToggleAutoTransport = async () => {
+    if (!settings) return;
+    const newVal = !(settings.autoTransportFeeEnabled ?? false);
+    const updated = { ...settings, autoTransportFeeEnabled: newVal };
+    setSettings(updated);
+    await saveSchoolSettings(updated);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -280,16 +296,34 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '40px', paddingTop: '16px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div>
-          <h1 className="page-title">Dashboard Overview</h1>
-          <p className="page-subtitle" style={{ margin: 0 }}>
-              {role === 'Teacher' 
-                ? "Welcome back, manage your classes, attendance and students." 
-                : "Welcome back, here's what's happening at MN Public School today."}
-            </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '20px' }}>
+          <div>
+            <h1 className="page-title">Dashboard Overview</h1>
+            <p className="page-subtitle" style={{ margin: 0 }}>
+                {role === 'Teacher' 
+                  ? "Welcome back, manage your classes, attendance and students." 
+                  : "Welcome back, here's what's happening at MN Public School today."}
+              </p>
+          </div>
+          
+          {role !== 'Teacher' && settings && (
+            <div style={{ display: 'flex', gap: '20px', background: 'white', padding: '16px 24px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--glass-border)', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#475569' }}>Auto Monthly Fee</span>
+                <div onClick={handleToggleAutoFee} style={{ width: '44px', height: '24px', background: settings.autoFeeEnabled ? '#16a34a' : '#cbd5e1', borderRadius: '20px', position: 'relative', cursor: 'pointer', transition: 'background 0.3s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}>
+                  <div style={{ width: '20px', height: '20px', background: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: settings.autoFeeEnabled ? '22px' : '2px', transition: 'left 0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+                </div>
+              </div>
+              <div style={{ width: '1px', height: '30px', background: '#e2e8f0' }}></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#475569' }}>Auto Transport Fee</span>
+                <div onClick={handleToggleAutoTransport} style={{ width: '44px', height: '24px', background: settings.autoTransportFeeEnabled ? '#16a34a' : '#cbd5e1', borderRadius: '20px', position: 'relative', cursor: 'pointer', transition: 'background 0.3s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}>
+                  <div style={{ width: '20px', height: '20px', background: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: settings.autoTransportFeeEnabled ? '22px' : '2px', transition: 'left 0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
       {role !== 'Teacher' && (
         <div className="dashboard-grid" style={{ marginBottom: "40px" }}>

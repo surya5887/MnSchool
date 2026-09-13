@@ -22,6 +22,8 @@ export interface SchoolSettingsData {
   feeReminderTemplate?: string;
   feeReceiptTemplate?: string;
   lastBillingMonth?: string;
+  autoFeeEnabled?: boolean;
+  autoTransportFeeEnabled?: boolean;
 }
 
 export const getSchoolSettings = async () => {
