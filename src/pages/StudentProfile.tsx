@@ -309,6 +309,17 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
     setIsEditing(!isEditing);
   };
 
+  const handleToggleStatus = async () => {
+    if (!id || !student || !['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role)) return;
+    try {
+      const newStatus = student.status === 'Active' ? 'Inactive' : 'Active';
+      await updateStudent(id, { status: newStatus });
+      setStudent({ ...student, status: newStatus });
+    } catch (e) {
+      console.error("Error toggling status", e);
+    }
+  };
+
   const handleSaveProfile = async () => {
     if (!id || !student) return;
     setSaving(true);
@@ -436,7 +447,13 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <div style={{ flex: 1, minWidth: '250px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
             <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 800, color: '#0f172a' }}>{student.firstName} {student.lastName}</h1>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#166534' : '#991b1b', padding: '6px 14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700 }}>
+            <span 
+              onClick={handleToggleStatus}
+              title="Click to toggle status"
+              style={{ cursor: ['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '6px', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#166534' : '#991b1b', padding: '6px 14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, transition: '0.2s', userSelect: 'none' }}
+              onMouseEnter={(e) => { if (['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role)) e.currentTarget.style.transform = 'scale(1.05)' }}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
               {student.status === 'Active' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />} {student.status || 'Active'}
             </span>
           </div>
