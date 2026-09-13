@@ -158,15 +158,15 @@ useEffect(() => {
     setSending(true);
     const loadingToast = toast.loading(`Sending to ${selectedGroups.length} groups...`);
 
-    try {
-      const response = await fetch('/api/whatsapp-send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jids: selectedGroups,
-          message: message.trim()
-        })
-      });
+      try {
+        const response = await fetch('/api/whatsapp-broadcast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            groupJids: selectedGroups,
+            message: message.trim()
+          })
+        });
 
       const text = await response.text();
         let data;
