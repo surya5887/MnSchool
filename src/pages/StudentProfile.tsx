@@ -447,15 +447,21 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <div style={{ flex: 1, minWidth: '250px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
             <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 800, color: '#0f172a' }}>{student.firstName} {student.lastName}</h1>
-            <span 
-              onClick={handleToggleStatus}
-              title="Click to toggle status"
-              style={{ cursor: ['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '6px', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#166534' : '#991b1b', padding: '6px 14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, transition: '0.2s', userSelect: 'none' }}
-              onMouseEnter={(e) => { if (['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role)) e.currentTarget.style.transform = 'scale(1.05)' }}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              {student.status === 'Active' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />} {student.status || 'Active'}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#166534' : '#991b1b', padding: '6px 14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, userSelect: 'none' }}>
+                {student.status === 'Active' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />} {student.status || 'Active'}
+              </span>
+              
+              {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
+                <div 
+                  onClick={handleToggleStatus} 
+                  style={{ width: '44px', height: '24px', background: student.status === 'Active' ? '#16a34a' : '#cbd5e1', borderRadius: '20px', position: 'relative', cursor: 'pointer', transition: 'background 0.3s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}
+                  title={student.status === 'Active' ? 'Click to Deactivate' : 'Click to Activate'}
+                >
+                  <div style={{ width: '20px', height: '20px', background: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: student.status === 'Active' ? '22px' : '2px', transition: 'left 0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+                </div>
+              )}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <span style={{ background: '#e0e7ff', color: '#3730a3', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
