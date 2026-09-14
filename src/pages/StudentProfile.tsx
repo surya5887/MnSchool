@@ -7,6 +7,7 @@ import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit,
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
+import { generateNativePdfReceiptBase64 } from '../lib/pdfGenerator';
 import FeeReceiptPrintView from '../components/FeeReceiptPrintView';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -187,39 +188,14 @@ const StudentProfile: React.FC = () => {
   const [sendingTxnId, setSendingTxnId] = useState<string | null>(null);
 
   const generatePdfBase64 = async (txn: any): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      setPdfTransaction(txn);
-      setTimeout(async () => {
-        if (!receiptPdfRef.current) {
-          setPdfTransaction(null);
-          return reject(new Error('Failed to render PDF'));
-        }
-        try {
-          const canvas = await html2canvas(receiptPdfRef.current, { 
-            scale: 1, 
-            useCORS: true,
-            logging: false
-          });
-          if (canvas.width === 0 || canvas.height === 0) {
-             throw new Error('Canvas rendering failed (zero width/height)');
-          }
-          const imgData = canvas.toDataURL('image/jpeg', 0.8);
-          if (imgData === 'data:,') {
-             throw new Error('Failed to generate image data from canvas');
-          }
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-          const base64 = pdf.output('datauristring');
-          setPdfTransaction(null);
-          resolve(base64);
-        } catch (err) {
-          console.error("PDF Gen Error:", err);
-          setPdfTransaction(null);
-          reject(err);
-        }
-      }, 800); // 800ms delay to ensure component and images load fully
+    return new Promise(async (resolve, reject) => {
+      try {
+        const base64 = await generateNativePdfReceiptBase64(student, txn, studentClass?.className || student.classId || 'Unknown', await getSchoolSettings());
+        resolve(base64);
+      } catch (err) {
+        console.error("PDF Gen Error:", err);
+        reject(err);
+      }
     });
   };
 
@@ -1169,18 +1145,6 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             transaction={printTransaction} 
             classNameStr={studentClass?.className || student.classId || 'Unknown'} 
           />
-        )}
-        
-        {pdfTransaction && (
-          <div id="pdf-receipt-container" style={{ position: 'absolute', top: 0, left: 0, zIndex: -9999, pointerEvents: 'none' }}>
-            <div ref={receiptPdfRef} style={{ width: '210mm', background: 'white' }}>
-              <FeeReceiptPrintView 
-                student={student} 
-                transaction={pdfTransaction} 
-                classNameStr={studentClass?.className || student.classId || 'Unknown'} 
-              />
-            </div>
-          </div>
         )}
       </motion.div>
   );
