@@ -195,8 +195,20 @@ const StudentProfile: React.FC = () => {
           return reject(new Error('Failed to render PDF'));
         }
         try {
-          const canvas = await html2canvas(receiptPdfRef.current, { scale: 2, useCORS: true });
+          const canvas = await html2canvas(receiptPdfRef.current, { 
+            scale: 2, 
+            useCORS: true,
+            logging: false,
+            windowWidth: document.documentElement.offsetWidth,
+            windowHeight: document.documentElement.offsetHeight
+          });
+          if (canvas.width === 0 || canvas.height === 0) {
+             throw new Error('Canvas rendering failed (zero width/height)');
+          }
           const imgData = canvas.toDataURL('image/png');
+          if (imgData === 'data:,') {
+             throw new Error('Failed to generate image data from canvas');
+          }
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
           const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
@@ -205,6 +217,7 @@ const StudentProfile: React.FC = () => {
           setPdfTransaction(null);
           resolve(base64);
         } catch (err) {
+          console.error("PDF Gen Error:", err);
           setPdfTransaction(null);
           reject(err);
         }
@@ -1155,7 +1168,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         )}
         
         {pdfTransaction && (
-          <div style={{ position: 'absolute', top: '-10000px', left: '-10000px', pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -9999, pointerEvents: 'none' }}>
             <div ref={receiptPdfRef} style={{ width: '800px', background: 'white' }}>
               <FeeReceiptPrintView 
                 student={student} 
