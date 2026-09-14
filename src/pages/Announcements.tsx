@@ -481,22 +481,47 @@ useEffect(() => {
           <Settings2 size={22} color="#f59e0b" /> Automated Fee Reminder Template
         </h2>
         <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '24px', lineHeight: '1.5' }}>
-          This exact message will be dynamically personalized and sent to parents. You can use placeholders like <b>{`{{name}}`}</b> for student name and <b>{`{{due}}`}</b> for the due amount.
+          Configure your automated message templates below.
         </p>
         
-        <textarea 
-          ref={templateRef}
-          value={feeTemplate}
-          onChange={(e) => setFeeTemplate(e.target.value)}
-          placeholder="Dear Parent, this is a reminder that fees are due for the current month..."
-          style={{ 
-            width: '100%', minHeight: '120px', padding: '20px', borderRadius: '16px', 
-            boxSizing: 'border-box', resize: 'vertical', fontSize: '1rem',
-            border: '2px solid #e2e8f0', background: '#fafafa', outline: 'none', color: '#334155'
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#fbbf24'}
-          onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
-        />
+        <div style={{ marginBottom: '24px' }}>
+          <h4 style={{ margin: '0 0 8px 0', color: '#1e293b' }}>Fee Reminder Template</h4>
+          <p style={{ margin: '0 0 16px 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            This exact message will be dynamically personalized and sent to parents. You can use placeholders like <b>{`{{name}}`}</b> for student name and <b>{`{{due}}`}</b> for the due amount.
+          </p>
+          <textarea 
+            ref={templateRef}
+            value={feeTemplate}
+            onChange={(e) => setFeeTemplate(e.target.value)}
+            placeholder="Dear Parent, this is a reminder that fees are due for the current month..."
+            style={{ 
+              width: '100%', minHeight: '120px', padding: '20px', borderRadius: '16px', 
+              boxSizing: 'border-box', resize: 'vertical', fontSize: '1rem',
+              border: '2px solid #e2e8f0', background: '#fafafa', outline: 'none', color: '#334155'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#fbbf24'}
+            onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+          />
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <h4 style={{ margin: '0 0 8px 0', color: '#1e293b' }}>Payment Receipt Template</h4>
+          <p style={{ margin: '0 0 16px 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            This message will be sent along with the payment slip. Placeholders: <b>{`{{name}}`}</b> (student name), <b>{`{{amount}}`}</b> (paid amount).
+          </p>
+          <textarea 
+            value={receiptTemplate}
+            onChange={(e) => setReceiptTemplate(e.target.value)}
+            placeholder="Dear Parent, we have received a fee payment of Rs..."
+            style={{ 
+              width: '100%', minHeight: '120px', padding: '20px', borderRadius: '16px', 
+              boxSizing: 'border-box', resize: 'vertical', fontSize: '1rem',
+              border: '2px solid #e2e8f0', background: '#fafafa', outline: 'none', color: '#334155'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#fbbf24'}
+            onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+          />
+        </div>
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
           <button 
@@ -511,7 +536,7 @@ useEffect(() => {
             }}
           >
             {isSavingTemplate ? <Loader2 size={18} className="spin" /> : null}
-            {isSavingTemplate ? 'Saving...' : 'Save Default Template'}
+            {isSavingTemplate ? 'Saving...' : 'Save Templates'}
           </button>
         </div>
       </div>

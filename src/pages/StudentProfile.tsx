@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock, Send } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
@@ -14,6 +14,7 @@ import Cropper from 'react-easy-crop';
 import { getTransactions, addTransaction, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
 import Modal from '../components/Modal';
+import toast from 'react-hot-toast';
 
 const getISTDateTimeLocalString = () => {
   const now = new Date();
@@ -183,6 +184,53 @@ const StudentProfile: React.FC = () => {
   }, [id]);
 
   
+  const [isSendingWA, setIsSendingWA] = useState(false);
+
+  const handleSendWhatsAppReceipt = async (txn: any) => {
+    if (!student.fatherPhone && !student.phone) {
+      toast.error('No contact number available for student.');
+      return;
+    }
+    
+    setIsSendingWA(true);
+    try {
+      const settings = await getSchoolSettings();
+      let template = settings?.feeReceiptTemplate || `Dear Parent,\nWe have received a fee payment of Rs. {{amount}} for your ward {{name}}.\nPlease find the attached receipt.\nThank you.\nMN Public School`;
+      
+      // Replace placeholders
+      let message = template
+        .replace(/{{amount}}/g, txn.amount.toString())
+        .replace(/{{name}}/g, `${student.firstName} ${student.lastName}`);
+      
+      // Add transaction details
+      message += `\n\n*Receipt Details:*`;
+      message += `\nDate: ${new Date(txn.date).toLocaleDateString()}`;
+      message += `\nDescription: ${txn.description}`;
+      message += `\nPaid: ₹${txn.amount}`;
+
+      const phone = student.fatherPhone || student.phone;
+      const formattedPhone = phone.startsWith('91') ? phone : `91${phone}`;
+
+      const response = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: formattedPhone,
+          message: message
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to send WhatsApp message');
+      
+      toast.success('Receipt sent via WhatsApp successfully!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send message');
+    } finally {
+      setIsSendingWA(false);
+    }
+  };
+
   const handlePrintReceipt = (txn: any) => {
     setPrintTransaction(txn);
     setTimeout(() => {
@@ -575,7 +623,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
       {/* TAB CONTENT: FINANCE */}
       {activeTab === 'finance' && (
         <div className="glass-panel" style={{ padding: '32px', marginBottom: '40px', background: 'white' }}>
-          <div className="flex-responsive" style={{ marginBottom: "32px" }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginBottom: "32px" }}>
             <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
               <div style={{ background: '#dcfce7', padding: '10px', borderRadius: '12px' }}><IndianRupee size={24} color="#16a34a" /></div> Financial Ledger
             </h3>
@@ -622,7 +670,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             </select>
           </div>
 
-          <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+          <div className="glass-table-container" style={{ maxHeight: '400px', overflowY: 'auto', overflowX: 'auto', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
             <table style={{ width: '100%', minWidth: '700px' }}>
               <thead style={{ position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }}>
                 <tr>
@@ -649,11 +697,18 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                       <td style={{ color: '#ef4444', fontWeight: row.type === 'Charge' ? 700 : 400, padding: '16px' }}>{row.type === 'Charge' ? `₹${row.amount}` : '-'}</td>
                       <td style={{ color: '#10b981', fontWeight: row.type !== 'Charge' ? 700 : 400, padding: '16px' }}>{row.type !== 'Charge' ? `₹${row.amount}` : '-'}</td>
                       <td style={{ padding: '16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {row.type !== 'Charge' && (
-                            <button onClick={() => handlePrintReceipt(row)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600 }}>
-                              <Printer size={14} /> Receipt
-                            </button>
+                            <>
+                              <button onClick={() => handlePrintReceipt(row)} style={{ background: '#e0e7ff', color: '#4f46e5', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                <Printer size={14} /> Receipt
+                              </button>
+                              {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
+                                <button onClick={() => handleSendWhatsAppReceipt(row)} disabled={isSendingWA} style={{ background: '#dcfce7', color: '#16a34a', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: isSendingWA ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, opacity: isSendingWA ? 0.7 : 1 }}>
+                                  <Send size={14} /> {isSendingWA ? 'Sending...' : 'Send'}
+                                </button>
+                              )}
+                            </>
                           )}
                           {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && row && (
                               <>
