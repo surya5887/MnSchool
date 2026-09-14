@@ -196,21 +196,21 @@ const StudentProfile: React.FC = () => {
         }
         try {
           const canvas = await html2canvas(receiptPdfRef.current, { 
-            scale: 2, 
+            scale: 1, 
             useCORS: true,
             logging: false
           });
           if (canvas.width === 0 || canvas.height === 0) {
              throw new Error('Canvas rendering failed (zero width/height)');
           }
-          const imgData = canvas.toDataURL('image/png');
+          const imgData = canvas.toDataURL('image/jpeg', 0.8);
           if (imgData === 'data:,') {
              throw new Error('Failed to generate image data from canvas');
           }
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
           const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
           const base64 = pdf.output('datauristring');
           setPdfTransaction(null);
           resolve(base64);
@@ -251,19 +251,25 @@ const StudentProfile: React.FC = () => {
       // Generate PDF
       const base64Pdf = await generatePdfBase64(txn);
 
-      const response = await fetch('/api/send-message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: formattedPhone,
-          message: message,
-          base64Pdf: base64Pdf,
-          pdfName: `Receipt_${txn.id}.pdf`
-        })
-      });
+        const response = await fetch('/api/send-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: formattedPhone,
+            message: message,
+            base64Pdf: base64Pdf,
+            pdfName: `Receipt_${txn.id}.pdf`
+          })
+        });
+  
+        let data;
+        try {
+          data = await response.json();
+        } catch (e) {
+          throw new Error(response.status === 413 ? 'PDF is too large to send' : 'Server error: Invalid JSON response');
+        }
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to send WhatsApp message');
+        if (!response.ok) throw new Error(data?.error || 'Failed to send WhatsApp message');
       
       toast.success('Receipt sent via WhatsApp successfully!');
     } catch (err: any) {
