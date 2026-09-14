@@ -79,8 +79,9 @@ export default async function handler(req: any, res: any) {
       await sock.sendMessage(formattedPhone, { text: message });
     }
     
-    // Disconnect so Vercel can sleep
-    sock.ws.close();
+    // Give it a moment to flush the TCP buffer before closing
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    sock.end(undefined);
     
     return res.status(200).json({ success: true, message: 'Message sent' });
   } catch (error: any) {

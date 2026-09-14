@@ -209,7 +209,9 @@ const StudentProfile: React.FC = () => {
       message += `\nDescription: ${txn.description}`;
       message += `\nPaid: ₹${txn.amount}`;
 
-      const formattedPhone = phone.startsWith('91') ? phone : `91${phone}`;
+      let cleanPhone = phone.replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
+      const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
       const response = await fetch('/api/send-message', {
         method: 'POST',
