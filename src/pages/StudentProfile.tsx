@@ -65,9 +65,9 @@ const InfoBadge = ({ icon, bg, label, value, wrapText = false }: { icon: React.R
     <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
       {icon}
     </div>
-    <div style={{ overflow: 'hidden' }}>
-      <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
-      <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 700, whiteSpace: wrapText ? 'normal' : 'nowrap', overflow: wrapText ? 'visible' : 'hidden', textOverflow: wrapText ? 'clip' : 'ellipsis', wordBreak: wrapText ? 'break-word' : 'normal' }}>{value || 'N/A'}</div>
+    <div style={{ overflow: 'hidden', minWidth: 0 }}>
+      <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={label}>{label}</div>
+      <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 700, whiteSpace: wrapText ? 'normal' : 'nowrap', overflow: wrapText ? 'visible' : 'hidden', textOverflow: wrapText ? 'clip' : 'ellipsis', wordBreak: wrapText ? 'break-word' : 'normal' }} title={typeof value === 'string' ? value : undefined}>{value || 'N/A'}</div>
     </div>
   </div>
 );
@@ -511,7 +511,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             <h3 style={{ margin: '0 0 24px 0', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem' }}>
               <div style={{ background: '#e0e7ff', padding: '8px', borderRadius: '10px' }}><GraduationCap size={20} color="#4f46e5" /></div> Academic Details
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
               <InfoBadge icon={<Calendar size={20} color="#0284c7" />} bg="#e0f2fe" label="Admission Date" value={student.admissionDate ? new Date(student.admissionDate).toLocaleDateString() : ''} />
               <InfoBadge icon={<CheckCircle size={20} color="#16a34a" />} bg="#dcfce7" label="Admission Type" value={student.admissionType} />
               <InfoBadge icon={<Clock size={20} color="#d946ef" />} bg="#fae8ff" label="Session" value={student.session} />
@@ -525,7 +525,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             <h3 style={{ margin: '0 0 24px 0', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem' }}>
               <div style={{ background: '#fae8ff', padding: '8px', borderRadius: '10px' }}><User size={20} color="#c026d3" /></div> Personal Details
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
               <InfoBadge icon={<Calendar size={20} color="#f59e0b" />} bg="#fef3c7" label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString() + calculateAge(student.dob) : ''} />
               <InfoBadge icon={<Users size={20} color="#8b5cf6" />} bg="#ede9fe" label="Gender" value={student.gender} />
               <InfoBadge icon={<Shield size={20} color="#10b981" />} bg="#d1fae5" label="Religion" value={student.religion} />
@@ -736,7 +736,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                 {/* Academic Section */}
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Academic Details</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
                     <div><label>Class ID</label><input className="glass-input" value={editData.classId || ''} onChange={e => setEditData({...editData, classId: e.target.value})} /></div>
                     <div><label>Section</label><input className="glass-input" value={editData.sectionId || ''} onChange={e => setEditData({...editData, sectionId: e.target.value})} /></div>
                     <div><label>Roll Number</label><input type="number" className="glass-input" value={editData.rollNumber || ''} onChange={e => setEditData({...editData, rollNumber: Number(e.target.value)})} /></div>
@@ -757,7 +757,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                 {/* Personal Section */}
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Personal Details</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
                     <div><label>First Name</label><input className="glass-input" value={editData.firstName || ''} onChange={e => setEditData({...editData, firstName: e.target.value})} /></div>
                     <div><label>Last Name</label><input className="glass-input" value={editData.lastName || ''} onChange={e => setEditData({...editData, lastName: e.target.value})} /></div>
                     <div><label>Date of Birth</label><input type="date" className="glass-input" value={editData.dob || ''} onChange={e => setEditData({...editData, dob: e.target.value})} /></div>
