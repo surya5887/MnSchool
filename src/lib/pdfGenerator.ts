@@ -52,18 +52,18 @@ export const generateNativePdfReceiptBase64 = async (
   doc.setTextColor(185, 28, 28);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
-  doc.text(schoolName, marginLeft + 35, marginTop + 8);
+  doc.text(String(schoolName), marginLeft + 35, marginTop + 8);
   
   doc.setTextColor(30, 58, 138);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text(recognitionText, marginLeft + 35, marginTop + 15);
+  doc.text(String(recognitionText), marginLeft + 35, marginTop + 15);
   
   doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.text(`Email: ${email}   |   Mobile No.: ${phone}`, marginLeft + 35, marginTop + 22);
-  doc.text(address, marginLeft + 35, marginTop + 28);
+  doc.text(String(address), marginLeft + 35, marginTop + 28);
 
   // Title
   doc.setTextColor(30, 58, 138);
@@ -83,12 +83,12 @@ export const generateNativePdfReceiptBase64 = async (
   doc.setFont("helvetica", "bold");
   doc.text("Receipt No:", col1X, y);
   doc.setFont("helvetica", "normal");
-  doc.text(transaction.receiptNo || transaction.id?.substring(0, 8).toUpperCase(), col1X + 25, y);
+  doc.text(String(transaction.receiptNo || transaction.id?.substring(0, 8).toUpperCase()), col1X + 25, y);
   
   doc.setFont("helvetica", "bold");
   doc.text("Class:", col2X, y);
   doc.setFont("helvetica", "normal");
-  doc.text(classNameStr, col2X + 25, y);
+  doc.text(String(classNameStr), col2X + 25, y);
   y += 7;
 
   doc.setFont("helvetica", "bold");
@@ -99,7 +99,7 @@ export const generateNativePdfReceiptBase64 = async (
   doc.setFont("helvetica", "bold");
   doc.text("Roll No:", col2X, y);
   doc.setFont("helvetica", "normal");
-  doc.text(student.rollNumber || 'N/A', col2X + 25, y);
+  doc.text(String(student.rollNumber || 'N/A'), col2X + 25, y);
   y += 7;
 
   doc.setFont("helvetica", "bold");
@@ -110,18 +110,18 @@ export const generateNativePdfReceiptBase64 = async (
   doc.setFont("helvetica", "bold");
   doc.text("Admission No:", col2X, y);
   doc.setFont("helvetica", "normal");
-  doc.text(student.admissionNo || 'N/A', col2X + 28, y);
+  doc.text(String(student.admissionNo || 'N/A'), col2X + 28, y);
   y += 7;
 
   doc.setFont("helvetica", "bold");
   doc.text("Father's Name:", col1X, y);
   doc.setFont("helvetica", "normal");
-  doc.text(student.parentName || 'N/A', col1X + 28, y);
+  doc.text(String(student.parentName || 'N/A'), col1X + 28, y);
   
   doc.setFont("helvetica", "bold");
   doc.text("Payment Mode:", col2X, y);
   doc.setFont("helvetica", "normal");
-  doc.text(transaction.paymentMethod || 'Cash', col2X + 28, y);
+  doc.text(String(transaction.paymentMethod || 'Cash'), col2X + 28, y);
   y += 15;
 
   // Table Header
@@ -143,7 +143,7 @@ export const generateNativePdfReceiptBase64 = async (
   // Table Body
   doc.setFont("helvetica", "normal");
   doc.text("1", marginLeft + 8, y + 5);
-  doc.text(transaction.description || 'Fee Payment', marginLeft + 25, y + 5);
+  doc.text(String(transaction.description || 'Fee Payment'), marginLeft + 25, y + 5);
   doc.text(transaction.amount.toLocaleString('en-IN') + ".00", marginLeft + 175, y + 5, { align: "right" });
   
   y += 8;
