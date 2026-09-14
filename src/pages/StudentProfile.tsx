@@ -1167,7 +1167,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         
         {pdfTransaction && (
           <div id="pdf-receipt-container" style={{ position: 'absolute', top: 0, left: 0, zIndex: -9999, pointerEvents: 'none' }}>
-            <div ref={receiptPdfRef} style={{ width: '800px', background: 'white' }}>
+            <div ref={receiptPdfRef} style={{ width: '210mm', background: 'white' }}>
               <FeeReceiptPrintView 
                 student={student} 
                 transaction={pdfTransaction} 

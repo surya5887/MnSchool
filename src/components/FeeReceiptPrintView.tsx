@@ -75,10 +75,6 @@ const FeeReceiptPrintView: React.FC<FeeReceiptPrintViewProps> = ({ student, tran
       background: 'white',
       color: 'black',
       fontFamily: 'Arial, sans-serif',
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      zIndex: 9999,
       boxSizing: 'border-box',
     }}>
       <style>
