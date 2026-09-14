@@ -186,6 +186,32 @@ const StudentProfile: React.FC = () => {
   
   const [sendingTxnId, setSendingTxnId] = useState<string | null>(null);
 
+  const generatePdfBase64 = async (txn: any): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      setPdfTransaction(txn);
+      setTimeout(async () => {
+        if (!receiptPdfRef.current) {
+          setPdfTransaction(null);
+          return reject(new Error('Failed to render PDF'));
+        }
+        try {
+          const canvas = await html2canvas(receiptPdfRef.current, { scale: 2, useCORS: true });
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          const base64 = pdf.output('datauristring');
+          setPdfTransaction(null);
+          resolve(base64);
+        } catch (err) {
+          setPdfTransaction(null);
+          reject(err);
+        }
+      }, 800); // 800ms delay to ensure component and images load fully
+    });
+  };
+
   const handleSendWhatsAppReceipt = async (txn: any) => {
     const phone = student.parentPhone || student.phone || student.motherPhone || student.emergencyContact;
     if (!phone) {
@@ -198,12 +224,10 @@ const StudentProfile: React.FC = () => {
       const settings = await getSchoolSettings();
       let template = settings?.feeReceiptTemplate || `Dear Parent,\nWe have received a fee payment of Rs. {{amount}} for your ward {{name}}.\nPlease find the attached receipt.\nThank you.\nMN Public School`;
       
-      // Replace placeholders
       let message = template
         .replace(/{{amount}}/g, txn.amount.toString())
         .replace(/{{name}}/g, `${student.firstName} ${student.lastName}`);
       
-      // Add transaction details
       message += `\n\n*Receipt Details:*`;
       message += `\nDate: ${new Date(txn.date).toLocaleDateString()}`;
       message += `\nDescription: ${txn.description}`;
@@ -213,12 +237,17 @@ const StudentProfile: React.FC = () => {
       if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
       const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
+      // Generate PDF
+      const base64Pdf = await generatePdfBase64(txn);
+
       const response = await fetch('/api/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: formattedPhone,
-          message: message
+          message: message,
+          base64Pdf: base64Pdf,
+          pdfName: `Receipt_${txn.id}.pdf`
         })
       });
 
@@ -1118,13 +1147,25 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
       )}
 
           {printTransaction && (
-        <FeeReceiptPrintView 
-          student={student} 
-          transaction={printTransaction} 
-          classNameStr={studentClass?.className || student.classId || 'Unknown'} 
-        />
-      )}
-    </motion.div>
+          <FeeReceiptPrintView 
+            student={student} 
+            transaction={printTransaction} 
+            classNameStr={studentClass?.className || student.classId || 'Unknown'} 
+          />
+        )}
+        
+        {pdfTransaction && (
+          <div style={{ position: 'absolute', top: '-10000px', left: '-10000px', pointerEvents: 'none' }}>
+            <div ref={receiptPdfRef} style={{ width: '800px', background: 'white' }}>
+              <FeeReceiptPrintView 
+                student={student} 
+                transaction={pdfTransaction} 
+                classNameStr={studentClass?.className || student.classId || 'Unknown'} 
+              />
+            </div>
+          </div>
+        )}
+      </motion.div>
   );
 };
 
