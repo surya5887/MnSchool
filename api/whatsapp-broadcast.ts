@@ -48,7 +48,8 @@ export default async function handler(req: any, res: any) {
             resolve(true);
           }
         } else if (connection === 'close') {
-          if (!isResolved) {
+          const statusCode = (update.lastDisconnect?.error as any)?.output?.statusCode;
+          if (statusCode !== 515 && !isResolved) {
             isResolved = true;
             clearTimeout(timeout);
             reject(new Error('Connection closed'));

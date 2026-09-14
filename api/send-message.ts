@@ -26,31 +26,46 @@ export default async function handler(req: any, res: any) {
 
     // Wait for connection to open
     await new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Timeout: Could not connect to WhatsApp. Is your phone internet on?')), 45000);
+      let isResolved = false;
+      const timeout = setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          sock.end(undefined);
+          reject(new Error('Timeout: Could not connect to WhatsApp. Please check your phone internet.'));
+        }
+      }, 15000); // reduced timeout to 15s for fast feedback
+
       sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
         
         if (qr) {
-          clearTimeout(timeout);
-          reject(new Error('WhatsApp Not Linked! Session expired. You need to re-scan the QR code.'));
+          if (!isResolved) {
+            isResolved = true;
+            clearTimeout(timeout);
+            reject(new Error('WhatsApp Not Linked! Session expired. You need to re-scan the QR code.'));
+          }
         }
         
         if (connection === 'open') {
-          clearTimeout(timeout);
-          resolve(true);
+          if (!isResolved) {
+            isResolved = true;
+            clearTimeout(timeout);
+            resolve(true);
+          }
         } else if (connection === 'close') {
-          clearTimeout(timeout);
-          reject(new Error('Connection closed or logged out.'));
+          const statusCode = (lastDisconnect?.error as any)?.output?.statusCode;
+          // Don't reject on 515 (Restart Required), Baileys will auto-reconnect
+          if (statusCode !== 515 && !isResolved) {
+            isResolved = true;
+            clearTimeout(timeout);
+            reject(new Error('Connection closed or logged out.'));
+          }
         }
       });
     });
 
     // Format phone number for WhatsApp (e.g., 919876543210@s.whatsapp.net)
     const formattedPhone = `${phone}@s.whatsapp.net`;
-    
-    // SAFE TIME: Random delay between 2 to 6 seconds to prevent ban
-    const safeDelay = Math.floor(Math.random() * 4000) + 2000;
-    await new Promise(resolve => setTimeout(resolve, safeDelay));
 
     if (base64Pdf) {
       const buffer = Buffer.from(base64Pdf.split(',')[1] || base64Pdf, 'base64');
