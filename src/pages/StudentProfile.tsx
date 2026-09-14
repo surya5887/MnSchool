@@ -198,15 +198,7 @@ const StudentProfile: React.FC = () => {
           const canvas = await html2canvas(receiptPdfRef.current, { 
             scale: 2, 
             useCORS: true,
-            logging: false,
-            onclone: (clonedDoc) => {
-              const el = clonedDoc.getElementById('pdf-receipt-container');
-              if (el) {
-                el.style.position = 'relative';
-                el.style.left = '0';
-                el.style.top = '0';
-              }
-            }
+            logging: false
           });
           if (canvas.width === 0 || canvas.height === 0) {
              throw new Error('Canvas rendering failed (zero width/height)');
@@ -1174,7 +1166,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         )}
         
         {pdfTransaction && (
-          <div id="pdf-receipt-container" style={{ position: 'fixed', left: '-9999px', top: 0, zIndex: -1000 }}>
+          <div id="pdf-receipt-container" style={{ position: 'absolute', top: 0, left: 0, zIndex: -9999, pointerEvents: 'none' }}>
             <div ref={receiptPdfRef} style={{ width: '800px', background: 'white' }}>
               <FeeReceiptPrintView 
                 student={student} 
