@@ -184,15 +184,16 @@ const StudentProfile: React.FC = () => {
   }, [id]);
 
   
-  const [isSendingWA, setIsSendingWA] = useState(false);
+  const [sendingTxnId, setSendingTxnId] = useState<string | null>(null);
 
   const handleSendWhatsAppReceipt = async (txn: any) => {
-    if (!student.parentPhone && !student.phone) {
+    const phone = student.parentPhone || student.phone || student.motherPhone || student.emergencyContact;
+    if (!phone) {
       toast.error('No contact number available for student.');
       return;
     }
     
-    setIsSendingWA(true);
+    setSendingTxnId(txn.id);
     try {
       const settings = await getSchoolSettings();
       let template = settings?.feeReceiptTemplate || `Dear Parent,\nWe have received a fee payment of Rs. {{amount}} for your ward {{name}}.\nPlease find the attached receipt.\nThank you.\nMN Public School`;
@@ -208,7 +209,6 @@ const StudentProfile: React.FC = () => {
       message += `\nDescription: ${txn.description}`;
       message += `\nPaid: ₹${txn.amount}`;
 
-      const phone = student.parentPhone || student.phone;
       const formattedPhone = phone.startsWith('91') ? phone : `91${phone}`;
 
       const response = await fetch('/api/send-message', {
@@ -227,7 +227,7 @@ const StudentProfile: React.FC = () => {
     } catch (err: any) {
       toast.error(err.message || 'Failed to send message');
     } finally {
-      setIsSendingWA(false);
+      setSendingTxnId(null);
     }
   };
 
@@ -704,8 +704,8 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                                 <Printer size={14} /> Receipt
                               </button>
                               {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
-                                <button onClick={() => handleSendWhatsAppReceipt(row)} disabled={isSendingWA} style={{ background: '#dcfce7', color: '#16a34a', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: isSendingWA ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, opacity: isSendingWA ? 0.7 : 1 }}>
-                                  <Send size={14} /> {isSendingWA ? 'Sending...' : 'Send'}
+                                <button onClick={() => handleSendWhatsAppReceipt(row)} disabled={sendingTxnId === row.id} style={{ background: '#dcfce7', color: '#16a34a', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: sendingTxnId === row.id ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, opacity: sendingTxnId === row.id ? 0.7 : 1 }}>
+                                  <Send size={14} /> {sendingTxnId === row.id ? 'Sending...' : 'Send'}
                                 </button>
                               )}
                             </>
