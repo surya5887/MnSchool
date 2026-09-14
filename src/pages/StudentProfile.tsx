@@ -187,7 +187,7 @@ const StudentProfile: React.FC = () => {
   const [isSendingWA, setIsSendingWA] = useState(false);
 
   const handleSendWhatsAppReceipt = async (txn: any) => {
-    if (!student.fatherPhone && !student.phone) {
+    if (!student.parentPhone && !student.phone) {
       toast.error('No contact number available for student.');
       return;
     }
@@ -208,7 +208,7 @@ const StudentProfile: React.FC = () => {
       message += `\nDescription: ${txn.description}`;
       message += `\nPaid: ₹${txn.amount}`;
 
-      const phone = student.fatherPhone || student.phone;
+      const phone = student.parentPhone || student.phone;
       const formattedPhone = phone.startsWith('91') ? phone : `91${phone}`;
 
       const response = await fetch('/api/send-message', {
