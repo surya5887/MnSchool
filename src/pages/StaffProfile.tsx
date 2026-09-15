@@ -293,21 +293,21 @@ const StaffProfile: React.FC = () => {
                 <div><label className="form-label">Qualification</label><input type="text" className="glass-input" value={editData.qualification || ''} onChange={e => setEditData({...editData, qualification: e.target.value})} /></div>
                 <div><label className="form-label">Subject</label><input type="text" className="glass-input" value={editData.subject || ''} onChange={e => setEditData({...editData, subject: e.target.value})} /></div>
                 <div>
-                    <label className="form-label">Assigned Class</label>
-                    <select className="glass-input" value={editData.assignedClass || ''} onChange={e => {
-                      setEditData({...editData, assignedClass: e.target.value, assignedSection: ''});
-                    }}>
-                      <option value="">None</option>
-                      {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
-                    </select>
-                  </div>
-                  {editData.assignedClass && (
-                    <div>
-                      <label className="form-label">Assigned Section</label>
-                      <select className="glass-input" value={editData.assignedSection || ''} onChange={e => setEditData({...editData, assignedSection: e.target.value})}>
+                      <label className="form-label">Assigned Class</label>
+                      <select className="glass-input" value={editData.assignedClass || ''} onChange={e => {
+                        setEditData({...editData, assignedClass: e.target.value, assignedSection: ''});
+                      }}>
                         <option value="">None</option>
-                        {classes.find(c => c.className === editData.assignedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>)}
+                        {Array.from(new Map(classes.map(c => [c.className, c])).values()).map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
                       </select>
+                    </div>
+                    {editData.assignedClass && (
+                      <div>
+                        <label className="form-label">Assigned Section</label>
+                        <select className="glass-input" value={editData.assignedSection || ''} onChange={e => setEditData({...editData, assignedSection: e.target.value})}>
+                          <option value="">None</option>
+                          {Array.from(new Set(classes.filter(c => c.className === editData.assignedClass).flatMap(c => c.sections || []))).map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
                     </div>
                   )}
                 <div><label className="form-label">Experience</label><input type="text" className="glass-input" value={editData.experience || ''} onChange={e => setEditData({...editData, experience: e.target.value})} /></div>

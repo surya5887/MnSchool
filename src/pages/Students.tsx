@@ -106,7 +106,11 @@ const Students: React.FC = () => {
   };
 
   const sortedClasses = useMemo(() => {
-    return [...classes].sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+    const unique = new Map<string, ClassData>();
+    classes.forEach(c => {
+      if (!unique.has(c.className)) unique.set(c.className, c);
+    });
+    return Array.from(unique.values()).sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
   }, [classes]);
 
   const availableSections = useMemo(() => {

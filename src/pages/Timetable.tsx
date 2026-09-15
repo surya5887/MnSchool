@@ -94,14 +94,16 @@ const Timetable: React.FC = () => {
         const classData = await getClasses();
         setClasses(classData);
         if (classData.length > 0) {
-          let defaultClass = classData[0].className;
+          let defaultClass = classData[0].id || '';
           if (role === 'Teacher') {
             const myClassByMapping = classData.find(c => c.classTeacher === authUser.name);
             const isValidAssigned = authUser.assignedClass && classData.some(c => c.className === authUser.assignedClass);
-            defaultClass = isValidAssigned ? authUser.assignedClass : (myClassByMapping?.className || authUser.assignedClass || '');
+            defaultClass = (isValidAssigned && classData.find(c => c.className === authUser.assignedClass)?.id) || (myClassByMapping?.id) || '';
           }
-          setClassFilter(defaultClass);
-          fetchTimetableAndStructure(defaultClass);
+          if (defaultClass) {
+            setClassFilter(defaultClass);
+            fetchTimetableAndStructure(defaultClass);
+          }
         }
       } catch (error) {
         console.error("Error fetching classes", error);

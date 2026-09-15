@@ -73,12 +73,27 @@ const Examination: React.FC = () => {
     fetchData();
   }, []);
 
+  // Deduplicate classes for the dropdown
+  const uniqueClasses = useMemo(() => {
+    const unique = new Map<string, ClassData>();
+    classes.forEach(c => {
+      if (!unique.has(c.className)) unique.set(c.className, c);
+    });
+    return Array.from(unique.values());
+  }, [classes]);
+
   useEffect(() => {
     if (classFilter) {
-      const cls = classes.find(c => c.className === classFilter);
-      if (cls) {
-        setActiveSections(cls.sections || []);
-        setActiveSubjects(cls.subjects || []);
+      const matchingClasses = classes.filter(c => c.className === classFilter);
+      if (matchingClasses.length > 0) {
+        const allSections = new Set<string>();
+        const allSubjects = new Set<string>();
+        matchingClasses.forEach(cls => {
+          (cls.sections || []).forEach(s => allSections.add(s));
+          (cls.subjects || []).forEach(s => allSubjects.add(s));
+        });
+        setActiveSections(Array.from(allSections));
+        setActiveSubjects(Array.from(allSubjects));
       }
     } else {
       setActiveSections([]);
@@ -609,10 +624,10 @@ const Examination: React.FC = () => {
           <div className="glass-panel" style={{ padding: '20px', marginBottom: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '200px' }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Class</label>
-            <select className="glass-input" value={classFilter} onChange={handleClassChange}>
-              <option value="">Select Class</option>
-              {classes.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
-            </select>
+              <select className="glass-input" value={classFilter} onChange={handleClassChange}>
+                <option value="">Select Class</option>
+                {uniqueClasses.map(c => <option key={c.id} value={c.className}>{c.className}</option>)}
+              </select>
           </div>
           {true && (
             <div style={{ flex: 1, minWidth: '200px' }}>

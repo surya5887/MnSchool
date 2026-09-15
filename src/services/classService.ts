@@ -71,26 +71,20 @@ export const getClasses = async (): Promise<ClassData[]> => {
     const querySnapshot = await getDocs(q);
     let classes = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as ClassData));
       
-    // Trim and Deduplicate
-    const uniqueMap = new Map<string, ClassData>();
     classes.forEach(c => {
       if (c.className) {
         c.className = c.className.trim();
-        if (!uniqueMap.has(c.className)) {
-          uniqueMap.set(c.className, c);
-        } else {
-          // Merge sections just in case
-          const existing = uniqueMap.get(c.className)!;
-          if (c.sections) {
-            existing.sections = Array.from(new Set([...(existing.sections || []), ...c.sections]));
-          }
-        }
       }
     });
-    classes = Array.from(uniqueMap.values());
 
-    // Smart sort
-    classes.sort((a, b) => getSequenceIndex(a.className) - getSequenceIndex(b.className));
+    // Smart sort by className then by section
+    classes.sort((a, b) => {
+      const diff = getSequenceIndex(a.className) - getSequenceIndex(b.className);
+      if (diff !== 0) return diff;
+      const secA = (a.sections && a.sections.length > 0) ? a.sections[0] : '';
+      const secB = (b.sections && b.sections.length > 0) ? b.sections[0] : '';
+      return secA.localeCompare(secB);
+    });
     
     cachedClasses = classes;
     lastClassFetch = Date.now();
