@@ -35,14 +35,24 @@ export const generateNativePdfReceiptBase64 = async (
       setTimeout(reject, 2000);
     });
     
+    // Resize image to max 200x200 to keep PDF size small
+    const MAX_SIZE = 200;
+    let width = img.width;
+    let height = img.height;
+    if (width > MAX_SIZE || height > MAX_SIZE) {
+      const ratio = Math.min(MAX_SIZE / width, MAX_SIZE / height);
+      width = width * ratio;
+      height = height * ratio;
+    }
+    
     const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.drawImage(img, 0, 0);
-      const dataUrl = canvas.toDataURL('image/png');
-      doc.addImage(dataUrl, 'PNG', marginLeft, marginTop, 25, 25);
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      doc.addImage(dataUrl, 'JPEG', marginLeft, marginTop, 25, 25);
     }
   } catch (e) {
     console.warn("Could not load logo for PDF generation");
