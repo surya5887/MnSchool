@@ -8,7 +8,7 @@ import { getStudentById, updateStudent, type StudentData } from '../services/stu
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import { generateNativePdfReceiptBase64 } from '../lib/pdfGenerator';
-import FeeReceiptPrintView from '../components/FeeReceiptPrintView';
+
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import Cropper from 'react-easy-crop';
@@ -131,9 +131,6 @@ const StudentProfile: React.FC = () => {
 
   // Charge modal
   const [isFineModalOpen, setIsFineModalOpen] = useState(false);
-  const [printTransaction, setPrintTransaction] = useState<any>(null);
-  const receiptPdfRef = useRef<HTMLDivElement>(null);
-  const [pdfTransaction, setPdfTransaction] = useState<any>(null);
   const [newFine, setNewFine] = useState({ amount: '', description: '', type: 'Late Fine', date: getISTDateTimeLocalString() });
 
 
@@ -255,12 +252,29 @@ const StudentProfile: React.FC = () => {
     }
   };
 
-  const handlePrintReceipt = (txn: any) => {
-    setPrintTransaction(txn);
-    setTimeout(() => {
-      window.print();
-      setPrintTransaction(null);
-    }, 500);
+  const handlePrintReceipt = async (txn: any) => {
+    try {
+      const toastId = toast.loading("Generating receipt...");
+      const base64 = await generateNativePdfReceiptBase64(student, txn, studentClass?.className || student.classId || 'Unknown', await getSchoolSettings());
+      
+      const byteCharacters = atob(base64.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(blob);
+      
+      toast.dismiss(toastId);
+      window.open(blobUrl, '_blank');
+      
+      // Clean up the URL object after some time
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+    } catch (error) {
+      console.error("Print Error:", error);
+      toast.error("Failed to generate PDF for printing");
+    }
   };
 
   const handleRecordPayment = async (e: React.FormEvent) => {
@@ -1139,13 +1153,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         </div>
       )}
 
-          {printTransaction && (
-          <FeeReceiptPrintView 
-            student={student} 
-            transaction={printTransaction} 
-            classNameStr={studentClass?.className || student.classId || 'Unknown'} 
-          />
-        )}
+
       </motion.div>
   );
 };
