@@ -51,8 +51,8 @@ export const generateNativePdfReceiptBase64 = async (
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      doc.addImage(dataUrl, 'JPEG', marginLeft, marginTop, 25, 25);
+      const dataUrl = canvas.toDataURL('image/png');
+      doc.addImage(dataUrl, 'PNG', marginLeft, marginTop, 25, 25);
     }
   } catch (e) {
     console.warn("Could not load logo for PDF generation");
