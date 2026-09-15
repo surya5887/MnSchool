@@ -20,16 +20,20 @@ export const createDefaultAdminIfNeeded = async () => {
       if (!oldAdminsSnap.empty) {
         for (const oldDoc of oldAdminsSnap.docs) {
           const adminData = oldDoc.data();
-          if (!adminData.email) continue;
-          const staffQ = query(collection(db, 'staff'), where('email', '==', adminData.email));
-          const staffSnap = await getDocs(staffQ);
-          if (staffSnap.empty) {
-            await addDoc(collection(db, 'staff'), {
-              ...adminData,
-              status: 'Active',
-              createdAt: new Date().toISOString()
-            });
+          if (adminData.email) {
+            const staffQ = query(collection(db, 'staff'), where('email', '==', adminData.email));
+            const staffSnap = await getDocs(staffQ);
+            if (staffSnap.empty) {
+              await addDoc(collection(db, 'staff'), {
+                ...adminData,
+                status: 'Active',
+                createdAt: new Date().toISOString()
+              });
+            }
           }
+          // After successfully migrating (or skipping if duplicate), delete the old legacy document
+          // so it stops confusing the user.
+          await deleteDoc(oldDoc.ref);
         }
       }
     } catch (e) {
