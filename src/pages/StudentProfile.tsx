@@ -252,6 +252,8 @@ const StudentProfile: React.FC = () => {
     }
   };
 
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+
   const handlePrintReceipt = async (txn: any) => {
     try {
       const toastId = toast.loading("Generating receipt...");
@@ -267,10 +269,7 @@ const StudentProfile: React.FC = () => {
       const blobUrl = URL.createObjectURL(blob);
       
       toast.dismiss(toastId);
-      window.open(blobUrl, '_blank');
-      
-      // Clean up the URL object after some time
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+      setPdfPreviewUrl(blobUrl);
     } catch (error) {
       console.error("Print Error:", error);
       toast.error("Failed to generate PDF for printing");
@@ -1153,6 +1152,20 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         </div>
       )}
 
+
+        {pdfPreviewUrl && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 99999, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '16px 24px', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10 }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e3a8a' }}>
+                 <FileText size={24} color="#1e3a8a" /> Receipt Preview
+              </h2>
+              <button onClick={() => { URL.revokeObjectURL(pdfPreviewUrl); setPdfPreviewUrl(null); }} style={{ padding: '8px 16px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
+                <ArrowLeft size={18} /> Back
+              </button>
+            </div>
+            <iframe src={pdfPreviewUrl} style={{ width: '100%', flex: 1, border: 'none' }} title="Receipt Preview" />
+          </div>
+        )}
 
       </motion.div>
   );
