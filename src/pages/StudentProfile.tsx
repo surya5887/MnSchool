@@ -223,17 +223,22 @@ const StudentProfile: React.FC = () => {
 
       // Generate PDF
       const base64Pdf = await generatePdfBase64(txn);
+      
+      const schoolName = settings?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'School';
+      const studentName = `${student.firstName}_${student.lastName}`.replace(/[^a-zA-Z0-9]/g, '_');
+      const receiptNo = txn.receiptNo || txn.id?.substring(0, 8);
+      const properPdfName = `${schoolName}_FeeReceipt_${studentName}_${receiptNo}.pdf`;
 
-        const response = await fetch('/api/send-message', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            phone: formattedPhone,
-            message: message,
-            base64Pdf: base64Pdf,
-            pdfName: `Receipt_${txn.id}.pdf`
-          })
-        });
+      const response = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: formattedPhone,
+          message: message,
+          base64Pdf: base64Pdf,
+          pdfName: properPdfName
+        })
+      });
   
         let data;
         try {
@@ -253,11 +258,18 @@ const StudentProfile: React.FC = () => {
   };
 
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfFilename, setPdfFilename] = useState<string>('Receipt.pdf');
 
   const handlePrintReceipt = async (txn: any) => {
     try {
       const toastId = toast.loading("Generating receipt...");
-      const base64 = await generateNativePdfReceiptBase64(student, txn, studentClass?.className || student.classId || 'Unknown', await getSchoolSettings());
+      const settings = await getSchoolSettings();
+      const base64 = await generateNativePdfReceiptBase64(student, txn, studentClass?.className || student.classId || 'Unknown', settings);
+      
+      const schoolName = settings?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'School';
+      const studentName = `${student.firstName}_${student.lastName}`.replace(/[^a-zA-Z0-9]/g, '_');
+      const receiptNo = txn.receiptNo || txn.id?.substring(0, 8);
+      const properPdfName = `${schoolName}_FeeReceipt_${studentName}_${receiptNo}.pdf`;
       
       const byteCharacters = atob(base64.split(',')[1]);
       const byteNumbers = new Array(byteCharacters.length);
@@ -269,6 +281,7 @@ const StudentProfile: React.FC = () => {
       const blobUrl = URL.createObjectURL(blob);
       
       toast.dismiss(toastId);
+      setPdfFilename(properPdfName);
       setPdfPreviewUrl(blobUrl);
     } catch (error) {
       console.error("Print Error:", error);
