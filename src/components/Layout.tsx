@@ -78,27 +78,32 @@ const Layout: React.FC = () => {
 
         // OS PUSH NOTIFICATIONS LOGIC
         if (Notification.permission === 'granted' && logs.length > 0) {
-          const lastNotifiedTimeStr = localStorage.getItem('last_os_notification_time') || '0';
-          const lastNotifiedTime = new Date(lastNotifiedTimeStr).getTime();
-          let latestLogTime = lastNotifiedTime;
+          const lastNotifiedTimeStr = localStorage.getItem('last_os_notification_time');
+          
+          if (!lastNotifiedTimeStr) {
+             // First run (or after clearing data) with permission already granted.
+             // Just set baseline so we don't spam past logs.
+             localStorage.setItem('last_os_notification_time', new Date(logs[0].time).toISOString());
+          } else {
+            const lastNotifiedTime = new Date(lastNotifiedTimeStr).getTime();
+            let latestLogTime = lastNotifiedTime;
 
-          logs.forEach(log => {
-            const logTime = new Date(log.time).getTime();
-            if (logTime > lastNotifiedTime) {
-              // Send native push notification
-              new Notification("MN Public School Alert", {
-                body: `${log.action} by ${log.user} (${log.role})`,
-                icon: '/images/logo_circular.png' // assuming this exists based on the header code
-              });
-              if (logTime > latestLogTime) {
-                latestLogTime = logTime;
+            logs.forEach(log => {
+              const logTime = new Date(log.time).getTime();
+              if (logTime > lastNotifiedTime) {
+                // Send native push notification
+                new Notification("MN Public School Alert", {
+                  body: `${log.action} by ${log.user} (${log.role})`,
+                  icon: '/images/logo_circular.png' // assuming this exists based on the header code
+                });
+                if (logTime > latestLogTime) latestLogTime = logTime;
               }
-            }
-          });
+            });
 
-          // Update the last notified time if we sent new ones
-          if (latestLogTime > lastNotifiedTime) {
-            localStorage.setItem('last_os_notification_time', new Date(latestLogTime).toISOString());
+            // Update the last notified time if we sent new ones
+            if (latestLogTime > lastNotifiedTime) {
+              localStorage.setItem('last_os_notification_time', new Date(latestLogTime).toISOString());
+            }
           }
         } else if (Notification.permission !== 'denied') {
            // If they haven't explicitly denied, request on mount will handle it, 
