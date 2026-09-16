@@ -175,12 +175,24 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                             )}
 
                             {q.images && q.images.length > 0 && (
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '12px', alignItems: 'flex-start' }}>
-                                {q.images.map((img, iIdx) => (
-                                  <div key={iIdx} style={{ flex: `0 0 calc(${img.width || 100}% - 12px)`, textAlign: img.align || 'center' }}>
-                                    <img src={img.url} alt="" style={{ maxWidth: '100%', height: 'auto', display: 'inline-block' }} />
-                                  </div>
-                                ))}
+                              <div style={{ overflow: 'hidden', width: '100%', marginTop: '12px' }}>
+                                {q.images.map((img, iIdx) => {
+                                  const isCenter = (!img.align || img.align === 'center');
+                                  const isRight = img.align === 'right';
+                                  return (
+                                    <div key={iIdx} style={{ 
+                                      float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
+                                      margin: isCenter ? '0 auto' : '0',
+                                      width: `${img.width || 100}%`, 
+                                      textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                      padding: '4px',
+                                      boxSizing: 'border-box'
+                                    }}>
+                                      <img src={img.url} alt="" style={{ maxWidth: '100%', height: 'auto', display: 'inline-block' }} />
+                                    </div>
+                                  );
+                                })}
+                                <div style={{ clear: 'both' }}></div>
                               </div>
                             )}
 
