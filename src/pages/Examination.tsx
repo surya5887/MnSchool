@@ -89,8 +89,10 @@ const Examination: React.FC = () => {
         const allSections = new Set<string>();
         const allSubjects = new Set<string>();
         matchingClasses.forEach(cls => {
-          (cls.sections || []).forEach(s => allSections.add(s));
-          (cls.subjects || []).forEach(s => allSubjects.add(s));
+          const secs = Array.isArray(cls.sections) ? cls.sections : (typeof cls.sections === 'string' ? [cls.sections] : []);
+          const subs = Array.isArray(cls.subjects) ? cls.subjects : (typeof cls.subjects === 'string' ? [cls.subjects] : []);
+          secs.forEach(s => allSections.add(s));
+          subs.forEach(s => allSubjects.add(s));
         });
         setActiveSections(Array.from(allSections));
         setActiveSubjects(Array.from(allSubjects));

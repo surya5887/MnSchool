@@ -118,7 +118,8 @@ const Students: React.FC = () => {
     const sectionsSet = new Set<string>();
     classes.forEach(c => {
       if (c.className === selectedClass) {
-        c.sections.forEach(s => sectionsSet.add(s));
+        const secs = Array.isArray(c.sections) ? c.sections : (typeof c.sections === 'string' ? [c.sections] : []);
+        secs.forEach(s => sectionsSet.add(s));
       }
     });
     return Array.from(sectionsSet).sort();

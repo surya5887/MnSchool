@@ -34,18 +34,19 @@ const Attendance: React.FC = () => {
 
   const uniqueClasses = useMemo(() => {
     const list: { className: string; sections: string[] }[] = [];
-    classes.forEach(c => {
-      let existing = list.find(x => x.className === c.className);
-      if (!existing) {
-        existing = { className: c.className, sections: [] };
-        list.push(existing);
-      }
-      if (c.sections) {
-        c.sections.forEach(s => {
-          if (!existing.sections.includes(s)) existing.sections.push(s);
-        });
-      }
-    });
+      classes.forEach(c => {
+        let existing = list.find(x => x.className === c.className);
+        if (!existing) {
+          existing = { className: c.className, sections: [] };
+          list.push(existing);
+        }
+        if (c.sections) {
+          const secs = Array.isArray(c.sections) ? c.sections : (typeof c.sections === 'string' ? [c.sections] : []);
+          secs.forEach(s => {
+            if (!existing.sections.includes(s)) existing.sections.push(s);
+          });
+        }
+      });
     return list.sort((a, b) => a.className.localeCompare(b.className));
   }, [classes]);
 
