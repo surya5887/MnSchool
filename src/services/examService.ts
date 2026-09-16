@@ -118,6 +118,8 @@ export interface QuestionPaperData {
       options?: string[];
       hint?: string;
       label?: string;
+      images?: { url: string; width: number; align: 'left' | 'center' | 'right' }[];
+      shapes?: { type: string; width: number; color: string; rotation: number; flipX: boolean; flipY: boolean; align: 'left' | 'center' | 'right' }[];
     }[];
   }[];
   createdAt: string;

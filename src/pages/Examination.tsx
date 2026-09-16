@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search, Image as ImageIcon, Square, Lightbulb, Settings, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search, Image as ImageIcon, Square, Lightbulb, Settings, AlignLeft, AlignCenter, AlignRight, Circle, Triangle, Hexagon, Octagon, Star, Diamond, Minus, RotateCw, FlipHorizontal, FlipVertical, Shapes } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { saveExamMark, getAllExamMarksForTerm, type ExamMarkData, saveExamSchedule, getExamSchedulesByClass, saveQuestionPaper, getQuestionPapersByClass, type ExamScheduleData, type QuestionPaperData } from '../services/examService';
@@ -14,6 +14,35 @@ import MasterScheduleConfig from '../components/MasterScheduleConfig';
 import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
+
+const renderShape = (shape: any) => {
+  let Icon = Circle;
+  switch (shape.type) {
+    case 'circle': Icon = Circle; break;
+    case 'square': Icon = Square; break;
+    case 'triangle': Icon = Triangle; break;
+    case 'hexagon': Icon = Hexagon; break;
+    case 'octagon': Icon = Octagon; break;
+    case 'star': Icon = Star; break;
+    case 'diamond': Icon = Diamond; break;
+    case 'line': Icon = Minus; break;
+    default: Icon = Circle; break;
+  }
+  
+  return (
+    <Icon 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        color: shape.color, 
+        fill: shape.type !== 'line' ? shape.color : 'none', 
+        transform: `rotate(${shape.rotation}deg) scaleX(${shape.flipX ? -1 : 1}) scaleY(${shape.flipY ? -1 : 1})`,
+        display: 'block'
+      }} 
+      strokeWidth={1}
+    />
+  );
+};
 
 const Examination: React.FC = () => {
   const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
@@ -559,16 +588,16 @@ const Examination: React.FC = () => {
                         </div>
                       )}
 
-                      {q.images && q.images.length > 0 && (
+                      {((q.images && q.images.length > 0) || (q.shapes && q.shapes.length > 0)) && (
                         <div style={{ marginTop: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', background: '#f9fafb' }}>
                           <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#6b7280', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Preview</div>
                           
                           <div style={{ overflow: 'hidden', width: '100%', border: '1px dashed #cbd5e1', padding: '8px', background: 'white', borderRadius: '4px', marginBottom: '16px' }}>
-                            {q.images.map((img, iIdx) => {
+                            {q.images?.map((img, iIdx) => {
                               const isCenter = (!img.align || img.align === 'center');
                               const isRight = img.align === 'right';
                               return (
-                                <div key={iIdx} style={{ 
+                                <div key={`img-${iIdx}`} style={{ 
                                   float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
                                   margin: isCenter ? '0 auto' : '0',
                                   width: `${img.width || 100}%`, 
@@ -580,13 +609,33 @@ const Examination: React.FC = () => {
                                 </div>
                               );
                             })}
+                            
+                            {q.shapes?.map((shape, sIdx) => {
+                              const isCenter = (!shape.align || shape.align === 'center');
+                              const isRight = shape.align === 'right';
+                              return (
+                                <div key={`shape-${sIdx}`} style={{ 
+                                  float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
+                                  margin: isCenter ? '0 auto' : '0',
+                                  width: `${shape.width || 10}%`, 
+                                  textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                  padding: '4px',
+                                  boxSizing: 'border-box'
+                                }}>
+                                  <div style={{ display: 'inline-block', width: '100%', aspectRatio: shape.type === 'line' ? 'auto' : '1 / 1' }}>
+                                    {renderShape(shape)}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                            
                             <div style={{ clear: 'both' }}></div>
                           </div>
 
-                          <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#6b7280', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Image Settings</div>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#6b7280', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Settings</div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {q.images.map((img, iIdx) => (
-                              <div key={iIdx} style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'white', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                            {q.images?.map((img, iIdx) => (
+                              <div key={`img-set-${iIdx}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'white', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.05)' }}>
                                 <img src={img.url} alt="" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} />
                                 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -620,6 +669,93 @@ const Examination: React.FC = () => {
                                 <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)', marginLeft: 'auto', marginBottom: 0 }} onClick={() => {
                                   const newSecs = [...paperData.sections];
                                   newSecs[sIdx].questions[qIdx].images!.splice(iIdx, 1);
+                                  setPaperData({...paperData, sections: newSecs});
+                                }}>Remove</button>
+                              </div>
+                            ))}
+                            
+                            {q.shapes?.map((shape, shpIdx) => (
+                              <div key={`shape-set-${shpIdx}`} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px', background: 'white', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                                <div style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  {renderShape({ ...shape, width: 40, height: 40, rotation: 0 })}
+                                </div>
+                                
+                                <select className="glass-input" style={{ width: '100px', padding: '4px' }} value={shape.type} onChange={e => {
+                                  const newSecs = [...paperData.sections];
+                                  newSecs[sIdx].questions[qIdx].shapes![shpIdx].type = e.target.value;
+                                  setPaperData({...paperData, sections: newSecs});
+                                }}>
+                                  <option value="circle">Circle</option>
+                                  <option value="square">Square</option>
+                                  <option value="triangle">Triangle</option>
+                                  <option value="hexagon">Hexagon</option>
+                                  <option value="octagon">Octagon</option>
+                                  <option value="star">Star</option>
+                                  <option value="diamond">Diamond</option>
+                                  <option value="line">Line</option>
+                                </select>
+                                
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ fontSize: '0.8rem' }}>Color:</span>
+                                  <input type="color" value={shape.color} onChange={e => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].color = e.target.value;
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }} style={{ width: '30px', height: '24px', padding: '0', border: 'none', cursor: 'pointer' }} />
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ fontSize: '0.8rem' }}>Size:</span>
+                                  <input type="number" min="5" max="100" value={shape.width} onChange={e => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].width = Number(e.target.value);
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }} style={{ width: '50px', padding: '4px', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center' }} />%
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ fontSize: '0.8rem' }}>Rot:</span>
+                                  <input type="number" value={shape.rotation} onChange={e => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].rotation = Number(e.target.value);
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }} style={{ width: '50px', padding: '4px', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center' }} />°
+                                </div>
+                                
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <button className="btn-secondary" style={{ padding: '4px', border: 'none', background: shape.flipX ? '#e5e7eb' : 'transparent' }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].flipX = !shape.flipX;
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><FlipHorizontal size={14} /></button>
+                                  <button className="btn-secondary" style={{ padding: '4px', border: 'none', background: shape.flipY ? '#e5e7eb' : 'transparent' }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].flipY = !shape.flipY;
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><FlipVertical size={14} /></button>
+                                </div>
+                                
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderLeft: '1px solid #e5e7eb', paddingLeft: '8px' }}>
+                                  <button className="btn-secondary" style={{ padding: '4px', background: shape.align === 'left' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].align = 'left';
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><AlignLeft size={16} /></button>
+                                  <button className="btn-secondary" style={{ padding: '4px', background: (!shape.align || shape.align === 'center') ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].align = 'center';
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><AlignCenter size={16} /></button>
+                                  <button className="btn-secondary" style={{ padding: '4px', background: shape.align === 'right' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].shapes![shpIdx].align = 'right';
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><AlignRight size={16} /></button>
+                                </div>
+                                
+                                <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)', marginLeft: 'auto', marginBottom: 0 }} onClick={() => {
+                                  const newSecs = [...paperData.sections];
+                                  newSecs[sIdx].questions[qIdx].shapes!.splice(shpIdx, 1);
                                   setPaperData({...paperData, sections: newSecs});
                                 }}>Remove</button>
                               </div>
@@ -718,7 +854,7 @@ const Examination: React.FC = () => {
                                   }
                                   newSecs[sIdx].questions[qIdx].images!.push({
                                     url: canvas.toDataURL('image/jpeg', 0.8),
-                                    width: 100,
+                                    width: 10,
                                     align: 'center'
                                   });
                                   setPaperData({...paperData, sections: newSecs});
@@ -729,7 +865,25 @@ const Examination: React.FC = () => {
                             }
                           }} />
                         </label>
-
+                        
+                        <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onClick={() => {
+                          const newSecs = [...paperData.sections];
+                          if (!newSecs[sIdx].questions[qIdx].shapes) {
+                            newSecs[sIdx].questions[qIdx].shapes = [];
+                          }
+                          newSecs[sIdx].questions[qIdx].shapes!.push({
+                            type: 'circle',
+                            width: 10,
+                            color: '#000000',
+                            rotation: 0,
+                            flipX: false,
+                            flipY: false,
+                            align: 'center'
+                          });
+                          setPaperData({...paperData, sections: newSecs});
+                        }}>
+                          <Shapes size={14} /> Add Shape
+                        </button>
                         <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onClick={() => {
                            const newSecs = [...paperData.sections];
                            newSecs[sIdx].questions[qIdx].blankSpace = 100;

@@ -1,5 +1,34 @@
 import React from 'react';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Printer, Circle, Square, Triangle, Hexagon, Octagon, Star, Diamond, Minus } from 'lucide-react';
+
+const renderShape = (shape: any) => {
+  let Icon = Circle;
+  switch (shape.type) {
+    case 'circle': Icon = Circle; break;
+    case 'square': Icon = Square; break;
+    case 'triangle': Icon = Triangle; break;
+    case 'hexagon': Icon = Hexagon; break;
+    case 'octagon': Icon = Octagon; break;
+    case 'star': Icon = Star; break;
+    case 'diamond': Icon = Diamond; break;
+    case 'line': Icon = Minus; break;
+    default: Icon = Circle; break;
+  }
+  
+  return (
+    <Icon 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        color: shape.color, 
+        fill: shape.type !== 'line' ? shape.color : 'none', 
+        transform: `rotate(${shape.rotation}deg) scaleX(${shape.flipX ? -1 : 1}) scaleY(${shape.flipY ? -1 : 1})`,
+        display: 'block'
+      }} 
+      strokeWidth={1}
+    />
+  );
+};
 import type { QuestionPaperData } from '../services/examService';
 
 interface QuestionPaperProps {
@@ -174,13 +203,13 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
-                            {q.images && q.images.length > 0 && (
+                            {((q.images && q.images.length > 0) || (q.shapes && q.shapes.length > 0)) && (
                               <div style={{ overflow: 'hidden', width: '100%', marginTop: '12px' }}>
-                                {q.images.map((img, iIdx) => {
+                                {q.images?.map((img, iIdx) => {
                                   const isCenter = (!img.align || img.align === 'center');
                                   const isRight = img.align === 'right';
                                   return (
-                                    <div key={iIdx} style={{ 
+                                    <div key={`img-${iIdx}`} style={{ 
                                       float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
                                       margin: isCenter ? '0 auto' : '0',
                                       width: `${img.width || 100}%`, 
@@ -189,6 +218,24 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                       boxSizing: 'border-box'
                                     }}>
                                       <img src={img.url} alt="" style={{ maxWidth: '100%', height: 'auto', display: 'inline-block' }} />
+                                    </div>
+                                  );
+                                })}
+                                {q.shapes?.map((shape, sIdx) => {
+                                  const isCenter = (!shape.align || shape.align === 'center');
+                                  const isRight = shape.align === 'right';
+                                  return (
+                                    <div key={`shape-${sIdx}`} style={{ 
+                                      float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
+                                      margin: isCenter ? '0 auto' : '0',
+                                      width: `${shape.width || 10}%`, 
+                                      textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                      padding: '4px',
+                                      boxSizing: 'border-box'
+                                    }}>
+                                      <div style={{ display: 'inline-block', width: '100%', aspectRatio: shape.type === 'line' ? 'auto' : '1 / 1' }}>
+                                        {renderShape(shape)}
+                                      </div>
                                     </div>
                                   );
                                 })}
