@@ -59,14 +59,39 @@ export const clearSpamLogs = async () => {
 
 export const getAuditLogs = async () => {
   try {
-    // Note: requires an index on 'time' if we use orderBy, but since it's a small app without indexes yet, we'll fetch and sort.
     const querySnapshot = await getDocs(collection(db, AUDIT_COLLECTION));
     const results = querySnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) } as unknown as AuditLogData));
     
-    // Sort descending by time
-    results.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+    // Auto-cleanup: if any log is older than 30 days, delete it
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
     
-    return results;
+    const toDelete = results.filter(log => {
+      const logTime = new Date(log.time).getTime();
+      if (isNaN(logTime)) return false;
+      return (now - logTime) > THIRTY_DAYS_MS;
+    });
+    
+    if (toDelete.length > 0) {
+      // Background delete so it doesn't block the UI
+      Promise.all(toDelete.map(log => deleteDoc(doc(db, AUDIT_COLLECTION, log.id!)))).catch(e => console.error("Error cleaning up old logs", e));
+    }
+
+    // Only return valid/recent logs
+    const validResults = results.filter(log => {
+      const logTime = new Date(log.time).getTime();
+      if (isNaN(logTime)) return true; // keep invalid dates so they aren't hidden forever
+      return (now - logTime) <= THIRTY_DAYS_MS;
+    });
+    
+    // Sort descending by time
+    validResults.sort((a, b) => {
+      const timeA = new Date(a.time).getTime();
+      const timeB = new Date(b.time).getTime();
+      return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+    });
+    
+    return validResults;
   } catch (error) {
     console.error("Error fetching audit logs: ", error);
     throw error;
