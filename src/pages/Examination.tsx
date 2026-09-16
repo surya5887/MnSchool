@@ -117,11 +117,12 @@ const Examination: React.FC = () => {
       filtered = filtered.filter(s => s.sectionId === sectionFilter);
     }
     if (studentSearch.trim()) {
-      const term = studentSearch.toLowerCase();
+      const searchLower = studentSearch.toLowerCase();
       filtered = filtered.filter(s => 
-        (s.firstName && s.firstName.toLowerCase().includes(term)) || 
-        (s.lastName && s.lastName.toLowerCase().includes(term)) ||
-        (s.admissionNo && s.admissionNo.toLowerCase().includes(term))
+        (s.firstName?.toLowerCase().includes(searchLower)) || 
+        (s.lastName?.toLowerCase().includes(searchLower)) || 
+        (s.admissionNo?.toLowerCase().includes(searchLower)) ||
+        (String(s.rollNumber || '').toLowerCase().includes(searchLower))
       );
     }
     setFilteredStudents(filtered);
