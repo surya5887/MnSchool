@@ -52,7 +52,7 @@ const AuditLogs: React.FC = () => {
       <div className="flex-responsive" style={{ marginBottom: '32px' }}>
         <div>
           <h1 className="page-title"><ShieldAlert size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> Audit Trail & Security Logs</h1>
-          <p className="page-subtitle">Track every action performed by staff on the platform to ensure 100% transparency.</p>
+          <p className="page-subtitle">Track every action performed by staff on the platform to ensure 100% transparency. (Showing last 30 days)</p>
         </div>
         <div style={{ display: 'flex', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
