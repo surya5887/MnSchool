@@ -175,10 +175,10 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                             )}
 
                             {q.images && q.images.length > 0 && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '12px', alignItems: 'flex-start' }}>
                                 {q.images.map((img, iIdx) => (
-                                  <div key={iIdx} style={{ textAlign: img.align || 'center' }}>
-                                    <img src={img.url} alt="" style={{ width: `${img.width || 100}%`, maxWidth: '100%', height: 'auto' }} />
+                                  <div key={iIdx} style={{ flex: `0 0 calc(${img.width || 100}% - 12px)`, textAlign: img.align || 'center' }}>
+                                    <img src={img.url} alt="" style={{ maxWidth: '100%', height: 'auto', display: 'inline-block' }} />
                                   </div>
                                 ))}
                               </div>

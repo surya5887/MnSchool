@@ -560,43 +560,51 @@ const Examination: React.FC = () => {
                       )}
 
                       {q.images && q.images.length > 0 && (
-                        <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-start' }}>
                           {q.images.map((img, iIdx) => (
-                            <div key={iIdx} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', background: '#f9fafb' }}>
+                            <div key={iIdx} style={{ flex: `0 0 calc(${img.width || 100}% - 12px)`, minWidth: '250px', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', background: '#f9fafb', boxSizing: 'border-box' }}>
                               <div style={{ textAlign: img.align || 'center' }}>
-                                <img src={img.url} alt="Question" style={{ width: `${img.width || 100}%`, height: 'auto', marginBottom: '12px' }} />
+                                <img src={img.url} alt="Question" style={{ maxWidth: '100%', height: 'auto', marginBottom: '12px', display: 'inline-block' }} />
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', background: 'white', padding: '8px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.05)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '200px' }}>
-                                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Size: {img.width}%</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: 'white', padding: '8px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Size:</span>
+                                  <input type="number" min="10" max="100" value={img.width} onChange={e => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].images![iIdx].width = Number(e.target.value);
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }} style={{ width: '50px', padding: '2px 4px', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center' }} />
+                                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>%</span>
                                   <input type="range" min="10" max="100" value={img.width} onChange={e => {
                                     const newSecs = [...paperData.sections];
                                     newSecs[sIdx].questions[qIdx].images![iIdx].width = Number(e.target.value);
                                     setPaperData({...paperData, sections: newSecs});
                                   }} style={{ flex: 1 }} />
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderLeft: '1px solid #e5e7eb', paddingLeft: '16px' }}>
-                                  <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'left' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'left' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                      const newSecs = [...paperData.sections];
+                                      newSecs[sIdx].questions[qIdx].images![iIdx].align = 'left';
+                                      setPaperData({...paperData, sections: newSecs});
+                                    }}><AlignLeft size={16} /></button>
+                                    <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'center' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                      const newSecs = [...paperData.sections];
+                                      newSecs[sIdx].questions[qIdx].images![iIdx].align = 'center';
+                                      setPaperData({...paperData, sections: newSecs});
+                                    }}><AlignCenter size={16} /></button>
+                                    <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'right' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                      const newSecs = [...paperData.sections];
+                                      newSecs[sIdx].questions[qIdx].images![iIdx].align = 'right';
+                                      setPaperData({...paperData, sections: newSecs});
+                                    }}><AlignRight size={16} /></button>
+                                  </div>
+                                  <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)', marginBottom: 0 }} onClick={() => {
                                     const newSecs = [...paperData.sections];
-                                    newSecs[sIdx].questions[qIdx].images![iIdx].align = 'left';
+                                    newSecs[sIdx].questions[qIdx].images!.splice(iIdx, 1);
                                     setPaperData({...paperData, sections: newSecs});
-                                  }}><AlignLeft size={16} /></button>
-                                  <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'center' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
-                                    const newSecs = [...paperData.sections];
-                                    newSecs[sIdx].questions[qIdx].images![iIdx].align = 'center';
-                                    setPaperData({...paperData, sections: newSecs});
-                                  }}><AlignCenter size={16} /></button>
-                                  <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'right' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
-                                    const newSecs = [...paperData.sections];
-                                    newSecs[sIdx].questions[qIdx].images![iIdx].align = 'right';
-                                    setPaperData({...paperData, sections: newSecs});
-                                  }}><AlignRight size={16} /></button>
+                                  }}>Remove</button>
                                 </div>
-                                <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)', marginLeft: 'auto', marginBottom: 0 }} onClick={() => {
-                                  const newSecs = [...paperData.sections];
-                                  newSecs[sIdx].questions[qIdx].images!.splice(iIdx, 1);
-                                  setPaperData({...paperData, sections: newSecs});
-                                }}>Remove</button>
                               </div>
                             </div>
                           ))}
