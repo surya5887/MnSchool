@@ -113,7 +113,16 @@ const AuditLogs: React.FC = () => {
                     {log.user} <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', fontWeight: 500 }}>{log.role}</span>
                   </td>
                   <td style={{ color: 'var(--text-main)' }}>{log.action}</td>
-                  <td style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{log.ip}</td>
+                  <td style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    {log.ip.includes('GPS:') ? (
+                      <>
+                        {log.ip.split('GPS:')[0]} <br/>
+                        <a href={`https://www.google.com/maps?q=${log.ip.split('GPS:')[1].trim()}`} target="_blank" rel="noreferrer" style={{ color: '#10b981', textDecoration: 'underline', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                           📍 View on Map
+                        </a>
+                      </>
+                    ) : log.ip}
+                  </td>
                   <td>
                     <span className={`badge ${log.status === 'Success' ? 'success' : 'danger'}`}>
                       {log.status}
