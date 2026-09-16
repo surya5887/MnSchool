@@ -114,7 +114,7 @@ export interface QuestionPaperData {
     questions: {
       text: string;
       marks: number;
-      type?: 'subjective' | 'objective' | 'instruction';
+      type?: 'subjective' | 'objective' | 'instruction' | 'match';
       options?: string[];
       hint?: string;
       label?: string;
@@ -206,6 +206,7 @@ export const getExamSchedulesByTerm = async (examTerm: string) => {
     return [];
   }
 };
+
 
 
 

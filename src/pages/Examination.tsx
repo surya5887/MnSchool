@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search } from 'lucide-react';
+import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search, Image as ImageIcon, Square, Lightbulb, Settings } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { saveExamMark, getAllExamMarksForTerm, type ExamMarkData, saveExamSchedule, getExamSchedulesByClass, saveQuestionPaper, getQuestionPapersByClass, type ExamScheduleData, type QuestionPaperData } from '../services/examService';
@@ -546,41 +546,174 @@ const Examination: React.FC = () => {
                           setPaperData({...paperData, sections: newSecs});
                         }}
                         placeholder={q.type === 'instruction' ? "Type instruction here (e.g. Attempt any 5 questions)" : "Type question here..."}
-                      /></div>
+                      />
+                      
+                      {q.image && (
+                        <div style={{ marginTop: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '8px', background: '#f9fafb' }}>
+                          <img src={q.image} alt="Question" style={{ maxWidth: '100%', height: 'auto', display: 'block', marginBottom: '8px' }} />
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)' }} onClick={() => {
+                            const newSecs = [...paperData.sections];
+                            delete newSecs[sIdx].questions[qIdx].image;
+                            setPaperData({...paperData, sections: newSecs});
+                          }}>Remove Image</button>
+                        </div>
+                      )}
 
-                      <div className="question-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <select className="glass-input" value={q.type || 'subjective'} onChange={e => {
+                      {q.blankSpace !== undefined && (
+                        <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px', background: '#fef3c7', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #f59e0b' }}>
+                          <Square size={16} color="#d97706" />
+                          <span style={{ color: '#d97706', fontSize: '0.9rem', fontWeight: 600 }}>Blank Space (px):</span>
+                          <input type="number" className="glass-input" style={{ width: '80px', padding: '4px 8px' }} value={q.blankSpace} onChange={e => {
+                            const newSecs = [...paperData.sections];
+                            newSecs[sIdx].questions[qIdx].blankSpace = Number(e.target.value) || 0;
+                            setPaperData({...paperData, sections: newSecs});
+                          }} />
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)', marginLeft: 'auto' }} onClick={() => {
+                            const newSecs = [...paperData.sections];
+                            delete newSecs[sIdx].questions[qIdx].blankSpace;
+                            setPaperData({...paperData, sections: newSecs});
+                          }}>Remove Space</button>
+                        </div>
+                      )}
+
+                      {q.hint !== undefined && (
+                        <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px', background: '#f3f4f6', padding: '8px 12px', borderRadius: '8px' }}>
+                          <Lightbulb size={16} color="#4b5563" />
+                          <input type="text" className="glass-input" placeholder="Enter Hint..." style={{ flex: 1, padding: '4px 8px' }} value={q.hint} onChange={e => {
+                            const newSecs = [...paperData.sections];
+                            newSecs[sIdx].questions[qIdx].hint = e.target.value;
+                            setPaperData({...paperData, sections: newSecs});
+                          }} />
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)' }} onClick={() => {
+                            const newSecs = [...paperData.sections];
+                            delete newSecs[sIdx].questions[qIdx].hint;
+                            setPaperData({...paperData, sections: newSecs});
+                          }}>Remove Hint</button>
+                        </div>
+                      )}
+                      
+                      <div className="question-action-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '12px', padding: '8px', background: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                        <select className="glass-input" style={{ background: 'white' }} value={q.type || 'subjective'} onChange={e => {
                           const newSecs = [...paperData.sections];
                           newSecs[sIdx].questions[qIdx].type = e.target.value as any;
                           if (e.target.value === 'objective' && !newSecs[sIdx].questions[qIdx].options) {
                             newSecs[sIdx].questions[qIdx].options = ['', '', '', ''];
                           }
+                          if (e.target.value === 'match' && !newSecs[sIdx].questions[qIdx].matchPairs) {
+                            newSecs[sIdx].questions[qIdx].matchPairs = [{left: '', right: ''}, {left: '', right: ''}];
+                          }
                           setPaperData({...paperData, sections: newSecs});
                         }}>
                           <option value="subjective">Subjective</option>
                           <option value="objective">Objective (MCQ)</option>
+                          <option value="match">Match the Following</option>
                           <option value="instruction">Instruction Text</option>
                         </select>
                         
                         {q.type !== 'instruction' && (
-                          <>
-                            <input type="number" className="glass-input" style={{ width: '70px' }} value={q.marks} onChange={e => {
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'white', padding: '2px 8px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                            <input type="number" style={{ width: '40px', border: 'none', outline: 'none', background: 'transparent', textAlign: 'center' }} value={q.marks} onChange={e => {
                               const newSecs = [...paperData.sections];
                               newSecs[sIdx].questions[qIdx].marks = Number(e.target.value);
                               setPaperData({...paperData, sections: newSecs});
                             }} />
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>marks</span>
-                          </>
+                          </div>
                         )}
-                        <button className="btn-secondary" style={{ padding: "6px", color: "var(--danger)", width: "auto", marginBottom: 0 }} onClick={() => {
+
+                        <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }} />
+
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', padding: '4px 8px', borderRadius: '6px', fontSize: '0.85rem', color: '#4b5563', background: 'white', border: '1px solid var(--border-color)', transition: 'all 0.2s' }} className="hover-bg-gray">
+                          <ImageIcon size={14} /> Add Image
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => {
+                                // Compression
+                                const img = new Image();
+                                img.onload = () => {
+                                  const canvas = document.createElement('canvas');
+                                  let width = img.width; let height = img.height;
+                                  const max = 800;
+                                  if(width > max || height > max) {
+                                    if(width > height) { height = (height/width)*max; width = max; }
+                                    else { width = (width/height)*max; height = max; }
+                                  }
+                                  canvas.width = width; canvas.height = height;
+                                  const ctx = canvas.getContext('2d');
+                                  ctx?.drawImage(img, 0, 0, width, height);
+                                  const newSecs = [...paperData.sections];
+                                  newSecs[sIdx].questions[qIdx].image = canvas.toDataURL('image/jpeg', 0.8);
+                                  setPaperData({...paperData, sections: newSecs});
+                                };
+                                img.src = ev.target?.result as string;
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+
+                        <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onClick={() => {
+                           const newSecs = [...paperData.sections];
+                           newSecs[sIdx].questions[qIdx].blankSpace = 100;
+                           setPaperData({...paperData, sections: newSecs});
+                        }}>
+                          <Square size={14} /> Blank Space
+                        </button>
+
+                        <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onClick={() => {
+                           const newSecs = [...paperData.sections];
+                           newSecs[sIdx].questions[qIdx].hint = '';
+                           setPaperData({...paperData, sections: newSecs});
+                        }}>
+                          <Lightbulb size={14} /> Hint
+                        </button>
+
+                        <button className="btn-secondary" style={{ padding: "6px", color: "var(--danger)", width: "auto", marginBottom: 0, marginLeft: 'auto', background: 'white', border: '1px solid #fca5a5' }} onClick={() => {
                           const newSecs = [...paperData.sections];
                           newSecs[sIdx].questions.splice(qIdx, 1);
                           setPaperData({...paperData, sections: newSecs});
                         }}><Trash2 size={14} /></button>
                       </div>
                     </div>
+                    </div>
+
+                    {q.type === 'match' && (
+                      <div style={{ marginTop: '16px', paddingLeft: '32px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '8px', fontWeight: 'bold', color: 'var(--text-muted)' }}>
+                          <div>Left Column</div>
+                          <div>Right Column</div>
+                        </div>
+                        {q.matchPairs?.map((pair, pIdx) => (
+                          <div key={pIdx} style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+                            <input type="text" className="glass-input" style={{ flex: 1 }} value={pair.left} onChange={e => {
+                               const newSecs = [...paperData.sections];
+                               newSecs[sIdx].questions[qIdx].matchPairs![pIdx].left = e.target.value;
+                               setPaperData({...paperData, sections: newSecs});
+                            }} placeholder="Item" />
+                            <input type="text" className="glass-input" style={{ flex: 1 }} value={pair.right} onChange={e => {
+                               const newSecs = [...paperData.sections];
+                               newSecs[sIdx].questions[qIdx].matchPairs![pIdx].right = e.target.value;
+                               setPaperData({...paperData, sections: newSecs});
+                            }} placeholder="Match" />
+                            <button className="btn-secondary" style={{ padding: '8px', color: 'var(--danger)' }} onClick={() => {
+                               const newSecs = [...paperData.sections];
+                               newSecs[sIdx].questions[qIdx].matchPairs!.splice(pIdx, 1);
+                               setPaperData({...paperData, sections: newSecs});
+                            }}><Trash2 size={16} /></button>
+                          </div>
+                        ))}
+                        <button className="btn-secondary" style={{ marginTop: '8px', fontSize: '0.85rem', padding: '6px 12px' }} onClick={() => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[sIdx].questions[qIdx].matchPairs!.push({left: '', right: ''});
+                          setPaperData({...paperData, sections: newSecs});
+                        }}><Plus size={14} /> Add Row</button>
+                      </div>
+                    )}
+
                     {q.type === 'objective' && (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingLeft: '32px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingLeft: '32px', marginTop: '12px' }}>
                         {['A', 'B', 'C', 'D'].map((optLabel, optIdx) => (
                           <div key={optIdx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontWeight: 'bold' }}>{optLabel}.</span>
@@ -824,6 +957,7 @@ const Examination: React.FC = () => {
 };
 
 export default Examination;
+
 
 
 

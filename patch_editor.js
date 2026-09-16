@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+const fs = require('fs');
+const content = \import React, { useRef, useEffect, useState } from 'react';
 import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered } from 'lucide-react';
 
 interface Props {
@@ -13,7 +14,6 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
   const [isFocused, setIsFocused] = useState(false);
   const lastHtml = useRef(value);
 
-  // Set initial value on mount, and update if value changes externally
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value;
@@ -29,17 +29,11 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
     }
   };
 
-  const execCommand = (cmd: string) => {
-        document.execCommand(cmd, false, undefined);
-    if (editorRef.current) {
-      const html = editorRef.current.innerHTML;
-      lastHtml.current = html;
-      onChange(html);
-      
-      // Fallback focus in case it was lost
-      if (!isFocused) {
-        editorRef.current.focus();
-      }
+  const execCommand = (cmd: string, arg?: string) => {
+    document.execCommand(cmd, false, arg);
+    handleInput();
+    if (!isFocused && editorRef.current) {
+      editorRef.current.focus();
     }
   };
 
@@ -68,40 +62,28 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
       transition: 'border 0.2s',
       boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
     }}>
-      <div style={{ display: 'flex', gap: '4px', padding: '6px 8px', borderBottom: '1px solid rgba(0,0,0,0.1)', background: '#f9fafb' }}>
-        <button 
-          type="button"
-          onMouseDown={e => { e.preventDefault(); execCommand('bold'); }}
-          style={btnStyle}
-          className="rich-btn"
-          title="Bold"
-        ><Bold size={16} /></button>
-        <button 
-          type="button"
-          onMouseDown={e => { e.preventDefault(); execCommand('italic'); }}
-          style={btnStyle}
-          className="rich-btn"
-          title="Italic"
-        ><Italic size={16} /></button>
-        <button 
-          type="button"
-          onMouseDown={e => { e.preventDefault(); execCommand('underline'); }}
-          style={btnStyle}
-          className="rich-btn"
-          title="Underline"
-        ><Underline size={16} /></button>
+      <div style={{ display: 'flex', gap: '4px', padding: '6px 8px', borderBottom: '1px solid rgba(0,0,0,0.1)', background: '#f9fafb', flexWrap: 'wrap' }}>
+        <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('bold'); }} style={btnStyle} className="rich-btn" title="Bold"><Bold size={16} /></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('italic'); }} style={btnStyle} className="rich-btn" title="Italic"><Italic size={16} /></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('underline'); }} style={btnStyle} className="rich-btn" title="Underline"><Underline size={16} /></button>
+        
         <div style={{ width: '1px', background: '#e5e7eb', margin: '0 4px' }} />
+        
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('justifyLeft'); }} style={btnStyle} className="rich-btn" title="Align Left"><AlignLeft size={16} /></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('justifyCenter'); }} style={btnStyle} className="rich-btn" title="Align Center"><AlignCenter size={16} /></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('justifyRight'); }} style={btnStyle} className="rich-btn" title="Align Right"><AlignRight size={16} /></button>
+        
         <div style={{ width: '1px', background: '#e5e7eb', margin: '0 4px' }} />
+        
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('insertUnorderedList'); }} style={btnStyle} className="rich-btn" title="Bullet List"><List size={16} /></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('insertOrderedList'); }} style={btnStyle} className="rich-btn" title="Numbered List"><ListOrdered size={16} /></button>
-        <style>{`
+
+        <style>{\
           .rich-btn:hover { background: #e5e7eb !important; border-color: #d1d5db !important; }
           .rich-btn:active { background: #d1d5db !important; transform: scale(0.95); }
           .editor-content:empty:before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; display: block; }
-        `}</style>
+          .editor-content ul, .editor-content ol { padding-left: 20px; margin: 4px 0; }
+        \}</style>
       </div>
       
       <div 
@@ -121,7 +103,8 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
           background: 'white',
           color: 'var(--text-main)',
           cursor: 'text',
-          whiteSpace: 'pre-wrap'
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word'
         }}
         data-placeholder={placeholder}
       />
@@ -130,4 +113,5 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
 };
 
 export default RichTextEditor;
-
+\;
+fs.writeFileSync('src/components/RichTextEditor.tsx', content);

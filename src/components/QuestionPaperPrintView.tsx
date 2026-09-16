@@ -167,15 +167,48 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                           <td style={{ verticalAlign: 'top', width: '60px', padding: '8px 0', fontWeight: 'bold' }}>{label}</td>
                           <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
                             <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
+                            
+                            {q.image && (
+                              <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                                <img src={q.image} alt="" style={{ maxWidth: '100%', height: 'auto' }} />
+                              </div>
+                            )}
+
+                            {q.type === 'match' && q.matchPairs && (
+                              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                                <table style={{ width: '80%', borderCollapse: 'collapse' }}>
+                                  <tbody>
+                                    {q.matchPairs.map((pair, pIdx) => (
+                                      <tr key={pIdx}>
+                                        <td style={{ padding: '8px', border: '1px solid transparent' }}>{pIdx + 1}. {pair.left}</td>
+                                        <td style={{ padding: '8px', border: '1px solid transparent', textAlign: 'center' }}>—</td>
+                                        <td style={{ padding: '8px', border: '1px solid transparent' }}>({String.fromCharCode(97 + pIdx)}) {pair.right}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+
                             {q.type === 'objective' && q.options && (
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
                                 {q.options.map((opt, optIdx) => (
                                   <div key={optIdx} style={{ display: 'flex', gap: '4px' }}>
                                     <span>({['a', 'b', 'c', 'd'][optIdx]})</span>
-                                    <div dangerouslySetInnerHTML={{ __html: opt.replace(/\n/g, '<br/>') }} />
+                                    <span>{opt}</span>
                                   </div>
                                 ))}
                               </div>
+                            )}
+
+                            {q.hint && (
+                              <div style={{ marginTop: '8px', fontStyle: 'italic', fontSize: '0.9em', color: '#555' }}>
+                                (Hint: {q.hint})
+                              </div>
+                            )}
+
+                            {q.blankSpace !== undefined && q.blankSpace > 0 && (
+                              <div style={{ height: `${q.blankSpace}px`, width: '100%' }} />
                             )}
                           </td>
                           <td style={{ verticalAlign: 'top', width: '50px', padding: '8px 0', textAlign: 'right', fontWeight: 'bold' }}>[{q.marks}]</td>
@@ -194,6 +227,88 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
           --- End of Question Paper ---
         </div>
       </div>
+
+      {paperData.includeOMR && (
+        <div className="paper-container" style={{ marginTop: '20px', pageBreakBefore: 'always', padding: '40px', boxSizing: 'border-box' }}>
+          <div style={{ textAlign: 'center', marginBottom: '20px', borderBottom: '2px solid #000', paddingBottom: '10px' }}>
+            <h1 style={{ margin: '0 0 5px 0', fontSize: '24px', textTransform: 'uppercase' }}>MN PUBLIC SCHOOL</h1>
+            <h2 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>OMR ANSWER SHEET</h2>
+          </div>
+
+          <div style={{ display: 'flex', gap: '40px', marginBottom: '30px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ border: '1px solid #000', padding: '10px', height: '100%', boxSizing: 'border-box' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '10px', textDecoration: 'underline' }}>INSTRUCTIONS FOR FILLING THE SHEET</div>
+                <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', lineHeight: '1.6' }}>
+                  <li>Use Blue/Black Ball Point Pen only.</li>
+                  <li>Darken the circle completely and properly.</li>
+                  <li>Cutting and erasing on this sheet is not allowed.</li>
+                  <li>Do not make any stray marks on the sheet.</li>
+                  <li>Rough work must not be done on the answer sheet.</li>
+                </ol>
+                <div style={{ marginTop: '20px', display: 'flex', gap: '20px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', marginBottom: '4px' }}>Correct Method:</div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#000' }}></div>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '1px solid #000' }}></div>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '1px solid #000' }}></div>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '1px solid #000' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', marginBottom: '4px' }}>Wrong Method:</div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>✓</div>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>✗</div>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#666' }}></div>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '1px solid #000' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #000' }}>
+                <tbody>
+                  <tr><td style={{ border: '1px solid #000', padding: '8px 10px', fontWeight: 'bold' }}>Student Name</td><td style={{ border: '1px solid #000', padding: '8px 10px' }}></td></tr>
+                  <tr><td style={{ border: '1px solid #000', padding: '8px 10px', fontWeight: 'bold' }}>Roll Number</td><td style={{ border: '1px solid #000', padding: '8px 10px' }}></td></tr>
+                  <tr><td style={{ border: '1px solid #000', padding: '8px 10px', fontWeight: 'bold' }}>Class & Section</td><td style={{ border: '1px solid #000', padding: '8px 10px' }}>{paperData.classId} {paperData.sectionId}</td></tr>
+                  <tr><td style={{ border: '1px solid #000', padding: '8px 10px', fontWeight: 'bold' }}>Subject</td><td style={{ border: '1px solid #000', padding: '8px 10px' }}>{paperData.subject}</td></tr>
+                  <tr><td style={{ border: '1px solid #000', padding: '8px 10px', fontWeight: 'bold' }}>Date of Exam</td><td style={{ border: '1px solid #000', padding: '8px 10px' }}></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '30px' }}>
+            {[0, 1, 2, 3].map(colIdx => (
+              <div key={colIdx}>
+                {Array.from({ length: 15 }).map((_, rIdx) => {
+                  const qNum = colIdx * 15 + rIdx + 1;
+                  return (
+                    <div key={rIdx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                      <div style={{ width: '30px', fontWeight: 'bold', fontSize: '13px' }}>{qNum}.</div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {['A', 'B', 'C', 'D'].map(opt => (
+                          <div key={opt} style={{ width: '22px', height: '22px', borderRadius: '50%', border: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#9ca3af' }}>{opt}</div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: '60px', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #000', paddingTop: '10px' }}>
+            <div style={{ width: '200px', textAlign: 'center', borderTop: '1px dashed #666', paddingTop: '5px' }}>Signature of Candidate</div>
+            <div style={{ width: '200px', textAlign: 'center', borderTop: '1px dashed #666', paddingTop: '5px' }}>Signature of Invigilator</div>
+            <div style={{ width: '200px', textAlign: 'center', borderTop: '1px dashed #666', paddingTop: '5px' }}>Signature of Examiner</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
