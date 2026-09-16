@@ -114,6 +114,7 @@ export interface QuestionPaperData {
       marks: number;
       type?: 'subjective' | 'objective' | 'instruction';
       options?: string[];
+      label?: string;
     }[];
   }[];
   createdAt: string;

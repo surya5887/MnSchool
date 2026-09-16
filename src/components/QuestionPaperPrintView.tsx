@@ -8,6 +8,7 @@ interface QuestionPaperProps {
 }
 
 const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose }) => {
+  let qCounter = 1;
   return (
     <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
       <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
@@ -137,7 +138,6 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         {/* Sections and Questions */}
         <div style={{ marginTop: '30px' }}>
           {paperData.sections.map((section, sIdx) => {
-            let qCounter = 1;
             return (
               <div key={sIdx} style={{ marginBottom: '30px' }}>
                 {section.sectionTitle && (
@@ -160,9 +160,11 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                       }
                       
                       const currentQNum = qCounter++;
+                      const label = q.label !== undefined ? q.label : `Q${currentQNum}.`;
+
                       return (
                         <tr key={qIdx} style={{ pageBreakInside: "avoid", breakInside: "avoid" }}>
-                          <td style={{ verticalAlign: 'top', width: '40px', padding: '8px 0', fontWeight: 'bold' }}>Q{currentQNum}.</td>
+                          <td style={{ verticalAlign: 'top', width: '60px', padding: '8px 0', fontWeight: 'bold' }}>{label}</td>
                           <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
                             <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
                             {q.type === 'objective' && q.options && (
