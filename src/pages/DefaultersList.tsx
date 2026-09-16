@@ -243,7 +243,7 @@ const DefaultersList: React.FC = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                           <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', flexShrink: 0, fontSize: '1.4rem', boxShadow: '0 4px 10px rgba(239,68,68,0.3)' }}>
-                            {d.student.firstName[0]}
+                            {(d.student.firstName || '')[0]}{(d.student.lastName || '')[0]}
                           </div>
                           <div>
                             <div 

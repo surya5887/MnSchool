@@ -757,7 +757,7 @@ const Examination: React.FC = () => {
                     filteredStudents.map(student => (
                       <motion.div key={student.id} whileHover={{ y: -5 }} className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: '20px', alignItems: 'center', textAlign: 'center' }}>
                         <div style={{ width: '70px', height: '70px', borderRadius: '35px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-                          {student.firstName[0]}{student.lastName ? student.lastName[0] : ''}
+                          {(student.firstName || '')[0]}{(student.lastName || '')[0]}
                         </div>
                         <div>
                           <h4 style={{ margin: '0 0 4px 0', fontSize: '1.2rem' }}>{student.firstName} {student.lastName}</h4>
