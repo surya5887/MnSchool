@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ShieldAlert, MapPin } from "lucide-react";
 
 export const LocationEnforcer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -70,11 +70,15 @@ export const LocationEnforcer: React.FC<{ children: React.ReactNode }> = ({ chil
             <strong>Please allow Location permissions in your browser settings and reload.</strong>
           </p>
           <button 
-            onClick={() => window.location.reload()} 
+            onClick={() => {
+              setLoading(true);
+              setTimeout(() => window.location.reload(), 500);
+            }} 
             className="btn-primary"
             style={{ width: "100%", padding: "16px", fontSize: "1.1rem" }}
+            disabled={loading}
           >
-            I have enabled it, Reload
+            {loading ? "Checking permissions..." : "I have enabled it, Reload"}
           </button>
         </div>
       </div>
