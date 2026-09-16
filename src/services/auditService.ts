@@ -15,15 +15,35 @@ export interface AuditLogData {
 
 
 let cachedIpInfo = '';
-export const getClientInfo = async () => {
-  if (cachedIpInfo) return cachedIpInfo;
+export const getClientInfo = async (): Promise<string> => {
+  // Device detection
+  const ua = navigator.userAgent;
+  let device = "Desktop";
+  if (/android/i.test(ua)) device = "Android";
+  else if (/iPad|iPhone|iPod/.test(ua)) device = "iOS";
+  else if (/Windows/.test(ua)) device = "Windows";
+  else if (/Mac/.test(ua)) device = "Mac";
+
+  if ((window as any).latestLocation) {
+    return `${device} | ${(window as any).latestLocation}`;
+  }
+
+  // Fallback if watchPosition hasn't fired yet
   try {
-    const res = await fetch('https://ipapi.co/json/');
-    const data = await res.json();
-    cachedIpInfo = `${data.ip} (${data.city || 'Unknown'}, ${data.country_name || 'Location'})`;
-    return cachedIpInfo;
-  } catch (e) {
-    return 'Unknown IP';
+    const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+    });
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    return `${device} | GPS: ${lat.toFixed(5)},${lon.toFixed(5)}`;
+  } catch (err) {
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      const data = await res.json();
+      return `${device} | ${data.ip} (${data.city || 'Unknown'})`;
+    } catch (e) {
+      return `${device} | Unknown Location`;
+    }
   }
 };
 

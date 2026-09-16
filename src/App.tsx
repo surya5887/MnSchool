@@ -23,38 +23,42 @@ import ClassDetails from './pages/ClassDetails';
 import StaffProfile from './pages/StaffProfile';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+import { LocationEnforcer } from './components/LocationEnforcer';
+
 function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" toastOptions={{ duration: 4000, style: { background: '#fff', color: '#363636', borderRadius: '12px', padding: '16px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', fontWeight: 500 } }} />
       <InstallPrompt />
       <ErrorBoundary>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="students" element={<Students />} />
-            <Route path="admission" element={<NewAdmission />} />
-            <Route path="student/:id" element={<StudentProfile />} />
-            <Route path="attendance" element={<Attendance />} />
-            <Route path="staff" element={<Staff />} />
-            <Route path="staff/:id" element={<StaffProfile />} />
-            <Route path="ledger" element={<MasterLedger />} />
-            <Route path="announcements" element={<Announcements />} />
-            <Route path="classes" element={<Classes />} />
-            <Route path="classes/:id" element={<ClassDetails />} />
-            <Route path="exam" element={<Examination />} />
-            <Route path="timetable" element={<Timetable />} />
-            <Route path="transport" element={<Transport />} />
-            <Route path="library" element={<Library />} />
-            <Route path="audit" element={<AuditLogs />} />
-            <Route path="settings" element={<SystemSettings />} />
-            <Route path="defaulters" element={<DefaultersList />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <LocationEnforcer>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="students" element={<Students />} />
+              <Route path="admission" element={<NewAdmission />} />
+              <Route path="student/:id" element={<StudentProfile />} />
+              <Route path="attendance" element={<Attendance />} />
+              <Route path="staff" element={<Staff />} />
+              <Route path="staff/:id" element={<StaffProfile />} />
+              <Route path="ledger" element={<MasterLedger />} />
+              <Route path="announcements" element={<Announcements />} />
+              <Route path="classes" element={<Classes />} />
+              <Route path="classes/:id" element={<ClassDetails />} />
+              <Route path="exam" element={<Examination />} />
+              <Route path="timetable" element={<Timetable />} />
+              <Route path="transport" element={<Transport />} />
+              <Route path="library" element={<Library />} />
+              <Route path="audit" element={<AuditLogs />} />
+              <Route path="settings" element={<SystemSettings />} />
+              <Route path="defaulters" element={<DefaultersList />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </LocationEnforcer>
       </ErrorBoundary>
     </BrowserRouter>
   );

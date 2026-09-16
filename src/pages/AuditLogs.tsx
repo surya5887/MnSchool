@@ -101,7 +101,7 @@ const AuditLogs: React.FC = () => {
                 <th style={{ width: '180px' }}>Time</th>
                 <th>User (Role)</th>
                 <th>Action Performed</th>
-                <th style={{ width: '150px' }}>IP Address</th>
+                <th style={{ width: '180px' }}>Device & Location</th>
                 <th style={{ width: '120px' }}>Status</th>
               </tr>
             </thead>
