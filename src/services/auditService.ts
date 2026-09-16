@@ -16,16 +16,46 @@ export interface AuditLogData {
 
 let cachedIpInfo = '';
 export const getClientInfo = async (): Promise<string> => {
-  // Device detection
+  // Enhanced Device and Browser detection
+  let device = "";
+  let browser = "";
   const ua = navigator.userAgent;
-  let device = "Desktop";
-  if (/android/i.test(ua)) device = "Android";
-  else if (/iPad|iPhone|iPod/.test(ua)) device = "iOS";
-  else if (/Windows/.test(ua)) device = "Windows";
-  else if (/Mac/.test(ua)) device = "Mac";
+
+  if (ua.includes("Firefox")) browser = "Firefox";
+  else if (ua.includes("SamsungBrowser")) browser = "Samsung Internet";
+  else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+  else if (ua.includes("Edge") || ua.includes("Edg")) browser = "Edge";
+  else if (ua.includes("Chrome")) browser = "Chrome";
+  else if (ua.includes("Safari")) browser = "Safari";
+  else browser = "Browser";
+
+  if ((navigator as any).userAgentData) {
+    try {
+      const hints = await (navigator as any).userAgentData.getHighEntropyValues(["model", "platform"]);
+      if (hints.platform) {
+        device = hints.platform;
+        if (hints.model) device += ` ${hints.model}`;
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  if (!device) {
+    if (/android/i.test(ua)) {
+      const match = ua.match(/Android [^;]+; ([^)]+)\)/);
+      if (match && match[1]) device = `Android (${match[1].split('Build')[0].trim()})`;
+      else device = "Android Device";
+    }
+    else if (/iPad|iPhone|iPod/.test(ua)) device = "Apple iOS Device";
+    else if (/Windows/.test(ua)) device = "Windows PC";
+    else if (/Mac/.test(ua)) device = "Mac";
+    else if (/Linux/.test(ua)) device = "Linux PC";
+    else device = "Unknown Device";
+  }
+
+  const fullDevice = `${device} - ${browser}`;
 
   if ((window as any).latestLocation) {
-    return `${device} | ${(window as any).latestLocation}`;
+    return `${fullDevice} | ${(window as any).latestLocation}`;
   }
 
   // Fallback if watchPosition hasn't fired yet
@@ -35,14 +65,14 @@ export const getClientInfo = async (): Promise<string> => {
     });
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
-    return `${device} | GPS: ${lat.toFixed(5)},${lon.toFixed(5)}`;
+    return `${fullDevice} | GPS: ${lat.toFixed(5)},${lon.toFixed(5)}`;
   } catch (err) {
     try {
       const res = await fetch('https://ipapi.co/json/');
       const data = await res.json();
-      return `${device} | ${data.ip} (${data.city || 'Unknown'})`;
+      return `${fullDevice} | ${data.ip} (${data.city || 'Unknown'})`;
     } catch (e) {
-      return `${device} | Unknown Location`;
+      return `${fullDevice} | Unknown Location`;
     }
   }
 };
