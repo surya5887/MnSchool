@@ -100,7 +100,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         `}
       </style>
 
-      <div className="paper-container">
+      <div className="paper-container" style={{ fontSize: paperData.globalFontSize || '14px' }}>
         {/* School Header */}
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h1 style={{ margin: '0 0 5px 0', fontSize: '24px', textTransform: 'uppercase' }}>MN PUBLIC SCHOOL</h1>
@@ -170,7 +170,10 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                             {q.type === 'objective' && q.options && (
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
                                 {q.options.map((opt, optIdx) => (
-                                  <div key={optIdx}>({['a', 'b', 'c', 'd'][optIdx]}) {opt}</div>
+                                  <div key={optIdx} style={{ display: 'flex', gap: '4px' }}>
+                                    <span>({['a', 'b', 'c', 'd'][optIdx]})</span>
+                                    <div dangerouslySetInnerHTML={{ __html: opt.replace(/\n/g, '<br/>') }} />
+                                  </div>
                                 ))}
                               </div>
                             )}
@@ -196,3 +199,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
 };
 
 export default QuestionPaperPrintView;
+
+
+
+

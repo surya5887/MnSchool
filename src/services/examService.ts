@@ -107,6 +107,8 @@ export interface QuestionPaperData {
   timeAllowed: string;
   maxMarks: number;
   generalInstructions: string[];
+    includeOMR?: boolean;
+    globalFontSize?: string;
   sections: {
     sectionTitle: string;
     questions: {
@@ -114,6 +116,7 @@ export interface QuestionPaperData {
       marks: number;
       type?: 'subjective' | 'objective' | 'instruction';
       options?: string[];
+      hint?: string;
       label?: string;
     }[];
   }[];
@@ -203,3 +206,6 @@ export const getExamSchedulesByTerm = async (examTerm: string) => {
     return [];
   }
 };
+
+
+
