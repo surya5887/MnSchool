@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search, Image as ImageIcon, Square, Lightbulb, Settings } from 'lucide-react';
+import { FileText, ArrowLeft, Save, CheckCircle, Award, FileOutput, Printer, Edit3, ShieldAlert, User, ChevronRight, Calendar, FileSignature, Plus, Trash2, Bold, Italic, Underline, Search, Image as ImageIcon, Square, Lightbulb, Settings, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { saveExamMark, getAllExamMarksForTerm, type ExamMarkData, saveExamSchedule, getExamSchedulesByClass, saveQuestionPaper, getQuestionPapersByClass, type ExamScheduleData, type QuestionPaperData } from '../services/examService';
@@ -555,7 +555,51 @@ const Examination: React.FC = () => {
                             const newSecs = [...paperData.sections];
                             delete newSecs[sIdx].questions[qIdx].image;
                             setPaperData({...paperData, sections: newSecs});
-                          }}>Remove Image</button>
+                          }}>Remove Image (Legacy)</button>
+                        </div>
+                      )}
+
+                      {q.images && q.images.length > 0 && (
+                        <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          {q.images.map((img, iIdx) => (
+                            <div key={iIdx} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', background: '#f9fafb' }}>
+                              <div style={{ textAlign: img.align || 'center' }}>
+                                <img src={img.url} alt="Question" style={{ width: `${img.width || 100}%`, height: 'auto', marginBottom: '12px' }} />
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', background: 'white', padding: '8px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '200px' }}>
+                                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Size: {img.width}%</span>
+                                  <input type="range" min="10" max="100" value={img.width} onChange={e => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].images![iIdx].width = Number(e.target.value);
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }} style={{ flex: 1 }} />
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderLeft: '1px solid #e5e7eb', paddingLeft: '16px' }}>
+                                  <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'left' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].images![iIdx].align = 'left';
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><AlignLeft size={16} /></button>
+                                  <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'center' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].images![iIdx].align = 'center';
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><AlignCenter size={16} /></button>
+                                  <button className="btn-secondary" style={{ padding: '4px', background: img.align === 'right' ? '#e5e7eb' : 'transparent', border: 'none', marginBottom: 0 }} onClick={() => {
+                                    const newSecs = [...paperData.sections];
+                                    newSecs[sIdx].questions[qIdx].images![iIdx].align = 'right';
+                                    setPaperData({...paperData, sections: newSecs});
+                                  }}><AlignRight size={16} /></button>
+                                </div>
+                                <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: 'var(--danger)', marginLeft: 'auto', marginBottom: 0 }} onClick={() => {
+                                  const newSecs = [...paperData.sections];
+                                  newSecs[sIdx].questions[qIdx].images!.splice(iIdx, 1);
+                                  setPaperData({...paperData, sections: newSecs});
+                                }}>Remove</button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
 
@@ -644,7 +688,14 @@ const Examination: React.FC = () => {
                                   const ctx = canvas.getContext('2d');
                                   ctx?.drawImage(img, 0, 0, width, height);
                                   const newSecs = [...paperData.sections];
-                                  newSecs[sIdx].questions[qIdx].image = canvas.toDataURL('image/jpeg', 0.8);
+                                  if (!newSecs[sIdx].questions[qIdx].images) {
+                                    newSecs[sIdx].questions[qIdx].images = [];
+                                  }
+                                  newSecs[sIdx].questions[qIdx].images!.push({
+                                    url: canvas.toDataURL('image/jpeg', 0.8),
+                                    width: 100,
+                                    align: 'center'
+                                  });
                                   setPaperData({...paperData, sections: newSecs});
                                 };
                                 img.src = ev.target?.result as string;

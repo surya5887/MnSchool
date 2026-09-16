@@ -174,6 +174,16 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
+                            {q.images && q.images.length > 0 && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
+                                {q.images.map((img, iIdx) => (
+                                  <div key={iIdx} style={{ textAlign: img.align || 'center' }}>
+                                    <img src={img.url} alt="" style={{ width: `${img.width || 100}%`, maxWidth: '100%', height: 'auto' }} />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
                             {q.type === 'match' && q.matchPairs && (
                               <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
                                 <table style={{ width: '80%', borderCollapse: 'collapse' }}>
