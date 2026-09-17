@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ArrowLeft, Printer, Circle, Square, Triangle, Hexagon, Octagon, Star, Diamond, Minus } from 'lucide-react';
 
 const renderShape = (shape: any) => {
@@ -34,22 +34,14 @@ import BlockPrintRenderer from './BlockPrintRenderer';
 
 interface QuestionPaperProps {
   paperData: QuestionPaperData;
-  onClose: () => void;
+  onClose?: () => void;
+  mode?: 'print' | 'inline';
 }
 
-const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose }) => {
+const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose, mode = 'print' }) => {
   let qCounter = 1;
-  return (
-    <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
-      <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
-        <button className="btn-secondary" onClick={onClose}>
-          <ArrowLeft size={20} /> Back
-        </button>
-        <button className="btn-primary" onClick={() => window.print()}>
-          <Printer size={20} /> Print Question Paper
-        </button>
-      </div>
-
+  const content = (
+    <>
       <style>
         {`
           @media print {
@@ -435,12 +427,33 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (mode === 'inline') {
+    return (
+      <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center', width: '800px', height: 'max-content' }}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
+      <div className="print-hide" style={{ background: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 0, zIndex: 10 }}>
+        <button className="btn-secondary" onClick={onClose}>
+          <ArrowLeft size={20} /> Back
+        </button>
+        <button className="btn-primary" onClick={() => window.print()}>
+          <Printer size={20} /> Print Question Paper
+        </button>
+      </div>
+      {content}
     </div>
   );
 };
 
+
+
+
 export default QuestionPaperPrintView;
-
-
-
-

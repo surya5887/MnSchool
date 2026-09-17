@@ -480,10 +480,12 @@ const Examination: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
           <button className="btn-secondary" style={{ padding: '8px 12px' }} onClick={() => setView('main')}><ArrowLeft size={20} /> Back</button>
           <div><h2 style={{ margin: 0 }}>Question Paper Generator</h2><p style={{ margin: 0, color: 'var(--text-muted)' }}>Class: {classFilter} {sectionFilter}</p></div>
-        </div>
-        
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          {/* Header Info */}
+          </div>
+          
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', maxHeight: 'calc(100vh - 150px)', paddingRight: '12px' }}>
+              <div className="glass-panel" style={{ padding: '24px' }}>
+                {/* Header Info */}
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px' }}>
             <div style={{ flex: "1 1 120px" }}>
                 <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Exam Term</label>
@@ -1099,8 +1101,16 @@ const Examination: React.FC = () => {
                  setTimeout(() => setSaved(false), 3000);
                }
              }} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save to Server'}</button>
-             <button className="btn-secondary" onClick={() => setShowPrintView(true)}><Printer size={18} style={{ marginRight: '8px' }} /> Preview & Print Paper</button>
+             <button className="btn-secondary" onClick={() => setShowPrintView(true)}><Printer size={18} style={{ marginRight: '8px' }} /> Full Screen Print</button>
           </div>
+        </div>
+        </div>
+
+        {/* Right Column: Live A4 Preview */}
+        <div style={{ flex: 1, position: 'sticky', top: '24px', height: 'calc(100vh - 150px)', display: 'flex', justifyContent: 'center', background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '12px', padding: '24px', overflowY: 'auto' }}>
+            {paperData && <QuestionPaperPrintView paperData={paperData} mode="inline" />}
+        </div>
+        
         </div>
       </motion.div>
     );
