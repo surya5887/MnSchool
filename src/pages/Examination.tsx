@@ -576,7 +576,18 @@ const Examination: React.FC = () => {
                         }}
                         placeholder={q.type === 'instruction' ? "Type instruction here (e.g. Attempt any 5 questions)" : "Type question here..."}
                       />
+
+                      {q.type === 'tracing' && (
+                        <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '4px', fontStyle: 'italic' }}>
+                          Note: For tracing, just type the letters (e.g., "A B C D E"). The editor format (bold/italic) will be ignored; it will be rendered as dotted grids in the print view.
+                        </div>
+                      )}
                       
+                      {q.type === 'passage' && (
+                        <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '4px', fontStyle: 'italic' }}>
+                          Note: Passage text spans the full width and allows for larger reading blocks.
+                        </div>
+                      )}
                       {q.image && (
                         <div style={{ marginTop: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '8px', background: '#f9fafb' }}>
                           <img src={q.image} alt="Question" style={{ maxWidth: '100%', height: 'auto', display: 'block', marginBottom: '8px' }} />
@@ -816,6 +827,9 @@ const Examination: React.FC = () => {
                           <option value="objective">Objective (MCQ)</option>
                           <option value="match">Match the Following</option>
                           <option value="fill_in_the_blanks">Fill in the Blanks</option>
+                          <option value="true_false">True / False</option>
+                          <option value="tracing">Tracing (Play Class)</option>
+                          <option value="passage">Comprehension Passage</option>
                           <option value="instruction">Instruction Text</option>
                         </select>
                         

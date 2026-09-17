@@ -114,7 +114,7 @@ export interface QuestionPaperData {
     questions: {
       text: string;
       marks: number;
-      type?: 'subjective' | 'objective' | 'instruction' | 'match' | 'fill_in_the_blanks';
+      type?: 'subjective' | 'objective' | 'instruction' | 'match' | 'fill_in_the_blanks' | 'true_false' | 'tracing' | 'passage';
       options?: string[];
       optionImages?: string[];
       wordBank?: string[];

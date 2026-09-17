@@ -195,7 +195,13 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                         <tr key={qIdx} style={{ pageBreakInside: "avoid", breakInside: "avoid" }}>
                           <td style={{ verticalAlign: 'top', width: '60px', padding: '8px 0', fontWeight: 'bold' }}>{label}</td>
                           <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
-                            <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
+                            {q.type === 'passage' ? (
+                              <div style={{ border: '1px solid #000', padding: '12px', borderRadius: '4px', background: '#fdfdfd', marginBottom: '12px' }}>
+                                <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
+                              </div>
+                            ) : (
+                              <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
+                            )}
                             
                             {q.image && (
                               <div style={{ marginTop: '12px', textAlign: 'center' }}>
@@ -280,6 +286,38 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                       )}
                                       {opt && <span>{opt}</span>}
                                     </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {q.type === 'true_false' && (
+                              <div style={{ display: 'flex', gap: '32px', marginTop: '12px', paddingLeft: '12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ width: '16px', height: '16px', border: '1px solid #000' }}></div>
+                                  <span>True</span>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ width: '16px', height: '16px', border: '1px solid #000' }}></div>
+                                  <span>False</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {q.type === 'tracing' && (
+                              <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0', borderTop: '1px solid #000', borderLeft: '1px solid #000' }}>
+                                {q.text.replace(/<[^>]*>?/gm, '').split('').filter(char => char.trim() !== '').map((char, cIdx) => (
+                                  <div key={cIdx} style={{ 
+                                    borderRight: '1px solid #000', 
+                                    borderBottom: '1px solid #000', 
+                                    padding: '24px 0', 
+                                    textAlign: 'center', 
+                                    fontSize: '3rem', 
+                                    fontFamily: 'Comic Sans MS, sans-serif',
+                                    color: '#d1d5db',
+                                    fontWeight: 'bold'
+                                  }}>
+                                    {char.toUpperCase()}
                                   </div>
                                 ))}
                               </div>

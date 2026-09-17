@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered } from 'lucide-react';
+import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Superscript, Subscript } from 'lucide-react';
 
 interface Props {
   value: string;
@@ -68,7 +68,7 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
       transition: 'border 0.2s',
       boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
     }}>
-      <div style={{ display: 'flex', gap: '4px', padding: '6px 8px', borderBottom: '1px solid rgba(0,0,0,0.1)', background: '#f9fafb' }}>
+      <div style={{ display: 'flex', gap: '4px', padding: '6px 8px', borderBottom: '1px solid rgba(0,0,0,0.1)', background: '#f9fafb', flexWrap: 'wrap' }}>
         <button 
           type="button"
           onMouseDown={e => { e.preventDefault(); execCommand('bold'); }}
@@ -91,12 +91,14 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, minHeig
           title="Underline"
         ><Underline size={16} /></button>
         <div style={{ width: '1px', background: '#e5e7eb', margin: '0 4px' }} />
+        <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('superscript'); }} style={btnStyle} className="rich-btn" title="Superscript"><Superscript size={16} /></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('subscript'); }} style={btnStyle} className="rich-btn" title="Subscript"><Subscript size={16} /></button>
+        <div style={{ width: '1px', background: '#e5e7eb', margin: '0 4px' }} />
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('justifyLeft'); }} style={btnStyle} className="rich-btn" title="Align Left"><AlignLeft size={16} /></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('justifyCenter'); }} style={btnStyle} className="rich-btn" title="Align Center"><AlignCenter size={16} /></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('justifyRight'); }} style={btnStyle} className="rich-btn" title="Align Right"><AlignRight size={16} /></button>
         <div style={{ width: '1px', background: '#e5e7eb', margin: '0 4px' }} />
         <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('insertUnorderedList'); }} style={btnStyle} className="rich-btn" title="Bullet List"><List size={16} /></button>
-        <button type="button" onMouseDown={e => { e.preventDefault(); execCommand('insertOrderedList'); }} style={btnStyle} className="rich-btn" title="Numbered List"><ListOrdered size={16} /></button>
         <style>{`
           .rich-btn:hover { background: #e5e7eb !important; border-color: #d1d5db !important; }
           .rich-btn:active { background: #d1d5db !important; transform: scale(0.95); }
