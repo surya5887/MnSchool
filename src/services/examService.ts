@@ -98,6 +98,84 @@ export interface ExamScheduleData {
   }[];
 }
 
+export type BlockType = 
+  | 'text'
+  | 'mcq'
+  | 'match'
+  | 'table'
+  | 'image_group'
+  | 'split_column'
+  | 'word_bank'
+  | 'header'
+  | 'marks_box';
+
+export interface BaseBlock {
+  id: string;
+  type: BlockType;
+  marks?: number;
+  showMarks?: boolean;
+}
+
+export interface HeaderBlock extends BaseBlock {
+  type: 'header';
+  title: string;
+  subtitle?: string;
+  leftLogo?: string;
+  rightLogo?: string;
+  fields: { label: string; value: string; width?: string }[];
+}
+
+export interface TextBlock extends BaseBlock {
+  type: 'text';
+  content: string;
+}
+
+export interface MCQBlock extends BaseBlock {
+  type: 'mcq';
+  question: string;
+  layout: '1-col' | '2-col' | '4-col' | 'inline';
+  options: { text: string; image?: string }[];
+  showBracket?: boolean;
+}
+
+export interface MatchBlock extends BaseBlock {
+  type: 'match';
+  leftColumn: { text: string; image?: string }[];
+  rightColumn: { text: string; image?: string }[];
+}
+
+export interface TableBlock extends BaseBlock {
+  type: 'table';
+  rows: number;
+  cols: number;
+  cells: { rowIndex: number; colIndex: number; content: string; hideBorder?: boolean }[];
+}
+
+export interface ImageGroupBlock extends BaseBlock {
+  type: 'image_group';
+  images: { url: string; width: number; caption?: string; showTickBox?: boolean }[];
+  layout: 'grid' | 'row';
+}
+
+// Forward declare PaperBlock for recursive use
+export type PaperBlock = TextBlock | MCQBlock | MatchBlock | TableBlock | ImageGroupBlock | SplitColumnBlock | WordBankBlock | MarksBoxBlock | HeaderBlock;
+
+export interface SplitColumnBlock extends BaseBlock {
+  type: 'split_column';
+  leftBlocks: PaperBlock[];
+  rightBlocks: PaperBlock[];
+}
+
+export interface WordBankBlock extends BaseBlock {
+  type: 'word_bank';
+  words: string[];
+}
+
+export interface MarksBoxBlock extends BaseBlock {
+  type: 'marks_box';
+  text: string;
+}
+
 export interface QuestionPaperData {
   id?: string;
   classId: string;
@@ -107,9 +185,10 @@ export interface QuestionPaperData {
   timeAllowed: string;
   maxMarks: number;
   generalInstructions: string[];
-    includeOMR?: boolean;
-    globalFontSize?: string;
-  sections: {
+  includeOMR?: boolean;
+  globalFontSize?: string;
+  blocks?: PaperBlock[];
+  sections?: {
     sectionTitle: string;
     questions: {
       text: string;

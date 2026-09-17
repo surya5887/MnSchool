@@ -30,6 +30,7 @@ const renderShape = (shape: any) => {
   );
 };
 import type { QuestionPaperData } from '../services/examService';
+import BlockPrintRenderer from './BlockPrintRenderer';
 
 interface QuestionPaperProps {
   paperData: QuestionPaperData;
@@ -166,7 +167,10 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
 
         {/* Sections and Questions */}
         <div style={{ marginTop: '30px' }}>
-          {paperData.sections.map((section, sIdx) => {
+          {paperData.blocks && paperData.blocks.length > 0 ? (
+            <BlockPrintRenderer blocks={paperData.blocks} />
+          ) : (
+            paperData.sections && paperData.sections.map((section, sIdx) => {
             return (
               <div key={sIdx} style={{ marginBottom: '30px' }}>
                 {section.sectionTitle && (
@@ -341,7 +345,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                 </table>
               </div>
             );
-          })}
+          }))}
         </div>
         
         {/* Footer line */}

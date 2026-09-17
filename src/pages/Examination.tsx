@@ -14,6 +14,7 @@ import MasterScheduleConfig from '../components/MasterScheduleConfig';
 import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
+import BlockCanvas from '../components/BlockCanvas/BlockCanvas';
 
 const renderShape = (shape: any) => {
   let Icon = Circle;
@@ -512,14 +513,38 @@ const Examination: React.FC = () => {
             <textarea className="glass-input" rows={3} style={{ width: '100%', resize: 'vertical' }} value={paperData?.generalInstructions.join('\n') || ''} onChange={e => setPaperData(prev => prev ? {...prev, generalInstructions: e.target.value.split('\n')} : null)} placeholder="E.g. All questions are compulsory."></textarea>
           </div>
 
-          {/* Sections Builder */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0 }}>Questions</h3>
-              <button className="btn-secondary" onClick={() => {
-                if(paperData) setPaperData({...paperData, sections: [...paperData.sections, { sectionTitle: 'New Section', questions: [{ text: '', marks: 1 }] }]});
-              }}><Plus size={18} /> Add Section</button>
-            </div>
+          <div style={{ marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <button 
+              className={`btn-${paperData?.blocks ? 'primary' : 'secondary'}`} 
+              onClick={() => setPaperData(prev => prev ? {...prev, blocks: prev.blocks || []} : null)}
+            >
+              Use Block Canvas (New)
+            </button>
+            <button 
+              className={`btn-${!paperData?.blocks ? 'primary' : 'secondary'}`} 
+              onClick={() => {
+                const newData = {...paperData} as any;
+                delete newData.blocks;
+                setPaperData(newData);
+              }}
+            >
+              Use Legacy Form Builder
+            </button>
+          </div>
+
+          {paperData?.blocks ? (
+            <BlockCanvas 
+              blocks={paperData.blocks} 
+              onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 
+            />
+          ) : (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0 }}>Questions</h3>
+                <button className="btn-secondary" onClick={() => {
+                  if(paperData) setPaperData({...paperData, sections: [...(paperData.sections || []), { sectionTitle: 'New Section', questions: [{ text: '', marks: 1 }] }]});
+                }}><Plus size={18} /> Add Section</button>
+              </div>
 
             {paperData?.sections.map((section, sIdx) => (
               <div key={sIdx} style={{ background: 'var(--bg-color)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--glass-border)' }}>
@@ -1062,6 +1087,7 @@ const Examination: React.FC = () => {
               </div>
             ))}
           </div>
+          )}
 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '32px' }}>
              <button className="btn-primary" onClick={async () => {
