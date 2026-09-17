@@ -807,11 +807,15 @@ const Examination: React.FC = () => {
                           if (e.target.value === 'match' && !newSecs[sIdx].questions[qIdx].matchPairs) {
                             newSecs[sIdx].questions[qIdx].matchPairs = [{left: '', right: ''}, {left: '', right: ''}];
                           }
+                          if (e.target.value === 'fill_in_the_blanks' && !newSecs[sIdx].questions[qIdx].wordBank) {
+                            newSecs[sIdx].questions[qIdx].wordBank = [];
+                          }
                           setPaperData({...paperData, sections: newSecs});
                         }}>
                           <option value="subjective">Subjective</option>
                           <option value="objective">Objective (MCQ)</option>
                           <option value="match">Match the Following</option>
+                          <option value="fill_in_the_blanks">Fill in the Blanks</option>
                           <option value="instruction">Instruction Text</option>
                         </select>
                         
@@ -942,18 +946,93 @@ const Examination: React.FC = () => {
                       </div>
                     )}
 
+                    {q.type === 'fill_in_the_blanks' && (
+                      <div style={{ paddingLeft: '32px', marginTop: '12px' }}>
+                        <div style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '8px' }}>
+                          Add words for the hint box (Word Bank). Use Enter or comma to add. Note: Use underscores (____) in the question text to create blanks.
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px', border: '1px solid #e5e7eb', borderRadius: '8px', background: '#f9fafb', minHeight: '42px' }}>
+                          {q.wordBank?.map((word, wIdx) => (
+                            <span key={wIdx} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'white', padding: '2px 8px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
+                              {word}
+                              <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 0 }} onClick={() => {
+                                const newSecs = [...paperData.sections];
+                                newSecs[sIdx].questions[qIdx].wordBank!.splice(wIdx, 1);
+                                setPaperData({...paperData, sections: newSecs});
+                              }}>×</button>
+                            </span>
+                          ))}
+                          <input type="text" placeholder="Type a word and press Enter..." style={{ border: 'none', background: 'transparent', outline: 'none', flex: 1, minWidth: '150px', fontSize: '0.85rem' }} onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ',') {
+                              e.preventDefault();
+                              const val = e.currentTarget.value.trim();
+                              if (val) {
+                                const newSecs = [...paperData.sections];
+                                if (!newSecs[sIdx].questions[qIdx].wordBank) newSecs[sIdx].questions[qIdx].wordBank = [];
+                                newSecs[sIdx].questions[qIdx].wordBank!.push(val);
+                                setPaperData({...paperData, sections: newSecs});
+                                e.currentTarget.value = '';
+                              }
+                            }
+                          }} />
+                        </div>
+                      </div>
+                    )}
+
                     {q.type === 'objective' && (
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingLeft: '32px', marginTop: '12px' }}>
                         {['A', 'B', 'C', 'D'].map((optLabel, optIdx) => (
-                          <div key={optIdx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontWeight: 'bold' }}>{optLabel}.</span>
-                            <input type="text" className="glass-input" style={{ flex: 1, padding: '6px 12px' }} value={q.options?.[optIdx] || ''} onChange={e => {
-                              const newSecs = [...paperData.sections];
-                              const opts = newSecs[sIdx].questions[qIdx].options || ['', '', '', ''];
-                              opts[optIdx] = e.target.value;
-                              newSecs[sIdx].questions[qIdx].options = opts;
-                              setPaperData({...paperData, sections: newSecs});
-                            }} placeholder={`Option ${optLabel}`} />
+                          <div key={optIdx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontWeight: 'bold' }}>{optLabel}.</span>
+                              <input type="text" className="glass-input" style={{ flex: 1, padding: '6px 12px' }} value={q.options?.[optIdx] || ''} onChange={e => {
+                                const newSecs = [...paperData.sections];
+                                const opts = newSecs[sIdx].questions[qIdx].options || ['', '', '', ''];
+                                opts[optIdx] = e.target.value;
+                                newSecs[sIdx].questions[qIdx].options = opts;
+                                setPaperData({...paperData, sections: newSecs});
+                              }} placeholder={`Option ${optLabel}`} />
+                              
+                              <label style={{ cursor: 'pointer', padding: '4px', background: '#f3f4f6', borderRadius: '4px', border: '1px solid #d1d5db', display: 'flex' }}>
+                                <ImageIcon size={14} />
+                                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (ev) => {
+                                      const img = new Image();
+                                      img.onload = () => {
+                                        const canvas = document.createElement('canvas');
+                                        let width = img.width; let height = img.height;
+                                        if (width > 600) { height = Math.round(height * 600 / width); width = 600; }
+                                        canvas.width = width; canvas.height = height;
+                                        const ctx = canvas.getContext('2d');
+                                        ctx?.drawImage(img, 0, 0, width, height);
+                                        const newSecs = [...paperData.sections];
+                                        if (!newSecs[sIdx].questions[qIdx].optionImages) {
+                                          newSecs[sIdx].questions[qIdx].optionImages = ['', '', '', ''];
+                                        }
+                                        newSecs[sIdx].questions[qIdx].optionImages![optIdx] = canvas.toDataURL('image/jpeg', 0.8);
+                                        setPaperData({...paperData, sections: newSecs});
+                                      };
+                                      img.src = ev.target?.result as string;
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }} />
+                              </label>
+                            </div>
+                            
+                            {q.optionImages && q.optionImages[optIdx] && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '24px' }}>
+                                <img src={q.optionImages[optIdx]} alt="" style={{ height: '40px', borderRadius: '4px', border: '1px solid #e5e7eb' }} />
+                                <button className="btn-secondary" style={{ padding: '2px 6px', fontSize: '0.7rem', color: 'var(--danger)', marginBottom: 0 }} onClick={() => {
+                                  const newSecs = [...paperData.sections];
+                                  newSecs[sIdx].questions[qIdx].optionImages![optIdx] = '';
+                                  setPaperData({...paperData, sections: newSecs});
+                                }}>Remove</button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

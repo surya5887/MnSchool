@@ -259,12 +259,27 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
+                            {q.type === 'fill_in_the_blanks' && q.wordBank && q.wordBank.length > 0 && (
+                              <div style={{ marginTop: '16px', padding: '12px', border: '1px solid #000', borderRadius: '4px', textAlign: 'center' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px' }}>
+                                  {q.wordBank.map((word, wIdx) => (
+                                    <span key={wIdx} style={{ fontWeight: 'bold' }}>{word}</span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
                             {q.type === 'objective' && q.options && (
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
                                 {q.options.map((opt, optIdx) => (
-                                  <div key={optIdx} style={{ display: 'flex', gap: '4px' }}>
+                                  <div key={optIdx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                                     <span>({['a', 'b', 'c', 'd'][optIdx]})</span>
-                                    <span>{opt}</span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                      {q.optionImages && q.optionImages[optIdx] && (
+                                        <img src={q.optionImages[optIdx]} alt="" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }} />
+                                      )}
+                                      {opt && <span>{opt}</span>}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
