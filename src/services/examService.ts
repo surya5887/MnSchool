@@ -200,6 +200,7 @@ export interface QuestionPaperData {
   hideStandardHeader?: boolean;
   includeOMR?: boolean;
   globalFontSize?: string;
+  wordContent?: string;
   worksheetElements?: CanvasElement[];
   blocks?: PaperBlock[];
   sections?: {

@@ -15,7 +15,7 @@ import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
 import BlockCanvas from '../components/BlockCanvas/BlockCanvas';
-import WorksheetCanvas from '../components/BlockCanvas/WorksheetCanvas';
+import WordDocumentCanvas from '../components/BlockCanvas/WordDocumentCanvas';
 
 const renderShape = (shape: any) => {
   let Icon = Circle;
@@ -527,11 +527,11 @@ const Examination: React.FC = () => {
 
           <div style={{ marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <button 
-              className={`btn-${!paperData?.blocks && !paperData?.worksheetElements ? 'primary' : 'secondary'}`} 
+              className={`btn-${!paperData?.blocks && paperData?.wordContent === undefined ? 'primary' : 'secondary'}`} 
               onClick={() => {
                 const newData = {...paperData} as any;
                 delete newData.blocks;
-                delete newData.worksheetElements;
+                delete newData.wordContent;
                 setPaperData(newData);
               }}
             >
@@ -541,14 +541,14 @@ const Examination: React.FC = () => {
               className={`btn-${paperData?.blocks ? 'primary' : 'secondary'}`} 
               onClick={() => {
                 const newData = {...paperData, blocks: paperData?.blocks || []} as any;
-                delete newData.worksheetElements;
+                delete newData.wordContent;
                 setPaperData(newData);
               }}
             >
               Use Block Canvas (6th-12th)
             </button>
             <button 
-              className={`btn-${paperData?.worksheetElements ? 'primary' : 'secondary'}`} 
+              className={`btn-${paperData?.wordContent !== undefined ? 'primary' : 'secondary'}`} 
               onClick={() => {
                 const newData = {...paperData, worksheetElements: paperData?.worksheetElements || []} as any;
                 delete newData.blocks;
@@ -559,10 +559,10 @@ const Examination: React.FC = () => {
             </button>
           </div>
 
-          {paperData?.worksheetElements ? (
-            <WorksheetCanvas 
-              elements={paperData.worksheetElements} 
-              onChange={(newElements) => setPaperData(prev => prev ? {...prev, worksheetElements: newElements} : null)} 
+          {paperData?.wordContent !== undefined ? (
+            <WordDocumentCanvas 
+              content={paperData.wordContent} 
+              onChange={(newContent) => setPaperData(prev => prev ? {...prev, wordContent: newContent} : null)} 
             />
           ) : paperData?.blocks ? (
             <BlockCanvas 
