@@ -15,6 +15,7 @@ import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
 import BlockCanvas from '../components/BlockCanvas/BlockCanvas';
+import WorksheetCanvas from '../components/BlockCanvas/WorksheetCanvas';
 
 const renderShape = (shape: any) => {
   let Icon = Circle;
@@ -513,26 +514,57 @@ const Examination: React.FC = () => {
             <textarea className="glass-input" rows={3} style={{ width: '100%', resize: 'vertical' }} value={paperData?.generalInstructions.join('\n') || ''} onChange={e => setPaperData(prev => prev ? {...prev, generalInstructions: e.target.value.split('\n')} : null)} placeholder="E.g. All questions are compulsory."></textarea>
           </div>
 
+          <div style={{ marginBottom: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}>
+              <input type="checkbox" checked={paperData?.includeOMR || false} onChange={e => setPaperData(prev => prev ? {...prev, includeOMR: e.target.checked} : null)} />
+              Attach OMR Sheet at the end
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}>
+              <input type="checkbox" checked={paperData?.hideStandardHeader || false} onChange={e => setPaperData(prev => prev ? {...prev, hideStandardHeader: e.target.checked} : null)} />
+              Hide Standard School Header
+            </label>
+          </div>
+
           <div style={{ marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <button 
-              className={`btn-${paperData?.blocks ? 'primary' : 'secondary'}`} 
-              onClick={() => setPaperData(prev => prev ? {...prev, blocks: prev.blocks || []} : null)}
-            >
-              Use Block Canvas (New)
-            </button>
-            <button 
-              className={`btn-${!paperData?.blocks ? 'primary' : 'secondary'}`} 
+              className={`btn-${!paperData?.blocks && !paperData?.worksheetElements ? 'primary' : 'secondary'}`} 
               onClick={() => {
                 const newData = {...paperData} as any;
                 delete newData.blocks;
+                delete newData.worksheetElements;
                 setPaperData(newData);
               }}
             >
               Use Legacy Form Builder
             </button>
+            <button 
+              className={`btn-${paperData?.blocks ? 'primary' : 'secondary'}`} 
+              onClick={() => {
+                const newData = {...paperData, blocks: paperData?.blocks || []} as any;
+                delete newData.worksheetElements;
+                setPaperData(newData);
+              }}
+            >
+              Use Block Canvas (6th-12th)
+            </button>
+            <button 
+              className={`btn-${paperData?.worksheetElements ? 'primary' : 'secondary'}`} 
+              onClick={() => {
+                const newData = {...paperData, worksheetElements: paperData?.worksheetElements || []} as any;
+                delete newData.blocks;
+                setPaperData(newData);
+              }}
+            >
+              Visual Designer (Nursery-5th)
+            </button>
           </div>
 
-          {paperData?.blocks ? (
+          {paperData?.worksheetElements ? (
+            <WorksheetCanvas 
+              elements={paperData.worksheetElements} 
+              onChange={(newElements) => setPaperData(prev => prev ? {...prev, worksheetElements: newElements} : null)} 
+            />
+          ) : paperData?.blocks ? (
             <BlockCanvas 
               blocks={paperData.blocks} 
               onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 

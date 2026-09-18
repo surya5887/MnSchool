@@ -3,7 +3,7 @@
 with open('src/components/QuestionPaperPrintView.tsx', 'r', encoding='utf-8') as f:
     code = f.read()
 
-replacement1 = '''<div className="paper-container" style={{ fontSize: paperData.globalFontSize || '14px' }}>
+replacement1 = '''<div className="paper-container" style={{ fontSize: paperData.globalFontSize || '14px', position: 'relative' }}>
       {paperData.worksheetElements && paperData.worksheetElements.length > 0 ? (
         <div style={{ position: 'relative', width: '100%', minHeight: '1130px' }}>
           {paperData.worksheetElements.map(el => (
@@ -39,14 +39,6 @@ replacement1 = '''<div className="paper-container" style={{ fontSize: paperData.
               {/* School Header */}'''
 
 code = re.sub(r'<div className="paper-container" style=\{\{ fontSize: paperData\.globalFontSize \|\| \'14px\' \}\}>\s*\{\/\* School Header \*\/\}', replacement1, code)
-
-replacement2 = '''--- End of Question Paper ---
-        </div>
-        </>
-      )}
-      </div>'''
-
-code = re.sub(r'--- End of Question Paper ---\s*<\/div>\s*<\/div>', replacement2, code)
 
 with open('src/components/QuestionPaperPrintView.tsx', 'w', encoding='utf-8') as f:
     f.write(code)

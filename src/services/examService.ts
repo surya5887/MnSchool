@@ -176,6 +176,18 @@ export interface MarksBoxBlock extends BaseBlock {
   text: string;
 }
 
+export interface CanvasElement {
+  id: string;
+  type: 'text' | 'image' | 'shape' | 'line';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  content?: string;
+  imageUrl?: string;
+  border?: boolean;
+}
+
 export interface QuestionPaperData {
   id?: string;
   classId: string;
@@ -185,8 +197,10 @@ export interface QuestionPaperData {
   timeAllowed: string;
   maxMarks: number;
   generalInstructions: string[];
+  hideStandardHeader?: boolean;
   includeOMR?: boolean;
   globalFontSize?: string;
+  worksheetElements?: CanvasElement[];
   blocks?: PaperBlock[];
   sections?: {
     sectionTitle: string;
