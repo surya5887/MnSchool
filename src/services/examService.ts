@@ -107,7 +107,8 @@ export type BlockType =
   | 'split_column'
   | 'word_bank'
   | 'header'
-  | 'marks_box';
+  | 'marks_box'
+  | 'kids_activity';
 
 export interface BaseBlock {
   id: string;
@@ -158,7 +159,37 @@ export interface ImageGroupBlock extends BaseBlock {
 }
 
 // Forward declare PaperBlock for recursive use
-export type PaperBlock = TextBlock | MCQBlock | MatchBlock | TableBlock | ImageGroupBlock | SplitColumnBlock | WordBankBlock | MarksBoxBlock | HeaderBlock;
+
+export type KidsCategory = 'TRACING' | 'VISUAL_DISCRIMINATION' | 'PHONICS' | 'NUMERACY' | 'PATTERNS' | 'EVS';
+export type KidsLayoutType = 'grid' | 'match_columns' | 'tracing' | 'sequence';
+
+export interface KidsActivityItem {
+  id: string;
+  imageUrl?: string;
+  text?: string;
+  isTarget?: boolean;
+  matchId?: string;
+  traceStrokes?: string;
+}
+
+export interface KidsActivityBlock {
+  id: string;
+  type: 'kids_activity';
+  category: KidsCategory;
+  subType: string;
+  instruction: string;
+  layoutType: KidsLayoutType;
+  items: KidsActivityItem[];
+  marks?: number;
+  config: {
+    columns?: number;
+    showCheckboxes?: boolean;
+    imageSize?: 'small' | 'medium' | 'large';
+  };
+}
+
+export type PaperBlock =
+ TextBlock | MCQBlock | MatchBlock | TableBlock | ImageGroupBlock | SplitColumnBlock | WordBankBlock | MarksBoxBlock | HeaderBlock;
 
 export interface SplitColumnBlock extends BaseBlock {
   type: 'split_column';

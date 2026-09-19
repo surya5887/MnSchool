@@ -15,6 +15,7 @@ import QuestionPaperPrintView from '../components/QuestionPaperPrintView';
 import Loader from '../components/Loader';
 import RichTextEditor from '../components/RichTextEditor';
 import BlockCanvas from '../components/BlockCanvas/BlockCanvas';
+import KidsBlockCanvas from '../components/BlockCanvas/KidsBlockCanvas';
 import WordDocumentCanvas from '../components/BlockCanvas/WordDocumentCanvas';
 
 const renderShape = (shape: any) => {

@@ -1,5 +1,9 @@
 import React from 'react';
-import type { PaperBlock } from '../../services/examService';
+import type { PaperBlock } from '../services/examService';
+import KidsGridRenderer from './BlockCanvas/KidsGridRenderer';
+import KidsMatchRenderer from './BlockCanvas/KidsMatchRenderer';
+import KidsTracingRenderer from './BlockCanvas/KidsTracingRenderer';
+import KidsSequenceRenderer from './BlockCanvas/KidsSequenceRenderer';
 
 interface Props {
   blocks: PaperBlock[];
@@ -24,6 +28,15 @@ const BlockPrintRenderer: React.FC<Props> = ({ blocks }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {blocks.map((block, idx) => {
         switch (block.type) {
+          case 'kids_activity': {
+            const kBlock = block as any;
+            if (kBlock.layoutType === 'grid') return <KidsGridRenderer key={kBlock.id} block={kBlock} />;
+            if (kBlock.layoutType === 'match_columns') return <KidsMatchRenderer key={kBlock.id} block={kBlock} />;
+            if (kBlock.layoutType === 'tracing') return <KidsTracingRenderer key={kBlock.id} block={kBlock} />;
+            if (kBlock.layoutType === 'sequence') return <KidsSequenceRenderer key={kBlock.id} block={kBlock} />;
+            return null;
+          }
+
           case 'header':
             return (
               <div key={idx} style={{ marginBottom: '20px', width: '100%' }}>
