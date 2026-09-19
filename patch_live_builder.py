@@ -1,69 +1,12 @@
-﻿import React, { useState } from 'react';
-import { Plus, Settings, X, Trash2, Image as ImageIcon, LayoutTemplate, Grid, Shapes, Square, Lightbulb } from 'lucide-react';
-import type { QuestionPaperData } from '../services/examService';
-import QuestionPaperPrintView from './QuestionPaperPrintView';
-import RichTextEditor from './RichTextEditor';
-import BlockCanvas from './BlockCanvas/BlockCanvas';
+﻿import re
 
-interface Props {
-  paperData: QuestionPaperData;
-  setPaperData: (data: QuestionPaperData) => void;
-}
+with open('src/components/LivePaperBuilder.tsx', 'r', encoding='utf-8') as f:
+    code = f.read()
 
-const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
-  const [selectedItem, setSelectedItem] = useState<{ type: 'section' | 'question', sIdx: number, qIdx?: number } | null>(null);
-
-  // Quick add helpers
-  const addQuestion = (type: string) => {
-    const newSecs = [...(paperData.sections || [])];
-    if (newSecs.length === 0) {
-      newSecs.push({ sectionTitle: 'SECTION A', questions: [] });
-    }
-    const sIdx = newSecs.length - 1;
-    newSecs[sIdx].questions.push({ text: 'New Question', marks: 1, type: type as any });
-    setPaperData({ ...paperData, sections: newSecs });
-    setSelectedItem({ type: 'question', sIdx, qIdx: newSecs[sIdx].questions.length - 1 });
-  };
-
-  const addSection = () => {
-    const newSecs = [...(paperData.sections || [])];
-    newSecs.push({ sectionTitle: 'NEW SECTION', questions: [] });
-    setPaperData({ ...paperData, sections: newSecs });
-    setSelectedItem({ type: 'section', sIdx: newSecs.length - 1 });
-  };
-
-  const updateQuestion = (sIdx: number, qIdx: number, updates: any) => {
-    const newSecs = [...paperData.sections];
-    newSecs[sIdx].questions[qIdx] = { ...newSecs[sIdx].questions[qIdx], ...updates };
-    setPaperData({ ...paperData, sections: newSecs });
-  };
-
-  const updateSection = (sIdx: number, title: string) => {
-    const newSecs = [...paperData.sections];
-    newSecs[sIdx].sectionTitle = title;
-    setPaperData({ ...paperData, sections: newSecs });
-  };
-
-  const addBlockToQuestion = (sIdx: number, qIdx: number, type: string) => {
-    const newSecs = [...paperData.sections];
-    if (!newSecs[sIdx].questions[qIdx].blocks) newSecs[sIdx].questions[qIdx].blocks = [];
-    
-    const newBlock: any = { id: Math.random().toString(36).substring(7), type };
-    if (type === 'table') {
-      newBlock.rows = 3; newBlock.cols = 3; newBlock.cells = [];
-      for (let r=0; r<3; r++) for(let c=0; c<3; c++) newBlock.cells.push({rowIndex:r, colIndex:c, content:''});
-    } else if (type === 'split_column') {
-      newBlock.leftContent = ''; newBlock.rightContent = ''; newBlock.splitRatio = '50-50';
-    }
-    newSecs[sIdx].questions[qIdx].blocks!.push(newBlock);
-    setPaperData({ ...paperData, sections: newSecs });
-  };
-
-  // We will build a highly interactive canvas
-  // For now, we can render a custom interactive view, because QuestionPaperPrintView is strictly for printing
-  // and doesn't accept onClick handlers on inner elements.
-
-  return (
+# Replace the entire return statement
+start_idx = code.find("  return (")
+if start_idx != -1:
+    new_render = '''  return (
     <div style={{ display: 'flex', height: 'calc(100vh - 160px)', background: '#f8fafc', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
       
       {/* LEFT TOOLBAR: Insert Panel */}
@@ -354,3 +297,10 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
   );
 }
 export default LivePaperBuilder;
+'''
+    code = code[:start_idx] + new_render
+    with open('src/components/LivePaperBuilder.tsx', 'w', encoding='utf-8') as f:
+        f.write(code)
+    print("Successfully patched layout!")
+else:
+    print("Could not find return statement!")
