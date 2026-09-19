@@ -20,7 +20,11 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
       newSecs.push({ sectionTitle: 'SECTION A', questions: [] });
     }
     const sIdx = newSecs.length - 1;
-    newSecs[sIdx].questions.push({ text: 'New Question', marks: 1, type: type as any });
+    const newQuestion: any = { text: 'New Question', marks: 1, type: type as any };
+    if (type === 'objective') {
+      newQuestion.options = ['Option A', 'Option B', 'Option C', 'Option D'];
+    }
+    newSecs[sIdx].questions.push(newQuestion);
     setPaperData({ ...paperData, sections: newSecs });
     setSelectedItem({ type: 'question', sIdx, qIdx: newSecs[sIdx].questions.length - 1 });
   };
@@ -233,7 +237,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                       />
                     </div>
 
-                                        {q.type === 'objective' && (
+                                                            {q.type === 'objective' && (
                       <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginTop: '16px' }}>
                         <label className="input-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <span>MCQ Options</span>
@@ -245,7 +249,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                         {(q.options || []).map((opt, optIdx) => (
                           <div key={optIdx} style={{ background: 'white', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '6px', marginBottom: '8px' }}>
                             <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                              <span style={{ fontWeight: 'bold', width: '24px', paddingTop: '8px' }}>{['A', 'B', 'C', 'D', 'E', 'F'][optIdx] || optIdx+1})</span>
+                              <span style={{ fontWeight: 'bold', width: '24px', paddingTop: '8px' }}>{['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][optIdx] || optIdx+1})</span>
                               <input type="text" className="glass-input" style={{ marginBottom: 0, flex: 1 }} placeholder="Option Text" value={opt} onChange={e => {
                                 const newOptions = [...q.options!]; newOptions[optIdx] = e.target.value;
                                 updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { options: newOptions });
@@ -257,39 +261,84 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                                 updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { options: newOptions, optionImages: newImages, optionShapes: newShapes });
                               }}><Trash2 size={14} /></button>
                             </div>
-                            <div style={{ display: 'flex', gap: '12px', marginLeft: '32px' }}>
-                              <div style={{ flex: 1 }}>
-                                <label style={{ fontSize: '10px', color: '#64748b' }}>Image URL (Optional)</label>
-                                <input type="text" className="glass-input" style={{ marginBottom: 0, fontSize: '11px', padding: '4px 8px' }} placeholder="https://..." value={q.optionImages?.[optIdx] || ''} onChange={e => {
-                                  const newImages = [...(q.optionImages || [])]; newImages[optIdx] = e.target.value;
-                                  updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionImages: newImages });
-                                }} />
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginLeft: '32px' }}>
+                              {/* Local Image Upload */}
+                              <div>
+                                <label style={{ fontSize: '10px', color: '#64748b' }}>Image (Local File)</label>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                  <input type="file" accept="image/*" style={{ fontSize: '11px', width: '180px' }} onChange={e => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onload = (ev) => {
+                                        const newImages = [...(q.optionImages || [])];
+                                        newImages[optIdx] = ev.target?.result as string;
+                                        updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionImages: newImages });
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }} />
+                                  {q.optionImages?.[optIdx] && (
+                                    <button className="btn-danger" style={{ padding: '2px 8px', fontSize: '10px' }} onClick={() => {
+                                      const newImages = [...(q.optionImages || [])]; newImages[optIdx] = undefined;
+                                      updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionImages: newImages });
+                                    }}>Remove Image</button>
+                                  )}
+                                </div>
                               </div>
-                              <div style={{ flex: 1 }}>
-                                <label style={{ fontSize: '10px', color: '#64748b' }}>Shape (Optional)</label>
-                                <select className="glass-input" style={{ marginBottom: 0, fontSize: '11px', padding: '4px 8px' }} value={q.optionShapes?.[optIdx]?.type || ''} onChange={e => {
-                                  const newShapes = [...(q.optionShapes || [])]; 
-                                  if (e.target.value) {
-                                    newShapes[optIdx] = { type: e.target.value, color: '#000' };
-                                  } else {
-                                    newShapes[optIdx] = undefined;
-                                  }
-                                  updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionShapes: newShapes });
-                                }}>
-                                  <option value="">None</option>
-                                  <option value="circle">Circle</option>
-                                  <option value="square">Square</option>
-                                  <option value="triangle">Triangle</option>
-                                  <option value="star">Star</option>
-                                </select>
+                              
+                              {/* Shapes Config */}
+                              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <div>
+                                  <label style={{ fontSize: '10px', color: '#64748b' }}>Shape</label>
+                                  <select className="glass-input" style={{ marginBottom: 0, fontSize: '11px', padding: '4px 8px', width: '90px' }} value={q.optionShapes?.[optIdx]?.type || ''} onChange={e => {
+                                    const newShapes = [...(q.optionShapes || [])]; 
+                                    if (e.target.value) {
+                                      newShapes[optIdx] = { type: e.target.value, color: q.optionShapes?.[optIdx]?.color || '#000000', rotation: q.optionShapes?.[optIdx]?.rotation || 0 } as any;
+                                    } else {
+                                      newShapes[optIdx] = undefined;
+                                    }
+                                    updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionShapes: newShapes });
+                                  }}>
+                                    <option value="">None</option>
+                                    <option value="circle">Circle</option>
+                                    <option value="square">Square</option>
+                                    <option value="triangle">Triangle</option>
+                                    <option value="hexagon">Hexagon</option>
+                                    <option value="octagon">Octagon</option>
+                                    <option value="diamond">Diamond</option>
+                                    <option value="star">Star</option>
+                                    <option value="line">Line</option>
+                                  </select>
+                                </div>
+                                {q.optionShapes?.[optIdx] && (
+                                  <>
+                                    <div>
+                                      <label style={{ fontSize: '10px', color: '#64748b' }}>Color</label>
+                                      <input type="color" value={q.optionShapes[optIdx]!.color || '#000000'} onChange={e => {
+                                        const newShapes = [...(q.optionShapes || [])];
+                                        if (newShapes[optIdx]) { newShapes[optIdx]!.color = e.target.value; }
+                                        updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionShapes: newShapes });
+                                      }} style={{ width: '30px', height: '24px', padding: 0, border: 'none', cursor: 'pointer' }} />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: '10px', color: '#64748b' }}>Angle ({q.optionShapes[optIdx]!.rotation || 0}°)</label>
+                                      <input type="range" min="0" max="360" value={q.optionShapes[optIdx]!.rotation || 0} onChange={e => {
+                                        const newShapes = [...(q.optionShapes || [])];
+                                        if (newShapes[optIdx]) { newShapes[optIdx]!.rotation = parseInt(e.target.value); }
+                                        updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { optionShapes: newShapes });
+                                      }} style={{ width: '80px' }} />
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             </div>
                           </div>
                         ))}
                       </div>
                     )}
-
-{q.type === 'match' && (
+                    {q.type === 'match' && (
                       <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                         <label className="input-label">Matching Pairs</label>
                         {(q.matchPairs || []).map((pair, pIdx) => (

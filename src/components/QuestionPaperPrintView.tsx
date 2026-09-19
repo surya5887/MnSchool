@@ -311,6 +311,11 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                   <div key={optIdx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                                     <span>({['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][optIdx]})</span>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                      {q.optionShapes && q.optionShapes[optIdx] && (
+                                        <div style={{ width: '40px', height: '40px' }}>
+                                          {renderShape(q.optionShapes[optIdx])}
+                                        </div>
+                                      )}
                                       {q.optionImages && q.optionImages[optIdx] && (
                                         <img src={q.optionImages[optIdx]} alt="" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }} />
                                       )}
