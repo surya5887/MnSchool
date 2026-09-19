@@ -66,6 +66,8 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
   return (
     <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 160px)', background: '#f8fafc', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
       
+      {/* Font Previews for Dropdown */}
+      <style dangerouslySetInnerHTML={{ __html: "@import url('https://fonts.googleapis.com/css2?family=Roboto&text=Robotoa'); @import url('https://fonts.googleapis.com/css2?family=Open+Sans&text=OpenSansa'); @import url('https://fonts.googleapis.com/css2?family=Lato&text=Latoa'); @import url('https://fonts.googleapis.com/css2?family=Montserrat&text=Montserrata'); @import url('https://fonts.googleapis.com/css2?family=Oswald&text=Oswalda'); @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&text=SourceSansProa'); @import url('https://fonts.googleapis.com/css2?family=Slabo+27px&text=Slabo27pxa'); @import url('https://fonts.googleapis.com/css2?family=Raleway&text=Ralewaya'); @import url('https://fonts.googleapis.com/css2?family=PT+Sans&text=PTSansa'); @import url('https://fonts.googleapis.com/css2?family=Merriweather&text=Merriweathera'); @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&text=NotoSansa'); @import url('https://fonts.googleapis.com/css2?family=Nunito&text=Nunitoa'); @import url('https://fonts.googleapis.com/css2?family=Concert+One&text=ConcertOnea'); @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&text=PlayfairDisplaya'); @import url('https://fonts.googleapis.com/css2?family=Rubik&text=Rubika'); @import url('https://fonts.googleapis.com/css2?family=Lora&text=Loraa'); @import url('https://fonts.googleapis.com/css2?family=Ubuntu&text=Ubuntua'); @import url('https://fonts.googleapis.com/css2?family=Work+Sans&text=WorkSansa'); @import url('https://fonts.googleapis.com/css2?family=Fira+Sans&text=FiraSansa'); @import url('https://fonts.googleapis.com/css2?family=Quicksand&text=Quicksanda'); @import url('https://fonts.googleapis.com/css2?family=Inter&text=Intera'); @import url('https://fonts.googleapis.com/css2?family=Poppins&text=Poppinsa'); @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed&text=RobotoCondenseda'); @import url('https://fonts.googleapis.com/css2?family=Karla&text=Karlaa'); @import url('https://fonts.googleapis.com/css2?family=Inconsolata&text=Inconsolataa'); @import url('https://fonts.googleapis.com/css2?family=Bitter&text=Bittera'); @import url('https://fonts.googleapis.com/css2?family=Pacifico&text=Pacificoa'); @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&text=DancingScripta'); @import url('https://fonts.googleapis.com/css2?family=Caveat&text=Caveata'); @import url('https://fonts.googleapis.com/css2?family=Righteous&text=Righteousa'); @import url('https://fonts.googleapis.com/css2?family=Creepster&text=Creepstera'); @import url('https://fonts.googleapis.com/css2?family=Lobster&text=Lobstera'); @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&text=FredokaOnea'); @import url('https://fonts.googleapis.com/css2?family=Comfortaa&text=Comfortaaa'); @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&text=ShadowsIntoLighta'); @import url('https://fonts.googleapis.com/css2?family=Cinzel&text=Cinzela'); @import url('https://fonts.googleapis.com/css2?family=Amatic+SC&text=AmaticSCa'); @import url('https://fonts.googleapis.com/css2?family=Bangers&text=Bangersa'); @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&text=PermanentMarkera'); @import url('https://fonts.googleapis.com/css2?family=Courgette&text=Courgettea'); @import url('https://fonts.googleapis.com/css2?family=Satisfy&text=Satisfya'); @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&text=AlfaSlabOnea'); @import url('https://fonts.googleapis.com/css2?family=Cookie&text=Cookiea'); @import url('https://fonts.googleapis.com/css2?family=Chewy&text=Chewya'); @import url('https://fonts.googleapis.com/css2?family=Bree+Serif&text=BreeSerifa'); " }} />
       {/* CENTER: Live Canvas Area */}
       <div className="hide-scrollbar" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
         <div style={{ margin: '40px 20px', width: '100%', maxWidth: '850px', background: 'white', minHeight: '1100px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
@@ -154,64 +156,64 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Font Style</label>
                           <select className="glass-input" style={{ marginBottom: 0, background: 'white', fontFamily: q.fontFamily || 'inherit' }} value={q.fontFamily || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontFamily: e.target.value })}>
                             <option value="">Default Font</option>
-                            <option value="Arial">Arial</option>
-                            <option value="Helvetica">Helvetica</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Courier New">Courier New</option>
-                            <option value="Verdana">Verdana</option>
-                            <option value="Georgia">Georgia</option>
-                            <option value="Palatino">Palatino</option>
-                            <option value="Garamond">Garamond</option>
-                            <option value="Bookman">Bookman</option>
-                            <option value="Comic Sans MS">Comic Sans MS</option>
-                            <option value="Trebuchet MS">Trebuchet MS</option>
-                            <option value="Arial Black">Arial Black</option>
-                            <option value="Impact">Impact</option>
-                            <option value="Roboto">Roboto</option>
-                            <option value="Open Sans">Open Sans</option>
-                            <option value="Lato">Lato</option>
-                            <option value="Montserrat">Montserrat</option>
-                            <option value="Oswald">Oswald</option>
-                            <option value="Source Sans Pro">Source Sans Pro</option>
-                            <option value="Slabo 27px">Slabo 27px</option>
-                            <option value="Raleway">Raleway</option>
-                            <option value="PT Sans">PT Sans</option>
-                            <option value="Merriweather">Merriweather</option>
-                            <option value="Noto Sans">Noto Sans</option>
-                            <option value="Nunito">Nunito</option>
-                            <option value="Concert One">Concert One</option>
-                            <option value="Playfair Display">Playfair Display</option>
-                            <option value="Rubik">Rubik</option>
-                            <option value="Lora">Lora</option>
-                            <option value="Ubuntu">Ubuntu</option>
-                            <option value="Work Sans">Work Sans</option>
-                            <option value="Fira Sans">Fira Sans</option>
-                            <option value="Quicksand">Quicksand</option>
-                            <option value="Inter">Inter</option>
-                            <option value="Poppins">Poppins</option>
-                            <option value="Roboto Condensed">Roboto Condensed</option>
-                            <option value="Karla">Karla</option>
-                            <option value="Inconsolata">Inconsolata</option>
-                            <option value="Bitter">Bitter</option>
-                            <option value="Pacifico">Pacifico</option>
-                            <option value="Dancing Script">Dancing Script</option>
-                            <option value="Caveat">Caveat</option>
-                            <option value="Righteous">Righteous</option>
-                            <option value="Creepster">Creepster</option>
-                            <option value="Lobster">Lobster</option>
-                            <option value="Fredoka One">Fredoka One</option>
-                            <option value="Comfortaa">Comfortaa</option>
-                            <option value="Shadows Into Light">Shadows Into Light</option>
-                            <option value="Cinzel">Cinzel</option>
-                            <option value="Amatic SC">Amatic SC</option>
-                            <option value="Bangers">Bangers</option>
-                            <option value="Permanent Marker">Permanent Marker</option>
-                            <option value="Courgette">Courgette</option>
-                            <option value="Satisfy">Satisfy</option>
-                            <option value="Alfa Slab One">Alfa Slab One</option>
-                            <option value="Cookie">Cookie</option>
-                            <option value="Chewy">Chewy</option>
-                            <option value="Bree Serif">Bree Serif</option>
+                            <option value="Arial" style={{ fontFamily: "Arial, sans-serif" }}>Arial</option>
+                            <option value="Helvetica" style={{ fontFamily: "Helvetica, sans-serif" }}>Helvetica</option>
+                            <option value="Times New Roman" style={{ fontFamily: "Times New Roman, sans-serif" }}>Times New Roman</option>
+                            <option value="Courier New" style={{ fontFamily: "Courier New, sans-serif" }}>Courier New</option>
+                            <option value="Verdana" style={{ fontFamily: "Verdana, sans-serif" }}>Verdana</option>
+                            <option value="Georgia" style={{ fontFamily: "Georgia, sans-serif" }}>Georgia</option>
+                            <option value="Palatino" style={{ fontFamily: "Palatino, sans-serif" }}>Palatino</option>
+                            <option value="Garamond" style={{ fontFamily: "Garamond, sans-serif" }}>Garamond</option>
+                            <option value="Bookman" style={{ fontFamily: "Bookman, sans-serif" }}>Bookman</option>
+                            <option value="Comic Sans MS" style={{ fontFamily: "Comic Sans MS, sans-serif" }}>Comic Sans MS</option>
+                            <option value="Trebuchet MS" style={{ fontFamily: "Trebuchet MS, sans-serif" }}>Trebuchet MS</option>
+                            <option value="Arial Black" style={{ fontFamily: "Arial Black, sans-serif" }}>Arial Black</option>
+                            <option value="Impact" style={{ fontFamily: "Impact, sans-serif" }}>Impact</option>
+                            <option value="Roboto" style={{ fontFamily: "Roboto, sans-serif" }}>Roboto</option>
+                            <option value="Open Sans" style={{ fontFamily: "Open Sans, sans-serif" }}>Open Sans</option>
+                            <option value="Lato" style={{ fontFamily: "Lato, sans-serif" }}>Lato</option>
+                            <option value="Montserrat" style={{ fontFamily: "Montserrat, sans-serif" }}>Montserrat</option>
+                            <option value="Oswald" style={{ fontFamily: "Oswald, sans-serif" }}>Oswald</option>
+                            <option value="Source Sans Pro" style={{ fontFamily: "Source Sans Pro, sans-serif" }}>Source Sans Pro</option>
+                            <option value="Slabo 27px" style={{ fontFamily: "Slabo 27px, sans-serif" }}>Slabo 27px</option>
+                            <option value="Raleway" style={{ fontFamily: "Raleway, sans-serif" }}>Raleway</option>
+                            <option value="PT Sans" style={{ fontFamily: "PT Sans, sans-serif" }}>PT Sans</option>
+                            <option value="Merriweather" style={{ fontFamily: "Merriweather, sans-serif" }}>Merriweather</option>
+                            <option value="Noto Sans" style={{ fontFamily: "Noto Sans, sans-serif" }}>Noto Sans</option>
+                            <option value="Nunito" style={{ fontFamily: "Nunito, sans-serif" }}>Nunito</option>
+                            <option value="Concert One" style={{ fontFamily: "Concert One, sans-serif" }}>Concert One</option>
+                            <option value="Playfair Display" style={{ fontFamily: "Playfair Display, sans-serif" }}>Playfair Display</option>
+                            <option value="Rubik" style={{ fontFamily: "Rubik, sans-serif" }}>Rubik</option>
+                            <option value="Lora" style={{ fontFamily: "Lora, sans-serif" }}>Lora</option>
+                            <option value="Ubuntu" style={{ fontFamily: "Ubuntu, sans-serif" }}>Ubuntu</option>
+                            <option value="Work Sans" style={{ fontFamily: "Work Sans, sans-serif" }}>Work Sans</option>
+                            <option value="Fira Sans" style={{ fontFamily: "Fira Sans, sans-serif" }}>Fira Sans</option>
+                            <option value="Quicksand" style={{ fontFamily: "Quicksand, sans-serif" }}>Quicksand</option>
+                            <option value="Inter" style={{ fontFamily: "Inter, sans-serif" }}>Inter</option>
+                            <option value="Poppins" style={{ fontFamily: "Poppins, sans-serif" }}>Poppins</option>
+                            <option value="Roboto Condensed" style={{ fontFamily: "Roboto Condensed, sans-serif" }}>Roboto Condensed</option>
+                            <option value="Karla" style={{ fontFamily: "Karla, sans-serif" }}>Karla</option>
+                            <option value="Inconsolata" style={{ fontFamily: "Inconsolata, sans-serif" }}>Inconsolata</option>
+                            <option value="Bitter" style={{ fontFamily: "Bitter, sans-serif" }}>Bitter</option>
+                            <option value="Pacifico" style={{ fontFamily: "Pacifico, sans-serif" }}>Pacifico</option>
+                            <option value="Dancing Script" style={{ fontFamily: "Dancing Script, sans-serif" }}>Dancing Script</option>
+                            <option value="Caveat" style={{ fontFamily: "Caveat, sans-serif" }}>Caveat</option>
+                            <option value="Righteous" style={{ fontFamily: "Righteous, sans-serif" }}>Righteous</option>
+                            <option value="Creepster" style={{ fontFamily: "Creepster, sans-serif" }}>Creepster</option>
+                            <option value="Lobster" style={{ fontFamily: "Lobster, sans-serif" }}>Lobster</option>
+                            <option value="Fredoka One" style={{ fontFamily: "Fredoka One, sans-serif" }}>Fredoka One</option>
+                            <option value="Comfortaa" style={{ fontFamily: "Comfortaa, sans-serif" }}>Comfortaa</option>
+                            <option value="Shadows Into Light" style={{ fontFamily: "Shadows Into Light, sans-serif" }}>Shadows Into Light</option>
+                            <option value="Cinzel" style={{ fontFamily: "Cinzel, sans-serif" }}>Cinzel</option>
+                            <option value="Amatic SC" style={{ fontFamily: "Amatic SC, sans-serif" }}>Amatic SC</option>
+                            <option value="Bangers" style={{ fontFamily: "Bangers, sans-serif" }}>Bangers</option>
+                            <option value="Permanent Marker" style={{ fontFamily: "Permanent Marker, sans-serif" }}>Permanent Marker</option>
+                            <option value="Courgette" style={{ fontFamily: "Courgette, sans-serif" }}>Courgette</option>
+                            <option value="Satisfy" style={{ fontFamily: "Satisfy, sans-serif" }}>Satisfy</option>
+                            <option value="Alfa Slab One" style={{ fontFamily: "Alfa Slab One, sans-serif" }}>Alfa Slab One</option>
+                            <option value="Cookie" style={{ fontFamily: "Cookie, sans-serif" }}>Cookie</option>
+                            <option value="Chewy" style={{ fontFamily: "Chewy, sans-serif" }}>Chewy</option>
+                            <option value="Bree Serif" style={{ fontFamily: "Bree Serif, sans-serif" }}>Bree Serif</option>
                           </select>
                         </div>
                       {q.type !== 'instruction' && (

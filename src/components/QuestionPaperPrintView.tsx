@@ -43,10 +43,27 @@ interface QuestionPaperProps {
 
 const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose, mode = 'print', isEditor = false, selectedItem = null, onItemClick }) => {
   let qCounter = 1;
+  
+  // Find all unique Google fonts used in the paper
+  const usedFonts = new Set<string>();
+  if (paperData.sections) {
+    paperData.sections.forEach(s => {
+      if (s.questions) {
+        s.questions.forEach(q => {
+          if (q.fontFamily && q.fontFamily !== 'inherit' && !['Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Palatino', 'Garamond', 'Bookman', 'Comic Sans MS', 'Trebuchet MS', 'Arial Black', 'Impact'].includes(q.fontFamily)) {
+            usedFonts.add(q.fontFamily);
+          }
+        });
+      }
+    });
+  }
+  const fontImports = Array.from(usedFonts).map(font => `@import url('https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@400;700&display=swap');`).join(' ');
+
   const content = (
     <>
       <style>
         {`
+          ${fontImports}
           @media print {
             .print-hide { display: none !important; }
             body, html { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; }
