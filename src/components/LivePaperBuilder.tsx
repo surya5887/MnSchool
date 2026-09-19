@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, Settings, X, Trash2, Image as ImageIcon, LayoutTemplate, Grid, Shapes, Square, Lightbulb } from 'lucide-react';
 import type { QuestionPaperData } from '../services/examService';
 import QuestionPaperPrintView from './QuestionPaperPrintView';
@@ -105,8 +105,8 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
       </div>
 
       {/* CENTER: Live Canvas Area */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
-        <div style={{ width: '100%', maxWidth: '850px', background: 'white', minHeight: '1100px', padding: '64px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
+      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
+        <div style={{ width: '100%', minWidth: '850px', maxWidth: '850px', background: 'white', minHeight: '1100px', padding: '64px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
           
           {/* Header Preview */}
           <div style={{ textAlign: 'center', marginBottom: '40px', borderBottom: '2px solid #000', paddingBottom: '16px' }}>
@@ -162,6 +162,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                       borderRadius: '8px',
                       position: 'relative',
                       transition: 'all 0.2s',
+                      fontFamily: q.fontFamily || 'inherit',
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected) e.currentTarget.style.border = '2px dashed #cbd5e1';
@@ -260,17 +261,70 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     
                     <div style={{ display: 'flex', gap: '16px', background: '#f1f5f9', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ flex: 1 }}>
-                        <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Question Type</label>
-                        <select className="glass-input" style={{ marginBottom: 0, background: 'white' }} value={q.type || 'subjective'} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { type: e.target.value })}>
-                          <option value="subjective">Subjective</option>
-                          <option value="objective">Objective (MCQ)</option>
-                          <option value="true_false">True / False</option>
-                          <option value="match">Match the Following</option>
-                          <option value="fill_in_the_blanks">Fill in Blanks</option>
-                          <option value="instruction">Instruction</option>
-                        </select>
-                      </div>
+                        <div style={{ flex: 1 }}>
+                          <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Font Style</label>
+                          <select className="glass-input" style={{ marginBottom: 0, background: 'white', fontFamily: q.fontFamily || 'inherit' }} value={q.fontFamily || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontFamily: e.target.value })}>
+                            <option value="">Default Font</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Palatino">Palatino</option>
+                            <option value="Garamond">Garamond</option>
+                            <option value="Bookman">Bookman</option>
+                            <option value="Comic Sans MS">Comic Sans MS</option>
+                            <option value="Trebuchet MS">Trebuchet MS</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <option value="Impact">Impact</option>
+                            <option value="Roboto">Roboto</option>
+                            <option value="Open Sans">Open Sans</option>
+                            <option value="Lato">Lato</option>
+                            <option value="Montserrat">Montserrat</option>
+                            <option value="Oswald">Oswald</option>
+                            <option value="Source Sans Pro">Source Sans Pro</option>
+                            <option value="Slabo 27px">Slabo 27px</option>
+                            <option value="Raleway">Raleway</option>
+                            <option value="PT Sans">PT Sans</option>
+                            <option value="Merriweather">Merriweather</option>
+                            <option value="Noto Sans">Noto Sans</option>
+                            <option value="Nunito">Nunito</option>
+                            <option value="Concert One">Concert One</option>
+                            <option value="Playfair Display">Playfair Display</option>
+                            <option value="Rubik">Rubik</option>
+                            <option value="Lora">Lora</option>
+                            <option value="Ubuntu">Ubuntu</option>
+                            <option value="Work Sans">Work Sans</option>
+                            <option value="Fira Sans">Fira Sans</option>
+                            <option value="Quicksand">Quicksand</option>
+                            <option value="Inter">Inter</option>
+                            <option value="Poppins">Poppins</option>
+                            <option value="Roboto Condensed">Roboto Condensed</option>
+                            <option value="Karla">Karla</option>
+                            <option value="Inconsolata">Inconsolata</option>
+                            <option value="Bitter">Bitter</option>
+                            <option value="Pacifico">Pacifico</option>
+                            <option value="Dancing Script">Dancing Script</option>
+                            <option value="Caveat">Caveat</option>
+                            <option value="Righteous">Righteous</option>
+                            <option value="Creepster">Creepster</option>
+                            <option value="Lobster">Lobster</option>
+                            <option value="Fredoka One">Fredoka One</option>
+                            <option value="Comfortaa">Comfortaa</option>
+                            <option value="Shadows Into Light">Shadows Into Light</option>
+                            <option value="Cinzel">Cinzel</option>
+                            <option value="Amatic SC">Amatic SC</option>
+                            <option value="Bangers">Bangers</option>
+                            <option value="Permanent Marker">Permanent Marker</option>
+                            <option value="Courgette">Courgette</option>
+                            <option value="Satisfy">Satisfy</option>
+                            <option value="Alfa Slab One">Alfa Slab One</option>
+                            <option value="Cookie">Cookie</option>
+                            <option value="Chewy">Chewy</option>
+                            <option value="Bree Serif">Bree Serif</option>
+                          </select>
+                        </div>
                       {q.type !== 'instruction' && (
                         <div style={{ width: '80px' }}>
                           <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Marks</label>
