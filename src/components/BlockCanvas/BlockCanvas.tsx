@@ -123,8 +123,6 @@ const BlockCanvas: React.FC<BlockCanvasProps> = ({ blocks, onChange, hideToolbar
                 )}
               </div>
 
-              <button className="btn-secondary" style={{ padding: '6px' }} onClick={() => moveBlock(index, 'up')} disabled={index === 0}><ChevronUp size={16} /></button>
-              <button className="btn-secondary" style={{ padding: '6px' }} onClick={() => moveBlock(index, 'down')} disabled={index === blocks.length - 1}><ChevronDown size={16} /></button>
               <button className="btn-secondary" style={{ padding: '6px', color: 'var(--danger)', marginLeft: '8px' }} onClick={() => removeBlock(block.id)}><Trash2 size={16} /></button>
             </div>
           </div>

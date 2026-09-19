@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import type { TableBlock } from '../../services/examService';
 import { Settings } from 'lucide-react';
 
@@ -60,7 +60,14 @@ const TableBlockEditor: React.FC<Props> = ({ block, onChange }) => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Table Text:</label>
-          <input type="color" value={(block as any).tableTextColor || '#000000'} onChange={e => onChange({ ...block, tableTextColor: e.target.value } as any)} style={{ width: '24px', height: '24px', padding: 0, border: 'none' }} />
+          <input type="color" value={(block as any).tableTextColor || '#000000'} onChange={e => onChange({ ...block, tableTextColor: e.target.value } as any)} style={{ width: '24px', height: '24px', padding: 0, border: 'none', cursor: 'pointer' }} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Border:</label>
+          <input type="number" min="0" max="10" className="glass-input" style={{ width: '45px', marginBottom: 0, padding: '4px', fontSize: '0.85rem' }} value={(block as any).tableBorderWidth !== undefined ? (block as any).tableBorderWidth : 1} onChange={e => onChange({ ...block, tableBorderWidth: parseInt(e.target.value) || 0 } as any)} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <input type="color" value={(block as any).tableBorderColor || '#000000'} onChange={e => onChange({ ...block, tableBorderColor: e.target.value } as any)} style={{ width: '24px', height: '24px', padding: 0, border: 'none', cursor: 'pointer' }} />
         </div>
       </div>
 
@@ -122,11 +129,11 @@ const TableBlockEditor: React.FC<Props> = ({ block, onChange }) => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
             <div>
               <label style={{ fontSize: '10px', color: '#64748b' }}>ColSpan (Merge Right)</label>
-              <input type="number" min="1" max="10" className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={activeCell.colSpan || 1} onChange={e => updateCellObj(activeCell.rowIndex, activeCell.colIndex, { colSpan: parseInt(e.target.value) || 1 })} />
+              <input type="number" min="1" max="10" className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={activeCell.colSpan || ''} onChange={e => updateCellObj(activeCell.rowIndex, activeCell.colIndex, { colSpan: e.target.value ? parseInt(e.target.value) : '' })} placeholder="1" />
             </div>
             <div>
               <label style={{ fontSize: '10px', color: '#64748b' }}>RowSpan (Merge Down)</label>
-              <input type="number" min="1" max="10" className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={activeCell.rowSpan || 1} onChange={e => updateCellObj(activeCell.rowIndex, activeCell.colIndex, { rowSpan: parseInt(e.target.value) || 1 })} />
+              <input type="number" min="1" max="10" className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={activeCell.rowSpan || ''} onChange={e => updateCellObj(activeCell.rowIndex, activeCell.colIndex, { rowSpan: e.target.value ? parseInt(e.target.value) : '' })} placeholder="1" />
             </div>
             <div>
               <label style={{ fontSize: '10px', color: '#64748b' }}>Bg Color</label>

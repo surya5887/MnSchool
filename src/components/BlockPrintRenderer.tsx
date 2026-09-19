@@ -123,25 +123,64 @@ const BlockPrintRenderer: React.FC<Props> = ({ blocks }) => {
               </div>
             );
 
-          case 'table':
+          case 'table': {
+            const skipCells = new Set<string>();
+            
+            // Extract table-level border settings or default to 1px solid #000
+            const tbBorderWidth = (block as any).tableBorderWidth !== undefined ? (block as any).tableBorderWidth : 1;
+            const tbBorderColor = (block as any).tableBorderColor || '#000000';
+            const tbBorderStr = `${tbBorderWidth}px solid ${tbBorderColor}`;
+
             return (
               <div key={idx} style={{ display: 'flex', justifyContent: 'center', margin: '20px 0', position: 'relative' }}>
-                <table style={{ borderCollapse: 'collapse' }}>
+                <table style={{ borderCollapse: 'collapse', minWidth: '50%' }}>
                   <tbody>
                     {Array.from({ length: block.rows }).map((_, r) => (
                       <tr key={r}>
                         {Array.from({ length: block.cols }).map((_, c) => {
-                          const cell = block.cells.find(cl => cl.rowIndex === r && cl.colIndex === c);
+                          if (skipCells.has(`${r}-${c}`)) return null;
+
+                          const cell = block.cells.find(cl => cl.rowIndex === r && cl.colIndex === c) as any || { content: '' };
+                          
+                          // Handle colSpan and rowSpan to skip rendering cells that are merged over
+                          const cSpan = cell.colSpan && cell.colSpan > 1 ? cell.colSpan : 1;
+                          const rSpan = cell.rowSpan && cell.rowSpan > 1 ? cell.rowSpan : 1;
+                          
+                          if (cSpan > 1 || rSpan > 1) {
+                             for (let i = 0; i < rSpan; i++) {
+                               for (let j = 0; j < cSpan; j++) {
+                                 if (i === 0 && j === 0) continue;
+                                 skipCells.add(`${r+i}-${c+j}`);
+                               }
+                             }
+                          }
+
+                          const TdOrTh = cell.isHeader ? 'th' : 'td';
+                          
+                          // Calculate background color
+                          let bgColor = 'transparent';
+                          if (cell.bgColor) bgColor = cell.bgColor;
+                          else if (cell.isHeader) bgColor = '#f1f5f9';
+                          else if ((block as any).tableBgColor) bgColor = (block as any).tableBgColor;
+
+                          // Calculate text color
+                          let txtColor = '#000000';
+                          if (cell.textColor) txtColor = cell.textColor;
+                          else if ((block as any).tableTextColor) txtColor = (block as any).tableTextColor;
+
                           return (
-                            <td key={c} style={{ 
-                              width: '40px', 
-                              height: '40px', 
-                              textAlign: 'center', 
-                              border: cell?.hideBorder ? 'none' : '1px solid #000',
-                              fontWeight: 'bold'
+                            <TdOrTh key={c} colSpan={cSpan} rowSpan={rSpan} style={{
+                              padding: '2px 4px', // Reduced padding
+                              textAlign: 'center',
+                              border: cell.hideBorder ? 'none' : tbBorderStr,
+                              fontWeight: cell.isHeader ? 'bold' : 'normal', // Normal by default unless header
+                              backgroundColor: bgColor,
+                              color: txtColor,
+                              minWidth: '40px',
+                              height: '24px'
                             }}>
-                              {cell?.content}
-                            </td>
+                              <div dangerouslySetInnerHTML={{ __html: cell.content?.replace(/\n/g, '<br/>') || '' }} />
+                            </TdOrTh>
                           );
                         })}
                       </tr>
@@ -155,6 +194,7 @@ const BlockPrintRenderer: React.FC<Props> = ({ blocks }) => {
                 )}
               </div>
             );
+          }
 
           case 'image_group':
             return (
