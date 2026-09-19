@@ -527,23 +527,16 @@ const Examination: React.FC = () => {
 
           <div style={{ marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <button 
-              className={`btn-${!paperData?.blocks ? 'primary' : 'secondary'}`} 
+              className={`btn-${!paperData?.blocks || !paperData.blocks.some(b => b.type === 'kids_activity') ? 'primary' : 'secondary'}`} 
               onClick={() => {
                 const newData = {...paperData} as any;
-                delete newData.blocks;
+                if(newData.blocks) {
+                  newData.blocks = newData.blocks.filter(b => b.type !== 'kids_activity');
+                }
                 setPaperData(newData);
               }}
             >
-              Use Legacy Form Builder
-            </button>
-            <button 
-              className={`btn-${paperData?.blocks && !paperData.blocks.some(b => b.type === 'kids_activity') ? 'primary' : 'secondary'}`} 
-              onClick={() => {
-                const newData = {...paperData, blocks: (paperData?.blocks || []).filter(b => b.type !== 'kids_activity')} as any;
-                setPaperData(newData);
-              }}
-            >
-              Use Block Canvas (6th-12th)
+              Regular Exam Builder (6th-12th)
             </button>
             <button 
               className={`btn-${paperData?.blocks && paperData.blocks.some(b => b.type === 'kids_activity') ? 'primary' : 'secondary'}`} 
@@ -563,15 +556,6 @@ const Examination: React.FC = () => {
             />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>Advanced Blocks (Optional)</h3>
-                <p style={{ margin: '0 0 24px 0', fontSize: '14px', color: '#64748b' }}>Add complex elements like images, tables, matching columns, or split sections.</p>
-                <BlockCanvas 
-                  blocks={paperData?.blocks || []} 
-                  onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 
-                />
-              </div>
-              
               <div style={{ background: '#ffffff', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ margin: 0 }}>Questions</h3>
@@ -1110,6 +1094,17 @@ const Examination: React.FC = () => {
                         ))}
                       </div>
                     )}
+                    
+                    <div style={{ marginTop: '16px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                      <BlockCanvas 
+                        blocks={q.blocks || []} 
+                        onChange={(newBlocks) => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[sIdx].questions[qIdx].blocks = newBlocks as any;
+                          setPaperData({...paperData, sections: newSecs});
+                        }} 
+                      />
+                    </div>
                   </div>
                 )})}
                 

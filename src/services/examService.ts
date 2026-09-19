@@ -238,7 +238,9 @@ export interface QuestionPaperData {
     sectionTitle: string;
     questions: {
       text: string;
+      image?: string;
       marks: number;
+      blocks?: PaperBlock[];
       type?: 'subjective' | 'objective' | 'instruction' | 'match' | 'fill_in_the_blanks' | 'true_false' | 'tracing' | 'passage';
       options?: string[];
       optionImages?: string[];
