@@ -149,7 +149,7 @@ export interface TableBlock extends BaseBlock {
   type: 'table';
   rows: number;
   cols: number;
-  cells: { rowIndex: number; colIndex: number; content: string; hideBorder?: boolean }[];
+  cells: { rowIndex: number; colIndex: number; content: string; hideBorder?: boolean; isHeader?: boolean; colSpan?: number; rowSpan?: number; bgColor?: string; textColor?: string }[];
 }
 
 export interface ImageGroupBlock extends BaseBlock {
@@ -248,8 +248,8 @@ export interface QuestionPaperData {
       hint?: string;
       label?: string;
       fontFamily?: string;
-      images?: { url: string; width: number; align: 'left' | 'center' | 'right' }[];
-      shapes?: { type: string; width: number; color: string; rotation: number; flipX: boolean; flipY: boolean; align: 'left' | 'center' | 'right' }[];
+      images?: { url: string; width: number; align: 'left' | 'center' | 'right'; borderWidth?: number; borderColor?: string }[];
+      shapes?: { type: string; width: number; color: string; rotation: number; align: 'left' | 'center' | 'right' }[];
     }[];
   }[];
   createdAt: string;
