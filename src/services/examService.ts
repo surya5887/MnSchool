@@ -247,7 +247,7 @@ export interface QuestionPaperData {
       wordBank?: string[];
       trueLabel?: string;
       falseLabel?: string;
-      tfStyle?: 'checkbox' | 'circle' | 'none';
+      tfStyle?: 'checkbox' | 'circle' | 'none' | 'checkbox_only' | 'circle_only';
       tfStatements?: string[];
       hint?: string;
       label?: string;

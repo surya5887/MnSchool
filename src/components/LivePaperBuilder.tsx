@@ -360,7 +360,9 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                             <label style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>Style</label>
                             <select className="glass-input" style={{ marginBottom: 0, width: '100%' }} value={q.tfStyle || 'checkbox'} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { tfStyle: e.target.value as any })}>
                               <option value="checkbox">Square Box</option>
+                              <option value="checkbox_only">Square Box (No Text)</option>
                               <option value="circle">Circle (Radio)</option>
+                              <option value="circle_only">Circle (No Text)</option>
                               <option value="none">Text Only</option>
                             </select>
                           </div>
