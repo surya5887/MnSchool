@@ -561,13 +561,18 @@ const Examination: React.FC = () => {
               blocks={paperData.blocks} 
               onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 
             />
-          ) : paperData?.blocks ? (
-            <BlockCanvas 
-              blocks={paperData.blocks} 
-              onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 
-            />
           ) : (
-            <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>Advanced Blocks (Optional)</h3>
+                <p style={{ margin: '0 0 24px 0', fontSize: '14px', color: '#64748b' }}>Add complex elements like images, tables, matching columns, or split sections.</p>
+                <BlockCanvas 
+                  blocks={paperData?.blocks || []} 
+                  onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 
+                />
+              </div>
+              
+              <div style={{ background: '#ffffff', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ margin: 0 }}>Questions</h3>
                 <button className="btn-secondary" onClick={() => {
@@ -1115,6 +1120,7 @@ const Examination: React.FC = () => {
                 }}><Plus size={16} /> Add Question</button>
               </div>
             ))}
+          </div>
           </div>
           )}
 
