@@ -133,7 +133,7 @@ const BlockPrintRenderer: React.FC<Props> = ({ blocks }) => {
 
             return (
               <div key={idx} style={{ display: 'flex', justifyContent: 'center', margin: '20px 0', position: 'relative' }}>
-                <table style={{ borderCollapse: 'collapse', minWidth: '50%' }}>
+                <table style={{ borderCollapse: 'collapse', minWidth: '50%', maxWidth: '100%', tableLayout: 'fixed', width: (block as any).tableWidth !== undefined ? `${(block as any).tableWidth}%` : '100%' }}>
                   <tbody>
                     {Array.from({ length: block.rows }).map((_, r) => (
                       <tr key={r}>
@@ -176,8 +176,9 @@ const BlockPrintRenderer: React.FC<Props> = ({ blocks }) => {
                               fontWeight: cell.isHeader ? 'bold' : 'normal', // Normal by default unless header
                               backgroundColor: bgColor,
                               color: txtColor,
-                              minWidth: '40px',
-                              height: '24px'
+                              height: '24px',
+                              wordBreak: 'break-word',
+                              overflowWrap: 'break-word'
                             }}>
                               <div dangerouslySetInnerHTML={{ __html: cell.content?.replace(/\n/g, '<br/>') || '' }} />
                             </TdOrTh>
