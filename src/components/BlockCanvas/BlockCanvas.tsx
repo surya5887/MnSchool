@@ -148,6 +148,7 @@ const BlockCanvas: React.FC<BlockCanvasProps> = ({ blocks, onChange, hideToolbar
         </div>
       ))}
 
+      {!hideToolbar && (
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '16px', padding: '16px', border: '2px dashed var(--glass-border)', borderRadius: '12px', justifyContent: 'center' }}>
         <button className="btn-secondary" onClick={() => addBlock('header')}>+ Header</button>
         <button className="btn-secondary" onClick={() => addBlock('text')}>+ Text/Math</button>
@@ -158,6 +159,7 @@ const BlockCanvas: React.FC<BlockCanvasProps> = ({ blocks, onChange, hideToolbar
         <button className="btn-secondary" onClick={() => addBlock('word_bank')}>+ Word Bank</button>
         <button className="btn-secondary" onClick={() => addBlock('split_column')}>+ Split Columns</button>
       </div>
+      )}
     </div>
   );
 };
