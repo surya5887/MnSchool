@@ -364,6 +364,9 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
+                            {q.blocks && q.blocks.length > 0 && (
+                              <BlockPrintRenderer blocks={q.blocks} />
+                            )}
                             {q.blankSpace !== undefined && q.blankSpace > 0 && (
                               <div style={{ height: `${q.blankSpace}px`, width: '100%' }} />
                             )}

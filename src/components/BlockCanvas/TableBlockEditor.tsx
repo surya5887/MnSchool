@@ -39,17 +39,29 @@ const TableBlockEditor: React.FC<Props> = ({ block, onChange }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-        <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Rows:</label>
-        <input 
-          type="number" min="1" max="20" className="glass-input" style={{ width: '60px', marginBottom: 0, padding: '4px' }} 
-          value={block.rows} onChange={e => updateDims(Number(e.target.value), block.cols)} 
-        />
-        <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Cols:</label>
-        <input 
-          type="number" min="1" max="20" className="glass-input" style={{ width: '60px', marginBottom: 0, padding: '4px' }} 
-          value={block.cols} onChange={e => updateDims(block.rows, Number(e.target.value))} 
-        />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Rows:</label>
+          <input 
+            type="number" min="1" max="20" className="glass-input" style={{ width: '60px', marginBottom: 0, padding: '4px' }} 
+            value={block.rows} onChange={e => updateDims(Number(e.target.value), block.cols)} 
+          />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Cols:</label>
+          <input 
+            type="number" min="1" max="20" className="glass-input" style={{ width: '60px', marginBottom: 0, padding: '4px' }} 
+            value={block.cols} onChange={e => updateDims(block.rows, Number(e.target.value))} 
+          />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Table Bg:</label>
+          <input type="color" value={(block as any).tableBgColor || '#ffffff'} onChange={e => onChange({ ...block, tableBgColor: e.target.value } as any)} style={{ width: '24px', height: '24px', padding: 0, border: 'none' }} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Table Text:</label>
+          <input type="color" value={(block as any).tableTextColor || '#000000'} onChange={e => onChange({ ...block, tableTextColor: e.target.value } as any)} style={{ width: '24px', height: '24px', padding: 0, border: 'none' }} />
+        </div>
       </div>
 
       <div style={{ overflowX: 'auto', background: '#f8fafc', padding: '8px', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
@@ -132,6 +144,28 @@ const TableBlockEditor: React.FC<Props> = ({ block, onChange }) => {
             </div>
           </div>
           
+          <div style={{ display: 'flex', gap: '8px', marginTop: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
+            <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', flex: 1 }} onClick={() => {
+              const newCells = [...block.cells];
+              newCells.forEach(c => {
+                if (c.rowIndex === activeCell.rowIndex) {
+                  c.bgColor = activeCell.bgColor;
+                  c.textColor = activeCell.textColor;
+                }
+              });
+              onChange({ ...block, cells: newCells });
+            }}>Apply Color to Entire Row</button>
+            <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '10px', flex: 1 }} onClick={() => {
+              const newCells = [...block.cells];
+              newCells.forEach(c => {
+                if (c.colIndex === activeCell.colIndex) {
+                  c.bgColor = activeCell.bgColor;
+                  c.textColor = activeCell.textColor;
+                }
+              });
+              onChange({ ...block, cells: newCells });
+            }}>Apply Color to Entire Column</button>
+          </div>
           <p style={{ fontSize: '9px', color: '#94a3b8', marginTop: '12px' }}>* Tip: If you set ColSpan &gt; 1, the cells to the right will be hidden automatically in Print View.</p>
         </div>
       )}
