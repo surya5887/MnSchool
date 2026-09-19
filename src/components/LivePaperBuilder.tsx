@@ -67,8 +67,8 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
     <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 160px)', background: '#f8fafc', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
       
       {/* CENTER: Live Canvas Area */}
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', background: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
-        <div style={{ margin: '40px 20px', minWidth: '850px', maxWidth: '850px', background: 'white', minHeight: '1100px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
+      <div className="hide-scrollbar" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
+        <div style={{ margin: '40px 20px', width: '100%', maxWidth: '850px', background: 'white', minHeight: '1100px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
           <QuestionPaperPrintView 
             mode="inline" 
             paperData={paperData} 
@@ -80,31 +80,31 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
       </div>
 
       {/* BOTTOM TOOLBAR: Insert Panel */}
-      <div style={{ width: '100%', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', padding: '12px 20px', gap: '24px', overflowX: 'auto', zIndex: 10 }}>
+      <div className="hide-scrollbar" style={{ width: '100%', background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', padding: '16px 24px', gap: '16px', zIndex: 10, boxShadow: '0 -4px 20px rgba(0,0,0,0.05)' }}>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Structure:</span>
-          <button className="btn-secondary" style={{ padding: '6px 12px', background: '#f1f5f9', border: '1px dashed #cbd5e1', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={addSection}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginRight: '4px' }}>Structure:</span>
+          <button className="btn-secondary" style={{ padding: '8px 16px', background: '#f1f5f9', border: '1px dashed #cbd5e1', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px' }} onClick={addSection}>
             <Plus size={14} style={{ color: '#64748b' }} /> Add Section
           </button>
         </div>
 
-        <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }}></div>
+        <div style={{ width: '1px', height: '24px', background: '#cbd5e1', display: 'none' }} className="toolbar-divider"></div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Questions:</span>
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={() => addQuestion('subjective')}>Subjective</button>
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={() => addQuestion('objective')}>MCQ</button>
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={() => addQuestion('true_false')}>True/False</button>
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={() => addQuestion('match')}>Match</button>
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={() => addQuestion('fill_in_the_blanks')}>Fill Blanks</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginRight: '4px', marginLeft: '12px' }}>Questions:</span>
+          <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('subjective')}>Subjective</button>
+          <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('objective')}>MCQ</button>
+          <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('true_false')}>True/False</button>
+          <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('match')}>Match</button>
+          <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('fill_in_the_blanks')}>Fill Blanks</button>
         </div>
         
-        <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }}></div>
+        <div style={{ width: '1px', height: '24px', background: '#cbd5e1', display: 'none' }} className="toolbar-divider"></div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Misc:</span>
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', whiteSpace: 'nowrap' }} onClick={() => addQuestion('instruction')}>Instruction</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginRight: '4px', marginLeft: '12px' }}>Misc:</span>
+          <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('instruction')}>Instruction</button>
         </div>
       </div>
 
