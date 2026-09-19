@@ -309,7 +309,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
                                 {q.options.map((opt, optIdx) => (
                                   <div key={optIdx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                                    <span>({['a', 'b', 'c', 'd'][optIdx]})</span>
+                                    <span>({['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][optIdx]})</span>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                       {q.optionImages && q.optionImages[optIdx] && (
                                         <img src={q.optionImages[optIdx]} alt="" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }} />
