@@ -64,7 +64,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
   // and doesn't accept onClick handlers on inner elements.
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 160px)', background: '#f8fafc', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+    <div style={{ position: 'relative', display: 'flex', height: 'calc(100vh - 160px)', background: '#f8fafc', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
       
       {/* LEFT TOOLBAR: Insert Panel */}
       <div style={{ width: '260px', background: 'white', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
@@ -105,122 +105,20 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
       </div>
 
       {/* CENTER: Live Canvas Area */}
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
-        <div style={{ width: '100%', minWidth: '850px', maxWidth: '850px', background: 'white', minHeight: '1100px', padding: '64px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
-          
-          {/* Header Preview */}
-          <div style={{ textAlign: 'center', marginBottom: '40px', borderBottom: '2px solid #000', paddingBottom: '16px' }}>
-            <h1 style={{ margin: 0, fontSize: '24px' }}>MN PUBLIC SCHOOL</h1>
-            <h2 style={{ margin: '8px 0', fontSize: '18px' }}>Half Yearly Examination</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginTop: '16px' }}>
-              <span>Time Allowed: 3 Hours</span>
-              <span>Maximum Marks: 100</span>
-            </div>
-          </div>
-
-          {/* Render Sections & Questions */}
-          {paperData.sections?.map((sec, sIdx) => (
-            <div key={sIdx} style={{ marginBottom: '32px' }}>
-              <div 
-                onClick={(e) => { e.stopPropagation(); setSelectedItem({ type: 'section', sIdx }); }}
-                style={{ 
-                  textAlign: 'center', 
-                  fontWeight: 'bold', 
-                  textDecoration: 'underline', 
-                  marginBottom: '16px',
-                  padding: '8px',
-                  cursor: 'pointer',
-                  border: selectedItem?.type === 'section' && selectedItem.sIdx === sIdx ? '2px solid #3b82f6' : '2px solid transparent',
-                  background: selectedItem?.type === 'section' && selectedItem.sIdx === sIdx ? '#eff6ff' : 'transparent',
-                  borderRadius: '4px',
-                  transition: 'all 0.2s'
-                }}
-              >
-                {sec.sectionTitle || 'UNTITLED SECTION'}
-              </div>
-
-              {sec.questions?.map((q, qIdx) => {
-                const isSelected = selectedItem?.type === 'question' && selectedItem.sIdx === sIdx && selectedItem.qIdx === qIdx;
-                let globalQuestionIndex = 0;
-                for (let i = 0; i < sIdx; i++) {
-                  globalQuestionIndex += paperData.sections[i].questions.filter(qu => qu.type !== 'instruction').length;
-                }
-                globalQuestionIndex += sec.questions.slice(0, qIdx).filter(qu => qu.type !== 'instruction').length;
-                
-                return (
-                  <div 
-                    key={qIdx} 
-                    onClick={(e) => { e.stopPropagation(); setSelectedItem({ type: 'question', sIdx, qIdx }); }}
-                    style={{ 
-                      display: 'flex', 
-                      gap: '12px', 
-                      marginBottom: '16px', 
-                      padding: '12px',
-                      cursor: 'pointer',
-                      border: isSelected ? '2px solid #3b82f6' : '2px solid transparent',
-                      background: isSelected ? '#eff6ff' : 'transparent',
-                      borderRadius: '8px',
-                      position: 'relative',
-                      transition: 'all 0.2s',
-                      fontFamily: q.fontFamily || 'inherit',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) e.currentTarget.style.border = '2px dashed #cbd5e1';
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) e.currentTarget.style.border = '2px solid transparent';
-                    }}
-                  >
-                    {q.type !== 'instruction' && (
-                      <div style={{ fontWeight: 'bold', minWidth: '30px' }}>Q{globalQuestionIndex + 1}.</div>
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div dangerouslySetInnerHTML={{ __html: q.text || '<span style="color:#9ca3af">Click to edit text...</span>' }} />
-                      
-                      {/* Previews */}
-                      {q.type === 'true_false' && (
-                        <div style={{ display: 'flex', gap: '32px', marginTop: '12px', opacity: 0.7 }}>
-                          <span>[ ] True</span>
-                          <span>[ ] False</span>
-                        </div>
-                      )}
-                      
-                      {q.type === 'match' && (
-                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', opacity: 0.7 }}>
-                           <table style={{ width: '80%', borderCollapse: 'collapse' }}>
-                             <tbody>
-                               {q.matchPairs?.map((pair, pIdx) => (
-                                 <tr key={pIdx}>
-                                   <td style={{ padding: '8px', border: '1px solid #000' }}>{pair.left || 'Left Item'}</td>
-                                   <td style={{ padding: '8px', border: '1px solid #000' }}>{pair.right || 'Right Item'}</td>
-                                 </tr>
-                               ))}
-                             </tbody>
-                           </table>
-                         </div>
-                      )}
-
-                      {q.blocks && q.blocks.length > 0 && (
-                        <div style={{ marginTop: '12px', padding: '8px', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '4px', fontSize: '12px', color: '#64748b' }}>
-                          [ {q.blocks.length} Attached Block(s): {q.blocks.map(b => b.type).join(', ')} - See Inspector to edit ]
-                        </div>
-                      )}
-                    </div>
-                    {q.type !== 'instruction' && (
-                      <div style={{ fontWeight: 'bold' }}>[{q.marks}]</div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-          
-          <div style={{ height: '100px' }}></div> {/* Pad bottom */}
+      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', background: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={() => setSelectedItem(null)}>
+        <div style={{ margin: '40px 20px', minWidth: '850px', maxWidth: '850px', background: 'white', minHeight: '1100px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', borderRadius: '2px', position: 'relative' }}>
+          <QuestionPaperPrintView 
+            mode="inline" 
+            paperData={paperData} 
+            isEditor={true} 
+            selectedItem={selectedItem} 
+            onItemClick={setSelectedItem as any} 
+          />
         </div>
       </div>
 
       {/* RIGHT SIDEBAR: Property Inspector */}
-      <div style={{ width: selectedItem ? '400px' : '0px', background: 'white', borderLeft: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, zIndex: 100, boxShadow: selectedItem ? '-10px 0 30px rgba(0,0,0,0.1)' : 'none', width: selectedItem ? '400px' : '0px', background: 'white', borderLeft: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', overflow: 'hidden' }}>
         {selectedItem && (
           <div style={{ width: '400px', display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

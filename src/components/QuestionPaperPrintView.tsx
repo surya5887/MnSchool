@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowLeft, Printer, Circle, Square, Triangle, Hexagon, Octagon, Star, Diamond, Minus } from 'lucide-react';
 
 const renderShape = (shape: any) => {
@@ -36,9 +36,12 @@ interface QuestionPaperProps {
   paperData: QuestionPaperData;
   onClose?: () => void;
   mode?: 'print' | 'inline';
+  isEditor?: boolean;
+  selectedItem?: { type: 'section' | 'question', sIdx: number, qIdx?: number } | null;
+  onItemClick?: (item: { type: 'section' | 'question', sIdx: number, qIdx?: number } | null) => void;
 }
 
-const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose, mode = 'print' }) => {
+const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose, mode = 'print', isEditor = false, selectedItem = null, onItemClick }) => {
   let qCounter = 1;
   const content = (
     <>
@@ -174,9 +177,23 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <tbody>
                     {section.questions.map((q, qIdx) => {
+                      const isQSelected = isEditor && selectedItem?.type === 'question' && selectedItem.sIdx === sIdx && selectedItem.qIdx === qIdx;
+                      const qProps = isEditor ? {
+                        onClick: (e: any) => { e.stopPropagation(); onItemClick?.({ type: 'question', sIdx, qIdx }); },
+                        onMouseEnter: (e: any) => { if (!isQSelected) e.currentTarget.style.outline = '2px dashed #cbd5e1'; },
+                        onMouseLeave: (e: any) => { if (!isQSelected) e.currentTarget.style.outline = '2px solid transparent'; }
+                      } : {};
+                      const qStyle = {
+                        pageBreakInside: 'avoid' as any, breakInside: 'avoid' as any, fontFamily: q.fontFamily || 'inherit',
+                        cursor: isEditor ? 'pointer' : 'auto',
+                        outline: isQSelected ? '2px solid #3b82f6' : '2px solid transparent',
+                        background: isQSelected ? '#eff6ff' : 'transparent',
+                        transition: 'all 0.2s'
+                      };
+
                       if (q.type === 'instruction') {
                         return (
-                          <tr key={qIdx} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                          <tr key={qIdx} style={qStyle} {...qProps}>
                             <td colSpan={3} style={{ padding: '12px 0', fontWeight: 'bold' }}>
                               <div dangerouslySetInnerHTML={{ __html: q.text.replace(/\n/g, '<br/>') }} />
                             </td>
@@ -188,7 +205,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                       const label = q.label !== undefined ? q.label : `Q${currentQNum}.`;
 
                       return (
-                        <tr key={qIdx} style={{ pageBreakInside: "avoid", breakInside: "avoid" }}>
+                        <tr key={qIdx} style={qStyle} {...qProps}>
                           <td style={{ verticalAlign: 'top', width: '60px', padding: '8px 0', fontWeight: 'bold' }}>{label}</td>
                           <td style={{ verticalAlign: 'top', padding: '8px 10px', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>
                             {q.type === 'passage' ? (
