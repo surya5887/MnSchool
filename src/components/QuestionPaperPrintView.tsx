@@ -286,7 +286,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                     {q.matchPairs.map((pair, pIdx) => (
                                       <tr key={pIdx}>
                                         <td style={{ padding: '8px', border: '1px solid transparent' }}>{pIdx + 1}. {pair.left}</td>
-                                        <td style={{ padding: '8px', border: '1px solid transparent', textAlign: 'center' }}>—</td>
+                                        <td style={{ padding: '8px', border: '1px solid transparent', textAlign: 'center', width: '20px' }}></td>
                                         <td style={{ padding: '8px', border: '1px solid transparent' }}>({String.fromCharCode(97 + pIdx)}) {pair.right}</td>
                                       </tr>
                                     ))}
@@ -337,36 +337,52 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                           <span>{stmt}</span>
                                         </div>
                                         <div style={{ display: 'flex', gap: '24px', whiteSpace: 'nowrap', marginLeft: '16px' }}>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            {(!q.tfStyle || q.tfStyle !== 'none') && (
-                                              <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
-                                            )}
-                                            <span>{q.trueLabel !== undefined ? q.trueLabel : 'True'}</span>
-                                          </div>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            {(!q.tfStyle || q.tfStyle !== 'none') && (
-                                              <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
-                                            )}
-                                            <span>{q.falseLabel !== undefined ? q.falseLabel : 'False'}</span>
-                                          </div>
+                                          {(q.tfStyle === 'checkbox_only' || q.tfStyle === 'circle_only') ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                              <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle_only' ? '50%' : '0' }}></div>
+                                            </div>
+                                          ) : (
+                                            <>
+                                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                {(!q.tfStyle || q.tfStyle !== 'none') && (
+                                                  <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
+                                                )}
+                                                <span>{q.trueLabel !== undefined ? q.trueLabel : 'True'}</span>
+                                              </div>
+                                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                {(!q.tfStyle || q.tfStyle !== 'none') && (
+                                                  <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
+                                                )}
+                                                <span>{q.falseLabel !== undefined ? q.falseLabel : 'False'}</span>
+                                              </div>
+                                            </>
+                                          )}
                                         </div>
                                       </div>
                                     ))}
                                   </div>
                                 ) : (
                                   <div style={{ display: 'flex', gap: '32px', paddingLeft: '12px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      {(!q.tfStyle || q.tfStyle !== 'none') && (
-                                        <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
-                                      )}
-                                      <span>{q.trueLabel !== undefined ? q.trueLabel : 'True'}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      {(!q.tfStyle || q.tfStyle !== 'none') && (
-                                        <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
-                                      )}
-                                      <span>{q.falseLabel !== undefined ? q.falseLabel : 'False'}</span>
-                                    </div>
+                                    {(q.tfStyle === 'checkbox_only' || q.tfStyle === 'circle_only') ? (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle_only' ? '50%' : '0' }}></div>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                          {(!q.tfStyle || q.tfStyle !== 'none') && (
+                                            <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
+                                          )}
+                                          <span>{q.trueLabel !== undefined ? q.trueLabel : 'True'}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                          {(!q.tfStyle || q.tfStyle !== 'none') && (
+                                            <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
+                                          )}
+                                          <span>{q.falseLabel !== undefined ? q.falseLabel : 'False'}</span>
+                                        </div>
+                                      </>
+                                    )}
                                   </div>
                                 )}
                               </div>
