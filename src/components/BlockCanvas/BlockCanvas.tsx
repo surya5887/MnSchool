@@ -13,9 +13,10 @@ import { Trash2, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 interface BlockCanvasProps {
   blocks: PaperBlock[];
   onChange: (blocks: PaperBlock[]) => void;
+  hideToolbar?: boolean;
 }
 
-const BlockCanvas: React.FC<BlockCanvasProps> = ({ blocks, onChange }) => {
+const BlockCanvas: React.FC<BlockCanvasProps> = ({ blocks, onChange, hideToolbar = false }) => {
   const addBlock = (type: PaperBlock['type']) => {
     const newBlock: any = {
       id: Math.random().toString(36).substring(7),

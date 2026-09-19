@@ -961,6 +961,24 @@ const Examination: React.FC = () => {
                           <Lightbulb size={14} /> Hint
                         </button>
 
+                        <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onClick={() => addBlockToQuestion(sIdx, qIdx, 'table')}>
+                          <Grid size={14} /> Table/Grid
+                        </button>
+                        <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.85rem', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onClick={() => addBlockToQuestion(sIdx, qIdx, 'split_column')}>
+                          <LayoutTemplate size={14} /> Split Cols
+                        </button>
+                        <select className="glass-input" style={{ padding: '4px 8px', fontSize: '0.85rem', height: 'auto', width: 'auto', background: 'white', border: '1px solid var(--border-color)', marginBottom: 0 }} onChange={(e) => {
+                          if (e.target.value) {
+                            addBlockToQuestion(sIdx, qIdx, e.target.value);
+                            e.target.value = "";
+                          }
+                        }}>
+                          <option value="">+ More Blocks...</option>
+                          <option value="match">Matching</option>
+                          <option value="mcq">MCQ Block</option>
+                          <option value="image_group">Images</option>
+                          <option value="text">Text/Math</option>
+                        </select>
                         <button className="btn-secondary" style={{ padding: "6px", color: "var(--danger)", width: "auto", marginBottom: 0, marginLeft: 'auto', background: 'white', border: '1px solid #fca5a5' }} onClick={() => {
                           const newSecs = [...paperData.sections];
                           newSecs[sIdx].questions.splice(qIdx, 1);
@@ -1096,7 +1114,7 @@ const Examination: React.FC = () => {
                     )}
                     
                     <div style={{ marginTop: '16px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                      <BlockCanvas 
+                      <BlockCanvas hideToolbar={true} 
                         blocks={q.blocks || []} 
                         onChange={(newBlocks) => {
                           const newSecs = [...paperData.sections];
