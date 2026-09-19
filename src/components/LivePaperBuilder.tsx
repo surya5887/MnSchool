@@ -24,6 +24,12 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
     if (type === 'objective') {
       newQuestion.options = ['Option A', 'Option B', 'Option C', 'Option D'];
     }
+    if (type === 'true_false') {
+      newQuestion.text = 'State True (✔) or False (✖) for the following:<br/><br/>New Question';
+      newQuestion.trueLabel = 'True';
+      newQuestion.falseLabel = 'False';
+      newQuestion.tfStyle = 'checkbox';
+    }
     newSecs[sIdx].questions.push(newQuestion);
     setPaperData({ ...paperData, sections: newSecs });
     setSelectedItem({ type: 'question', sIdx, qIdx: newSecs[sIdx].questions.length - 1 });
@@ -336,6 +342,29 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                             </div>
                           </div>
                         ))}
+                      </div>
+                    )}
+                    {q.type === 'true_false' && (
+                      <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginTop: '16px' }}>
+                        <label className="input-label">True/False Properties</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                          <div>
+                            <label style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>True Label</label>
+                            <input type="text" className="glass-input" style={{ marginBottom: 0 }} value={q.trueLabel !== undefined ? q.trueLabel : 'True'} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { trueLabel: e.target.value })} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>False Label</label>
+                            <input type="text" className="glass-input" style={{ marginBottom: 0 }} value={q.falseLabel !== undefined ? q.falseLabel : 'False'} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { falseLabel: e.target.value })} />
+                          </div>
+                          <div style={{ gridColumn: 'span 2' }}>
+                            <label style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>Style</label>
+                            <select className="glass-input" style={{ marginBottom: 0, width: '100%' }} value={q.tfStyle || 'checkbox'} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { tfStyle: e.target.value as any })}>
+                              <option value="checkbox">Square Box</option>
+                              <option value="circle">Circle (Radio)</option>
+                              <option value="none">Text Only</option>
+                            </select>
+                          </div>
+                        </div>
                       </div>
                     )}
                     {q.type === 'match' && (

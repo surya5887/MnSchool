@@ -329,12 +329,16 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                             {q.type === 'true_false' && (
                               <div style={{ display: 'flex', gap: '32px', marginTop: '12px', paddingLeft: '12px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <div style={{ width: '16px', height: '16px', border: '1px solid #000' }}></div>
-                                  <span>True</span>
+                                  {(!q.tfStyle || q.tfStyle !== 'none') && (
+                                    <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
+                                  )}
+                                  <span>{q.trueLabel !== undefined ? q.trueLabel : 'True'}</span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <div style={{ width: '16px', height: '16px', border: '1px solid #000' }}></div>
-                                  <span>False</span>
+                                  {(!q.tfStyle || q.tfStyle !== 'none') && (
+                                    <div style={{ width: '16px', height: '16px', border: '1px solid #000', borderRadius: q.tfStyle === 'circle' ? '50%' : '0' }}></div>
+                                  )}
+                                  <span>{q.falseLabel !== undefined ? q.falseLabel : 'False'}</span>
                                 </div>
                               </div>
                             )}
