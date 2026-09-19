@@ -245,6 +245,10 @@ export interface QuestionPaperData {
       options?: string[];
       optionImages?: string[];
       wordBank?: string[];
+      trueLabel?: string;
+      falseLabel?: string;
+      tfStyle?: 'checkbox' | 'circle' | 'none';
+      tfStatements?: string[];
       hint?: string;
       label?: string;
       fontFamily?: string;

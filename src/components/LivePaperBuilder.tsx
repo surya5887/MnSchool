@@ -365,6 +365,32 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                             </select>
                           </div>
                         </div>
+
+                        <div style={{ marginTop: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+                          <label className="input-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Statements (Lines)</span>
+                            <button className="btn-secondary" style={{ padding: '2px 8px', fontSize: '11px' }} onClick={() => {
+                              const newStatements = [...(q.tfStatements || []), 'New Statement'];
+                              updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { tfStatements: newStatements });
+                            }}>+ Add Line</button>
+                          </label>
+                          {(q.tfStatements || []).map((stmt, stmtIdx) => (
+                            <div key={stmtIdx} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'flex-start' }}>
+                              <span style={{ fontWeight: 'bold', width: '20px', paddingTop: '6px', fontSize: '12px' }}>{stmtIdx+1}.</span>
+                              <input type="text" className="glass-input" style={{ marginBottom: 0, flex: 1 }} placeholder="Statement Text" value={stmt} onChange={e => {
+                                const newStatements = [...q.tfStatements!]; newStatements[stmtIdx] = e.target.value;
+                                updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { tfStatements: newStatements });
+                              }} />
+                              <button className="btn-danger" style={{ padding: '8px' }} onClick={() => {
+                                const newStatements = [...q.tfStatements!]; newStatements.splice(stmtIdx, 1);
+                                updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { tfStatements: newStatements });
+                              }}><Trash2 size={14} /></button>
+                            </div>
+                          ))}
+                          {(!q.tfStatements || q.tfStatements.length === 0) && (
+                            <p style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic' }}>No lines added. A single True/False block will appear below the question text.</p>
+                          )}
+                        </div>
                       </div>
                     )}
                     {q.type === 'match' && (
