@@ -295,13 +295,23 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
-                            {q.type === 'fill_in_the_blanks' && q.wordBank && q.wordBank.length > 0 && (
-                              <div style={{ marginTop: '16px', padding: '12px', border: '1px solid #000', borderRadius: '4px', textAlign: 'center' }}>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px' }}>
-                                  {q.wordBank.map((word, wIdx) => (
-                                    <span key={wIdx} style={{ fontWeight: 'bold' }}>{word}</span>
-                                  ))}
-                                </div>
+                            {q.type === 'fill_in_the_blanks' && (
+                              <div style={{ marginTop: '8px' }}>
+                                {q.wordBank && q.wordBank.length > 0 && (
+                                  <div style={{ textAlign: 'center', marginBottom: '16px', fontWeight: 'bold' }}>
+                                    ( {q.wordBank.join(', ')} )
+                                  </div>
+                                )}
+                                {q.fibStatements && q.fibStatements.length > 0 && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '24px' }}>
+                                    {q.fibStatements.map((stmt, stmtIdx) => (
+                                      <div key={stmtIdx} style={{ display: 'flex', gap: '12px' }}>
+                                        <span>{['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)', '(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)', '(q)', '(r)', '(s)', '(t)', '(u)', '(v)', '(w)', '(x)', '(y)', '(z)'][stmtIdx] || `(${stmtIdx + 1})`}</span>
+                                        <span dangerouslySetInnerHTML={{ __html: stmt.replace(/\n/g, '<br/>') }} />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             )}
 

@@ -249,6 +249,7 @@ export interface QuestionPaperData {
       falseLabel?: string;
       tfStyle?: 'checkbox' | 'circle' | 'none' | 'checkbox_only' | 'circle_only';
       tfStatements?: string[];
+      fibStatements?: string[];
       hint?: string;
       label?: string;
       fontFamily?: string;

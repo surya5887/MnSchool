@@ -30,6 +30,11 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
       newQuestion.falseLabel = 'False';
       newQuestion.tfStyle = 'checkbox';
     }
+    if (type === 'fill_in_the_blanks') {
+      newQuestion.text = 'Fill in the blanks with the correct words:';
+      newQuestion.wordBank = [];
+      newQuestion.fibStatements = ['New Statement __________________ .'];
+    }
     newSecs[sIdx].questions.push(newQuestion);
     setPaperData({ ...paperData, sections: newSecs });
     setSelectedItem({ type: 'question', sIdx, qIdx: newSecs[sIdx].questions.length - 1 });
@@ -411,6 +416,58 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                            </div>
                         ))}
                         <button className="btn-secondary" style={{ width: '100%', padding: '6px', fontSize: '12px' }} onClick={() => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { matchPairs: [...(q.matchPairs || []), {left:'', right:''}] })}>+ Add Pair</button>
+                      </div>
+                    )}
+
+                    {q.type === 'fill_in_the_blanks' && (
+                      <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginTop: '16px' }}>
+                        <label className="input-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Word Bank (Help Box)</span>
+                          <button className="btn-secondary" style={{ padding: '2px 8px', fontSize: '11px' }} onClick={() => {
+                            const newBank = q.wordBank ? [...q.wordBank, 'new_word'] : ['new_word'];
+                            updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { wordBank: newBank });
+                          }}>+ Add Word</button>
+                        </label>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                          {q.wordBank && q.wordBank.map((word, wIdx) => (
+                            <div key={wIdx} style={{ display: 'flex', alignItems: 'center', background: 'white', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '2px 4px 2px 8px' }}>
+                              <input type="text" value={word} onChange={e => {
+                                const newBank = [...q.wordBank!]; newBank[wIdx] = e.target.value;
+                                updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { wordBank: newBank });
+                              }} style={{ border: 'none', background: 'transparent', outline: 'none', width: '60px', fontSize: '12px' }} />
+                              <button className="icon-btn" style={{ padding: '2px', color: 'var(--danger)' }} onClick={() => {
+                                const newBank = [...q.wordBank!]; newBank.splice(wIdx, 1);
+                                updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { wordBank: newBank.length > 0 ? newBank : undefined });
+                              }}><X size={12} /></button>
+                            </div>
+                          ))}
+                          {(!q.wordBank || q.wordBank.length === 0) && (
+                            <p style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic', margin: 0 }}>No words added. Word bank will be hidden.</p>
+                          )}
+                        </div>
+
+                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+                          <label className="input-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Blanks (Lines)</span>
+                            <button className="btn-secondary" style={{ padding: '2px 8px', fontSize: '11px' }} onClick={() => {
+                              const newStatements = [...(q.fibStatements || []), 'New Statement __________________ .'];
+                              updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fibStatements: newStatements });
+                            }}>+ Add Line</button>
+                          </label>
+                          {(q.fibStatements || []).map((stmt, stmtIdx) => (
+                            <div key={stmtIdx} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'flex-start' }}>
+                              <span style={{ fontWeight: 'bold', width: '20px', paddingTop: '6px', fontSize: '12px' }}>{stmtIdx+1}.</span>
+                              <input type="text" className="glass-input" style={{ marginBottom: 0, flex: 1 }} placeholder="Statement Text" value={stmt} onChange={e => {
+                                const newStatements = [...q.fibStatements!]; newStatements[stmtIdx] = e.target.value;
+                                updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fibStatements: newStatements });
+                              }} />
+                              <button className="btn-danger" style={{ padding: '8px' }} onClick={() => {
+                                const newStatements = [...q.fibStatements!]; newStatements.splice(stmtIdx, 1);
+                                updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fibStatements: newStatements });
+                              }}><Trash2 size={14} /></button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
 
