@@ -56,6 +56,36 @@ const Examination: React.FC = () => {
   // Tabs
   const [activeTab, setActiveTab] = useState<'reports' | 'certificates' | 'schedules' | 'papers' | 'doc_builder'>('reports');
 
+  const addBlockToQuestion = (sIdx: number, qIdx: number, type: string) => {
+    const newSecs = [...paperData!.sections];
+    if (!newSecs[sIdx].questions[qIdx].blocks) {
+      newSecs[sIdx].questions[qIdx].blocks = [];
+    }
+    
+    const newBlock: any = {
+      id: Math.random().toString(36).substring(7),
+      type,
+    };
+
+    if (type === 'table') {
+      newBlock.rows = 3;
+      newBlock.cols = 3;
+      newBlock.cells = [];
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          newBlock.cells.push({ rowIndex: r, colIndex: c, content: '' });
+        }
+      }
+    } else if (type === 'split_column') {
+      newBlock.leftContent = '';
+      newBlock.rightContent = '';
+      newBlock.splitRatio = '50-50';
+    }
+
+    newSecs[sIdx].questions[qIdx].blocks!.push(newBlock);
+    setPaperData({...paperData!, sections: newSecs});
+  };
+
   // Main Page Filters
   const [classFilter, setClassFilter] = useState('');
   const [sectionFilter, setSectionFilter] = useState('');
@@ -976,6 +1006,20 @@ const Examination: React.FC = () => {
                       </div>
                     </div>
                     </div>
+
+                    {q.type === 'true_false' && (
+                      <div style={{ display: 'flex', gap: '32px', marginTop: '16px', paddingLeft: '16px', opacity: 0.7 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '16px', height: '16px', border: '1px solid var(--border-color)', borderRadius: '2px' }}></div>
+                          <span style={{ fontSize: '14px', fontWeight: 500 }}>True</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '16px', height: '16px', border: '1px solid var(--border-color)', borderRadius: '2px' }}></div>
+                          <span style={{ fontSize: '14px', fontWeight: 500 }}>False</span>
+                        </div>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', marginLeft: 'auto' }}>(Preview: This will be printed on the paper)</span>
+                      </div>
+                    )}
 
                     {q.type === 'match' && (
                       <div style={{ marginTop: '16px', paddingLeft: '32px' }}>
