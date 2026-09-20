@@ -3,11 +3,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock, Send, Circle, XCircle } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock, Send, Circle, XCircle, CreditCard } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
 import { generateNativePdfReceiptBase64 } from '../lib/pdfGenerator';
+import { QRCodeSVG } from 'qrcode.react';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -97,7 +98,7 @@ const StudentProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<StudentData>>({});
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'profile' | 'finance' | 'documents' | 'attendance'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'finance' | 'documents' | 'attendance' | 'id-card'>('profile');
   const [newDocs, setNewDocs] = useState<{name: string, file: File | null}[]>([]);
   const [docsToRemove, setDocsToRemove] = useState<string[]>([]);
   const [newDocName, setNewDocName] = useState('');
@@ -108,6 +109,7 @@ const StudentProfile: React.FC = () => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   });
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [schoolSettings, setSchoolSettings] = useState<any>(null);
 
   useEffect(() => {
     if (student && studentClass?.id && student.sectionId) {
@@ -618,6 +620,9 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <div onClick={() => setActiveTab('profile')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'profile' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'profile' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <User size={18} /> Profile Overview
         </div>
+        <div onClick={() => setActiveTab('id-card')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'id-card' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'id-card' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CreditCard size={18} /> Smart ID Card
+        </div>
         <div onClick={() => setActiveTab('attendance')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'attendance' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'attendance' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Calendar size={18} /> Attendance
         </div>
@@ -873,6 +878,99 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: ID CARD */}
+      {activeTab === 'id-card' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
+          <div className="no-print" style={{ marginBottom: '24px', display: 'flex', gap: '16px' }}>
+            <button className="btn-primary" onClick={() => window.print()}><Printer size={18} /> Print ID Card</button>
+          </div>
+
+          <div className="id-card-print-container" style={{ position: 'relative', width: '320px', height: '500px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
+            {/* Top Header / School branding */}
+            <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)', color: 'white', padding: '16px 12px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              {schoolSettings?.logoUrl ? (
+                <img src={schoolSettings.logoUrl} alt="School Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
+              ) : (
+                <div style={{ width: '48px', height: '48px', background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5', fontWeight: 800, fontSize: '1.2rem' }}>{schoolSettings?.shortName || 'MN'}</div>
+              )}
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '1.1rem', lineHeight: '1.2' }}>{schoolSettings?.schoolName || 'MN Public School'}</div>
+                <div style={{ fontSize: '0.65rem', opacity: 0.9, marginTop: '2px', lineHeight: '1.2' }}>{schoolSettings?.address || 'School Address Not Set'}</div>
+                <div style={{ fontSize: '0.65rem', opacity: 0.9, lineHeight: '1.2' }}>Ph: {schoolSettings?.phone || 'N/A'}</div>
+              </div>
+            </div>
+            
+            {/* Identity Text */}
+            <div style={{ background: '#e0e7ff', color: '#4338ca', textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, padding: '4px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>
+              Identity Card
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+              {/* Photo */}
+              <div style={{ width: '90px', height: '110px', borderRadius: '8px', border: '3px solid #e0e7ff', overflow: 'hidden', marginBottom: '12px', background: '#f1f5f9' }}>
+                <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=4f46e5&color=fff&size=150`} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+
+              {/* Name */}
+              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1e293b', textAlign: 'center', lineHeight: '1.1', marginBottom: '4px' }}>
+                {student.firstName} {student.lastName}
+              </div>
+              
+              {/* Class & Roll */}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '12px' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4f46e5', background: '#e0e7ff', padding: '2px 8px', borderRadius: '12px' }}>Class: {studentClass?.className || 'N/A'}{student.sectionId ? ` - ${student.sectionId}` : ''}</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Roll: {student.rollNumber || 'N/A'}</span>
+              </div>
+
+              {/* Details Grid */}
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem' }}>
+                <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 600, color: '#64748b' }}>F. Name:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{student.parentName || 'N/A'}</span></div>
+                <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 600, color: '#64748b' }}>DOB:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1 }}>{student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString('en-GB') : 'N/A'}</span></div>
+                <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 600, color: '#64748b' }}>Blood Grp:</span> <span style={{ fontWeight: 700, color: '#ef4444', flex: 1 }}>{student.bloodGroup || 'N/A'}</span></div>
+                <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 600, color: '#64748b' }}>Contact:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1 }}>{student.parentPhone || student.phone || 'N/A'}</span></div>
+                <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 600, color: '#64748b' }}>Address:</span> <span style={{ fontWeight: 600, color: '#334155', flex: 1, lineHeight: '1.2', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{student.address || 'N/A'}</span></div>
+              </div>
+            </div>
+
+            {/* Footer with QR and Signature */}
+            <div style={{ padding: '0 16px 16px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
+              <div style={{ padding: '4px', background: 'white', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
+                <QRCodeSVG value={`Student ID: ${student.id}\nName: ${student.firstName} ${student.lastName}\nClass: ${studentClass?.className}\nPhone: ${student.parentPhone}`} size={56} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {schoolSettings?.principalSignatureUrl ? (
+                  <img src={schoolSettings.principalSignatureUrl} alt="Signature" style={{ height: '30px', objectFit: 'contain', marginBottom: '2px' }} />
+                ) : (
+                  <div style={{ height: '30px', borderBottom: '1px solid #cbd5e1', width: '80px', marginBottom: '2px' }}></div>
+                )}
+                <span style={{ fontSize: '0.65rem', fontWeight: 600, color: '#64748b' }}>Principal</span>
+              </div>
+            </div>
+            
+            {/* Background pattern overlay */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%234f46e5\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")', pointerEvents: 'none', zIndex: 0 }}></div>
+          </div>
+          <style>{`
+            @media print {
+              body * { visibility: hidden; }
+              .id-card-print-container, .id-card-print-container * { visibility: visible; }
+              .id-card-print-container {
+                position: absolute !important;
+                left: 50% !important;
+                top: 50px !important;
+                transform: translateX(-50%) !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+              }
+            }
+          `}</style>
         </div>
       )}
 
