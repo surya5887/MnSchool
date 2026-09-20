@@ -132,7 +132,25 @@ export const generateNativePdfReceiptBase64 = async (
   doc.text("Payment Mode:", col2X, y);
   doc.setFont("helvetica", "normal");
   doc.text(String(transaction.paymentMethod || 'Cash'), col2X + 28, y);
-  y += 15;
+  y += 7;
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Mobile No:", col1X, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(String(student.parentPhone || student.phone || 'N/A'), col1X + 28, y);
+
+  if (transaction.runningBalance !== undefined && transaction.runningBalance > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.text("Pending Dues:", col2X, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Rs. ${transaction.runningBalance.toLocaleString('en-IN')}`, col2X + 28, y);
+  } else if (transaction.runningBalance !== undefined && transaction.runningBalance < 0) {
+    doc.setFont("helvetica", "bold");
+    doc.text("Advance Bal:", col2X, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Rs. ${Math.abs(transaction.runningBalance).toLocaleString('en-IN')}`, col2X + 28, y);
+  }
+  y += 12;
 
   // Table Header
   doc.setFillColor(240, 240, 240);

@@ -216,6 +216,11 @@ const StudentProfile: React.FC = () => {
       message += `\nDate: ${new Date(txn.date).toLocaleDateString()}`;
       message += `\nDescription: ${txn.description}`;
       message += `\nPaid: ₹${txn.amount}`;
+      if (txn.runningBalance !== undefined && txn.runningBalance > 0) {
+        message += `\nPending Dues: ₹${txn.runningBalance}`;
+      } else if (txn.runningBalance !== undefined && txn.runningBalance < 0) {
+        message += `\nAdvance Balance: ₹${Math.abs(txn.runningBalance)}`;
+      }
 
       let cleanPhone = phone.replace(/\D/g, '');
       if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
