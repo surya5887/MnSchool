@@ -56,8 +56,9 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [billingLoading, setBillingLoading] = useState(false);
 
-  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-  const role = authUser.role || 'Admin';
+  const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
+  const role = String(authUser.role || 'Admin').trim();
+  const isTeacher = role.toLowerCase() === 'teacher';
 
   const [timeRange, setTimeRange] = useState('30d');
 
@@ -155,7 +156,7 @@ const Dashboard: React.FC = () => {
   };
 
   const analyticsData = useMemo(() => {
-    if (role === 'Teacher') return null;
+    if (isTeacher) return null;
 
     const now = new Date();
     let cutoff = new Date(0);
@@ -258,7 +259,7 @@ const Dashboard: React.FC = () => {
       PIE_COLORS_REV, PIE_COLORS_GEN, PIE_COLORS_ATT, PIE_COLORS_STAFF,
       newAdmissions: filteredStudents.length
     };
-  }, [transactions, students, staff, todayAttendance, timeRange, role]);
+  }, [transactions, students, staff, todayAttendance, timeRange, isTeacher]);
 
   // General Metrics
   const today = new Date().toISOString().split('T')[0];
@@ -297,16 +298,17 @@ const Dashboard: React.FC = () => {
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '40px', paddingTop: '16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '20px' }}>
-          <div>
-            <h1 className="page-title">Dashboard Overview</h1>
-            <p className="page-subtitle" style={{ margin: 0 }}>
-                {role === 'Teacher' 
-                  ? "Welcome back, manage your classes, attendance and students." 
-                  : "Welcome back, here's what's happening at MN Public School today."}
-              </p>
-          </div>
+            <div>
+              <h1 className="page-title">Dashboard Overview</h1>
+              
+              <p className="page-subtitle" style={{ margin: 0 }}>
+                {isTeacher 
+                    ? "Welcome back, manage your classes, attendance and students." 
+                    : "Welcome back, here's what's happening at MN Public School today."}
+                </p>
+            </div>
           
-          {role !== 'Teacher' && settings && (
+          {!isTeacher && settings && (
             <div style={{ display: 'flex', gap: '20px', background: 'white', padding: '16px 24px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--glass-border)', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#475569' }}>Auto Monthly Fee</span>
@@ -325,7 +327,7 @@ const Dashboard: React.FC = () => {
           )}
         </div>
 
-      {role !== 'Teacher' && (
+      {!isTeacher && (
         <div className="dashboard-grid" style={{ marginBottom: "40px" }}>
           <StatCard title="Total Students" value={loading ? "..." : students.filter(s => s.status !== 'Inactive').length.toString()} icon={Users} bgGradient="linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" delay={0.1} />
           <StatCard title="Staff Members" value={loading ? "..." : staff.filter(s => s.status === 'Active').length.toString()} icon={Shield} bgGradient="linear-gradient(135deg, #db2777 0%, #e11d48 100%)" delay={0.2} />
@@ -334,7 +336,7 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {role === 'Teacher' ? (
+      {isTeacher ? (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-panel" style={{ padding: '32px' }}>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
