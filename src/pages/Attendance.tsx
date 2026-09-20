@@ -7,7 +7,7 @@ import { getStudents, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData, getSequenceIndex } from '../services/classService';
 import { exportToCSV } from '../utils/exportUtils';
 import { getAllAttendanceForClass } from '../services/attendanceService';
-import { getAttendance, saveAttendance, type AttendanceStatus } from '../services/attendanceService';
+import { getAttendance, saveAttendance, type AttendanceStatus, type AttendanceRecord } from '../services/attendanceService';
 
 const Attendance: React.FC = () => {
   const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
@@ -18,6 +18,28 @@ const Attendance: React.FC = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchQuery, setSearchQuery] = useState('');
   
+  const [studentMonth, setStudentMonth] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [studentRecords, setStudentRecords] = useState<AttendanceRecord[]>([]);
+
+  useEffect(() => {
+    if (role === 'Student' && authUser.classId && authUser.sectionId) {
+      const fetchStudentAtt = async () => {
+        const activeSession = localStorage.getItem('activeSession') || '2026-2027';
+        try {
+          const allAtt = await getAllAttendanceForClass(authUser.classId, authUser.sectionId, activeSession);
+          const filtered = allAtt.filter(r => r.date.startsWith(studentMonth));
+          setStudentRecords(filtered);
+        } catch (e) {
+          console.error("Error fetching student attendance", e);
+        }
+      };
+      fetchStudentAtt();
+    }
+  }, [role, authUser.classId, authUser.sectionId, studentMonth]);
+
   const [students, setStudents] = useState<StudentData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
   
@@ -173,6 +195,17 @@ const Attendance: React.FC = () => {
   const unmarkedCount = activeStudents.length - presentCount - absentCount;
 
   if (role === 'Student') {
+    let present = 0;
+    let absent = 0;
+    
+    const sortedRecords = [...studentRecords].sort((a,b) => a.date.localeCompare(b.date));
+    
+    sortedRecords.forEach(r => {
+      const status = r.records[authUser.id];
+      if (status === 'Present') present++;
+      else if (status === 'Absent') absent++;
+    });
+
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <div className="flex-responsive" style={{ marginBottom: "32px" }}>
@@ -180,9 +213,61 @@ const Attendance: React.FC = () => {
             <h1 className="page-title"><CalendarCheck size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}/> My Attendance</h1>
             <p className="page-subtitle">View your daily attendance history.</p>
           </div>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <label style={{ fontWeight: 600, color: 'var(--text-muted)' }}>Month:</label>
+            <input type="month" className="glass-input" style={{ marginBottom: 0 }} value={studentMonth} onChange={e => setStudentMonth(e.target.value)} />
+          </div>
         </div>
-        <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-          Attendance history is currently being compiled. Please contact your class teacher for detailed reports.
+
+        <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
+          <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Total Working Days</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{sortedRecords.length}</div>
+          </div>
+          <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{present}</div>
+          </div>
+          <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <div style={{ fontSize: '0.85rem', color: '#ef4444', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Absent</div>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{absent}</div>
+          </div>
+        </div>
+
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', fontSize: '1.2rem' }}>Attendance Details - {new Date(studentMonth + '-01').toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
+          
+          {sortedRecords.length === 0 ? (
+             <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px' }}>No attendance records found for this month.</div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                    <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Date</th>
+                    <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedRecords.map(r => {
+                    const status = r.records[authUser.id] || 'Unmarked';
+                    return (
+                      <tr key={r.date} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                        <td style={{ padding: '12px', color: 'var(--text-main)', fontWeight: 500 }}>
+                          {new Date(r.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          {status === 'Present' && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--success)', background: 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}><CheckCircle size={14} /> Present</span>}
+                          {status === 'Absent' && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--danger)', background: 'rgba(239,68,68,0.1)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}><XCircle size={14} /> Absent</span>}
+                          {status === 'Unmarked' && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', background: 'var(--glass-bg)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}><Circle size={14} /> Not Marked</span>}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </motion.div>
     );
