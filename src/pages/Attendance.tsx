@@ -100,20 +100,19 @@ const Attendance: React.FC = () => {
       
       const activeSession = localStorage.getItem('activeSession') || '2026-2027';
       try {
-        const record = await getAttendance(date, selectedClass, selectedSection, activeSession);
+        const resolvedClassId = classes.find(c => c.className === selectedClass && (c.sections || []).includes(selectedSection))?.id || selectedClass;
+        const record = await getAttendance(date, resolvedClassId, selectedSection, activeSession);
         if (record && record.records) {
           setAttendance(record.records);
         } else {
-          setAttendance({}); // Reset if no data found
+          setAttendance({});
         }
       } catch (error) {
-        console.error("Error fetching attendance record", error);
-      } finally {
-        
+        console.error("Failed to load attendance", error);
       }
     };
     fetchAttendanceData();
-  }, [selectedClass, selectedSection, date]);
+  }, [selectedClass, selectedSection, date, classes]);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
