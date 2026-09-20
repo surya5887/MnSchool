@@ -150,12 +150,15 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         </div>
 
         {/* Paper Details Table */}
-        <table className="header-table">
+        <table className="header-table" style={{ fontSize: '15px' }}>
           <tbody>
             <tr>
               <td style={{ textAlign: 'left', width: '33%' }}>Class: {paperData.classId} {paperData.sectionId || ''}</td>
               <td style={{ textAlign: 'center', width: '33%', fontSize: '18px', textDecoration: 'underline' }}>{paperData.subject}</td>
-              <td style={{ textAlign: 'right', width: '33%' }}>Max Marks: {paperData.maxMarks}</td>
+              <td style={{ textAlign: 'right', width: '33%' }}>
+                {paperData.maxMarks !== undefined && paperData.maxMarks !== '' && `Max Marks: ${paperData.maxMarks}`}
+                {paperData.minMarks !== undefined && paperData.minMarks !== '' && <><br /><span style={{fontSize: '13px'}}>Min Marks: {paperData.minMarks}</span></>}
+              </td>
             </tr>
             <tr>
               <td colSpan={3} style={{ textAlign: 'left', paddingTop: '10px' }}>Time Allowed: {paperData.timeAllowed}</td>

@@ -536,7 +536,11 @@ const Examination: React.FC = () => {
             </div>
             <div style={{ flex: "1 1 120px" }}>
                 <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Max Marks</label>
-              <input type="number" className="glass-input" value={paperData?.maxMarks || 100} onChange={e => setPaperData(prev => prev ? {...prev, maxMarks: Number(e.target.value)} : null)} />
+              <input type="number" className="glass-input" value={paperData?.maxMarks === undefined || paperData?.maxMarks === '' ? '' : paperData.maxMarks} onChange={e => setPaperData(prev => prev ? {...prev, maxMarks: e.target.value === '' ? '' : Number(e.target.value)} : null)} placeholder="E.g. 100" />
+            </div>
+            <div style={{ flex: "1 1 120px" }}>
+                <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)" }}>Min Marks (Pass)</label>
+              <input type="number" className="glass-input" value={paperData?.minMarks === undefined || paperData?.minMarks === '' ? '' : paperData.minMarks} onChange={e => setPaperData(prev => prev ? {...prev, minMarks: e.target.value === '' ? '' : Number(e.target.value)} : null)} placeholder="E.g. 33" />
             </div>
           </div>
 

@@ -226,7 +226,8 @@ export interface QuestionPaperData {
   subject: string;
   examTerm: string;
   timeAllowed: string;
-  maxMarks: number;
+  maxMarks: number | string;
+  minMarks?: number | string;
   generalInstructions: string[];
   hideStandardHeader?: boolean;
   includeOMR?: boolean;
