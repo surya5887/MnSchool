@@ -195,7 +195,10 @@ const StudentProfile: React.FC = () => {
           setTransactions(txns);
           
           const settings = await getSchoolSettings();
-          if (settings?.customChargeTypes) setCustomChargeTypes(settings.customChargeTypes);
+          if (settings) {
+            setSchoolSettings(settings);
+            if (settings.customChargeTypes) setCustomChargeTypes(settings.customChargeTypes);
+          }
         }
       } catch (error) {
         console.error("Error fetching student details", error);
@@ -892,11 +895,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             <div className="id-card-print-container" style={{ position: 'relative', width: '520px', minWidth: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
               {/* Top Header / School branding */}
               <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-                {schoolSettings?.logoUrl ? (
-                  <img src={schoolSettings.logoUrl} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
-                ) : (
-                  <div style={{ width: '56px', height: '56px', background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5', fontWeight: 900, fontSize: '1.4rem' }}>{schoolSettings?.shortName || 'MN'}</div>
-                )}
+                <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
                 <div style={{ flex: 1, textAlign: 'center' }}>
                   <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: '1.1', letterSpacing: '0.5px' }}>{schoolSettings?.schoolName || 'MN Public School'}</div>
                   <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#c7d2fe', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{schoolSettings?.recognitionText || 'Recognized by Government'}</div>
