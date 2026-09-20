@@ -96,7 +96,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
           
           @media screen {
             .paper-container {
-              width: 100% !important;
+              width: 800px !important;
               max-width: 800px !important;
               min-height: 1130px !important;
               height: max-content !important;
@@ -125,8 +125,14 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
               align-items: center !important;
             }
             .paper-container {
+              zoom: 0.6;
               margin: 1rem auto;
-              padding: 20px !important;
+              padding: 40px !important;
+            }
+          }
+          @media screen and (max-width: 480px) {
+            .paper-container {
+              zoom: 0.42;
             }
           }
           .header-table {
