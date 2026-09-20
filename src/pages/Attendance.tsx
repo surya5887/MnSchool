@@ -18,6 +18,18 @@ const Attendance: React.FC = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchQuery, setSearchQuery] = useState('');
   
+  const [students, setStudents] = useState<StudentData[]>([]);
+  const [classes, setClasses] = useState<ClassData[]>([]);
+  const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
+  const [saving, setSaving] = useState(false);
+  
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportClass, setExportClass] = useState('');
+  const [exportSection, setExportSection] = useState('');
+  const [exportMonth, setExportMonth] = useState(new Date().toISOString().substring(0, 7));
+  const [loading, setLoading] = useState(true);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [studentMonth, setStudentMonth] = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -42,20 +54,6 @@ const Attendance: React.FC = () => {
       }
     }
   }, [role, authUser.id, studentMonth, students]);
-
-  const [students, setStudents] = useState<StudentData[]>([]);
-  const [classes, setClasses] = useState<ClassData[]>([]);
-  
-
-  // Map of studentId -> AttendanceStatus ('Present' | 'Absent' | 'Unmarked')
-  const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
-  const [saving, setSaving] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [exportClass, setExportClass] = useState('');
-  const [exportSection, setExportSection] = useState('');
-  const [exportMonth, setExportMonth] = useState(new Date().toISOString().substring(0, 7));
-  const [loading, setLoading] = useState(true);
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const uniqueClasses = useMemo(() => {
     const list: { className: string; sections: string[] }[] = [];
