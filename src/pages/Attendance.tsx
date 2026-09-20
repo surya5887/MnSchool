@@ -200,7 +200,9 @@ const Attendance: React.FC = () => {
     let present = 0;
     let absent = 0;
     
-    const sortedRecords = [...studentRecords].sort((a,b) => a.date.localeCompare(b.date));
+    // Only show records where the student was explicitly marked Present or Absent
+    const studentSpecificRecords = studentRecords.filter(r => r.records[authUser.id] === 'Present' || r.records[authUser.id] === 'Absent');
+    const sortedRecords = [...studentSpecificRecords].sort((a,b) => a.date.localeCompare(b.date));
     
     sortedRecords.forEach(r => {
       const status = r.records[authUser.id];
@@ -222,9 +224,9 @@ const Attendance: React.FC = () => {
         </div>
 
         <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
-          <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
-            <div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Total Working Days</div>
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{sortedRecords.length}</div>
+          <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
+            <div style={{ fontSize: '0.9rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '8px' }}>Total Working Days</div>
+            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#6366f1' }}>{sortedRecords.length}</div>
           </div>
           <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
             <div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div>

@@ -517,6 +517,8 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
   if (loading) return <Loader message="Loading data..." />;
   if (!student) return <div>Student not found.</div>;
 
+  const studentSpecificRecords = attendanceRecords.filter(r => r.records[id!] === 'Present' || r.records[id!] === 'Absent');
+
   const previousDues = student.previousDues || 0;
   const previousPaidAmount = student.previousPaidAmount || 0;
   const previousPending = previousDues - previousPaidAmount;
@@ -828,19 +830,19 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
             <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
               <div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Total Working Days</div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{attendanceRecords.length}</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{studentSpecificRecords.length}</div>
             </div>
             <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
               <div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{attendanceRecords.filter(r => r.records[id!] === 'Present').length}</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{studentSpecificRecords.filter(r => r.records[id!] === 'Present').length}</div>
             </div>
             <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(239,68,68,0.2)' }}>
               <div style={{ fontSize: '0.85rem', color: '#ef4444', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Absent</div>
-              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{attendanceRecords.filter(r => r.records[id!] === 'Absent').length}</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{studentSpecificRecords.filter(r => r.records[id!] === 'Absent').length}</div>
             </div>
           </div>
 
-          {attendanceRecords.length === 0 ? (
+          {studentSpecificRecords.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px' }}>No attendance records found for this month.</div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -852,7 +854,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...attendanceRecords].sort((a,b) => a.date.localeCompare(b.date)).map(r => {
+                  {[...studentSpecificRecords].sort((a,b) => a.date.localeCompare(b.date)).map(r => {
                     const status = r.records[id!] || 'Unmarked';
                     return (
                       <tr key={r.date} style={{ borderBottom: '1px solid var(--glass-border)' }}>
