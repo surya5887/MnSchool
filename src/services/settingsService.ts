@@ -10,6 +10,7 @@ export interface SchoolSettingsData {
   email: string;
   phone: string;
   address: string;
+  website?: string;
   recognitionText?: string;
   logoUrl?: string;
   faviconUrl?: string;
