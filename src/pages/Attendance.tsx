@@ -25,20 +25,23 @@ const Attendance: React.FC = () => {
   const [studentRecords, setStudentRecords] = useState<AttendanceRecord[]>([]);
 
   useEffect(() => {
-    if (role === 'Student' && authUser.classId && authUser.sectionId) {
-      const fetchStudentAtt = async () => {
-        const activeSession = localStorage.getItem('activeSession') || '2026-2027';
-        try {
-          const allAtt = await getAllAttendanceForClass(authUser.classId, authUser.sectionId, activeSession);
-          const filtered = allAtt.filter(r => r.date.startsWith(studentMonth));
-          setStudentRecords(filtered);
-        } catch (e) {
-          console.error("Error fetching student attendance", e);
-        }
-      };
-      fetchStudentAtt();
+    if (role === 'Student' && authUser.id) {
+      const studentInfo = students.find(s => s.id === authUser.id);
+      if (studentInfo && studentInfo.classId && studentInfo.sectionId) {
+        const fetchStudentAtt = async () => {
+          const activeSession = localStorage.getItem('activeSession') || '2026-2027';
+          try {
+            const allAtt = await getAllAttendanceForClass(studentInfo.classId, studentInfo.sectionId, activeSession);
+            const filtered = allAtt.filter(r => r.date.startsWith(studentMonth));
+            setStudentRecords(filtered);
+          } catch (e) {
+            console.error("Error fetching student attendance", e);
+          }
+        };
+        fetchStudentAtt();
+      }
     }
-  }, [role, authUser.classId, authUser.sectionId, studentMonth]);
+  }, [role, authUser.id, studentMonth, students]);
 
   const [students, setStudents] = useState<StudentData[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);

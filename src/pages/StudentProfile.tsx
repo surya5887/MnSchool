@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock, Send } from 'lucide-react';
+import { IndianRupee, Plus, FileText, AlertTriangle, ArrowLeft, Camera, X, Edit, Save, Trash2, Printer, GraduationCap, User, Phone, Calendar, Activity, MapPin, Mail, Hash, Shield, Bus, Heart, Users, CheckCircle, Droplet, Clock, Send, Circle, XCircle } from 'lucide-react';
 import { getStudentById, updateStudent, type StudentData } from '../services/studentService';
 import { getClasses, type ClassData } from '../services/classService';
 import { uploadImageToCloudinary } from '../lib/cloudinary';
@@ -14,6 +14,7 @@ import jsPDF from 'jspdf';
 import Cropper from 'react-easy-crop';
 import { getTransactions, addTransaction, deleteTransaction, updateTransaction, type TransactionData } from '../services/financeService';
 import { getSchoolSettings, saveSchoolSettings } from '../services/settingsService';
+import { getAllAttendanceForClass, type AttendanceRecord } from '../services/attendanceService';
 import Modal from '../components/Modal';
 import toast from 'react-hot-toast';
 
@@ -96,11 +97,33 @@ const StudentProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<StudentData>>({});
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'profile' | 'finance' | 'documents'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'finance' | 'documents' | 'attendance'>('profile');
   const [newDocs, setNewDocs] = useState<{name: string, file: File | null}[]>([]);
   const [docsToRemove, setDocsToRemove] = useState<string[]>([]);
   const [newDocName, setNewDocName] = useState('');
   const [newDocFile, setNewDocFile] = useState<File | null>(null);
+
+  const [studentMonth, setStudentMonth] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+
+  useEffect(() => {
+    if (student?.classId && student?.sectionId) {
+      const fetchStudentAtt = async () => {
+        const activeSession = localStorage.getItem('activeSession') || '2026-2027';
+        try {
+          const allAtt = await getAllAttendanceForClass(student.classId, student.sectionId, activeSession);
+          const filtered = allAtt.filter(r => r.date.startsWith(studentMonth));
+          setAttendanceRecords(filtered);
+        } catch (e) {
+          console.error("Error fetching student attendance", e);
+        }
+      };
+      fetchStudentAtt();
+    }
+  }, [student, studentMonth]);
 
   const handleAddDoc = () => {
     if (newDocName && newDocFile) {
@@ -593,6 +616,9 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <div onClick={() => setActiveTab('profile')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'profile' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'profile' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <User size={18} /> Profile Overview
         </div>
+        <div onClick={() => setActiveTab('attendance')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'attendance' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'attendance' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Calendar size={18} /> Attendance
+        </div>
         {role !== 'Teacher' && (
           <div onClick={() => setActiveTab('finance')} style={{ padding: '0 0 12px 0', borderBottom: activeTab === 'finance' ? '3px solid #6366f1' : '3px solid transparent', color: activeTab === 'finance' ? '#4f46e5' : '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <IndianRupee size={18} /> Financial Ledger
@@ -783,6 +809,68 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: ATTENDANCE */}
+      {activeTab === 'attendance' && (
+        <div className="glass-panel" style={{ padding: '32px', marginBottom: '40px', background: 'white' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginBottom: "32px" }}>
+            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
+              <div style={{ background: '#e0e7ff', padding: '10px', borderRadius: '12px' }}><Calendar size={24} color="#4f46e5" /></div> Attendance History
+            </h3>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <label style={{ fontWeight: 600, color: 'var(--text-muted)' }}>Month:</label>
+              <input type="month" className="glass-input" style={{ marginBottom: 0 }} value={studentMonth} onChange={e => setStudentMonth(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
+            <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)' }}>
+              <div style={{ fontSize: '0.85rem', color: '#6366f1', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Total Working Days</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>{attendanceRecords.length}</div>
+            </div>
+            <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.2)' }}>
+              <div style={{ fontSize: '0.85rem', color: '#10b981', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Present</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#10b981' }}>{attendanceRecords.filter(r => r.records[id!] === 'Present').length}</div>
+            </div>
+            <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(239,68,68,0.2)' }}>
+              <div style={{ fontSize: '0.85rem', color: '#ef4444', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Absent</div>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{attendanceRecords.filter(r => r.records[id!] === 'Absent').length}</div>
+            </div>
+          </div>
+
+          {attendanceRecords.length === 0 ? (
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px' }}>No attendance records found for this month.</div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                    <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Date</th>
+                    <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...attendanceRecords].sort((a,b) => a.date.localeCompare(b.date)).map(r => {
+                    const status = r.records[id!] || 'Unmarked';
+                    return (
+                      <tr key={r.date} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                        <td style={{ padding: '12px', color: 'var(--text-main)', fontWeight: 500 }}>
+                          {new Date(r.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          {status === 'Present' && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--success)', background: 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}><CheckCircle size={14} /> Present</span>}
+                          {status === 'Absent' && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--danger)', background: 'rgba(239,68,68,0.1)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}><XCircle size={14} /> Absent</span>}
+                          {status === 'Unmarked' && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', background: 'var(--glass-bg)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600 }}><Circle size={14} /> Not Marked</span>}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
