@@ -110,11 +110,11 @@ const StudentProfile: React.FC = () => {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
 
   useEffect(() => {
-    if (student?.classId && student?.sectionId) {
+    if (student && studentClass?.id && student.sectionId) {
       const fetchStudentAtt = async () => {
         const activeSession = localStorage.getItem('activeSession') || '2026-2027';
         try {
-          const allAtt = await getAllAttendanceForClass(student.classId, student.sectionId, activeSession);
+          const allAtt = await getAllAttendanceForClass(studentClass.id, student.sectionId, activeSession);
           const filtered = allAtt.filter(r => r.date.startsWith(studentMonth));
           setAttendanceRecords(filtered);
         } catch (e) {
@@ -123,7 +123,7 @@ const StudentProfile: React.FC = () => {
       };
       fetchStudentAtt();
     }
-  }, [student, studentMonth]);
+  }, [student, studentClass, studentMonth]);
 
   const handleAddDoc = () => {
     if (newDocName && newDocFile) {

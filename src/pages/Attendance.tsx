@@ -43,7 +43,8 @@ const Attendance: React.FC = () => {
         const fetchStudentAtt = async () => {
           const activeSession = localStorage.getItem('activeSession') || '2026-2027';
           try {
-            const allAtt = await getAllAttendanceForClass(studentInfo.classId, studentInfo.sectionId, activeSession);
+            const realClassId = classes.find(c => c.id === studentInfo.classId || c.className === studentInfo.classId)?.id || studentInfo.classId;
+            const allAtt = await getAllAttendanceForClass(realClassId, studentInfo.sectionId, activeSession);
             const filtered = allAtt.filter(r => r.date.startsWith(studentMonth));
             setStudentRecords(filtered);
           } catch (e) {
@@ -53,7 +54,7 @@ const Attendance: React.FC = () => {
         fetchStudentAtt();
       }
     }
-  }, [role, authUser.id, studentMonth, students]);
+  }, [role, authUser.id, studentMonth, students, classes]);
 
   const uniqueClasses = useMemo(() => {
     const list: { className: string; sections: string[] }[] = [];
