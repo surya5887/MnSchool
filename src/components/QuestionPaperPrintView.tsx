@@ -96,7 +96,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
           
           @media screen {
             .paper-container {
-              width: 800px !important;
+              width: 100% !important;
               max-width: 800px !important;
               min-height: 1130px !important;
               height: max-content !important;
@@ -125,10 +125,8 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
               align-items: center !important;
             }
             .paper-container {
-              zoom: 0.45;
-              -moz-transform: scale(0.45);
-              -moz-transform-origin: top center;
               margin: 1rem auto;
+              padding: 20px !important;
             }
           }
           .header-table {
@@ -534,13 +532,13 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
     </>
   );
 
-  if (mode === 'inline') {
-    return (
-      <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center', width: '800px', height: 'max-content' }}>
-        {content}
-      </div>
-    );
-  }
+    if (mode === 'inline') {
+      return (
+        <div style={{ width: '100%', height: 'max-content', display: 'flex', justifyContent: 'center' }}>
+          {content}
+        </div>
+      );
+    }
 
   return (
     <div className="print-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 100000, overflowY: 'auto' }}>
