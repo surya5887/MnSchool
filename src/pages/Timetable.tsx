@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getTimetable, assignPeriod, removePeriod, getTimetableStructure, saveTimetableStructure, type TimetableEntry } from '../services/timetableService';
 import { getClasses, type ClassData } from '../services/classService';
+import { getStudentById } from '../services/studentService';
 import { Plus, Clock, Printer } from 'lucide-react';
 import Modal from '../components/Modal';
 import './Timetable.css';
@@ -99,6 +100,14 @@ const Timetable: React.FC = () => {
             const myClassByMapping = classData.find(c => c.classTeacher === authUser.name);
             const isValidAssigned = authUser.assignedClass && classData.some(c => c.className === authUser.assignedClass);
             defaultClass = (isValidAssigned && classData.find(c => c.className === authUser.assignedClass)?.id) || (myClassByMapping?.id) || '';
+          } else if (role === 'Student' && authUser.id) {
+            const studentInfo = await getStudentById(authUser.id);
+            if (studentInfo && studentInfo.classId) {
+              const matchedClass = classData.find(c => c.id === studentInfo.classId || c.className === studentInfo.classId);
+              if (matchedClass) {
+                defaultClass = matchedClass.id || '';
+              }
+            }
           }
           if (defaultClass) {
             setClassFilter(defaultClass);
@@ -153,18 +162,21 @@ const Timetable: React.FC = () => {
 
   // --- Period Management ---
   const handleAddPeriod = () => {
+    if (role === 'Student') return;
     setEditingPeriodIndex(null);
     setPeriodFormData({ name: `P${periods.length + 1}`, isBreak: false });
     setEditPeriodModalOpen(true);
   };
 
   const handleEditPeriod = (index: number) => {
+    if (role === 'Student') return;
     setEditingPeriodIndex(index);
     setPeriodFormData(periods[index]);
     setEditPeriodModalOpen(true);
   };
 
   const handleSavePeriod = (e: React.FormEvent) => {
+    if (role === 'Student') return;
     e.preventDefault();
     const newPeriods = [...periods];
     if (editingPeriodIndex !== null) {
@@ -178,6 +190,7 @@ const Timetable: React.FC = () => {
   };
 
   const handleDeletePeriod = () => {
+    if (role === 'Student') return;
     if (editingPeriodIndex === null) return;
     if (window.confirm("Delete this period? Assigned teachers in this column will be orphaned.")) {
       const newPeriods = periods.filter((_, i) => i !== editingPeriodIndex);
@@ -189,18 +202,21 @@ const Timetable: React.FC = () => {
 
   // --- Day Management ---
   const handleAddDay = () => {
+    if (role === 'Student') return;
     setEditingDayIndex(null);
     setDayFormData({ name: 'New Day', isHoliday: false });
     setEditDayModalOpen(true);
   };
 
   const handleEditDay = (index: number) => {
+    if (role === 'Student') return;
     setEditingDayIndex(index);
     setDayFormData(days[index]);
     setEditDayModalOpen(true);
   };
 
   const handleSaveDay = (e: React.FormEvent) => {
+    if (role === 'Student') return;
     e.preventDefault();
     const newDays = [...days];
     if (editingDayIndex !== null) {
@@ -214,6 +230,7 @@ const Timetable: React.FC = () => {
   };
 
   const handleDeleteDay = () => {
+    if (role === 'Student') return;
     if (editingDayIndex === null) return;
     if (window.confirm("Delete this day? Assignments for this day will be orphaned.")) {
       const newDays = days.filter((_, i) => i !== editingDayIndex);
@@ -224,6 +241,7 @@ const Timetable: React.FC = () => {
   };
 
   const handleCellClick = (day: string, periodIndex: number, existingEntry: TimetableEntry | undefined) => {
+    if (role === 'Student') return;
     setAssignment({
       day,
       periodIndex,
@@ -285,7 +303,9 @@ const Timetable: React.FC = () => {
           <p className="page-subtitle">Visually manage and print daily schedules for teachers and students.</p>
         </div>
         <div className="no-print" style={{ display: 'flex', gap: '16px' }}>
-          <button className="btn-secondary" onClick={() => window.print()}><Printer size={18} /> Print Routine</button>
+          {role !== 'Student' && (
+            <button className="btn-secondary" onClick={() => window.print()}><Printer size={18} /> Print Routine</button>
+          )}
         </div>
       </div>
 
@@ -303,8 +323,8 @@ const Timetable: React.FC = () => {
       ) : (
         <div className="glass-panel no-print" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Select Class to View Timetable</label>
-            <select className="glass-input" value={classFilter} onChange={handleClassChange}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>{role === 'Student' ? 'Your Class Timetable' : 'Select Class to View Timetable'}</label>
+            <select className="glass-input" value={classFilter} onChange={handleClassChange} disabled={role === 'Student'}>
               {classes.map(c => <option key={c.id} value={c.id}>{c.className} - {c.sections?.[0] || ''}</option>)}
             </select>
           </div>
@@ -333,70 +353,75 @@ const Timetable: React.FC = () => {
               {p.name}
             </div>
           ))}
-          <div
-            onClick={handleAddPeriod}
-            className="timetable-add-cell"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
-            title="Add Period"
-          >
-            <Plus size={20} />
-          </div>
+          {role !== 'Student' && (
+            <div
+              onClick={handleAddPeriod}
+              className="timetable-add-cell"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
+              title="Add Period"
+            >
+              <Plus size={20} />
+            </div>
+          )}
 
           {/* Timetable Rows */}
           {days.map((day, dIndex) => (
-            <React.Fragment key={dIndex}>
+            <React.Fragment key={day.name}>
               <div
-                onClick={() => handleEditDay(dIndex)}
                 className="timetable-header-cell"
-                style={{ fontWeight: 600, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: day.isHoliday ? 'rgba(255, 99, 132, 0.1)' : 'rgba(255,255,255,0.4)', color: day.isHoliday ? 'var(--danger)' : 'inherit', borderRadius: '8px', cursor: 'pointer' }}
-                title="Click to Edit Day"
+                style={{ fontWeight: 600, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: day.isHoliday ? '#fecaca' : 'white', borderRadius: '8px', border: '1px solid var(--glass-border)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', cursor: 'pointer' }}
+                onClick={() => handleEditDay(dIndex)}
+                title={day.isHoliday ? "Holiday" : "Edit Day"}
               >
-                {day.name}
+                {day.name} {day.isHoliday ? '(Holiday)' : ''}
               </div>
 
               {day.isHoliday ? (
-                <div className="holiday-cell" style={{ gridColumn: `span ${periods.length + 1}`, background: 'rgba(255, 99, 132, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                  Holiday / Off-Day
+                <div className="glass-card holiday-cell" style={{ gridColumn: `span ${periods.length + (role === 'Student' ? 0 : 1)}`, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontWeight: 700, borderRadius: '8px', border: '1px dashed #ef4444' }}>
+                  DAY OFF / HOLIDAY
                 </div>
               ) : (
                 <>
                   {periods.map((p, i) => {
-                    if (p.isBreak) {
-                      return <div key={`${day.name}-${i}`} style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '8px' }}></div>;
-                    }
-
                     const entry = timetable.find(t => t.day === day.name && t.periodIndex === i);
-
-                    return (
+                    return p.isBreak ? (
+                      <div key={`${day.name}-break-${i}`} className="glass-card break-cell" style={{ padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', fontWeight: 700, borderRadius: '8px', border: '1px dashed #f59e0b', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                        BREAK
+                      </div>
+                    ) : (
                       <div
                         key={`${day.name}-${i}`}
                         className="glass-card timetable-cell"
-                        style={{ padding: '12px', textAlign: 'center', position: 'relative', border: '1px solid var(--glass-border)', cursor: 'pointer', transition: 'var(--transition)' }}
+                        style={{ padding: '12px', textAlign: 'center', position: 'relative', border: '1px solid var(--glass-border)', cursor: role === 'Student' ? 'default' : 'pointer', transition: 'var(--transition)' }}
                         onClick={() => handleCellClick(day.name, i, entry)}
                       >
                         <div style={{ fontWeight: 700, fontSize: '0.95rem', color: entry ? 'var(--text-main)' : 'var(--text-muted)' }}>
                           {entry ? entry.subject : 'Free'}
                         </div>
-                        {entry && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>{entry.teacher}</div>}
-                        {!entry && <div className="assign-hint" style={{ fontSize: '0.75rem', color: 'var(--primary)', marginTop: '4px', opacity: 0, transition: 'var(--transition)' }}>+ Assign</div>}
+                        {entry && <div style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600, marginTop: '4px' }}>{entry.teacher}</div>}
+                        {role !== 'Student' && <div className="assign-hint">Assign</div>}
                       </div>
-                    )
+                    );
                   })}
-                  <div className="no-print"></div> {/* Empty cell under the + Period button */}
+                  {role !== 'Student' && (
+                    <div className="timetable-add-cell" style={{ background: 'transparent' }}></div>
+                  )}
                 </>
               )}
             </React.Fragment>
           ))}
 
           {/* Add Day Row */}
-          <div
-            onClick={handleAddDay}
-            className="timetable-add-cell"
-            style={{ fontWeight: 600, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
-            title="Add Day"
-          >
-            <Plus size={20} />
-          </div>
+          {role !== 'Student' && (
+            <div
+              onClick={handleAddDay}
+              className="timetable-add-cell"
+              style={{ fontWeight: 600, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-muted)' }}
+              title="Add Day"
+            >
+              <Plus size={20} />
+            </div>
+          )}
           {/* Fill the rest of the bottom row with empty space */}
           {periods.map((_, i) => <div key={`empty-${i}`}></div>)}
           <div></div>
