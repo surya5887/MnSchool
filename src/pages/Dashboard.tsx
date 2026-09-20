@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { Navigate } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { Users, GraduationCap, IndianRupee, TrendingUp, Clock, AlertTriangle, FileText, CheckCircle2, BarChart2, Activity, Calendar, PieChart as PieChartIcon, School, UserCheck, Shield } from 'lucide-react';
@@ -59,6 +60,11 @@ const Dashboard: React.FC = () => {
   const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
   const role = String(authUser.role || 'Admin').trim();
   const isTeacher = role.toLowerCase() === 'teacher';
+  const isStudent = role.toLowerCase() === 'student';
+
+  if (isStudent && authUser.id) {
+    return <Navigate to={`/student/${authUser.id}`} replace />;
+  }
 
   const [timeRange, setTimeRange] = useState('30d');
 
