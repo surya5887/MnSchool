@@ -1020,13 +1020,38 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
           background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
-          <div style={{ 
+          <div className="edit-modal-container" style={{ 
             background: '#ffffff', width: '90%', maxWidth: '1000px', height: '90vh', 
             borderRadius: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' 
           }}>
-            <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
-              <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.5rem' }}>
+            <style>{`
+              .edit-modal-container .glass-input {
+                width: 100%;
+                padding: 10px 14px !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 8px !important;
+                background: #f8fafc !important;
+                font-size: 0.95rem !important;
+                color: #1e293b !important;
+                box-shadow: none !important;
+              }
+              .edit-modal-container .glass-input:focus {
+                border-color: #6366f1 !important;
+                box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
+                outline: none !important;
+                background: #ffffff !important;
+              }
+              .edit-modal-container label {
+                display: block !important;
+                font-size: 0.85rem !important;
+                font-weight: 600 !important;
+                color: #64748b !important;
+                margin-bottom: 6px !important;
+              }
+            `}</style>
+            <div style={{ padding: '24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
+              <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.5rem', color: '#1e293b' }}>
                 <Edit size={24} className="text-primary" /> Edit Profile
               </h2>
               <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '50%' }}>
@@ -1047,7 +1072,13 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                     <div><label>Admission No</label><input className="glass-input" value={editData.admissionNo || ''} onChange={e => setEditData({...editData, admissionNo: e.target.value})} /></div>
                     <div><label>Admission Date</label><input type="date" className="glass-input" value={editData.admissionDate || ''} onChange={e => setEditData({...editData, admissionDate: e.target.value})} /></div>
                     <div><label>Session</label><input className="glass-input" value={editData.session || ''} onChange={e => setEditData({...editData, session: e.target.value})} /></div>
-                    <div><label>Fee Group</label><input className="glass-input" value={editData.feeGroup || ''} onChange={e => setEditData({...editData, feeGroup: e.target.value})} /></div>
+                      <div>
+                        <label>Fee Group</label>
+                        <select className="glass-input" value={editData.feeGroup || ''} onChange={e => setEditData({...editData, feeGroup: e.target.value})}>
+                          <option value="General Fee Category">General Fee Category</option>
+                          {customChargeTypes.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
                     <div>
                       <label>Status</label>
                       <select className="glass-input" value={editData.status || 'Active'} onChange={e => setEditData({...editData, status: e.target.value as 'Active' | 'Inactive'})}>
@@ -1076,7 +1107,20 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                     <div><label>Religion</label><input className="glass-input" value={editData.religion || ''} onChange={e => setEditData({...editData, religion: e.target.value})} /></div>
                     <div><label>Caste</label><input className="glass-input" value={editData.caste || ''} onChange={e => setEditData({...editData, caste: e.target.value})} /></div>
                     <div><label>Category</label><input className="glass-input" value={editData.category || ''} onChange={e => setEditData({...editData, category: e.target.value})} /></div>
-                    <div><label>Blood Group</label><input className="glass-input" value={editData.bloodGroup || ''} onChange={e => setEditData({...editData, bloodGroup: e.target.value})} /></div>
+                      <div>
+                        <label>Blood Group</label>
+                        <select className="glass-input" value={editData.bloodGroup || ''} onChange={e => setEditData({...editData, bloodGroup: e.target.value})}>
+                          <option value="">Select Blood Group</option>
+                          <option value="A+">A+</option>
+                          <option value="A-">A-</option>
+                          <option value="B+">B+</option>
+                          <option value="B-">B-</option>
+                          <option value="AB+">AB+</option>
+                          <option value="AB-">AB-</option>
+                          <option value="O+">O+</option>
+                          <option value="O-">O-</option>
+                        </select>
+                      </div>
                     <div style={{ gridColumn: '1 / -1' }}><label>Aadhar Number</label><input className="glass-input" value={editData.aadharNumber || ''} onChange={e => setEditData({...editData, aadharNumber: e.target.value})} /></div>
                   </div>
                 </div>
