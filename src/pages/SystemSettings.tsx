@@ -1,6 +1,6 @@
 import WhatsAppSetup from './WhatsAppSetup';
 import { getAllAdmins, updateAdminCredentials } from '../services/adminService';
-import { Lock, Edit, Save, X as XIcon, Building2, Phone, Mail, Calendar, User, ShieldCheck, Settings as SettingsIcon, MessageSquare } from 'lucide-react';
+import { Lock, Edit, Save, X as XIcon, Building2, Phone, Mail, Calendar, User, ShieldCheck, Settings as SettingsIcon, MessageSquare, Globe } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import ImageCropperModal from '../components/ImageCropperModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -169,6 +169,13 @@ const SystemSettings: React.FC = () => {
                         <Mail size={16} /> Email Address
                       </label>
                       <input type="email" className="glass-input" style={{ padding: '14px 20px', borderRadius: '16px' }} value={settings.email} onChange={e => setSettings({...settings, email: e.target.value})} />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
+                        <Globe size={16} /> Website URL
+                      </label>
+                      <input type="text" className="glass-input" style={{ padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. www.mnpublicschool.in" value={settings.website || ''} onChange={e => setSettings({...settings, website: e.target.value})} />
                     </div>
                       <div style={{ gridColumn: '1 / -1' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>

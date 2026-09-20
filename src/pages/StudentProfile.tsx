@@ -888,72 +888,78 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
             <button className="btn-primary" onClick={() => window.print()}><Printer size={18} /> Print ID Card</button>
           </div>
 
-          <div className="id-card-print-container" style={{ position: 'relative', width: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
-            {/* Top Header / School branding */}
-            <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-              {schoolSettings?.logoUrl ? (
-                <img src={schoolSettings.logoUrl} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
-              ) : (
-                <div style={{ width: '56px', height: '56px', background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5', fontWeight: 900, fontSize: '1.4rem' }}>{schoolSettings?.shortName || 'MN'}</div>
-              )}
-              <div style={{ flex: 1, textAlign: 'center' }}>
-                <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: '1.1', letterSpacing: '0.5px' }}>{schoolSettings?.schoolName || 'MN Public School'}</div>
-                <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#c7d2fe', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{schoolSettings?.recognitionText || 'Recognized by Government'}</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.95, marginTop: '2px', lineHeight: '1.2' }}>{schoolSettings?.address || 'School Address Not Set'}</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>Ph: {schoolSettings?.phone || 'N/A'} | Email: {schoolSettings?.email || 'N/A'}</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>Web: {schoolSettings?.website || 'www.mnpublicschool.in'}</div>
-              </div>
-            </div>
-            
-            {/* Identity Text */}
-            <div style={{ background: '#e0e7ff', color: '#4338ca', textAlign: 'center', fontSize: '0.7rem', fontWeight: 800, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '3px', borderBottom: '1px solid #c7d2fe' }}>
-              Identity Card
-            </div>
-
-            {/* Body */}
-            <div style={{ display: 'flex', flex: 1, padding: '12px 16px', gap: '16px', position: 'relative', zIndex: 1 }}>
-              {/* Left Column (Photo & QR) */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '90px' }}>
-                <div style={{ width: '90px', height: '110px', borderRadius: '8px', border: '2px solid #4f46e5', overflow: 'hidden', background: '#f1f5f9', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                  <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=4f46e5&color=fff&size=150`} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{ padding: '4px', background: 'white', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex', marginTop: 'auto' }}>
-                  <QRCodeSVG value={`Student ID: ${student.id}\nName: ${student.firstName} ${student.lastName}\nClass: ${studentClass?.className}\nPhone: ${student.parentPhone}`} size={64} />
+          <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+            <div className="id-card-print-container" style={{ position: 'relative', width: '520px', minWidth: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
+              {/* Top Header / School branding */}
+              <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                {schoolSettings?.logoUrl ? (
+                  <img src={schoolSettings.logoUrl} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
+                ) : (
+                  <div style={{ width: '56px', height: '56px', background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5', fontWeight: 900, fontSize: '1.4rem' }}>{schoolSettings?.shortName || 'MN'}</div>
+                )}
+                <div style={{ flex: 1, textAlign: 'center' }}>
+                  <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: '1.1', letterSpacing: '0.5px' }}>{schoolSettings?.schoolName || 'MN Public School'}</div>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#c7d2fe', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{schoolSettings?.recognitionText || 'Recognized by Government'}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.95, marginTop: '2px', lineHeight: '1.2' }}>{schoolSettings?.address || 'School Address Not Set'}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>Ph: {schoolSettings?.phone || 'N/A'} | Email: {schoolSettings?.email || 'N/A'}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>Web: {schoolSettings?.website || 'www.mnpublicschool.in'}</div>
                 </div>
               </div>
+              
+              {/* Identity Text */}
+              <div style={{ background: '#e0e7ff', color: '#4338ca', textAlign: 'center', fontSize: '0.7rem', fontWeight: 800, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '3px', borderBottom: '1px solid #c7d2fe' }}>
+                Identity Card
+              </div>
 
-              {/* Right Column (Details) */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1e293b', lineHeight: '1.1', textTransform: 'uppercase' }}>
-                  {student.firstName} {student.lastName}
-                </div>
-                
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: '4px 0 8px 0' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#ffffff', background: '#4f46e5', padding: '2px 8px', borderRadius: '12px' }}>Class: {studentClass?.className || 'N/A'}{student.sectionId ? ` - ${student.sectionId}` : ''}</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '2px 8px', borderRadius: '12px' }}>Roll: {student.rollNumber || 'N/A'}</span>
-                </div>
-
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' }}>
-                  <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>F. Name:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{student.parentName || 'N/A'}</span></div>
-                  <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>DOB:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString('en-GB') : 'N/A'}</span></div>
-                  <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Blood Grp:</span> <span style={{ fontWeight: 900, color: '#ef4444', flex: 1 }}>{student.bloodGroup || 'N/A'}</span></div>
-                  <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Contact:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.parentPhone || student.phone || 'N/A'}</span></div>
-                  <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Address:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1, lineHeight: '1.2', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{student.address || 'N/A'}</span></div>
+              {/* Body */}
+              <div style={{ display: 'flex', flex: 1, padding: '12px 16px', gap: '16px', position: 'relative', zIndex: 1 }}>
+                {/* Left Column (Photo) */}
+                <div style={{ width: '90px' }}>
+                  <div style={{ width: '90px', height: '110px', borderRadius: '8px', border: '2px solid #4f46e5', overflow: 'hidden', background: '#f1f5f9', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                    <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=4f46e5&color=fff&size=150`} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignSelf: 'flex-end', marginTop: 'auto' }}>
-                  {schoolSettings?.signatureUrl ? (
-                    <img src={schoolSettings.signatureUrl} alt="Signature" style={{ height: '30px', objectFit: 'contain', marginBottom: '2px' }} />
-                  ) : (
-                    <div style={{ height: '30px', borderBottom: '1px solid #cbd5e1', width: '80px', marginBottom: '2px' }}></div>
-                  )}
-                  <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Principal</span>
+                {/* Middle Column (Details) */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1e293b', lineHeight: '1.1', textTransform: 'uppercase' }}>
+                    {student.firstName} {student.lastName}
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: '4px 0 8px 0' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#ffffff', background: '#4f46e5', padding: '2px 8px', borderRadius: '12px' }}>Class: {studentClass?.className || 'N/A'}{student.sectionId ? ` - ${student.sectionId}` : ''}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '2px 8px', borderRadius: '12px' }}>Roll: {student.rollNumber || 'N/A'}</span>
+                  </div>
+
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' }}>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>F. Name:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{student.parentName || 'N/A'}</span></div>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>DOB:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString('en-GB') : 'N/A'}</span></div>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Blood Grp:</span> <span style={{ fontWeight: 900, color: '#ef4444', flex: 1 }}>{student.bloodGroup || 'N/A'}</span></div>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Contact:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.parentPhone || student.phone || 'N/A'}</span></div>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Address:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1, lineHeight: '1.2', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{student.address || 'N/A'}</span></div>
+                  </div>
+                </div>
+
+                {/* Right Column (QR & Signature) */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '80px' }}>
+                  <div style={{ padding: '4px', background: 'white', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex' }}>
+                    <QRCodeSVG value={`Student ID: ${student.id}\nName: ${student.firstName} ${student.lastName}\nClass: ${studentClass?.className}\nPhone: ${student.parentPhone}`} size={64} />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'auto' }}>
+                    {schoolSettings?.signatureUrl ? (
+                      <img src={schoolSettings.signatureUrl} alt="Signature" style={{ height: '30px', objectFit: 'contain', marginBottom: '2px' }} />
+                    ) : (
+                      <div style={{ height: '30px', borderBottom: '1px solid #cbd5e1', width: '70px', marginBottom: '2px' }}></div>
+                    )}
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Principal</span>
+                  </div>
                 </div>
               </div>
+              
+              {/* Background pattern overlay */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%234f46e5\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")', pointerEvents: 'none', zIndex: 0 }}></div>
             </div>
-            
-            {/* Background pattern overlay */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%234f46e5\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")', pointerEvents: 'none', zIndex: 0 }}></div>
           </div>
           <style>{`
             @media print {
