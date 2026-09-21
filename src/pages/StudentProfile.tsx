@@ -892,7 +892,7 @@ const StudentProfile: React.FC = () => {
             <div className="id-card-print-container" style={{ position: 'relative', width: '520px', minWidth: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'inline-flex', flexDirection: 'column', textAlign: 'left', margin: '0 auto' }}>
               {/* Top Header / School branding */}
               <div style={{ background: 'linear-gradient(135deg, #6c3505ff 0%, #8a370eff 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-                <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
+                <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '64px', height: '64px', objectFit: 'contain', background: 'transparent' }} />
                 <div style={{ flex: 1, textAlign: 'center' }}>
                   <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: '1.1', letterSpacing: '0.5px' }}>{schoolSettings?.schoolName || 'School Name Not Set'}</div>
                   <div style={{ fontSize: '0.7rem', opacity: 0.95, marginTop: '2px', lineHeight: '1.2' }}>{schoolSettings?.address || 'School Address Not Set'}</div>
@@ -927,7 +927,7 @@ const StudentProfile: React.FC = () => {
 
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' }}>
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>F. Name:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{student.parentName || 'N/A'}</span></div>
-                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>DOB:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString('en-GB') : 'N/A'}</span></div>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>DOB:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.dob ? new Date(student.dob).toLocaleDateString('en-GB') : 'N/A'}</span></div>
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Blood Grp:</span> <span style={{ fontWeight: 900, color: '#ef4444', flex: 1 }}>{student.bloodGroup || 'N/A'}</span></div>
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Contact:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.parentPhone || student.phone || 'N/A'}</span></div>
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Address:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1, lineHeight: '1.2', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{student.address || 'N/A'}</span></div>
@@ -938,7 +938,7 @@ const StudentProfile: React.FC = () => {
                 {/* Right Column (QR & Signature) */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '80px' }}>
                   <div style={{ padding: '4px', background: 'white', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex' }}>
-                    <QRCodeSVG value={`Student ID: ${student.id}\nName: ${student.firstName} ${student.lastName}\nClass: ${studentClass?.className}\nPhone: ${student.parentPhone}`} size={64} />
+                    <QRCodeSVG value={`Name: ${student.firstName} ${student.lastName}\nAdm No: ${student.admissionNumber || 'N/A'}\nRoll No: ${student.rollNumber || 'N/A'}\nClass: ${studentClass?.className || 'N/A'}\nDOB: ${student.dob ? new Date(student.dob).toLocaleDateString('en-GB') : 'N/A'}\nPhone: ${student.parentPhone || student.phone || 'N/A'}`} size={64} />
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'auto' }}>
