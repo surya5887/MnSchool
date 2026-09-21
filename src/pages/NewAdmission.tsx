@@ -18,8 +18,9 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
     image.src = imageSrc;
     image.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = pixelCrop.width;
-      canvas.height = pixelCrop.height;
+      const TARGET_SIZE = 400;
+      canvas.width = TARGET_SIZE;
+      canvas.height = TARGET_SIZE;
       const ctx = canvas.getContext('2d');
       if (!ctx) return reject('No 2d context');
 
@@ -31,8 +32,8 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
         pixelCrop.height,
         0,
         0,
-        pixelCrop.width,
-        pixelCrop.height
+        TARGET_SIZE,
+        TARGET_SIZE
       );
 
       canvas.toBlob((blob) => {

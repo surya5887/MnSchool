@@ -36,8 +36,9 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
     image.src = imageSrc;
     image.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = pixelCrop.width;
-      canvas.height = pixelCrop.height;
+      const TARGET_SIZE = 400;
+      canvas.width = TARGET_SIZE;
+      canvas.height = TARGET_SIZE;
       const ctx = canvas.getContext('2d');
       if (!ctx) return reject('No 2d context');
 
@@ -49,8 +50,8 @@ const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
         pixelCrop.height,
         0,
         0,
-        pixelCrop.width,
-        pixelCrop.height
+        TARGET_SIZE,
+        TARGET_SIZE
       );
 
       canvas.toBlob((blob) => {
@@ -898,6 +899,7 @@ const StudentProfile: React.FC = () => {
                   <div style={{ fontSize: '0.7rem', opacity: 0.95, marginTop: '2px', lineHeight: '1.2' }}>{schoolSettings?.address || 'School Address Not Set'}</div>
                   <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>{schoolSettings?.phone || 'N/A'}, {schoolSettings?.email || 'N/A'}</div>
                 </div>
+                <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '64px', height: '64px', objectFit: 'contain', background: 'transparent' }} />
               </div>
 
               {/* Identity Text */}
@@ -1153,13 +1155,7 @@ const StudentProfile: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <img src={newPhotoPreview || editData.photoUrl || 'https://ui-avatars.com/api/?name=U+A'} alt="Preview" style={{ width: '100px', height: '100px', borderRadius: '12px', objectFit: 'cover' }} />
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          const reader = new FileReader();
-                          reader.onload = () => { setRawImage(reader.result); setShowCropper(true); };
-                          reader.readAsDataURL(e.target.files[0]);
-                        }
-                      }} />
+                        <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handlePhotoChange} />
                       <button type="button" className="btn-secondary" onClick={() => fileInputRef.current?.click()}><Camera size={16} style={{ display: 'inline', marginRight: '4px' }} /> Upload New</button>
                       {(newPhotoPreview || editData.photoUrl) && <button type="button" onClick={handleRemovePhoto} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 600 }}>Remove</button>}
                     </div>

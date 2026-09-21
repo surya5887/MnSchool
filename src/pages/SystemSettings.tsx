@@ -21,11 +21,8 @@ const SystemSettings: React.FC = () => {
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        setCropImageSrc(reader.result?.toString() || null);
-      });
-      reader.readAsDataURL(file);
+      const imageUrl = URL.createObjectURL(file);
+      setCropImageSrc(imageUrl);
     }
     // reset input
     if (fileInputRef.current) fileInputRef.current.value = '';
