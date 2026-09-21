@@ -133,7 +133,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Settings size={18} style={{ color: '#64748b' }} />
                 <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#334155' }}>
-                  {selectedItem.type === 'section' ? 'Section Inspector' : 'Question Inspector'}
+                  {selectedItem.type === 'section' ? 'Section Inspector' : selectedItem.type === 'endText' ? 'Footer Inspector' : 'Question Inspector'}
                 </h3>
               </div>
               <button className="icon-btn" onClick={() => setSelectedItem(null)}><X size={20} /></button>
@@ -146,13 +146,48 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                   <input 
                     type="text" 
                     className="glass-input" 
-                    value={paperData.sections[selectedItem.sIdx].sectionTitle}
-                    onChange={(e) => updateSection(selectedItem.sIdx, e.target.value)}
+                    value={paperData.sections[selectedItem.sIdx!].sectionTitle}
+                    onChange={(e) => updateSection(selectedItem.sIdx!, e.target.value)}
                   />
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
+                    <div>
+                      <label className="input-label">Font Family</label>
+                      <select 
+                        className="glass-input" 
+                        value={paperData.sections[selectedItem.sIdx!].sectionFontFamily || ''}
+                        onChange={(e) => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[selectedItem.sIdx!].sectionFontFamily = e.target.value;
+                          setPaperData({ ...paperData, sections: newSecs });
+                        }}
+                      >
+                        <option value="">Default (Inherit)</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="input-label">Font Size</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        placeholder="e.g. 16px"
+                        value={paperData.sections[selectedItem.sIdx!].sectionFontSize || ''}
+                        onChange={(e) => {
+                          const newSecs = [...paperData.sections];
+                          newSecs[selectedItem.sIdx!].sectionFontSize = e.target.value;
+                          setPaperData({ ...paperData, sections: newSecs });
+                        }}
+                      />
+                    </div>
+                  </div>
                   
                   <button className="btn-danger" style={{ width: '100%', marginTop: '32px' }} onClick={() => {
                     const newSecs = [...paperData.sections];
-                    newSecs.splice(selectedItem.sIdx, 1);
+                    newSecs.splice(selectedItem.sIdx!, 1);
                     setPaperData({ ...paperData, sections: newSecs });
                     setSelectedItem(null);
                   }}>
@@ -644,6 +679,58 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                   </div>
                 );
               })()}
+
+                {selectedItem.type === 'section' && (
+                  <div>
+                    <button className="btn-danger" style={{ width: '100%', marginTop: '32px' }} onClick={() => {
+                      const newSecs = [...paperData.sections];
+                      newSecs.splice(selectedItem.sIdx!, 1);
+                      setPaperData({ ...paperData, sections: newSecs });
+                      setSelectedItem(null);
+                    }}>
+                      <Trash2 size={16} /> Delete Section
+                    </button>
+                  </div>
+                )}
+
+                {selectedItem.type === 'endText' && (
+                  <div>
+                    <label className="input-label">Footer Text</label>
+                    <input 
+                      type="text" 
+                      className="glass-input" 
+                      value={paperData.endText || '--- End of Question Paper ---'}
+                      onChange={(e) => setPaperData({ ...paperData, endText: e.target.value })}
+                    />
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
+                      <div>
+                        <label className="input-label">Font Family</label>
+                        <select 
+                          className="glass-input" 
+                          value={paperData.endTextFontFamily || ''}
+                          onChange={(e) => setPaperData({ ...paperData, endTextFontFamily: e.target.value })}
+                        >
+                          <option value="">Default (Inherit)</option>
+                          <option value="Arial, sans-serif">Arial</option>
+                          <option value="'Times New Roman', serif">Times New Roman</option>
+                          <option value="'Courier New', monospace">Courier New</option>
+                          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="input-label">Font Size</label>
+                        <input 
+                          type="text" 
+                          className="glass-input" 
+                          placeholder="e.g. 12px"
+                          value={paperData.endTextFontSize || ''}
+                          onChange={(e) => setPaperData({ ...paperData, endTextFontSize: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )};
             </div>
           </div>
         )}

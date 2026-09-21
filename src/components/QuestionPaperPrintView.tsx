@@ -37,8 +37,8 @@ interface QuestionPaperProps {
   onClose?: () => void;
   mode?: 'print' | 'inline';
   isEditor?: boolean;
-  selectedItem?: { type: 'section' | 'question', sIdx: number, qIdx?: number } | null;
-  onItemClick?: (item: { type: 'section' | 'question', sIdx: number, qIdx?: number } | null) => void;
+  selectedItem?: { type: 'section' | 'question' | 'endText', sIdx?: number, qIdx?: number } | null;
+  onItemClick?: (item: { type: 'section' | 'question' | 'endText', sIdx?: number, qIdx?: number } | null) => void;
 }
 
 const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClose, mode = 'print', isEditor = false, selectedItem = null, onItemClick }) => {
@@ -161,7 +161,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
               <td style={{ textAlign: 'center', width: '33%', fontSize: '18px', textDecoration: 'underline' }}>{paperData.subject}</td>
               <td style={{ textAlign: 'right', width: '33%' }}>
                 {paperData.maxMarks !== undefined && paperData.maxMarks !== '' && `Max Marks: ${paperData.maxMarks}`}
-                {paperData.minMarks !== undefined && paperData.minMarks !== '' && <><br /><span style={{fontSize: '13px'}}>Min Marks: {paperData.minMarks}</span></>}
+                {paperData.minMarks !== undefined && paperData.minMarks !== '' && <><br />Min Marks: {paperData.minMarks}</>}
               </td>
             </tr>
             <tr>
@@ -192,11 +192,37 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
             paperData.sections && paperData.sections.map((section, sIdx) => {
             return (
               <div key={sIdx} style={{ marginBottom: '30px' }}>
-                {section.sectionTitle && (
-                  <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '16px', margin: '20px 0', textDecoration: 'underline', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
-                    {section.sectionTitle}
-                  </div>
-                )}
+                  {section.sectionTitle && (() => {
+                    const isSecSelected = isEditor && selectedItem?.type === 'section' && selectedItem.sIdx === sIdx;
+                    return (
+                      <div 
+                        onClick={(e) => {
+                          if (isEditor) {
+                            e.stopPropagation();
+                            onItemClick?.({ type: 'section', sIdx });
+                          }
+                        }}
+                        onMouseEnter={(e: any) => { if (isEditor && !isSecSelected) e.currentTarget.style.outline = '2px dashed #cbd5e1'; }}
+                        onMouseLeave={(e: any) => { if (isEditor && !isSecSelected) e.currentTarget.style.outline = '2px solid transparent'; }}
+                        style={{ 
+                          textAlign: 'center', 
+                          fontWeight: 'bold', 
+                          fontSize: section.sectionFontSize || '16px', 
+                          fontFamily: section.sectionFontFamily || 'inherit',
+                          margin: '20px 0', 
+                          textDecoration: 'underline', 
+                          pageBreakAfter: 'avoid', 
+                          breakAfter: 'avoid',
+                          cursor: isEditor ? 'pointer' : 'default',
+                          outline: isSecSelected ? '2px solid #3b82f6' : '2px solid transparent',
+                          padding: isEditor ? '4px' : '0',
+                          borderRadius: '4px',
+                          transition: 'outline 0.2s'
+                        }}>
+                        {section.sectionTitle}
+                      </div>
+                    );
+                  })()}
                 
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <tbody>
@@ -449,9 +475,36 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         </div>
         
         {/* Footer line */}
-        <div style={{ textAlign: 'center', marginTop: '50px', fontStyle: 'italic', fontSize: '12px' }}>
-          --- End of Question Paper ---
-        </div>
+        {(() => {
+          const isEndSelected = isEditor && selectedItem?.type === 'endText';
+          return (
+            <div 
+              onClick={(e) => {
+                if (isEditor) {
+                  e.stopPropagation();
+                  onItemClick?.({ type: 'endText' });
+                }
+              }}
+              onMouseEnter={(e: any) => { if (isEditor && !isEndSelected) e.currentTarget.style.outline = '2px dashed #cbd5e1'; }}
+              onMouseLeave={(e: any) => { if (isEditor && !isEndSelected) e.currentTarget.style.outline = '2px solid transparent'; }}
+              style={{ 
+                textAlign: 'center', 
+                marginTop: '50px', 
+                fontStyle: 'italic', 
+                fontSize: paperData.endTextFontSize || '12px',
+                fontFamily: paperData.endTextFontFamily || 'inherit',
+                cursor: isEditor ? 'pointer' : 'default',
+                outline: isEndSelected ? '2px solid #3b82f6' : '2px solid transparent',
+                padding: isEditor ? '4px' : '0',
+                borderRadius: '4px',
+                transition: 'outline 0.2s',
+                display: 'inline-block',
+                width: '100%'
+              }}>
+              {paperData.endText || '--- End of Question Paper ---'}
+            </div>
+          );
+        })()}
       </div>
 
       {paperData.includeOMR && (

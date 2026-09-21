@@ -21,7 +21,7 @@ import toast from 'react-hot-toast';
 
 const getISTDateTimeLocalString = () => {
   const now = new Date();
-  const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+  const istTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
   const yyyy = istTime.getFullYear();
   const mm = String(istTime.getMonth() + 1).padStart(2, '0');
   const dd = String(istTime.getDate()).padStart(2, '0');
@@ -77,11 +77,11 @@ const InfoBadge = ({ icon, bg, label, value, wrapText = false }: { icon: React.R
 );
 
 const calculateAge = (dobString: string | undefined) => {
-    if (!dobString) return '';
-    const birthDate = new Date(dobString);
-    const difference = Date.now() - birthDate.getTime();
-    const ageDate = new Date(difference);
-    return ` (${Math.abs(ageDate.getUTCFullYear() - 1970)} Yrs)`;
+  if (!dobString) return '';
+  const birthDate = new Date(dobString);
+  const difference = Date.now() - birthDate.getTime();
+  const ageDate = new Date(difference);
+  return ` (${Math.abs(ageDate.getUTCFullYear() - 1970)} Yrs)`;
 };
 
 
@@ -99,7 +99,7 @@ const StudentProfile: React.FC = () => {
   const [editData, setEditData] = useState<Partial<StudentData>>({});
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'finance' | 'documents' | 'attendance' | 'id-card'>('profile');
-  const [newDocs, setNewDocs] = useState<{name: string, file: File | null}[]>([]);
+  const [newDocs, setNewDocs] = useState<{ name: string, file: File | null }[]>([]);
   const [docsToRemove, setDocsToRemove] = useState<string[]>([]);
   const [newDocName, setNewDocName] = useState('');
   const [newDocFile, setNewDocFile] = useState<File | null>(null);
@@ -186,14 +186,14 @@ const StudentProfile: React.FC = () => {
         if (studentData) {
           setStudent(studentData);
           setEditData(studentData);
-          
+
           const classes = await getClasses();
           const cls = classes.find(c => c.id === studentData.classId || (c.className && studentData.classId && c.className.trim().toLowerCase() === studentData.classId.trim().toLowerCase()));
           if (cls) setStudentClass(cls);
 
           const txns = await getTransactions({ studentId: id });
           setTransactions(txns);
-          
+
           const settings = await getSchoolSettings();
           if (settings) {
             setSchoolSettings(settings);
@@ -209,7 +209,7 @@ const StudentProfile: React.FC = () => {
     fetchData();
   }, [id]);
 
-  
+
   const [sendingTxnId, setSendingTxnId] = useState<string | null>(null);
 
   const generatePdfBase64 = async (txn: any): Promise<string> => {
@@ -230,16 +230,16 @@ const StudentProfile: React.FC = () => {
       toast.error('No contact number available for student.');
       return;
     }
-    
+
     setSendingTxnId(txn.id);
     try {
       const settings = await getSchoolSettings();
       let template = settings?.feeReceiptTemplate || `Dear Parent,\nWe have received a fee payment of Rs. {{amount}} for your ward {{name}}.\nPlease find the attached receipt.\nThank you.\nMN Public School`;
-      
+
       let message = template
         .replace(/{{amount}}/g, txn.amount.toString())
         .replace(/{{name}}/g, `${student.firstName} ${student.lastName}`);
-      
+
       message += `\n\n*Receipt Details:*`;
       message += `\nDate: ${new Date(txn.date).toLocaleDateString()}`;
       message += `\nDescription: ${txn.description}`;
@@ -256,7 +256,7 @@ const StudentProfile: React.FC = () => {
 
       // Generate PDF
       const base64Pdf = await generatePdfBase64(txn);
-      
+
       const schoolName = settings?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'School';
       const studentName = `${student.firstName}_${student.lastName}`.replace(/[^a-zA-Z0-9]/g, '_');
       const receiptNo = txn.receiptNo || txn.id?.substring(0, 8);
@@ -272,16 +272,16 @@ const StudentProfile: React.FC = () => {
           pdfName: properPdfName
         })
       });
-  
-        let data;
-        try {
-          data = await response.json();
-        } catch (e) {
-          throw new Error(response.status === 413 ? 'PDF is too large to send' : 'Server error: Invalid JSON response');
-        }
 
-        if (!response.ok) throw new Error(data?.error || 'Failed to send WhatsApp message');
-      
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error(response.status === 413 ? 'PDF is too large to send' : 'Server error: Invalid JSON response');
+      }
+
+      if (!response.ok) throw new Error(data?.error || 'Failed to send WhatsApp message');
+
       toast.success('Receipt sent via WhatsApp successfully!');
     } catch (err: any) {
       toast.error(err.message || 'Failed to send message');
@@ -298,12 +298,12 @@ const StudentProfile: React.FC = () => {
       const toastId = toast.loading("Generating receipt...");
       const settings = await getSchoolSettings();
       const base64 = await generateNativePdfReceiptBase64(student, txn, studentClass?.className || student.classId || 'Unknown', settings);
-      
+
       const schoolName = settings?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'School';
       const studentName = `${student.firstName}_${student.lastName}`.replace(/[^a-zA-Z0-9]/g, '_');
       const receiptNo = txn.receiptNo || txn.id?.substring(0, 8);
       const properPdfName = `${schoolName}_FeeReceipt_${studentName}_${receiptNo}.pdf`;
-      
+
       const byteCharacters = atob(base64.split(',')[1]);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -312,7 +312,7 @@ const StudentProfile: React.FC = () => {
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'application/pdf' });
       const blobUrl = URL.createObjectURL(blob);
-      
+
       toast.dismiss(toastId);
       setPdfFilename(properPdfName);
       setPdfPreviewUrl(blobUrl);
@@ -383,11 +383,11 @@ const StudentProfile: React.FC = () => {
   };
 
 
-  
+
   const handleEditTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     const isValid = await verifyAdminPassword(editTxnPassword);
-      if (!isValid) {
+    if (!isValid) {
       setEditTxnError('Incorrect admin password.');
       return;
     }
@@ -411,10 +411,10 @@ const StudentProfile: React.FC = () => {
     }
   };
 
-const handleDeleteTransaction = async (e: React.FormEvent) => {
+  const handleDeleteTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     const isValid = await verifyAdminPassword(deleteTxnPassword);
-      if (!isValid) {
+    if (!isValid) {
       setDeleteTxnError('Incorrect admin password.');
       return;
     }
@@ -456,12 +456,12 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
     setSaving(true);
     try {
       let finalPhotoUrl = editData.photoUrl;
-      
+
       if (newPhotoFile) {
         finalPhotoUrl = await uploadImageToCloudinary(newPhotoFile);
-      } 
+      }
       else if (editData.photoUrl === '') {
-         finalPhotoUrl = '';
+        finalPhotoUrl = '';
       }
 
       const updatedData = { ...editData, photoUrl: finalPhotoUrl };
@@ -530,23 +530,23 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
 
   // Filter out any transaction that has 'Previous' in it if we want, but since they are added manually,
   // we just use the transactions array.
-  
+
   const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
+
   let currentBal = 0;
   const ledgerRows = sortedTransactions.map(t => {
     if (t.type === 'Charge') currentBal += t.amount;
     else if (t.type === 'Income' || t.type === 'Discount') currentBal -= t.amount;
     return { ...t, runningBalance: currentBal };
   });
-  
+
   const currentDue = currentBal > 0 ? currentBal : 0;
   const currentAdvance = currentBal < 0 ? Math.abs(currentBal) : 0;
-  
+
   const availableMonths = Array.from(new Set(ledgerRows.map(t => t.date.substring(0, 7)))).sort().reverse();
 
-  const displayedRows = filterMonth === 'All' 
-    ? ledgerRows.slice().reverse() 
+  const displayedRows = filterMonth === 'All'
+    ? ledgerRows.slice().reverse()
     : ledgerRows.slice().reverse().filter(t => t.date.startsWith(filterMonth));
 
   return (
@@ -558,8 +558,8 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
       </div>
 
       {/* Modern, Beautiful, Colorful Header */}
-      <div className="glass-panel" style={{ 
-        padding: '32px', 
+      <div className="glass-panel" style={{
+        padding: '32px',
         marginBottom: '24px',
         display: 'flex',
         alignItems: 'center',
@@ -570,13 +570,13 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
       }}>
         <div style={{ position: 'relative' }}>
-          <img 
-            src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=6366f1&color=ffffff`} 
-            alt="Profile" 
-            style={{ width: '130px', height: '130px', borderRadius: '50%', border: '6px solid white', boxShadow: '0 8px 20px rgba(99,102,241,0.15)', objectFit: 'cover' }} 
+          <img
+            src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=6366f1&color=ffffff`}
+            alt="Profile"
+            style={{ width: '130px', height: '130px', borderRadius: '50%', border: '6px solid white', boxShadow: '0 8px 20px rgba(99,102,241,0.15)', objectFit: 'cover' }}
           />
         </div>
-        
+
         <div style={{ flex: 1, minWidth: '250px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
             <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 800, color: '#0f172a' }}>{student.firstName} {student.lastName}</h1>
@@ -584,10 +584,10 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px', background: student.status === 'Active' ? '#dcfce7' : '#fee2e2', color: student.status === 'Active' ? '#166534' : '#991b1b', padding: '6px 14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, userSelect: 'none' }}>
                 {student.status === 'Active' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />} {student.status || 'Active'}
               </span>
-              
+
               {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
-                <div 
-                  onClick={handleToggleStatus} 
+                <div
+                  onClick={handleToggleStatus}
                   style={{ width: '44px', height: '24px', background: student.status === 'Active' ? '#16a34a' : '#cbd5e1', borderRadius: '20px', position: 'relative', cursor: 'pointer', transition: 'background 0.3s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}
                   title={student.status === 'Active' ? 'Click to Deactivate' : 'Click to Activate'}
                 >
@@ -598,13 +598,13 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           </div>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <span style={{ background: '#e0e7ff', color: '#3730a3', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-               <GraduationCap size={16} /> Class {studentClass?.className || student.classId} {student.sectionId}
+              <GraduationCap size={16} /> Class {studentClass?.className || student.classId} {student.sectionId}
             </span>
             <span style={{ background: '#fef3c7', color: '#92400e', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-               <Hash size={16} /> Roll: {student.rollNumber || 'N/A'}
+              <Hash size={16} /> Roll: {student.rollNumber || 'N/A'}
             </span>
             <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '6px 16px', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-               <FileText size={16} /> Adm: {student.admissionNo || 'N/A'}
+              <FileText size={16} /> Adm: {student.admissionNo || 'N/A'}
             </span>
           </div>
         </div>
@@ -644,7 +644,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
       {/* TAB CONTENT: PROFILE */}
       {activeTab === 'profile' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-          
+
           {/* Academic Info */}
           <div className="glass-panel" style={{ padding: '24px', background: 'white' }}>
             <h3 style={{ margin: '0 0 24px 0', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem' }}>
@@ -704,7 +704,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               <InfoBadge icon={<AlertTriangle size={20} color="#ea580c" />} bg="#ffedd5" label="Emergency Contact" value={student.emergencyContact} />
               <InfoBadge icon={<Mail size={20} color="#8b5cf6" />} bg="#ede9fe" label="Email Address" value={student.email} />
               <div style={{ gridColumn: '1 / -1' }}>
-                  <InfoBadge icon={<MapPin size={20} color="#0284c7" />} bg="#e0f2fe" label="Full Address" value={student.address} wrapText={true} />
+                <InfoBadge icon={<MapPin size={20} color="#0284c7" />} bg="#e0f2fe" label="Full Address" value={student.address} wrapText={true} />
               </div>
             </div>
           </div>
@@ -714,7 +714,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
       {/* TAB CONTENT: FINANCE */}
       {activeTab === 'finance' && (
         <div className="glass-panel" style={{ padding: '32px', marginBottom: '40px', background: 'white' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginBottom: "32px" }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginBottom: "32px" }}>
             <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
               <div style={{ background: '#dcfce7', padding: '10px', borderRadius: '12px' }}><IndianRupee size={24} color="#16a34a" /></div> Financial Ledger
             </h3>
@@ -729,7 +729,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               </div>
             )}
           </div>
-          
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
             <div style={{ padding: '24px', borderRadius: '20px', background: currentBal > 0 ? '#fef2f2' : '#f8fafc', border: '1px solid', borderColor: currentBal > 0 ? '#fecaca' : '#e2e8f0', display: 'flex', alignItems: 'center', gap: '20px' }}>
               <div style={{ background: currentBal > 0 ? '#fee2e2' : '#f1f5f9', padding: '16px', borderRadius: '16px' }}>
@@ -750,7 +750,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               </div>
             </div>
           </div>
-          
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div style={{ fontWeight: 600, color: '#334155' }}>Transaction History</div>
             <select className="glass-input" style={{ width: '250px', background: '#f8fafc' }} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
@@ -796,21 +796,21 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                               </button>
                               {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && (
                                 <button onClick={() => handleSendWhatsAppReceipt(row)} disabled={sendingTxnId === row.id} style={{ background: '#dcfce7', color: '#16a34a', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: sendingTxnId === row.id ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, opacity: sendingTxnId === row.id ? 0.7 : 1 }}>
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.878-.788-1.47-1.761-1.643-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.416z"/></svg> {sendingTxnId === row.id ? 'Sending...' : 'Send'}
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.878-.788-1.47-1.761-1.643-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.416z" /></svg> {sendingTxnId === row.id ? 'Sending...' : 'Send'}
                                 </button>
                               )}
                             </>
                           )}
                           {['Admin', 'Principal', 'Manager', 'Super Admin'].includes(role) && row && (
-                              <>
-                                <button onClick={() => { setEditTxnData(row); setIsEditTxnModalOpen(true); }} style={{ background: '#fef3c7', color: '#d97706', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Edit">
-                                  <Edit size={14} />
-                                </button>
-                                <button onClick={() => { setDeleteTxnId(row.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Delete">
-                                  <Trash2 size={14} />
-                                </button>
-                              </>
-                            )}
+                            <>
+                              <button onClick={() => { setEditTxnData(row); setIsEditTxnModalOpen(true); }} style={{ background: '#fef3c7', color: '#d97706', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Edit">
+                                <Edit size={14} />
+                              </button>
+                              <button onClick={() => { setDeleteTxnId(row.id || null); setIsDeleteTxnModalOpen(true); }} style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Delete">
+                                <Trash2 size={14} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -862,7 +862,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...studentSpecificRecords].sort((a,b) => a.date.localeCompare(b.date)).map(r => {
+                  {[...studentSpecificRecords].sort((a, b) => a.date.localeCompare(b.date)).map(r => {
                     const status = r.records[id!] || 'Unmarked';
                     return (
                       <tr key={r.date} style={{ borderBottom: '1px solid var(--glass-border)' }}>
@@ -894,19 +894,17 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '20px', display: 'flex', justifyContent: 'center' }}>
             <div className="id-card-print-container" style={{ position: 'relative', width: '520px', minWidth: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
               {/* Top Header / School branding */}
-              <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+              <div style={{ background: 'linear-gradient(135deg, #6c3505ff 0%, #8a370eff 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
                 <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                  <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: '1.1', letterSpacing: '0.5px' }}>{schoolSettings?.schoolName || 'MN Public School'}</div>
-                  <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#c7d2fe', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{schoolSettings?.recognitionText || 'Recognized by Government'}</div>
+                  <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: '1.1', letterSpacing: '0.5px' }}>{schoolSettings?.schoolName || 'School Name Not Set'}</div>
                   <div style={{ fontSize: '0.7rem', opacity: 0.95, marginTop: '2px', lineHeight: '1.2' }}>{schoolSettings?.address || 'School Address Not Set'}</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>Ph: {schoolSettings?.phone || 'N/A'} | Email: {schoolSettings?.email || 'N/A'}</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>Web: {schoolSettings?.website || 'www.mnpublicschool.in'}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.95, lineHeight: '1.2' }}>{schoolSettings?.phone || 'N/A'}, {schoolSettings?.email || 'N/A'}</div>
                 </div>
               </div>
-              
+
               {/* Identity Text */}
-              <div style={{ background: '#e0e7ff', color: '#4338ca', textAlign: 'center', fontSize: '0.7rem', fontWeight: 800, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '3px', borderBottom: '1px solid #c7d2fe' }}>
+              <div style={{ background: '#ffe9e0ff', color: '#8a370eff', textAlign: 'center', fontSize: '0.7rem', fontWeight: 800, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '3px', borderBottom: '1px solid #c7d2fe' }}>
                 Identity Card
               </div>
 
@@ -914,7 +912,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               <div style={{ display: 'flex', flex: 1, padding: '12px 16px', gap: '16px', position: 'relative', zIndex: 1 }}>
                 {/* Left Column (Photo) */}
                 <div style={{ width: '90px' }}>
-                  <div style={{ width: '90px', height: '110px', borderRadius: '8px', border: '2px solid #4f46e5', overflow: 'hidden', background: '#f1f5f9', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                  <div style={{ width: '90px', height: '110px', borderRadius: '8px', border: '2px solid #6d2d08ff', overflow: 'hidden', background: '#f1f5f9', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
                     <img src={student.photoUrl || `https://ui-avatars.com/api/?name=${student.firstName}+${student.lastName}&background=4f46e5&color=fff&size=150`} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 </div>
@@ -924,9 +922,9 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                   <div style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1e293b', lineHeight: '1.1', textTransform: 'uppercase' }}>
                     {student.firstName} {student.lastName}
                   </div>
-                  
+
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: '4px 0 8px 0' }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#ffffff', background: '#4f46e5', padding: '2px 8px', borderRadius: '12px' }}>Class: {studentClass?.className || 'N/A'}{student.sectionId ? ` - ${student.sectionId}` : ''}</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#ffffff', background: '#8a370eff', padding: '2px 8px', borderRadius: '12px' }}>Class: {studentClass?.className || 'N/A'}{student.sectionId ? ` - ${student.sectionId}` : ''}</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '2px 8px', borderRadius: '12px' }}>Roll: {student.rollNumber || 'N/A'}</span>
                   </div>
 
@@ -936,6 +934,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Blood Grp:</span> <span style={{ fontWeight: 900, color: '#ef4444', flex: 1 }}>{student.bloodGroup || 'N/A'}</span></div>
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Contact:</span> <span style={{ fontWeight: 800, color: '#1e293b', flex: 1 }}>{student.parentPhone || student.phone || 'N/A'}</span></div>
                     <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Address:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1, lineHeight: '1.2', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{student.address || 'N/A'}</span></div>
+                    <div style={{ display: 'flex' }}><span style={{ width: '70px', fontWeight: 700, color: '#64748b' }}>Website:</span> <span style={{ fontWeight: 700, color: '#334155', flex: 1, lineHeight: '1.2', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{schoolSettings?.website || 'Website Not Set'}</span></div>
                   </div>
                 </div>
 
@@ -955,7 +954,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Background pattern overlay */}
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%234f46e5\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")', pointerEvents: 'none', zIndex: 0 }}></div>
             </div>
@@ -986,17 +985,17 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           <h3 style={{ margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.4rem' }}>
             <div style={{ background: '#e0e7ff', padding: '10px', borderRadius: '12px' }}><FileText size={24} color="#4f46e5" /></div> Uploaded Documents
           </h3>
-          
+
           {student.documents && student.documents.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
               {student.documents.map((doc, idx) => (
-                <a key={idx} href={doc.url} target="_blank" rel="noreferrer" style={{ 
-                  background: '#f8fafc', border: '1px solid #e2e8f0', padding: '24px', borderRadius: '20px', 
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', 
-                  color: '#1e293b', transition: '0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' 
+                <a key={idx} href={doc.url} target="_blank" rel="noreferrer" style={{
+                  background: '#f8fafc', border: '1px solid #e2e8f0', padding: '24px', borderRadius: '20px',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none',
+                  color: '#1e293b', transition: '0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
                 }} className="hover-scale">
                   <div style={{ background: 'white', padding: '16px', borderRadius: '16px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-                     <FileText size={40} color="#6366f1" />
+                    <FileText size={40} color="#6366f1" />
                   </div>
                   <span style={{ fontWeight: 700, textAlign: 'center', fontSize: '1.1rem' }}>{doc.name}</span>
                 </a>
@@ -1005,7 +1004,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           ) : (
             <div style={{ textAlign: 'center', padding: '60px', background: '#f8fafc', borderRadius: '24px', border: '2px dashed #cbd5e1' }}>
               <div style={{ background: 'white', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}>
-                 <FileText size={40} color="#cbd5e1" />
+                <FileText size={40} color="#cbd5e1" />
               </div>
               <h4 style={{ margin: '0 0 8px 0', color: '#475569', fontSize: '1.2rem' }}>No Documents</h4>
               <p style={{ color: '#94a3b8', margin: 0, fontWeight: 500 }}>This student hasn't uploaded any documents yet.</p>
@@ -1020,10 +1019,10 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
           background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
-          <div className="edit-modal-container" style={{ 
-            background: '#ffffff', width: '90%', maxWidth: '1000px', height: '90vh', 
+          <div className="edit-modal-container" style={{
+            background: '#ffffff', width: '90%', maxWidth: '1000px', height: '90vh',
             borderRadius: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' 
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
           }}>
             <style>{`
               .edit-modal-container .glass-input {
@@ -1058,30 +1057,30 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                 <X size={24} color="#64748b" />
               </button>
             </div>
-            
+
             <div style={{ padding: '32px', overflowY: 'auto', flex: 1 }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
-                
+
                 {/* Academic Section */}
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Academic Details</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-                    <div><label>Class ID</label><input className="glass-input" value={editData.classId || ''} onChange={e => setEditData({...editData, classId: e.target.value})} /></div>
-                    <div><label>Section</label><input className="glass-input" value={editData.sectionId || ''} onChange={e => setEditData({...editData, sectionId: e.target.value})} /></div>
-                    <div><label>Roll Number</label><input type="number" className="glass-input" value={editData.rollNumber || ''} onChange={e => setEditData({...editData, rollNumber: Number(e.target.value)})} /></div>
-                    <div><label>Admission No</label><input className="glass-input" value={editData.admissionNo || ''} onChange={e => setEditData({...editData, admissionNo: e.target.value})} /></div>
-                    <div><label>Admission Date</label><input type="date" className="glass-input" value={editData.admissionDate || ''} onChange={e => setEditData({...editData, admissionDate: e.target.value})} /></div>
-                    <div><label>Session</label><input className="glass-input" value={editData.session || ''} onChange={e => setEditData({...editData, session: e.target.value})} /></div>
-                      <div>
-                        <label>Fee Group</label>
-                        <select className="glass-input" value={editData.feeGroup || ''} onChange={e => setEditData({...editData, feeGroup: e.target.value})}>
-                          <option value="General Fee Category">General Fee Category</option>
-                          {customChargeTypes.map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                      </div>
+                    <div><label>Class ID</label><input className="glass-input" value={editData.classId || ''} onChange={e => setEditData({ ...editData, classId: e.target.value })} /></div>
+                    <div><label>Section</label><input className="glass-input" value={editData.sectionId || ''} onChange={e => setEditData({ ...editData, sectionId: e.target.value })} /></div>
+                    <div><label>Roll Number</label><input type="number" className="glass-input" value={editData.rollNumber || ''} onChange={e => setEditData({ ...editData, rollNumber: Number(e.target.value) })} /></div>
+                    <div><label>Admission No</label><input className="glass-input" value={editData.admissionNo || ''} onChange={e => setEditData({ ...editData, admissionNo: e.target.value })} /></div>
+                    <div><label>Admission Date</label><input type="date" className="glass-input" value={editData.admissionDate || ''} onChange={e => setEditData({ ...editData, admissionDate: e.target.value })} /></div>
+                    <div><label>Session</label><input className="glass-input" value={editData.session || ''} onChange={e => setEditData({ ...editData, session: e.target.value })} /></div>
+                    <div>
+                      <label>Fee Group</label>
+                      <select className="glass-input" value={editData.feeGroup || ''} onChange={e => setEditData({ ...editData, feeGroup: e.target.value })}>
+                        <option value="General Fee Category">General Fee Category</option>
+                        {customChargeTypes.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
                     <div>
                       <label>Status</label>
-                      <select className="glass-input" value={editData.status || 'Active'} onChange={e => setEditData({...editData, status: e.target.value as 'Active' | 'Inactive'})}>
+                      <select className="glass-input" value={editData.status || 'Active'} onChange={e => setEditData({ ...editData, status: e.target.value as 'Active' | 'Inactive' })}>
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                       </select>
@@ -1093,61 +1092,61 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Personal Details</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-                    <div><label>First Name</label><input className="glass-input" value={editData.firstName || ''} onChange={e => setEditData({...editData, firstName: e.target.value})} /></div>
-                    <div><label>Last Name</label><input className="glass-input" value={editData.lastName || ''} onChange={e => setEditData({...editData, lastName: e.target.value})} /></div>
-                    <div><label>Date of Birth</label><input type="date" className="glass-input" value={editData.dob || ''} onChange={e => setEditData({...editData, dob: e.target.value})} /></div>
+                    <div><label>First Name</label><input className="glass-input" value={editData.firstName || ''} onChange={e => setEditData({ ...editData, firstName: e.target.value })} /></div>
+                    <div><label>Last Name</label><input className="glass-input" value={editData.lastName || ''} onChange={e => setEditData({ ...editData, lastName: e.target.value })} /></div>
+                    <div><label>Date of Birth</label><input type="date" className="glass-input" value={editData.dob || ''} onChange={e => setEditData({ ...editData, dob: e.target.value })} /></div>
                     <div>
                       <label>Gender</label>
-                      <select className="glass-input" value={editData.gender || ''} onChange={e => setEditData({...editData, gender: e.target.value})}>
+                      <select className="glass-input" value={editData.gender || ''} onChange={e => setEditData({ ...editData, gender: e.target.value })}>
                         <option value="">Select</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                       </select>
                     </div>
-                    <div><label>Religion</label><input className="glass-input" value={editData.religion || ''} onChange={e => setEditData({...editData, religion: e.target.value})} /></div>
-                    <div><label>Caste</label><input className="glass-input" value={editData.caste || ''} onChange={e => setEditData({...editData, caste: e.target.value})} /></div>
-                    <div><label>Category</label><input className="glass-input" value={editData.category || ''} onChange={e => setEditData({...editData, category: e.target.value})} /></div>
-                      <div>
-                        <label>Blood Group</label>
-                        <select className="glass-input" value={editData.bloodGroup || ''} onChange={e => setEditData({...editData, bloodGroup: e.target.value})}>
-                          <option value="">Select Blood Group</option>
-                          <option value="A+">A+</option>
-                          <option value="A-">A-</option>
-                          <option value="B+">B+</option>
-                          <option value="B-">B-</option>
-                          <option value="AB+">AB+</option>
-                          <option value="AB-">AB-</option>
-                          <option value="O+">O+</option>
-                          <option value="O-">O-</option>
-                        </select>
-                      </div>
-                    <div style={{ gridColumn: '1 / -1' }}><label>Aadhar Number</label><input className="glass-input" value={editData.aadharNumber || ''} onChange={e => setEditData({...editData, aadharNumber: e.target.value})} /></div>
+                    <div><label>Religion</label><input className="glass-input" value={editData.religion || ''} onChange={e => setEditData({ ...editData, religion: e.target.value })} /></div>
+                    <div><label>Caste</label><input className="glass-input" value={editData.caste || ''} onChange={e => setEditData({ ...editData, caste: e.target.value })} /></div>
+                    <div><label>Category</label><input className="glass-input" value={editData.category || ''} onChange={e => setEditData({ ...editData, category: e.target.value })} /></div>
+                    <div>
+                      <label>Blood Group</label>
+                      <select className="glass-input" value={editData.bloodGroup || ''} onChange={e => setEditData({ ...editData, bloodGroup: e.target.value })}>
+                        <option value="">Select Blood Group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                      </select>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}><label>Aadhar Number</label><input className="glass-input" value={editData.aadharNumber || ''} onChange={e => setEditData({ ...editData, aadharNumber: e.target.value })} /></div>
                   </div>
                 </div>
 
                 {/* Parent Section */}
                 <div className="glass-panel" style={{ padding: '24px', gridColumn: '1 / -1' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Parent & Contact Details</h4>
-                  
+
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                    <div><label>Father's Name</label><input className="glass-input" value={editData.parentName || ''} onChange={e => setEditData({...editData, parentName: e.target.value})} /></div>
-                    <div><label>Father Aadhar</label><input className="glass-input" value={editData.fatherAadhar || ''} onChange={e => setEditData({...editData, fatherAadhar: e.target.value})} /></div>
-                    <div><label>Father Qualification</label><input className="glass-input" value={editData.fatherQualification || ''} onChange={e => setEditData({...editData, fatherQualification: e.target.value})} /></div>
-                    <div><label>Father Occupation</label><input className="glass-input" value={editData.fatherOccupation || ''} onChange={e => setEditData({...editData, fatherOccupation: e.target.value})} /></div>
+                    <div><label>Father's Name</label><input className="glass-input" value={editData.parentName || ''} onChange={e => setEditData({ ...editData, parentName: e.target.value })} /></div>
+                    <div><label>Father Aadhar</label><input className="glass-input" value={editData.fatherAadhar || ''} onChange={e => setEditData({ ...editData, fatherAadhar: e.target.value })} /></div>
+                    <div><label>Father Qualification</label><input className="glass-input" value={editData.fatherQualification || ''} onChange={e => setEditData({ ...editData, fatherQualification: e.target.value })} /></div>
+                    <div><label>Father Occupation</label><input className="glass-input" value={editData.fatherOccupation || ''} onChange={e => setEditData({ ...editData, fatherOccupation: e.target.value })} /></div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                    <div><label>Mother's Name</label><input className="glass-input" value={editData.motherName || ''} onChange={e => setEditData({...editData, motherName: e.target.value})} /></div>
-                    <div><label>Mother Aadhar</label><input className="glass-input" value={editData.motherAadhar || ''} onChange={e => setEditData({...editData, motherAadhar: e.target.value})} /></div>
-                    <div><label>Mother Qualification</label><input className="glass-input" value={editData.motherQualification || ''} onChange={e => setEditData({...editData, motherQualification: e.target.value})} /></div>
-                    <div><label>Mother Occupation</label><input className="glass-input" value={editData.motherOccupation || ''} onChange={e => setEditData({...editData, motherOccupation: e.target.value})} /></div>
+                    <div><label>Mother's Name</label><input className="glass-input" value={editData.motherName || ''} onChange={e => setEditData({ ...editData, motherName: e.target.value })} /></div>
+                    <div><label>Mother Aadhar</label><input className="glass-input" value={editData.motherAadhar || ''} onChange={e => setEditData({ ...editData, motherAadhar: e.target.value })} /></div>
+                    <div><label>Mother Qualification</label><input className="glass-input" value={editData.motherQualification || ''} onChange={e => setEditData({ ...editData, motherQualification: e.target.value })} /></div>
+                    <div><label>Mother Occupation</label><input className="glass-input" value={editData.motherOccupation || ''} onChange={e => setEditData({ ...editData, motherOccupation: e.target.value })} /></div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                    <div><label>Primary Phone</label><input className="glass-input" value={editData.parentPhone || ''} onChange={e => setEditData({...editData, parentPhone: e.target.value})} /></div>
-                    <div><label>Emergency Contact</label><input className="glass-input" value={editData.emergencyContact || ''} onChange={e => setEditData({...editData, emergencyContact: e.target.value})} /></div>
-                    <div><label>Email Address</label><input type="email" className="glass-input" value={editData.email || ''} onChange={e => setEditData({...editData, email: e.target.value})} /></div>
-                    <div style={{ gridColumn: '1 / -1' }}><label>Full Address</label><textarea className="glass-input" style={{ width: '100%', minHeight: '80px' }} value={editData.address || ''} onChange={e => setEditData({...editData, address: e.target.value})}></textarea></div>
+                    <div><label>Primary Phone</label><input className="glass-input" value={editData.parentPhone || ''} onChange={e => setEditData({ ...editData, parentPhone: e.target.value })} /></div>
+                    <div><label>Emergency Contact</label><input className="glass-input" value={editData.emergencyContact || ''} onChange={e => setEditData({ ...editData, emergencyContact: e.target.value })} /></div>
+                    <div><label>Email Address</label><input type="email" className="glass-input" value={editData.email || ''} onChange={e => setEditData({ ...editData, email: e.target.value })} /></div>
+                    <div style={{ gridColumn: '1 / -1' }}><label>Full Address</label><textarea className="glass-input" style={{ width: '100%', minHeight: '80px' }} value={editData.address || ''} onChange={e => setEditData({ ...editData, address: e.target.value })}></textarea></div>
                   </div>
                 </div>
 
@@ -1155,45 +1154,45 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Profile Photo</h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                     <img src={newPhotoPreview || editData.photoUrl || 'https://ui-avatars.com/api/?name=U+A'} alt="Preview" style={{ width: '100px', height: '100px', borderRadius: '12px', objectFit: 'cover' }} />
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                       <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            const reader = new FileReader();
-                            reader.onload = () => { setRawImage(reader.result); setShowCropper(true); };
-                            reader.readAsDataURL(e.target.files[0]);
-                          }
-                       }} />
-                       <button type="button" className="btn-secondary" onClick={() => fileInputRef.current?.click()}><Camera size={16} style={{ display: 'inline', marginRight: '4px' }}/> Upload New</button>
-                       {(newPhotoPreview || editData.photoUrl) && <button type="button" onClick={handleRemovePhoto} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 600 }}>Remove</button>}
-                     </div>
+                    <img src={newPhotoPreview || editData.photoUrl || 'https://ui-avatars.com/api/?name=U+A'} alt="Preview" style={{ width: '100px', height: '100px', borderRadius: '12px', objectFit: 'cover' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const reader = new FileReader();
+                          reader.onload = () => { setRawImage(reader.result); setShowCropper(true); };
+                          reader.readAsDataURL(e.target.files[0]);
+                        }
+                      }} />
+                      <button type="button" className="btn-secondary" onClick={() => fileInputRef.current?.click()}><Camera size={16} style={{ display: 'inline', marginRight: '4px' }} /> Upload New</button>
+                      {(newPhotoPreview || editData.photoUrl) && <button type="button" onClick={handleRemovePhoto} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 600 }}>Remove</button>}
+                    </div>
                   </div>
                 </div>
 
                 {/* Documents Management */}
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '8px', display: 'inline-block' }}>Manage Documents</h4>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
                     {(editData.documents || []).map((doc, idx) => {
-                       const isRemoved = docsToRemove.includes(doc.url);
-                       return (
-                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: isRemoved ? '#fee2e2' : '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                           <span style={{ textDecoration: isRemoved ? 'line-through' : 'none', color: isRemoved ? '#ef4444' : '#1e293b', display: 'flex', alignItems: 'center' }}><FileText size={14} style={{ marginRight: '8px' }}/> {doc.name}</span>
-                           <button type="button" onClick={() => {
-                              if (isRemoved) setDocsToRemove(docsToRemove.filter(u => u !== doc.url));
-                              else setDocsToRemove([...docsToRemove, doc.url]);
-                           }} style={{ color: isRemoved ? '#10b981' : '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
-                             {isRemoved ? 'Restore' : 'Delete'}
-                           </button>
-                         </div>
-                       );
+                      const isRemoved = docsToRemove.includes(doc.url);
+                      return (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: isRemoved ? '#fee2e2' : '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                          <span style={{ textDecoration: isRemoved ? 'line-through' : 'none', color: isRemoved ? '#ef4444' : '#1e293b', display: 'flex', alignItems: 'center' }}><FileText size={14} style={{ marginRight: '8px' }} /> {doc.name}</span>
+                          <button type="button" onClick={() => {
+                            if (isRemoved) setDocsToRemove(docsToRemove.filter(u => u !== doc.url));
+                            else setDocsToRemove([...docsToRemove, doc.url]);
+                          }} style={{ color: isRemoved ? '#10b981' : '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                            {isRemoved ? 'Restore' : 'Delete'}
+                          </button>
+                        </div>
+                      );
                     })}
                     {newDocs.map((doc, idx) => (
-                         <div key={`new-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#dcfce7', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                           <span style={{ display: 'flex', alignItems: 'center' }}><FileText size={14} style={{ marginRight: '8px' }}/> {doc.name} (New)</span>
-                           <button type="button" onClick={() => handleRemoveNewDoc(idx)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Remove</button>
-                         </div>
+                      <div key={`new-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#dcfce7', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                        <span style={{ display: 'flex', alignItems: 'center' }}><FileText size={14} style={{ marginRight: '8px' }} /> {doc.name} (New)</span>
+                        <button type="button" onClick={() => handleRemoveNewDoc(idx)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Remove</button>
+                      </div>
                     ))}
                   </div>
 
@@ -1209,15 +1208,15 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
 
               </div>
             </div>
-            
+
             <div style={{ padding: '24px', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end', gap: '16px', background: 'white' }}>
               <button type="button" className="btn-secondary" onClick={() => {
-                 setIsEditing(false);
-                 setNewDocs([]);
-                 setDocsToRemove([]);
+                setIsEditing(false);
+                setNewDocs([]);
+                setDocsToRemove([]);
               }}>Cancel</button>
               <button type="button" className="btn-primary" onClick={handleSaveProfile} disabled={saving} style={{ padding: '12px 32px', fontSize: '1.1rem' }}>
-                {saving ? 'Saving...' : <><Save size={18} style={{ display: 'inline', marginRight: '8px' }}/> Save Changes</>}
+                {saving ? 'Saving...' : <><Save size={18} style={{ display: 'inline', marginRight: '8px' }} /> Save Changes</>}
               </button>
             </div>
           </div>
@@ -1229,15 +1228,15 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
-            <input required type="number" className="glass-input" value={newPayment.amount} onChange={e => setNewPayment({...newPayment, amount: e.target.value})} placeholder="e.g. 1500" />
+            <input required type="number" className="glass-input" value={newPayment.amount} onChange={e => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder="e.g. 1500" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
-            <input type="text" className="glass-input" value={newPayment.description} onChange={e => setNewPayment({...newPayment, description: e.target.value})} placeholder="e.g. Term 1 Fee" />
+            <input type="text" className="glass-input" value={newPayment.description} onChange={e => setNewPayment({ ...newPayment, description: e.target.value })} placeholder="e.g. Term 1 Fee" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Payment Method</label>
-            <select className="glass-input" value={newPayment.paymentMethod} onChange={e => setNewPayment({...newPayment, paymentMethod: e.target.value as any})}>
+            <select className="glass-input" value={newPayment.paymentMethod} onChange={e => setNewPayment({ ...newPayment, paymentMethod: e.target.value as any })}>
               <option value="Cash">Cash</option>
               <option value="Bank Transfer">Bank Transfer</option>
               <option value="UPI">UPI</option>
@@ -1245,7 +1244,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
-            <input required type="datetime-local" className="glass-input" value={newPayment.date} onChange={e => setNewPayment({...newPayment, date: e.target.value})} />
+            <input required type="datetime-local" className="glass-input" value={newPayment.date} onChange={e => setNewPayment({ ...newPayment, date: e.target.value })} />
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsPaymentModalOpen(false)}>Cancel</button>
@@ -1260,12 +1259,12 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
           <div className="alert-warning" style={{ background: 'rgba(245?58?1,0.1)', color: 'var(--warning)', padding: '12px', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', gap: '8px' }}>
             <AlertTriangle size={18} /> Charges increase pending dues. Discounts decrease pending dues.
           </div>
-          
+
           {!showNewChargeTypeInput ? (
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Type</label>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <select className="glass-input" style={{ flex: 1 }} value={newFine.type} onChange={e => setNewFine({...newFine, type: e.target.value})}>
+                <select className="glass-input" style={{ flex: 1 }} value={newFine.type} onChange={e => setNewFine({ ...newFine, type: e.target.value })}>
                   <option>Base Class Fee</option>
                   <option>Previous Dues</option>
                   <option>Late Fine</option>
@@ -1290,15 +1289,15 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
-            <input required type="text" className="glass-input" value={newFine.description} onChange={e => setNewFine({...newFine, description: e.target.value})} placeholder="e.g. September Fee / Books" />
+            <input required type="text" className="glass-input" value={newFine.description} onChange={e => setNewFine({ ...newFine, description: e.target.value })} placeholder="e.g. September Fee / Books" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Amount (₹)</label>
-            <input required type="number" className="glass-input" value={newFine.amount} onChange={e => setNewFine({...newFine, amount: e.target.value})} placeholder="e.g. 500" />
+            <input required type="number" className="glass-input" value={newFine.amount} onChange={e => setNewFine({ ...newFine, amount: e.target.value })} placeholder="e.g. 500" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
-            <input required type="datetime-local" className="glass-input" value={newFine.date} onChange={e => setNewFine({...newFine, date: e.target.value})} />
+            <input required type="datetime-local" className="glass-input" value={newFine.date} onChange={e => setNewFine({ ...newFine, date: e.target.value })} />
           </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsFineModalOpen(false)}>Cancel</button>
@@ -1326,34 +1325,34 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
         </form>
       </Modal>
 
-        {/* EDIT TXN MODAL */}
-        <Modal isOpen={isEditTxnModalOpen} onClose={() => { setIsEditTxnModalOpen(false); setEditTxnData(null); setEditTxnError(''); }} title="Edit Transaction">
-          {editTxnData && (
-            <form onSubmit={handleEditTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px' }}>Amount</label>
-                <input required type="number" className="glass-input" value={editTxnData.amount || ''} onChange={e => setEditTxnData({...editTxnData, amount: e.target.value})} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
-                <input required type="text" className="glass-input" value={editTxnData.description || ''} onChange={e => setEditTxnData({...editTxnData, description: e.target.value})} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
-                <input required type="datetime-local" className="glass-input" value={editTxnData.date ? editTxnData.date.substring(0,16) : ''} onChange={e => setEditTxnData({...editTxnData, date: e.target.value})} />
-              </div>
-              <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password to Save</label>
-                <input required type="password" className="glass-input" value={editTxnPassword} onChange={e => setEditTxnPassword(e.target.value)} placeholder="Enter admin password" />
-                {editTxnError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '4px' }}>{editTxnError}</p>}
-              </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-                <button type="button" className="btn-secondary" onClick={() => setIsEditTxnModalOpen(false)}>Cancel</button>
-                <button type="submit" className="btn-primary" style={{ background: '#d97706' }}>Save Changes</button>
-              </div>
-            </form>
-          )}
-        </Modal>
+      {/* EDIT TXN MODAL */}
+      <Modal isOpen={isEditTxnModalOpen} onClose={() => { setIsEditTxnModalOpen(false); setEditTxnData(null); setEditTxnError(''); }} title="Edit Transaction">
+        {editTxnData && (
+          <form onSubmit={handleEditTransaction} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Amount</label>
+              <input required type="number" className="glass-input" value={editTxnData.amount || ''} onChange={e => setEditTxnData({ ...editTxnData, amount: e.target.value })} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Description</label>
+              <input required type="text" className="glass-input" value={editTxnData.description || ''} onChange={e => setEditTxnData({ ...editTxnData, description: e.target.value })} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Date</label>
+              <input required type="datetime-local" className="glass-input" value={editTxnData.date ? editTxnData.date.substring(0, 16) : ''} onChange={e => setEditTxnData({ ...editTxnData, date: e.target.value })} />
+            </div>
+            <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '8px' }}>Admin Password to Save</label>
+              <input required type="password" className="glass-input" value={editTxnPassword} onChange={e => setEditTxnPassword(e.target.value)} placeholder="Enter admin password" />
+              {editTxnError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: '4px' }}>{editTxnError}</p>}
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button type="button" className="btn-secondary" onClick={() => setIsEditTxnModalOpen(false)}>Cancel</button>
+              <button type="submit" className="btn-primary" style={{ background: '#d97706' }}>Save Changes</button>
+            </div>
+          </form>
+        )}
+      </Modal>
 
 
       {/* Cropper Modal */}
@@ -1367,7 +1366,7 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
               <h3 style={{ margin: 0, color: '#333' }}>Crop Photo</h3>
               <button onClick={() => { setShowCropper(false); setRawImage(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><X size={20} /></button>
             </div>
-            
+
             <div style={{ position: 'relative', width: '100%', height: '350px', background: '#333' }}>
               <Cropper
                 image={rawImage}
@@ -1379,25 +1378,25 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
                 onZoomChange={setZoom}
               />
             </div>
-            
+
             <div style={{ padding: '16px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', overflowX: 'auto', paddingBottom: '4px' }}>
                 <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 1 ? 'var(--primary)' : '', color: aspect === 1 ? 'white' : '' }} onClick={() => setAspect(1)}>1:1</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 3/4 ? 'var(--primary)' : '', color: aspect === 3/4 ? 'white' : '' }} onClick={() => setAspect(3/4)}>3:4</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4/3 ? 'var(--primary)' : '', color: aspect === 4/3 ? 'white' : '' }} onClick={() => setAspect(4/3)}>4:3</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4/5 ? 'var(--primary)' : '', color: aspect === 4/5 ? 'white' : '' }} onClick={() => setAspect(4/5)}>4:5</button>
-                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 16/9 ? 'var(--primary)' : '', color: aspect === 16/9 ? 'white' : '' }} onClick={() => setAspect(16/9)}>16:9</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 3 / 4 ? 'var(--primary)' : '', color: aspect === 3 / 4 ? 'white' : '' }} onClick={() => setAspect(3 / 4)}>3:4</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4 / 3 ? 'var(--primary)' : '', color: aspect === 4 / 3 ? 'white' : '' }} onClick={() => setAspect(4 / 3)}>4:3</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 4 / 5 ? 'var(--primary)' : '', color: aspect === 4 / 5 ? 'white' : '' }} onClick={() => setAspect(4 / 5)}>4:5</button>
+                <button className="btn-secondary" style={{ padding: '4px 12px', background: aspect === 16 / 9 ? 'var(--primary)' : '', color: aspect === 16 / 9 ? 'white' : '' }} onClick={() => setAspect(16 / 9)}>16:9</button>
               </div>
 
               <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '8px', color: '#555' }}>Zoom</label>
-              <input 
-                type="range" 
-                value={zoom} 
-                min={1} 
-                max={3} 
+              <input
+                type="range"
+                value={zoom}
+                min={1}
+                max={3}
                 step={0.1}
-                onChange={(e) => setZoom(Number(e.target.value))} 
-                style={{ width: '100%', marginBottom: '16px' }} 
+                onChange={(e) => setZoom(Number(e.target.value))}
+                style={{ width: '100%', marginBottom: '16px' }}
               />
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                 <button className="btn-secondary" onClick={() => { setShowCropper(false); setRawImage(null); }}>Cancel</button>
@@ -1409,21 +1408,21 @@ const handleDeleteTransaction = async (e: React.FormEvent) => {
       )}
 
 
-        {pdfPreviewUrl && (
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 99999, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ padding: '16px 24px', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10 }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e3a8a' }}>
-                 <FileText size={24} color="#1e3a8a" /> Receipt Preview
-              </h2>
-              <button onClick={() => { URL.revokeObjectURL(pdfPreviewUrl); setPdfPreviewUrl(null); }} style={{ padding: '8px 16px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
-                <ArrowLeft size={18} /> Back
-              </button>
-            </div>
-            <iframe src={pdfPreviewUrl} style={{ width: '100%', flex: 1, border: 'none' }} title="Receipt Preview" />
+      {pdfPreviewUrl && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#e5e7eb', zIndex: 99999, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '16px 24px', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10 }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e3a8a' }}>
+              <FileText size={24} color="#1e3a8a" /> Receipt Preview
+            </h2>
+            <button onClick={() => { URL.revokeObjectURL(pdfPreviewUrl); setPdfPreviewUrl(null); }} style={{ padding: '8px 16px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
+              <ArrowLeft size={18} /> Back
+            </button>
           </div>
-        )}
+          <iframe src={pdfPreviewUrl} style={{ width: '100%', flex: 1, border: 'none' }} title="Receipt Preview" />
+        </div>
+      )}
 
-      </motion.div>
+    </motion.div>
   );
 };
 

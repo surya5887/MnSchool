@@ -232,11 +232,16 @@ export interface QuestionPaperData {
   hideStandardHeader?: boolean;
   includeOMR?: boolean;
   globalFontSize?: string;
+  endText?: string;
+  endTextFontSize?: string;
+  endTextFontFamily?: string;
   wordContent?: string;
   worksheetElements?: CanvasElement[];
   blocks?: PaperBlock[];
   sections?: {
     sectionTitle: string;
+    sectionFontSize?: string;
+    sectionFontFamily?: string;
     questions: {
       text: string;
       image?: string;
