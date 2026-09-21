@@ -5,13 +5,71 @@ import QuestionPaperPrintView from './QuestionPaperPrintView';
 import RichTextEditor from './RichTextEditor';
 import BlockCanvas from './BlockCanvas/BlockCanvas';
 
+export const FONT_OPTIONS = [
+  { value: 'Arial', label: 'Arial', style: 'Arial, sans-serif' },
+  { value: 'Helvetica', label: 'Helvetica', style: 'Helvetica, sans-serif' },
+  { value: 'Times New Roman', label: 'Times New Roman', style: 'Times New Roman, sans-serif' },
+  { value: 'Courier New', label: 'Courier New', style: 'Courier New, sans-serif' },
+  { value: 'Verdana', label: 'Verdana', style: 'Verdana, sans-serif' },
+  { value: 'Georgia', label: 'Georgia', style: 'Georgia, sans-serif' },
+  { value: 'Palatino', label: 'Palatino', style: 'Palatino, sans-serif' },
+  { value: 'Garamond', label: 'Garamond', style: 'Garamond, sans-serif' },
+  { value: 'Bookman', label: 'Bookman', style: 'Bookman, sans-serif' },
+  { value: 'Comic Sans MS', label: 'Comic Sans MS', style: 'Comic Sans MS, sans-serif' },
+  { value: 'Trebuchet MS', label: 'Trebuchet MS', style: 'Trebuchet MS, sans-serif' },
+  { value: 'Arial Black', label: 'Arial Black', style: 'Arial Black, sans-serif' },
+  { value: 'Impact', label: 'Impact', style: 'Impact, sans-serif' },
+  { value: 'Roboto', label: 'Roboto', style: 'Roboto, sans-serif' },
+  { value: 'Open Sans', label: 'Open Sans', style: 'Open Sans, sans-serif' },
+  { value: 'Lato', label: 'Lato', style: 'Lato, sans-serif' },
+  { value: 'Montserrat', label: 'Montserrat', style: 'Montserrat, sans-serif' },
+  { value: 'Oswald', label: 'Oswald', style: 'Oswald, sans-serif' },
+  { value: 'Source Sans Pro', label: 'Source Sans Pro', style: 'Source Sans Pro, sans-serif' },
+  { value: 'Slabo 27px', label: 'Slabo 27px', style: 'Slabo 27px, sans-serif' },
+  { value: 'Raleway', label: 'Raleway', style: 'Raleway, sans-serif' },
+  { value: 'PT Sans', label: 'PT Sans', style: 'PT Sans, sans-serif' },
+  { value: 'Merriweather', label: 'Merriweather', style: 'Merriweather, sans-serif' },
+  { value: 'Noto Sans', label: 'Noto Sans', style: 'Noto Sans, sans-serif' },
+  { value: 'Nunito', label: 'Nunito', style: 'Nunito, sans-serif' },
+  { value: 'Playfair Display', label: 'Playfair Display', style: 'Playfair Display, serif' },
+  { value: 'Ubuntu', label: 'Ubuntu', style: 'Ubuntu, sans-serif' },
+  { value: 'Rubik', label: 'Rubik', style: 'Rubik, sans-serif' },
+  { value: 'Work Sans', label: 'Work Sans', style: 'Work Sans, sans-serif' },
+  { value: 'Fira Sans', label: 'Fira Sans', style: 'Fira Sans, sans-serif' },
+  { value: 'Quicksand', label: 'Quicksand', style: 'Quicksand, sans-serif' },
+  { value: 'Titillium Web', label: 'Titillium Web', style: 'Titillium Web, sans-serif' },
+  { value: 'Oxygen', label: 'Oxygen', style: 'Oxygen, sans-serif' },
+  { value: 'Dosis', label: 'Dosis', style: 'Dosis, sans-serif' },
+  { value: 'Cabin', label: 'Cabin', style: 'Cabin, sans-serif' },
+  { value: 'Arimo', label: 'Arimo', style: 'Arimo, sans-serif' },
+  { value: 'Anton', label: 'Anton', style: 'Anton, sans-serif' },
+  { value: 'Josefin Sans', label: 'Josefin Sans', style: 'Josefin Sans, sans-serif' },
+  { value: 'Libre Baskerville', label: 'Libre Baskerville', style: 'Libre Baskerville, serif' },
+  { value: 'Lobster', label: 'Lobster', style: 'Lobster, cursive' },
+  { value: 'Pacifico', label: 'Pacifico', style: 'Pacifico, cursive' },
+  { value: 'Dancing Script', label: 'Dancing Script', style: 'Dancing Script, cursive' },
+  { value: 'Indie Flower', label: 'Indie Flower', style: 'Indie Flower, cursive' },
+  { value: 'Caveat', label: 'Caveat', style: 'Caveat, cursive' },
+  { value: 'Shadows Into Light', label: 'Shadows Into Light', style: 'Shadows Into Light, cursive' },
+  { value: 'Righteous', label: 'Righteous', style: 'Righteous, cursive' },
+  { value: 'Fredoka One', label: 'Fredoka One', style: 'Fredoka One, cursive' },
+  { value: 'Bree Serif', label: 'Bree Serif', style: 'Bree Serif, sans-serif' }
+];
+
+export const FontSelectOptions = () => (
+  <>
+    <option value="">Default Font</option>
+    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} style={{ fontFamily: f.style }}>{f.label}</option>)}
+  </>
+);
+
 interface Props {
   paperData: QuestionPaperData;
   setPaperData: (data: QuestionPaperData) => void;
 }
 
 const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
-  const [selectedItem, setSelectedItem] = useState<{ type: 'section' | 'question', sIdx: number, qIdx?: number } | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{ type: 'section' | 'question' | 'endText', sIdx?: number, qIdx?: number } | null>(null);
 
   // Quick add helpers
   const addQuestion = (type: string) => {
@@ -101,9 +159,12 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginRight: '4px' }}>Structure:</span>
-          <button className="btn-secondary" style={{ padding: '8px 16px', background: '#f1f5f9', border: '1px dashed #cbd5e1', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px' }} onClick={addSection}>
-            <Plus size={14} style={{ color: '#64748b' }} /> Add Section
-          </button>
+            <button className="btn-secondary" style={{ padding: '8px 16px', background: '#f1f5f9', border: '1px dashed #cbd5e1', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px' }} onClick={addSection}>
+              <Plus size={14} style={{ color: '#64748b' }} /> Add Section
+            </button>
+            <button className="btn-secondary" style={{ padding: '8px 16px', background: '#f1f5f9', border: '1px dashed #cbd5e1', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px' }} onClick={() => setSelectedItem({ type: 'endText', sIdx: -1 })}>
+              <Settings size={14} style={{ color: '#64748b' }} /> Footer Text
+            </button>
         </div>
 
         <div style={{ width: '1px', height: '24px', background: '#cbd5e1', display: 'none' }} className="toolbar-divider"></div>
@@ -162,11 +223,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           setPaperData({ ...paperData, sections: newSecs });
                         }}
                       >
-                        <option value="">Default (Inherit)</option>
-                        <option value="Arial, sans-serif">Arial</option>
-                        <option value="'Times New Roman', serif">Times New Roman</option>
-                        <option value="'Courier New', monospace">Courier New</option>
-                        <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                        <FontSelectOptions />
                       </select>
                     </div>
                     <div>
@@ -178,7 +235,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                         value={paperData.sections[selectedItem.sIdx!].sectionFontSize || ''}
                         onChange={(e) => {
                           const newSecs = [...paperData.sections];
-                          newSecs[selectedItem.sIdx!].sectionFontSize = e.target.value;
+                          newSecs[selectedItem.sIdx!].sectionFontSize = e.target.value && !isNaN(Number(e.target.value)) ? e.target.value + 'px' : e.target.value;
                           setPaperData({ ...paperData, sections: newSecs });
                         }}
                       />
@@ -206,65 +263,12 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Font Style</label>
                           <select className="glass-input" style={{ marginBottom: 0, background: 'white', fontFamily: q.fontFamily || 'inherit' }} value={q.fontFamily || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontFamily: e.target.value })}>
                             <option value="">Default Font</option>
-                            <option value="Arial" style={{ fontFamily: "Arial, sans-serif" }}>Arial</option>
-                            <option value="Helvetica" style={{ fontFamily: "Helvetica, sans-serif" }}>Helvetica</option>
-                            <option value="Times New Roman" style={{ fontFamily: "Times New Roman, sans-serif" }}>Times New Roman</option>
-                            <option value="Courier New" style={{ fontFamily: "Courier New, sans-serif" }}>Courier New</option>
-                            <option value="Verdana" style={{ fontFamily: "Verdana, sans-serif" }}>Verdana</option>
-                            <option value="Georgia" style={{ fontFamily: "Georgia, sans-serif" }}>Georgia</option>
-                            <option value="Palatino" style={{ fontFamily: "Palatino, sans-serif" }}>Palatino</option>
-                            <option value="Garamond" style={{ fontFamily: "Garamond, sans-serif" }}>Garamond</option>
-                            <option value="Bookman" style={{ fontFamily: "Bookman, sans-serif" }}>Bookman</option>
-                            <option value="Comic Sans MS" style={{ fontFamily: "Comic Sans MS, sans-serif" }}>Comic Sans MS</option>
-                            <option value="Trebuchet MS" style={{ fontFamily: "Trebuchet MS, sans-serif" }}>Trebuchet MS</option>
-                            <option value="Arial Black" style={{ fontFamily: "Arial Black, sans-serif" }}>Arial Black</option>
-                            <option value="Impact" style={{ fontFamily: "Impact, sans-serif" }}>Impact</option>
-                            <option value="Roboto" style={{ fontFamily: "Roboto, sans-serif" }}>Roboto</option>
-                            <option value="Open Sans" style={{ fontFamily: "Open Sans, sans-serif" }}>Open Sans</option>
-                            <option value="Lato" style={{ fontFamily: "Lato, sans-serif" }}>Lato</option>
-                            <option value="Montserrat" style={{ fontFamily: "Montserrat, sans-serif" }}>Montserrat</option>
-                            <option value="Oswald" style={{ fontFamily: "Oswald, sans-serif" }}>Oswald</option>
-                            <option value="Source Sans Pro" style={{ fontFamily: "Source Sans Pro, sans-serif" }}>Source Sans Pro</option>
-                            <option value="Slabo 27px" style={{ fontFamily: "Slabo 27px, sans-serif" }}>Slabo 27px</option>
-                            <option value="Raleway" style={{ fontFamily: "Raleway, sans-serif" }}>Raleway</option>
-                            <option value="PT Sans" style={{ fontFamily: "PT Sans, sans-serif" }}>PT Sans</option>
-                            <option value="Merriweather" style={{ fontFamily: "Merriweather, sans-serif" }}>Merriweather</option>
-                            <option value="Noto Sans" style={{ fontFamily: "Noto Sans, sans-serif" }}>Noto Sans</option>
-                            <option value="Nunito" style={{ fontFamily: "Nunito, sans-serif" }}>Nunito</option>
-                            <option value="Concert One" style={{ fontFamily: "Concert One, sans-serif" }}>Concert One</option>
-                            <option value="Playfair Display" style={{ fontFamily: "Playfair Display, sans-serif" }}>Playfair Display</option>
-                            <option value="Rubik" style={{ fontFamily: "Rubik, sans-serif" }}>Rubik</option>
-                            <option value="Lora" style={{ fontFamily: "Lora, sans-serif" }}>Lora</option>
-                            <option value="Ubuntu" style={{ fontFamily: "Ubuntu, sans-serif" }}>Ubuntu</option>
-                            <option value="Work Sans" style={{ fontFamily: "Work Sans, sans-serif" }}>Work Sans</option>
-                            <option value="Fira Sans" style={{ fontFamily: "Fira Sans, sans-serif" }}>Fira Sans</option>
-                            <option value="Quicksand" style={{ fontFamily: "Quicksand, sans-serif" }}>Quicksand</option>
-                            <option value="Inter" style={{ fontFamily: "Inter, sans-serif" }}>Inter</option>
-                            <option value="Poppins" style={{ fontFamily: "Poppins, sans-serif" }}>Poppins</option>
-                            <option value="Roboto Condensed" style={{ fontFamily: "Roboto Condensed, sans-serif" }}>Roboto Condensed</option>
-                            <option value="Karla" style={{ fontFamily: "Karla, sans-serif" }}>Karla</option>
-                            <option value="Inconsolata" style={{ fontFamily: "Inconsolata, sans-serif" }}>Inconsolata</option>
-                            <option value="Bitter" style={{ fontFamily: "Bitter, sans-serif" }}>Bitter</option>
-                            <option value="Pacifico" style={{ fontFamily: "Pacifico, sans-serif" }}>Pacifico</option>
-                            <option value="Dancing Script" style={{ fontFamily: "Dancing Script, sans-serif" }}>Dancing Script</option>
-                            <option value="Caveat" style={{ fontFamily: "Caveat, sans-serif" }}>Caveat</option>
-                            <option value="Righteous" style={{ fontFamily: "Righteous, sans-serif" }}>Righteous</option>
-                            <option value="Creepster" style={{ fontFamily: "Creepster, sans-serif" }}>Creepster</option>
-                            <option value="Lobster" style={{ fontFamily: "Lobster, sans-serif" }}>Lobster</option>
-                            <option value="Fredoka One" style={{ fontFamily: "Fredoka One, sans-serif" }}>Fredoka One</option>
-                            <option value="Comfortaa" style={{ fontFamily: "Comfortaa, sans-serif" }}>Comfortaa</option>
-                            <option value="Shadows Into Light" style={{ fontFamily: "Shadows Into Light, sans-serif" }}>Shadows Into Light</option>
-                            <option value="Cinzel" style={{ fontFamily: "Cinzel, sans-serif" }}>Cinzel</option>
-                            <option value="Amatic SC" style={{ fontFamily: "Amatic SC, sans-serif" }}>Amatic SC</option>
-                            <option value="Bangers" style={{ fontFamily: "Bangers, sans-serif" }}>Bangers</option>
-                            <option value="Permanent Marker" style={{ fontFamily: "Permanent Marker, sans-serif" }}>Permanent Marker</option>
-                            <option value="Courgette" style={{ fontFamily: "Courgette, sans-serif" }}>Courgette</option>
-                            <option value="Satisfy" style={{ fontFamily: "Satisfy, sans-serif" }}>Satisfy</option>
-                            <option value="Alfa Slab One" style={{ fontFamily: "Alfa Slab One, sans-serif" }}>Alfa Slab One</option>
-                            <option value="Cookie" style={{ fontFamily: "Cookie, sans-serif" }}>Cookie</option>
-                            <option value="Chewy" style={{ fontFamily: "Chewy, sans-serif" }}>Chewy</option>
-                            <option value="Bree Serif" style={{ fontFamily: "Bree Serif, sans-serif" }}>Bree Serif</option>
+                              <FontSelectOptions />
                           </select>
+                        </div>
+                        <div style={{ width: '80px' }}>
+                          <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Font Size</label>
+                          <input className="glass-input" style={{ marginBottom: 0, background: 'white' }} placeholder="16px" value={q.fontSize || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontSize: e.target.value && !isNaN(Number(e.target.value)) ? e.target.value + 'px' : e.target.value })} />
                         </div>
                       {q.type !== 'instruction' && (
                         <div style={{ width: '80px' }}>
@@ -680,18 +684,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                 );
               })()}
 
-                {selectedItem.type === 'section' && (
-                  <div>
-                    <button className="btn-danger" style={{ width: '100%', marginTop: '32px' }} onClick={() => {
-                      const newSecs = [...paperData.sections];
-                      newSecs.splice(selectedItem.sIdx!, 1);
-                      setPaperData({ ...paperData, sections: newSecs });
-                      setSelectedItem(null);
-                    }}>
-                      <Trash2 size={16} /> Delete Section
-                    </button>
-                  </div>
-                )}
+                
 
                 {selectedItem.type === 'endText' && (
                   <div>
@@ -699,7 +692,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                     <input 
                       type="text" 
                       className="glass-input" 
-                      value={paperData.endText || '--- End of Question Paper ---'}
+                      value={paperData.endText !== undefined ? paperData.endText : '--- End of Question Paper ---'}
                       onChange={(e) => setPaperData({ ...paperData, endText: e.target.value })}
                     />
                     
@@ -711,11 +704,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           value={paperData.endTextFontFamily || ''}
                           onChange={(e) => setPaperData({ ...paperData, endTextFontFamily: e.target.value })}
                         >
-                          <option value="">Default (Inherit)</option>
-                          <option value="Arial, sans-serif">Arial</option>
-                          <option value="'Times New Roman', serif">Times New Roman</option>
-                          <option value="'Courier New', monospace">Courier New</option>
-                          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                          <FontSelectOptions />
                         </select>
                       </div>
                       <div>
@@ -725,7 +714,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           className="glass-input" 
                           placeholder="e.g. 12px"
                           value={paperData.endTextFontSize || ''}
-                          onChange={(e) => setPaperData({ ...paperData, endTextFontSize: e.target.value })}
+                          onChange={(e) => setPaperData({ ...paperData, endTextFontSize: e.target.value && !isNaN(Number(e.target.value)) ? e.target.value + 'px' : e.target.value })}
                         />
                       </div>
                     </div>

@@ -234,7 +234,9 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                         onMouseLeave: (e: any) => { if (!isQSelected) e.currentTarget.style.outline = '2px solid transparent'; }
                       } : {};
                       const qStyle = {
-                        pageBreakInside: 'avoid' as any, breakInside: 'avoid' as any, fontFamily: q.fontFamily || 'inherit',
+                        pageBreakInside: 'avoid' as any, breakInside: 'avoid' as any, 
+                        fontFamily: q.fontFamily || 'inherit',
+                        fontSize: q.fontSize || 'inherit',
                         cursor: isEditor ? 'pointer' : 'auto',
                         outline: isQSelected ? '2px solid #3b82f6' : '2px solid transparent',
                         background: isQSelected ? '#eff6ff' : 'transparent',
@@ -501,7 +503,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                 display: 'inline-block',
                 width: '100%'
               }}>
-              {paperData.endText || '--- End of Question Paper ---'}
+              {paperData.endText !== undefined ? paperData.endText : '--- End of Question Paper ---'}
             </div>
           );
         })()}
