@@ -891,8 +891,8 @@ const StudentProfile: React.FC = () => {
             <button className="btn-primary" onClick={() => window.print()}><Printer size={18} /> Print ID Card</button>
           </div>
 
-          <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '20px', display: 'flex', justifyContent: 'center' }}>
-            <div className="id-card-print-container" style={{ position: 'relative', width: '520px', minWidth: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
+          <div className="id-card-wrapper" style={{ width: '100%', overflowX: 'auto', paddingBottom: '20px', textAlign: 'center' }}>
+            <div className="id-card-print-container" style={{ position: 'relative', width: '520px', minWidth: '520px', height: '330px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', display: 'inline-flex', flexDirection: 'column', textAlign: 'left', margin: '0 auto' }}>
               {/* Top Header / School branding */}
               <div style={{ background: 'linear-gradient(135deg, #6c3505ff 0%, #8a370eff 100%)', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
                 <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '2px' }} />
