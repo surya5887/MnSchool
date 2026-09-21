@@ -235,7 +235,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                         value={paperData.sections[selectedItem.sIdx!].sectionFontSize || ''}
                         onChange={(e) => {
                           const newSecs = [...paperData.sections];
-                          newSecs[selectedItem.sIdx!].sectionFontSize = e.target.value && !isNaN(Number(e.target.value)) ? e.target.value + 'px' : e.target.value;
+                          newSecs[selectedItem.sIdx!].sectionFontSize = e.target.value;
                           setPaperData({ ...paperData, sections: newSecs });
                         }}
                       />
@@ -268,7 +268,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                         </div>
                         <div style={{ width: '80px' }}>
                           <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Font Size</label>
-                          <input className="glass-input" style={{ marginBottom: 0, background: 'white' }} placeholder="16px" value={q.fontSize || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontSize: e.target.value && !isNaN(Number(e.target.value)) ? e.target.value + 'px' : e.target.value })} />
+                          <input className="glass-input" style={{ marginBottom: 0, background: 'white' }} placeholder="16px" value={q.fontSize || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontSize: e.target.value })} />
                         </div>
                       {q.type !== 'instruction' && (
                         <div style={{ width: '80px' }}>
@@ -714,7 +714,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           className="glass-input" 
                           placeholder="e.g. 12px"
                           value={paperData.endTextFontSize || ''}
-                          onChange={(e) => setPaperData({ ...paperData, endTextFontSize: e.target.value && !isNaN(Number(e.target.value)) ? e.target.value + 'px' : e.target.value })}
+                          onChange={(e) => setPaperData({ ...paperData, endTextFontSize: e.target.value })}
                         />
                       </div>
                     </div>

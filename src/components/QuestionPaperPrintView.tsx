@@ -1,6 +1,11 @@
 import React from 'react';
 import { ArrowLeft, Printer, Circle, Square, Triangle, Hexagon, Octagon, Star, Diamond, Minus } from 'lucide-react';
 
+const formatSize = (val?: string, defaultVal: string = 'inherit') => {
+  if (!val) return defaultVal;
+  return !isNaN(Number(val)) ? val + 'px' : val;
+};
+
 const renderShape = (shape: any) => {
   let Icon = Circle;
   switch (shape.type) {
@@ -207,7 +212,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                         style={{ 
                           textAlign: 'center', 
                           fontWeight: 'bold', 
-                          fontSize: section.sectionFontSize || '16px', 
+                          fontSize: formatSize(section.sectionFontSize, '16px'), 
                           fontFamily: section.sectionFontFamily || 'inherit',
                           margin: '20px 0', 
                           textDecoration: 'underline', 
@@ -236,7 +241,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                       const qStyle = {
                         pageBreakInside: 'avoid' as any, breakInside: 'avoid' as any, 
                         fontFamily: q.fontFamily || 'inherit',
-                        fontSize: q.fontSize || 'inherit',
+                        fontSize: formatSize(q.fontSize, 'inherit'),
                         cursor: isEditor ? 'pointer' : 'auto',
                         outline: isQSelected ? '2px solid #3b82f6' : '2px solid transparent',
                         background: isQSelected ? '#eff6ff' : 'transparent',
@@ -493,7 +498,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                 textAlign: 'center', 
                 marginTop: '50px', 
                 fontStyle: 'italic', 
-                fontSize: paperData.endTextFontSize || '12px',
+                fontSize: formatSize(paperData.endTextFontSize, '12px'),
                 fontFamily: paperData.endTextFontFamily || 'inherit',
                 cursor: isEditor ? 'pointer' : 'default',
                 outline: isEndSelected ? '2px solid #3b82f6' : '2px solid transparent',
