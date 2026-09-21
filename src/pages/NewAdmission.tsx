@@ -121,7 +121,7 @@ const NewAdmission: React.FC = () => {
   // Cropper state
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(4 / 5);
+  const [aspect, setAspect] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
   const [rawImage, setRawImage] = useState<string | null>(null);
@@ -289,12 +289,9 @@ const NewAdmission: React.FC = () => {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setRawImage(reader.result as string);
-        setShowCropper(true);
-      };
-      reader.readAsDataURL(file);
+      const imageUrl = URL.createObjectURL(file);
+      setRawImage(imageUrl);
+      setShowCropper(true);
     }
     // reset input value so selecting the same file again triggers change
     if(fileInputRef.current) fileInputRef.current.value = '';

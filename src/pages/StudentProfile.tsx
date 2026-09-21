@@ -143,7 +143,7 @@ const StudentProfile: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(4 / 5);
+  const [aspect, setAspect] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
   const [rawImage, setRawImage] = useState<string | null>(null);
@@ -485,12 +485,9 @@ const StudentProfile: React.FC = () => {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setRawImage(reader.result as string);
-        setShowCropper(true);
-      };
-      reader.readAsDataURL(file);
+      const imageUrl = URL.createObjectURL(file);
+      setRawImage(imageUrl);
+      setShowCropper(true);
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
