@@ -858,30 +858,30 @@ const NewAdmission: React.FC = () => {
             
             {/* Submit Bar Dock */}
               <div className="submit-dock-wrapper">
-                <div className="submit-dock">
+                <div className="submit-dock" style={{ padding: '12px 20px', borderRadius: '16px' }}>
                   
                   {/* Attractive Notice */}
-                  <div className="submit-notice-container" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 auto' }}>
-                    <div className="submit-notice-icon">
-                      <Info size={24} />
+                  <div className="submit-notice-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 auto' }}>
+                    <div className="submit-notice-icon" style={{ padding: '8px', borderRadius: '12px' }}>
+                      <Info size={20} />
                     </div>
                     <div>
-                      <h4 className="submit-notice-title">
-                        Login Information <span>Required</span>
+                      <h4 className="submit-notice-title" style={{ fontSize: '0.95rem', marginBottom: '2px' }}>
+                        Login Information <span style={{ padding: '2px 8px', fontSize: '0.6rem' }}>Required</span>
                       </h4>
-                      <p className="submit-notice-text">
-                        <strong>Email ID</strong> is mandatory for student portal access. <br/>Default password is <strong>First Name + Birth Year</strong> (e.g. RAHUL2015).
+                      <p className="submit-notice-text" style={{ fontSize: '0.8rem', lineHeight: '1.3' }}>
+                        <strong>Email ID</strong> is mandatory for portal access. Default password is <strong>First Name + Birth Year</strong> (e.g. RAHUL2015).
                       </p>
                     </div>
                   </div>
   
                   {/* Buttons */}
-                  <div className="submit-buttons">
-                    <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="hover-scale reset-btn" style={{ padding: '14px 28px', fontSize: '1rem', fontWeight: 700, borderRadius: '16px', color: '#ef4444', background: '#fff', border: '2px solid #fee2e2', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }} onMouseOver={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#fee2e2'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                      Reset Form
+                  <div className="submit-buttons" style={{ gap: '12px' }}>
+                    <button type="button" onClick={() => setFormData(INITIAL_FORM_DATA)} className="hover-scale reset-btn" style={{ padding: '10px 20px', fontSize: '0.95rem', fontWeight: 700, borderRadius: '12px', color: '#ef4444', background: '#fff', border: '2px solid #fee2e2', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }} onMouseOver={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#fee2e2'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                      Reset
                     </button>
-                    <button type="submit" disabled={loading} className="hover-scale submit-btn" style={{ padding: '14px 36px', fontSize: '1.05rem', fontWeight: 700, borderRadius: '16px', color: 'white', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16,185,129,0.35)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                      {loading ? 'Saving...' : <><Save size={20} /> Enroll Student</>}
+                    <button type="submit" disabled={loading} className="hover-scale submit-btn" style={{ padding: '10px 24px', fontSize: '0.95rem', fontWeight: 700, borderRadius: '12px', color: 'white', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16,185,129,0.35)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                      {loading ? 'Saving...' : <><Save size={18} /> Enroll Student</>}
                     </button>
                   </div>
                 </div>
