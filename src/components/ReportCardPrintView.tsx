@@ -461,8 +461,8 @@ const ReportCardPrintView: React.FC<ReportCardProps> = ({ students, classes, cla
                   <div className="rc-header-text">
                     <h1>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
                       <h3>{settings?.recognitionText || 'Recognition from UP Board (CBSE Pattern for English Medium)'}</h3>
-                      <p>Email: {settings?.email || 'info@mnpublicschool.com'} &nbsp;&nbsp;|&nbsp;&nbsp; Mobile No.: {settings?.phone || '9997125152, 8430707174'}</p>
-                      <p>{settings?.address || 'Harsoli - 251001, Distt. Muzaffarnagar (U.P.) India'}</p>
+                      <p>Email: {settings?.email || 'info@yourschool.com'} &nbsp;&nbsp;|&nbsp;&nbsp; Mobile No.: {settings?.phone || '1234567890'}</p>
+                      <p>{settings?.address || 'Your School Address Here'}</p>
                   </div>
                 </div>
 

@@ -120,8 +120,8 @@ const TransferCertificatePrintView: React.FC<TCProps> = ({ student, className, o
                     <div className="rc-header-text">
                         <h1>{settings?.name || 'M.N. PUBLIC SCHOOL'}</h1>
                         <h3>{settings?.recognitionText || 'Recognition from UP Board (CBSE Pattern for English Medium)'}</h3>
-                        <p>Email: {settings?.email || 'mnpsharsoli@gmail.com'} &nbsp;&nbsp;|&nbsp;&nbsp; Mobile No.: {settings?.phone || '8477025152'}</p>
-                        <p>{settings?.address || 'Harsoli - 251001, Distt. Muzaffarnagar (U.P.) India'}</p>
+                        <p>Email: {settings?.email || 'info@yourschool.com'} &nbsp;&nbsp;|&nbsp;&nbsp; Mobile No.: {settings?.phone || '1234567890'}</p>
+                        <p>{settings?.address || 'Your School Address Here'}</p>
                     </div>
                 </div>
 

@@ -50,7 +50,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
     session: '2026-2027',
     dobWords: '',
     admissionNumber: '',
-    place: 'HARSOLI'
+    place: 'CITY'
   ,
     studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim(),
     fatherName: student.parentName || student.fatherName || '',
@@ -185,7 +185,7 @@ const CharacterCertificatePrintView: React.FC<CCProps> = ({ student, className, 
                        <img src={settings?.logoUrl || "/images/logo_circular.png"} style={{ width: '90px', height: '90px' }} alt="Logo" />
                        <div style={{ textAlign: 'left' }}>
                       <h1 style={{ margin: 0, color: '#b91c1c', fontSize: '26px', fontFamily: "'Arial Black', Impact, sans-serif", letterSpacing: '1px', textShadow: '1px 1px 0px rgba(0,0,0,0.1)' }}>{settings?.schoolName || 'M.N. PUBLIC SCHOOL'}</h1>
-                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'HARSOLI-251001, DISTT. MUZAFFARNAGAR (U.P.) INDIA'}</p>
+                          <p style={{ margin: '4px 0 0 0', fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>{settings?.address ? settings.address.toUpperCase() : 'YOUR SCHOOL ADDRESS HERE'}</p>
                       {settings?.recognitionText && <p style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#444' }}>{settings.recognitionText}</p>}
                    </div>
                    

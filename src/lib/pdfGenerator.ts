@@ -11,9 +11,9 @@ export const generateNativePdfReceiptBase64 = async (
   // Settings
   const schoolName = settings?.name || 'M.N. PUBLIC SCHOOL';
   const recognitionText = settings?.recognitionText || 'Recognition from UP Board (CBSE Pattern for English Medium)';
-  const email = settings?.email || 'mnpsharsoli@gmail.com';
+  const email = settings?.email || 'info@yourschool.com';
   const phone = settings?.phone || '8477025152';
-  const address = settings?.address || 'Harsoli - 251001, Distt. Muzaffarnagar (U.P.) India';
+  const address = settings?.address || 'Your School Address Here';
   
   const marginLeft = 15;
   const marginTop = 20;

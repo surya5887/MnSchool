@@ -187,19 +187,19 @@ const SystemSettings: React.FC = () => {
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
                         <Globe size={16} /> Website URL
                       </label>
-                      <input type="text" className="glass-input" style={{ padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. www.mnpublicschool.in" value={settings.website || ''} onChange={e => setSettings({...settings, website: e.target.value})} />
+                      <input type="text" className="glass-input" style={{ padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. www.schoolwebsite.com" value={settings.website || ''} onChange={e => setSettings({...settings, website: e.target.value})} />
                     </div>
                       <div style={{ gridColumn: '1 / -1' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
                           <PenTool size={16} /> Recognition Text (Appears on Certificates)
                         </label>
-                        <input type="text" className="glass-input" style={{ fontSize: '1.05rem', padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. Recognition from UP Board (CBSE Pattern)" value={settings.recognitionText || ''} onChange={e => setSettings({...settings, recognitionText: e.target.value})} />
+                        <input type="text" className="glass-input" style={{ fontSize: '1.05rem', padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. Affiliated to Central Board of Secondary Education (CBSE)" value={settings.recognitionText || ''} onChange={e => setSettings({...settings, recognitionText: e.target.value})} />
                       </div>
                       <div style={{ gridColumn: '1 / -1' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
                           <Building2 size={16} /> Full Address
                         </label>
-                        <input type="text" className="glass-input" style={{ fontSize: '1.05rem', padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. Harsoli - 251001, Distt. Muzaffarnagar (U.P.) India" value={settings.address || ''} onChange={e => setSettings({...settings, address: e.target.value})} />
+                        <input type="text" className="glass-input" style={{ fontSize: '1.05rem', padding: '14px 20px', borderRadius: '16px' }} placeholder="e.g. 123 Education Lane, School District, City, State, ZIP" value={settings.address || ''} onChange={e => setSettings({...settings, address: e.target.value})} />
                       </div>
 
                     
