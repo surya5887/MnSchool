@@ -9,8 +9,8 @@ export const verifyAdminPassword = async (password: string): Promise<boolean> =>
     
     const authUser = JSON.parse(authUserStr);
     
-    // Safety check: Only admins/principals should be deleting things
-    if (authUser.role !== 'Principal' && authUser.role !== 'Admin') {
+    // Safety check: Only admins/principals/super admins should be deleting things
+    if (!['Principal', 'Admin', 'Super Admin', 'Manager'].includes(authUser.role)) {
        return false;
     }
 
