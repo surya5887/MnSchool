@@ -28,9 +28,22 @@ const SystemSettings: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const onCropComplete = (croppedBase64: string) => {
-    setSettings(prev => prev ? { ...prev, logoUrl: croppedBase64 } : prev);
+  const [saveProgress, setSaveProgress] = useState(0);
+
+  const onCropComplete = async (croppedBase64: string) => {
+    const updatedSettings = { ...settings!, logoUrl: croppedBase64 };
+    setSettings(updatedSettings);
     setCropImageSrc(null);
+    setIsSaving(true);
+    // Fake upload progress for UX
+    for (let i = 0; i <= 100; i += 15) {
+      setSaveProgress(i);
+      await new Promise(r => setTimeout(r, 50));
+    }
+    await saveSchoolSettings(updatedSettings);
+    window.dispatchEvent(new Event('settingsUpdated'));
+    setSaveProgress(0);
+    setIsSaving(false);
   };
 
   const [admins, setAdmins] = useState<any[]>([]);
@@ -235,15 +248,25 @@ const SystemSettings: React.FC = () => {
                     </div>
                     
                     <div style={{ gridColumn: '1 / -1', marginTop: '16px' }}>
-                      <button className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px', fontSize: '1.05rem', display: 'flex', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)' }} disabled={isSaving} onClick={async () => {
-                        setIsSaving(true);
-                        await saveSchoolSettings(settings);
-                        window.dispatchEvent(new Event('settingsUpdated'));
-                        await handleSave('Core');
-                        setIsSaving(false);
-                      }}>
-                        {isSaving ? 'Saving...' : <><Save size={20} /> Save All Changes</>}
-                      </button>
+                        <button className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px', fontSize: '1.05rem', display: 'flex', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)', position: 'relative', overflow: 'hidden' }} disabled={isSaving} onClick={async () => {
+                          setIsSaving(true);
+                          for (let i = 0; i <= 100; i += 10) {
+                            setSaveProgress(i);
+                            await new Promise(r => setTimeout(r, 40));
+                          }
+                          await saveSchoolSettings(settings);
+                          window.dispatchEvent(new Event('settingsUpdated'));
+                          await handleSave('Core');
+                          setSaveProgress(0);
+                          setIsSaving(false);
+                        }}>
+                          {isSaving && saveProgress > 0 && (
+                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${saveProgress}%`, background: 'rgba(255,255,255,0.2)', transition: 'width 0.1s' }}></div>
+                          )}
+                          <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {isSaving ? `Uploading & Saving... ${Math.min(saveProgress, 100)}%` : <><Save size={20} /> Save All Changes</>}
+                          </span>
+                        </button>
                     </div>
                   </div>
                 </div>

@@ -47,7 +47,7 @@ async function getCroppedImg(
     TARGET_SIZE
   );
 
-  return canvas.toDataURL('image/jpeg', 0.9);
+  return canvas.toDataURL('image/png');
 }
 
 const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onClose, onCropComplete }) => {
