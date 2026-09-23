@@ -381,7 +381,7 @@ const Timetable: React.FC = () => {
       )}
       <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
         <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>{schoolName}</h1>
-        <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class: {classFilter || "All"} - Time Table</h2>
+        <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class: {(() => { const c = classes.find(cls => cls.id === classFilter); return c ? (c.className + (c.sections?.[0] ? " - " + c.sections[0] : "")) : (authUser.assignedClass || "All"); })()} - Time Table</h2>
       </div>
       <div className="glass-panel print-grid-wrapper" style={{ padding: '24px', overflowX: 'auto' }}>
         <div className="timetable-grid" style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
