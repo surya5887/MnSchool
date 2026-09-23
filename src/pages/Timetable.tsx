@@ -271,6 +271,7 @@ const Timetable: React.FC = () => {
                overflow: hidden !important;
                margin: 0 !important;
                padding: 0 !important;
+               background: white !important;
             }
             .timetable-print-wrapper {
                position: absolute !important;
@@ -284,17 +285,22 @@ const Timetable: React.FC = () => {
                display: flex !important;
                flex-direction: column !important;
                overflow: hidden !important;
+               z-index: 9999 !important;
             }
             .timetable-print-wrapper, .timetable-print-wrapper * {
                visibility: visible !important;
             }
-            .no-print {
+            .no-print, .no-print * {
                display: none !important;
+               visibility: hidden !important;
+               height: 0 !important;
+               opacity: 0 !important;
             }
             .print-only {
                display: block !important;
             }
-            .glass-panel {
+            /* Only target the specific wrapper for the grid */
+            .print-grid-wrapper {
                flex: 1 !important;
                padding: 0 !important;
                margin: 0 !important;
@@ -323,6 +329,11 @@ const Timetable: React.FC = () => {
             .holiday-cell {
                 grid-column: span ${periods.length} !important;
             }
+            .break-cell {
+                writing-mode: horizontal-tb !important;
+                transform: none !important;
+                font-size: 0.8rem !important;
+            }
             .timetable-add-cell, .assign-hint {
                display: none !important;
             }
@@ -345,7 +356,7 @@ const Timetable: React.FC = () => {
       </div>
 
       {role === 'Teacher' ? (
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(245,158,11,0.2)' }}>
+        <div className="glass-panel no-print" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(245,158,11,0.2)' }}>
           <div>
             <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '4px', fontWeight: 600 }}>Viewing Timetable For</div>
             <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Class {(authUser.assignedClass && classes.some(c => c.className === authUser.assignedClass) ? authUser.assignedClass : (classes.find(c => c.classTeacher === authUser.name)?.className || authUser.assignedClass || 'Not Assigned'))}</div>
@@ -372,7 +383,7 @@ const Timetable: React.FC = () => {
         <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>{schoolName}</h1>
         <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class: {classFilter || "All"} - Time Table</h2>
       </div>
-      <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
+      <div className="glass-panel print-grid-wrapper" style={{ padding: '24px', overflowX: 'auto' }}>
         <div className="timetable-grid" style={{ display: 'grid', gridTemplateColumns: `100px repeat(${periods.length}, 1fr) 60px`, gap: '8px', minWidth: '800px' }}>
 
           {/* Header Row */}
