@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { getTimetable, assignPeriod, removePeriod, getTimetableStructure, saveTimetableStructure, type TimetableEntry } from '../services/timetableService';
 import { getClasses, type ClassData } from '../services/classService';
 import { getStudentById } from '../services/studentService';
+import { getSchoolSettings } from '../services/settingsService';
 import { Plus, Clock, Printer } from 'lucide-react';
 import Modal from '../components/Modal';
 import './Timetable.css';
@@ -10,6 +11,12 @@ import './Timetable.css';
 const Timetable: React.FC = () => {
   const authUser = JSON.parse(sessionStorage.getItem('authUser') || localStorage.getItem('authUser') || '{}');
   const role = authUser.role || '';
+    const [schoolName, setSchoolName] = useState('School ERP');
+  useEffect(() => {
+    getSchoolSettings().then(s => {
+      if(s && s.schoolName) setSchoolName(s.schoolName);
+    });
+  }, []);
   const [classFilter, setClassFilter] = useState('');
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   const [classes, setClasses] = useState<ClassData[]>([]);
@@ -334,7 +341,7 @@ const Timetable: React.FC = () => {
         </div>
       )}
       <div style={{ display: "none", width: "100%", textAlign: "center", marginBottom: "20px" }} className="print-only">
-        <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>M.N. PUBLIC SCHOOL</h1>
+        <h1 style={{ fontSize: "2.2rem", fontWeight: "900", margin: "0 0 8px 0", color: "#1e3a8a", textTransform: "uppercase" }}>{schoolName}</h1>
         <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: 0, color: "#333", textTransform: "uppercase", borderBottom: "2px solid #ccc", display: "inline-block", paddingBottom: "4px" }}>Class: {classFilter || "All"} - Time Table</h2>
       </div>
       <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
