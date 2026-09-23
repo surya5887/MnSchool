@@ -1,7 +1,7 @@
 {
-  "name": "School ERP",
-  "short_name": "School ERP",
-  "description": "School ERP System",
+  "name": "MN Public School",
+  "short_name": "MN Public School",
+  "description": "MN Public School ERP",
   "start_url": "/?app=true",
   "display": "standalone",
   "theme_color": "#ffffff",
