@@ -261,50 +261,78 @@ const Timetable: React.FC = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="timetable-print-wrapper">
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @media print {
-          @page { size: landscape; margin: 10mm; }
-          .timetable-print-wrapper {
-             position: absolute !important;
-             left: 0 !important;
-             top: 0 !important;
-             width: 100vw !important;
-             height: auto !important;
-             background: white !important;
-             padding: 20px !important;
-             box-sizing: border-box !important;
-             transform: scale(1); width: 100% !important;
-             transform-origin: top left;
+              <style dangerouslySetInnerHTML={{
+          __html: `
+          @media print {
+            @page { size: landscape; margin: 5mm; }
+            html, body {
+               height: 100vh !important;
+               width: 100vw !important;
+               overflow: hidden !important;
+               margin: 0 !important;
+               padding: 0 !important;
+            }
+            .timetable-print-wrapper {
+               position: absolute !important;
+               left: 0 !important;
+               top: 0 !important;
+               width: 100vw !important;
+               height: 100vh !important;
+               background: white !important;
+               padding: 5mm !important;
+               box-sizing: border-box !important;
+               display: flex !important;
+               flex-direction: column !important;
+               overflow: hidden !important;
+            }
+            .timetable-print-wrapper, .timetable-print-wrapper * {
+               visibility: visible !important;
+            }
+            .no-print {
+               display: none !important;
+            }
+            .print-only {
+               display: block !important;
+            }
+            .glass-panel {
+               flex: 1 !important;
+               padding: 0 !important;
+               margin: 0 !important;
+               border: none !important;
+               box-shadow: none !important;
+               background: none !important;
+               display: flex !important;
+               flex-direction: column !important;
+               overflow: hidden !important;
+            }
+            .timetable-grid {
+               flex: 1 !important;
+               grid-template-columns: 100px repeat(${periods.length}, 1fr) !important;
+               grid-auto-rows: minmax(0, 1fr) !important;
+               height: 100% !important;
+               min-width: 0 !important;
+               width: 100% !important;
+               gap: 4px !important;
+            }
+            .timetable-cell {
+               padding: 2px !important;
+               display: flex !important;
+               flex-direction: column !important;
+               justify-content: center !important;
+            }
+            .holiday-cell {
+                grid-column: span ${periods.length} !important;
+            }
+            .timetable-add-cell, .assign-hint {
+               display: none !important;
+            }
+            .timetable-print-wrapper * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
           }
-          .timetable-print-wrapper, .timetable-print-wrapper * {
-             visibility: visible !important;
-          }
-          .no-print {
-             display: none !important;
-          }
-          .print-only {
-             display: block !important;
-          }
-                    .timetable-grid {
-             grid-template-columns: 100px repeat(${periods.length}, 1fr) !important;
-             min-width: 0 !important;
-             width: 100% !important;
-          }
-                    .holiday-cell {
-              grid-column: span ${periods.length} !important;
-          }
-          .timetable-add-cell, .assign-hint {
-             display: none !important;
-          }
-          /* Make print background colors work */
-          .timetable-print-wrapper * {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-          }
-        }
-      `}} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+        `}} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div className="no-print">
           <h1 className="page-title"><Clock size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }} /> Class Timetable</h1>
           <p className="page-subtitle">Visually manage and print daily schedules for teachers and students.</p>
