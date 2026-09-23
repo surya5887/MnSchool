@@ -330,7 +330,7 @@ const Layout: React.FC = () => {
       </aside>
 
       <main className="main-content">
-        <header className="top-header">
+        <header className="top-header" style={{ background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.8)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
             <button className="mobile-menu-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', padding: '8px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.4)' }} onClick={() => setMobileMenuOpen(true)}>
               <Menu size={20} />
@@ -338,7 +338,7 @@ const Layout: React.FC = () => {
              
               <LiveClock />
               <motion.button 
-                whileHover={{ scale: 1.05, rotate: 180 }}
+                whileHover={{ scale: 1.05, rotate: 180, backgroundColor: 'rgba(99, 102, 241, 0.1)' }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
                   caches.keys().then((names) => {
@@ -348,34 +348,34 @@ const Layout: React.FC = () => {
                 }}
                 title="Hard Refresh App"
                 style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-                  border: 'none',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '10px',
+                  background: 'white',
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                  color: 'white',
-                  marginLeft: '8px'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  color: '#64748b',
+                  marginLeft: '4px',
+                  transition: 'color 0.2s'
                 }}
               >
                 <RefreshCw size={16} />
               </motion.button>
 
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ position: 'relative' }}>
               <button 
-                className="glass-panel" 
                 onClick={() => { setShowNotifications(!showNotifications); if(!showNotifications) fetchNotifications(); }}
-                style={{ padding: '10px', borderRadius: '50%', display: 'flex', border: 'none', cursor: 'pointer', position: 'relative', background: showNotifications ? 'rgba(99, 102, 241, 0.1)' : 'var(--glass-bg)' }}
+                style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(0,0,0,0.05)', cursor: 'pointer', position: 'relative', background: showNotifications ? 'rgba(99, 102, 241, 0.1)' : 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', transition: 'all 0.2s' }}
               >
-                <Bell size={20} color={showNotifications ? "var(--primary-color)" : "var(--text-main)"} />
+                <Bell size={18} color={showNotifications ? "var(--primary-color)" : "#64748b"} />
                 {unreadCount > 0 && (
-                  <div style={{ position: 'absolute', top: '-2px', right: '-2px', width: '18px', height: '18px', borderRadius: '50%', background: 'var(--danger)', border: '2px solid white', color: 'white', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                  <div style={{ position: 'absolute', top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', background: 'linear-gradient(135deg, #ef4444 0%, #f43f5e 100%)', border: '2px solid white', color: 'white', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(239,68,68,0.3)' }}>
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </div>
                 )}
