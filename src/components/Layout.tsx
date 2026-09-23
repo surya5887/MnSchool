@@ -267,10 +267,10 @@ const Layout: React.FC = () => {
         </button>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
-          <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
-          <div>
-            <h2 style={{ fontSize: "1.1rem", margin: 0, whiteSpace: "nowrap" }}>{schoolSettings?.schoolName || 'School ERP'}</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+          <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h2 style={{ fontSize: "1.05rem", margin: 0, whiteSpace: "normal", lineHeight: 1.2, wordBreak: 'break-word', color: 'var(--text-main)' }}>{schoolSettings?.schoolName || 'School ERP'}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)' }}></div>
               <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>Session {activeSession}</span>
             </div>
