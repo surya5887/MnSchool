@@ -204,7 +204,7 @@ const Layout: React.FC = () => {
   };
 
   const navLinkStyle = ({isActive}: {isActive: boolean}) => ({
-    padding: '12px 16px', borderRadius: '12px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px',
+    padding: '12px 12px', borderRadius: '12px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px',
     color: isActive ? 'white' : 'var(--text-main)',
     background: isActive ? 'var(--primary-gradient)' : 'transparent',
     fontWeight: isActive ? 600 : 500,
@@ -240,7 +240,7 @@ const Layout: React.FC = () => {
           borderRight: '1px solid var(--glass-border)',
           display: 'flex',
           flexDirection: 'column',
-          padding: '32px 24px',
+          padding: '32px 16px',
           zIndex: 9999
         }}
       >
@@ -266,10 +266,10 @@ const Layout: React.FC = () => {
           <X size={20} />
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
-          <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "32px" }}>
+          <img src={schoolSettings?.logoUrl || "/images/logo_circular.png"} alt="School Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h2 style={{ fontSize: "1.05rem", margin: 0, whiteSpace: "normal", lineHeight: 1.2, wordBreak: 'break-word', color: 'var(--text-main)' }}>{schoolSettings?.schoolName || 'School ERP'}</h2>
+            <h2 style={{ fontSize: "0.95rem", margin: 0, whiteSpace: "normal", lineHeight: 1.2, wordBreak: 'break-word', color: 'var(--text-main)' }}>{schoolSettings?.schoolName || 'School ERP'}</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)' }}></div>
               <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>Session {activeSession}</span>
