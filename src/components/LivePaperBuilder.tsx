@@ -293,8 +293,12 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           <span>MCQ Options</span>
                           <button className="btn-secondary" style={{ padding: '2px 8px', fontSize: '11px' }} onClick={() => {
                             const newOptions = [...(q.options || []), 'New Option'];
-                            updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { options: newOptions });
-                          }}>+ Add Option</button>
+                              const payload: any = { options: newOptions };
+                              if ((!q.options || q.options.length === 0) && ((q.blocks && q.blocks.length > 0) || (q.images && q.images.length > 0) || (q.shapes && q.shapes.length > 0))) {
+                                payload.optionsAfterBlocks = true;
+                              }
+                              updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, payload);
+                            }}>+ Add Option</button>
                         </label>
                         {(q.options || []).map((opt, optIdx) => (
                           <div key={optIdx} style={{ background: 'white', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '6px', marginBottom: '8px' }}>

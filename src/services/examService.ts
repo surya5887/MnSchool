@@ -249,6 +249,8 @@ export interface QuestionPaperData {
       blocks?: PaperBlock[];
       type?: 'subjective' | 'objective' | 'instruction' | 'match' | 'fill_in_the_blanks' | 'true_false' | 'tracing' | 'passage';
       options?: string[];
+        optionsAfterBlocks?: boolean;
+        optionShapes?: any[];
       optionImages?: string[];
       wordBank?: string[];
       trueLabel?: string;

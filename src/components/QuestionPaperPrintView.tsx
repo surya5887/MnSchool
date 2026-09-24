@@ -321,7 +321,9 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
-                            {((q.images && q.images.length > 0) || (q.shapes && q.shapes.length > 0)) && (
+                             {q.optionsAfterBlocks && (
+<>
+{((q.images && q.images.length > 0) || (q.shapes && q.shapes.length > 0)) && (
                               <div style={{ overflow: 'hidden', width: '100%', marginTop: '12px' }}>
                                 {q.images?.map((img, iIdx) => {
                                   const isCenter = (!img.align || img.align === 'center');
@@ -392,7 +394,10 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '24px' }}>
                                     {q.fibStatements.map((stmt, stmtIdx) => (
                                       <div key={stmtIdx} style={{ display: 'flex', gap: '12px' }}>
-                                        <span>{['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)', '(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)', '(q)', '(r)', '(s)', '(t)', '(u)', '(v)', '(w)', '(x)', '(y)', '(z)'][stmtIdx] || `(${stmtIdx + 1})`}</span>
+                                        <span>{['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)', '(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)', '(q)', '(r)', '(s)', '(t)', '(u)', '(v)', '(w)', '(x)', '(y)', '(z)'][stmtIdx] || `(${stmtIdx + 1})
+</>
+)} 
+`}</span>
                                         <span dangerouslySetInnerHTML={{ __html: stmt.replace(/\n/g, '<br/>') }} />
                                       </div>
                                     ))}
@@ -515,7 +520,84 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                           <td style={{ verticalAlign: 'top', width: '50px', padding: '8px 0', textAlign: 'right', fontWeight: 'bold' }}>[{q.marks}]</td>
                         </tr>
                       );
-                    })}
+                    })
+ {!q.optionsAfterBlocks && (
+<>
+{((q.images && q.images.length > 0) || (q.shapes && q.shapes.length > 0)) && (
+                              <div style={{ overflow: 'hidden', width: '100%', marginTop: '12px' }}>
+                                {q.images?.map((img, iIdx) => {
+                                  const isCenter = (!img.align || img.align === 'center');
+                                  const isRight = img.align === 'right';
+                                  return (
+                                    <div key={`img-${iIdx}`} style={{ 
+                                      float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
+                                      margin: isCenter ? '0 auto' : '0',
+                                      width: `${img.width || 100}%`, 
+                                      textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                      padding: '4px',
+                                      boxSizing: 'border-box'
+                                    }}>
+                                      <img src={img.url} alt="" style={{ maxWidth: '100%', height: 'auto', display: 'inline-block' }} />
+                                    </div>
+                                  );
+                                })}
+                                {q.shapes?.map((shape, sIdx) => {
+                                  const isCenter = (!shape.align || shape.align === 'center');
+                                  const isRight = shape.align === 'right';
+                                  return (
+                                    <div key={`shape-${sIdx}`} style={{ 
+                                      float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
+                                      margin: isCenter ? '0 auto' : '0',
+                                      width: `${shape.width || 10}%`, 
+                                      textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                      padding: '4px',
+                                      boxSizing: 'border-box'
+                                    }}>
+                                      <div style={{ display: 'inline-block', width: '100%', aspectRatio: shape.type === 'line' ? 'auto' : '1 / 1' }}>
+                                        {renderShape(shape)}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                                <div style={{ clear: 'both' }}></div>
+                              </div>
+                            )}
+
+                            {q.type === 'match' && q.matchPairs && (
+                              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                                <table style={{ width: '80%', borderCollapse: 'collapse' }}>
+                                  <tbody>
+                                    {q.matchPairs.map((pair, pIdx) => (
+                                      <tr key={pIdx}>
+                                        <td style={{ padding: '8px', border: '1px solid transparent' }}>{pIdx + 1}. {pair.left}</td>
+                                        <td style={{ padding: '8px', border: '1px solid transparent', textAlign: 'center', width: '20px' }}></td>
+                                        <td style={{ padding: '8px', border: '1px solid transparent' }}>({String.fromCharCode(97 + pIdx)}) {pair.right}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+
+                            {q.blocks && q.blocks.length > 0 && (
+                              <BlockPrintRenderer blocks={q.blocks} />
+                            )}
+
+                              {q.type === 'fill_in_the_blanks' && (
+                              <div style={{ marginTop: '8px' }}>
+                                {q.wordBank && q.wordBank.length > 0 && (
+                                  <div style={{ textAlign: 'center', marginBottom: '16px', fontWeight: 'bold' }}>
+                                    ( {q.wordBank.join(', ')} )
+                                  </div>
+                                )}
+                                {q.fibStatements && q.fibStatements.length > 0 && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '24px' }}>
+                                    {q.fibStatements.map((stmt, stmtIdx) => (
+                                      <div key={stmtIdx} style={{ display: 'flex', gap: '12px' }}>
+                                        <span>{['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)', '(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)', '(q)', '(r)', '(s)', '(t)', '(u)', '(v)', '(w)', '(x)', '(y)', '(z)'][stmtIdx] || `(${stmtIdx + 1})
+</>
+)} 
+}
                   </tbody>
                 </table>
               </div>
