@@ -477,7 +477,7 @@ const StudentProfile: React.FC = () => {
       setNewPhotoPreview(null);
     } catch (e) {
       console.error("Error updating profile", e);
-      alert("Failed to update profile");
+      toast.error("Failed to update profile");
     } finally {
       setSaving(false);
     }

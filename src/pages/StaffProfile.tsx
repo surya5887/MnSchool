@@ -1,4 +1,5 @@
 import { verifyAdminPassword } from '../services/authService';
+import toast from 'react-hot-toast';
 import React, { useEffect, useState } from 'react';
 import Loader from '../components/Loader';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -121,7 +122,7 @@ const StaffProfile: React.FC = () => {
       setNewDocFiles([]);
     } catch (e) {
       console.error('Error updating profile', e);
-      alert('Failed to update profile');
+      toast.error("Failed to update profile");
     } finally {
       setSaving(false);
     }

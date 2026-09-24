@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, User, Phone, Camera, Edit3 } from 'lucide-react';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import toast from 'react-hot-toast';
 
 interface ProfileSidebarProps {
   isOpen: boolean;
@@ -98,7 +99,7 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ isOpen, onClose, authUs
         updatePayload.name = profileData.name;
       }
 
-      await updateDoc(docRef, updatePayload);
+      await setDoc(docRef, updatePayload, { merge: true });
 
       const updatedUser = { ...authUser, name: profileData.name };
       if (profileData.photoUrl) updatedUser.photoUrl = profileData.photoUrl;
@@ -107,10 +108,12 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ isOpen, onClose, authUs
       sessionStorage.setItem('authUser', JSON.stringify(updatedUser));
       window.dispatchEvent(new Event('storage'));
 
+      toast.success("Profile updated successfully!");
       onClose();
     } catch (error) {
       console.error("Failed to update profile", error);
-      alert("Failed to update profile");
+      toast.error("An error occurred while saving.");
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
