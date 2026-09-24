@@ -70,8 +70,25 @@ interface Props {
 
 const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
   const [selectedItem, setSelectedItem] = useState<{ type: 'section' | 'question' | 'endText' | 'instructions', sIdx?: number, qIdx?: number } | null>(null);
+  const [showAppStore, setShowAppStore] = useState(false);
+  const [editingKidsBlock, setEditingKidsBlock] = useState<{sIdx: number, qIdx: number, block: any} | null>(null);
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('All');
 
   // Quick add helpers
+  useEffect(() => {
+    // Migrate legacy paperData.blocks to section questions so they are editable
+    if (paperData.blocks && paperData.blocks.length > 0) {
+      const newSecs = [...(paperData.sections || [])];
+      if (newSecs.length === 0) newSecs.push({ sectionTitle: '', questions: [] });
+      
+      paperData.blocks.forEach(block => {
+        newSecs[0].questions.push({ text: block.instruction || 'Activity', marks: 2, type: 'subjective', blocks: [block] } as any);
+      });
+      
+      setPaperData({ ...paperData, sections: newSecs, blocks: [] });
+    }
+  }, [paperData.blocks]);
+
   const addQuestion = (type: string) => {
     const newSecs = [...(paperData.sections || [])];
     if (newSecs.length === 0) {
@@ -183,6 +200,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginRight: '4px', marginLeft: '12px' }}>Misc:</span>
           <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onClick={() => addQuestion('instruction')}>Instruction</button>
+            <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', borderRadius: '20px', boxShadow: '0 4px 10px rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center' }} onClick={() => setShowAppStore(true)}><Plus size={14} style={{ marginRight: '4px' }} /> App Store</button>
         </div>
       </div>
 

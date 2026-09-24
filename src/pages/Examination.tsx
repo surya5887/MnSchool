@@ -560,40 +560,9 @@ const Examination: React.FC = () => {
             </label>
           </div>
 
-          <div style={{ marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <button 
-              className={`btn-${!paperData?.blocks || !paperData.blocks.some(b => b.type === 'kids_activity') ? 'primary' : 'secondary'}`} 
-              onClick={() => {
-                const newData = {...paperData} as any;
-                if(newData.blocks) {
-                  newData.blocks = newData.blocks.filter(b => b.type !== 'kids_activity');
-                }
-                setPaperData(newData);
-              }}
-            >
-              Live Paper Builder (6th-12th)
-            </button>
-            <button 
-              className={`btn-${paperData?.blocks && paperData.blocks.some(b => b.type === 'kids_activity') ? 'primary' : 'secondary'}`} 
-              onClick={() => {
-                const newData = {...paperData, blocks: [...(paperData?.blocks || []).filter(b => b.type === 'kids_activity'), { id: Math.random().toString(), type: 'kids_activity', category: 'VISUAL_DISCRIMINATION', subType: 'Odd One Out', instruction: 'Circle the odd one out', layoutType: 'grid', items: [], config: { columns: 4 } }]} as any;
-                setPaperData(newData);
-              }}
-            >
-              Kids Worksheet Engine (Play-5th)
-            </button>
-          </div>
-
-          {paperData?.blocks && paperData.blocks.some(b => b.type === 'kids_activity') ? (
-            <KidsBlockCanvas 
-              blocks={paperData.blocks} 
-              onChange={(newBlocks) => setPaperData(prev => prev ? {...prev, blocks: newBlocks} : null)} 
-            />
-          ) : (
-            <div style={{ marginTop: '24px' }}>
+          <div style={{ marginTop: '24px' }}>
               <LivePaperBuilder paperData={paperData!} setPaperData={setPaperData as any} />
             </div>
-          )}
 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '32px' }}>
              <button className="btn-primary" onClick={async () => {
