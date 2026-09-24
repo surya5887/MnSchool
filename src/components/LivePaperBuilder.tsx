@@ -4,6 +4,8 @@ import type { QuestionPaperData } from '../services/examService';
 import QuestionPaperPrintView from './QuestionPaperPrintView';
 import RichTextEditor from './RichTextEditor';
 import BlockCanvas from './BlockCanvas/BlockCanvas';
+import { KIDS_TEMPLATES } from '../services/KidsTemplates';
+import KidsActivityEditor from './BlockCanvas/KidsActivityEditor';
 
 export const FONT_OPTIONS = [
   { value: 'Arial', label: 'Arial', style: 'Arial, sans-serif' },
