@@ -377,7 +377,11 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               </div>
                             )}
 
-                            {q.type === 'fill_in_the_blanks' && (
+                            {q.blocks && q.blocks.length > 0 && (
+                              <BlockPrintRenderer blocks={q.blocks} />
+                            )}
+
+                              {q.type === 'fill_in_the_blanks' && (
                               <div style={{ marginTop: '8px' }}>
                                 {q.wordBank && q.wordBank.length > 0 && (
                                   <div style={{ textAlign: 'center', marginBottom: '16px', fontWeight: 'bold' }}>
@@ -503,10 +507,6 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               <div style={{ marginTop: '8px', fontStyle: 'italic', fontSize: '0.9em', color: '#555' }}>
                                 (Hint: {q.hint})
                               </div>
-                            )}
-
-                            {q.blocks && q.blocks.length > 0 && (
-                              <BlockPrintRenderer blocks={q.blocks} />
                             )}
                             {q.blankSpace !== undefined && q.blankSpace > 0 && (
                               <div style={{ height: `${q.blankSpace}px`, width: '100%' }} />
