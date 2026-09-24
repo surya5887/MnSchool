@@ -759,9 +759,108 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
               </div>
           </div>
         )}
-      </div>
+      
+        {showAppStore && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: 'white', borderRadius: '16px', width: '90vw', maxWidth: '1200px', height: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ margin: 0, fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}><LayoutTemplate size={28} /> Activity App Store</h2>
+                <button className="btn-secondary" onClick={() => setShowAppStore(false)}>Close</button>
+              </div>
+              
+              <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', padding: '0 24px', overflowX: 'auto' }}>
+                {['All', ...Array.from(new Set(KIDS_TEMPLATES.map(t => t.category)))].map(c => (
+                  <button 
+                    key={c}
+                    style={{ 
+                      padding: '16px 20px', 
+                      background: 'none', 
+                      border: 'none', 
+                      borderBottom: activeCategoryFilter === c ? '3px solid var(--primary-color)' : '3px solid transparent',
+                      color: activeCategoryFilter === c ? 'var(--primary-color)' : '#6b7280',
+                      fontWeight: activeCategoryFilter === c ? 'bold' : 'normal',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => setActiveCategoryFilter(c)}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+  
+              <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                  {KIDS_TEMPLATES.filter(t => activeCategoryFilter === 'All' || t.category === activeCategoryFilter).map(template => (
+                    <div 
+                      key={template.id} 
+                      style={{ border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }}
+                      onMouseOver={e => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+                      onMouseOut={e => e.currentTarget.style.borderColor = '#e5e7eb'}
+                      onClick={() => {
+                        const newBlock = {
+                          id: Math.random().toString(36).substr(2, 9),
+                          type: 'kids_activity',
+                          category: 'VISUAL_DISCRIMINATION',
+                          subType: template.title,
+                          instruction: template.description,
+                          layoutType: template.layoutEngine,
+                          items: [],
+                          config: { columns: 4 }
+                        };
+                        
+                        const newSecs = [...(paperData.sections || [])];
+                        let sIdx = newSecs.length - 1;
+                        if (sIdx < 0) {
+                          newSecs.push({ sectionTitle: '', questions: [] });
+                          sIdx = 0;
+                        }
+                        
+                        let qIdx = newSecs[sIdx].questions.length;
+                        
+                        // If they clicked App Store while a question was already selected, add to THAT question instead of creating a new one
+                        if (selectedItem?.type === 'question' && selectedItem.sIdx !== undefined && selectedItem.qIdx !== undefined) {
+                            sIdx = selectedItem.sIdx;
+                            qIdx = selectedItem.qIdx;
+                            if (!newSecs[sIdx].questions[qIdx].blocks) newSecs[sIdx].questions[qIdx].blocks = [];
+                            newSecs[sIdx].questions[qIdx].blocks.push(newBlock);
+                        } else {
+                            const newQuestion = { text: template.description, marks: 2, type: 'subjective', blocks: [newBlock] };
+                            newSecs[sIdx].questions.push(newQuestion);
+                        }
+                        
+                        setPaperData({ ...paperData, sections: newSecs });
+                        setShowAppStore(false);
+                        setEditingKidsBlock({ sIdx, qIdx, block: newBlock });
+                      }}
+                    >
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>{template.icon}</div>
+                      <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', color: '#111827' }}>{template.title}</h3>
+                      <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', lineHeight: 1.5 }}>{template.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {editingKidsBlock && (
+          <KidsActivityEditor 
+            block={editingKidsBlock.block}
+            onSave={(updatedBlock) => {
+               const newSecs = [...paperData.sections];
+               const blocks = newSecs[editingKidsBlock.sIdx].questions[editingKidsBlock.qIdx].blocks || [];
+               newSecs[editingKidsBlock.sIdx].questions[editingKidsBlock.qIdx].blocks = blocks.map(b => b.id === updatedBlock.id ? updatedBlock : b);
+               setPaperData({ ...paperData, sections: newSecs });
+               setEditingKidsBlock(null);
+            }}
+            onClose={() => setEditingKidsBlock(null)}
+          />
+        )}
+</div>
 
     </div>
   );
 }
-export default LivePaperBuilder;
+export default
