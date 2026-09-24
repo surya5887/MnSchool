@@ -69,7 +69,7 @@ interface Props {
 }
 
 const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
-  const [selectedItem, setSelectedItem] = useState<{ type: 'section' | 'question' | 'endText', sIdx?: number, qIdx?: number } | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{ type: 'section' | 'question' | 'endText' | 'instructions', sIdx?: number, qIdx?: number } | null>(null);
 
   // Quick add helpers
   const addQuestion = (type: string) => {
@@ -686,7 +686,20 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
 
                 
 
-                {selectedItem.type === 'endText' && (
+                {selectedItem.type === 'instructions' && (
+                    <div>
+                      <label className="input-label">General Instructions (One per line)</label>
+                      <textarea 
+                        className="glass-input" 
+                        rows={6} 
+                        style={{ width: '100%', resize: 'vertical' }} 
+                        value={paperData.generalInstructions?.join('\n') || ''}
+                        onChange={(e) => setPaperData({ ...paperData, generalInstructions: e.target.value.split('\n') })}
+                      />
+                    </div>
+                  )}
+                  
+                  {selectedItem.type === 'endText' && (
                   <div>
                     <label className="input-label">Footer Text</label>
                     <input 

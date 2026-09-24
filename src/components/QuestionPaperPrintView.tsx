@@ -42,7 +42,7 @@ interface QuestionPaperProps {
   onClose?: () => void;
   mode?: 'print' | 'inline';
   isEditor?: boolean;
-  selectedItem?: { type: 'section' | 'question' | 'endText', sIdx?: number, qIdx?: number } | null;
+  selectedItem?: { type: 'section' | 'question' | 'endText' | 'instructions' | 'instructions', sIdx?: number, qIdx?: number } | null;
   onItemClick?: (item: { type: 'section' | 'question' | 'endText', sIdx?: number, qIdx?: number } | null) => void;
 }
 
@@ -205,17 +205,31 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
 
           <hr style={{ border: 'none', borderTop: '2px solid #000', margin: '0 0 20px 0' }} />
 
-        {/* General Instructions */}
-        {paperData.generalInstructions && paperData.generalInstructions.length > 0 && (
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>General Instructions:</div>
-            <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.5' }}>
-              {paperData.generalInstructions.map((inst, idx) => (
-                <li key={idx}>{inst}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+                  {/* General Instructions */}
+          {paperData.generalInstructions && paperData.generalInstructions.length > 0 && (
+            <div 
+              style={{ 
+                marginBottom: '20px', 
+                cursor: isEditor ? 'pointer' : 'default',
+                outline: isEditor && selectedItem?.type === 'instructions' ? '2px solid #3b82f6' : 'none'
+              }}
+              onClick={(e) => {
+                if (isEditor) {
+                  e.stopPropagation();
+                  onItemClick?.({ type: 'instructions' } as any);
+                }
+              }}
+              onMouseEnter={(e: any) => { if (isEditor && selectedItem?.type !== 'instructions') e.currentTarget.style.outline = '2px dashed #cbd5e1'; }}
+              onMouseLeave={(e: any) => { if (isEditor && selectedItem?.type !== 'instructions') e.currentTarget.style.outline = 'none'; }}
+            >
+              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>General Instructions:</div>
+              <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.5' }}>
+                {paperData.generalInstructions.map((inst, idx) => (
+                  <li key={idx}>{inst}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
         {/* Sections and Questions */}
         <div style={{ marginTop: '10px' }}>
