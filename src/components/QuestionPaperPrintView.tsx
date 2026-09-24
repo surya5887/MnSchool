@@ -175,14 +175,32 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
           </tbody>
         </table>
 
-                  {/* Fillable Fields */}
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", margin: "15px 0", fontSize: "14px", fontWeight: "bold", textAlign: "left", color: "#000" }}>
-            <div style={{ width: "32%", marginBottom: "15px" }}>Name: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "75%" }}></span></div>
-            <div style={{ width: "32%", marginBottom: "15px" }}>Roll No.: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "70%" }}></span></div>
-            <div style={{ width: "32%", marginBottom: "15px" }}>F. Name: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "75%" }}></span></div>
-            <div style={{ width: "32%" }}>Date of Exam: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "55%" }}></span></div>
-            <div style={{ width: "32%" }}>Examiner: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "70%" }}></span></div>
-            <div style={{ width: "32%" }}>Invigilator: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "65%" }}></span></div>
+                            {/* Fillable Fields */}
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", margin: "5px 0 15px 0", fontSize: "14px", fontWeight: "bold", textAlign: "left", color: "#000" }}>
+            <div style={{ width: "31%", marginBottom: "15px", display: "flex", alignItems: "flex-end" }}>
+              <span style={{ whiteSpace: "nowrap", marginRight: "5px" }}>Name:</span>
+              <span style={{ borderBottom: "1px solid #000", flex: 1 }}></span>
+            </div>
+            <div style={{ width: "31%", marginBottom: "15px", display: "flex", alignItems: "flex-end" }}>
+              <span style={{ whiteSpace: "nowrap", marginRight: "5px" }}>Roll No.:</span>
+              <span style={{ borderBottom: "1px solid #000", flex: 1 }}></span>
+            </div>
+            <div style={{ width: "31%", marginBottom: "15px", display: "flex", alignItems: "flex-end" }}>
+              <span style={{ whiteSpace: "nowrap", marginRight: "5px" }}>F. Name:</span>
+              <span style={{ borderBottom: "1px solid #000", flex: 1 }}></span>
+            </div>
+            <div style={{ width: "31%", display: "flex", alignItems: "flex-end" }}>
+              <span style={{ whiteSpace: "nowrap", marginRight: "5px" }}>Date of Exam:</span>
+              <span style={{ borderBottom: "1px solid #000", flex: 1 }}></span>
+            </div>
+            <div style={{ width: "31%", display: "flex", alignItems: "flex-end" }}>
+              <span style={{ whiteSpace: "nowrap", marginRight: "5px" }}>Examiner:</span>
+              <span style={{ borderBottom: "1px solid #000", flex: 1 }}></span>
+            </div>
+            <div style={{ width: "31%", display: "flex", alignItems: "flex-end" }}>
+              <span style={{ whiteSpace: "nowrap", marginRight: "5px" }}>Invigilator:</span>
+              <span style={{ borderBottom: "1px solid #000", flex: 1 }}></span>
+            </div>
           </div>
 
           <hr style={{ border: 'none', borderTop: '2px solid #000', margin: '0 0 20px 0' }} />
@@ -200,7 +218,7 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
         )}
 
         {/* Sections and Questions */}
-        <div style={{ marginTop: '30px' }}>
+        <div style={{ marginTop: '10px' }}>
           {paperData.blocks && paperData.blocks.length > 0 ? (
             <BlockPrintRenderer blocks={paperData.blocks} />
           ) : (
