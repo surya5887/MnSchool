@@ -863,4 +863,4 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
     </div>
   );
 }
-export default
+export default LivePaperBuilder;
