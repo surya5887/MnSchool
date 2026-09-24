@@ -175,7 +175,17 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
           </tbody>
         </table>
 
-        <hr style={{ border: 'none', borderTop: '2px solid #000', margin: '0 0 20px 0' }} />
+                  {/* Fillable Fields */}
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", margin: "15px 0", fontSize: "14px", fontWeight: "bold", textAlign: "left", color: "#000" }}>
+            <div style={{ width: "32%", marginBottom: "15px" }}>Name: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "75%" }}></span></div>
+            <div style={{ width: "32%", marginBottom: "15px" }}>Roll No.: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "70%" }}></span></div>
+            <div style={{ width: "32%", marginBottom: "15px" }}>F. Name: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "75%" }}></span></div>
+            <div style={{ width: "32%" }}>Date of Exam: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "55%" }}></span></div>
+            <div style={{ width: "32%" }}>Examiner: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "70%" }}></span></div>
+            <div style={{ width: "32%" }}>Invigilator: <span style={{ borderBottom: "1px solid #000", display: "inline-block", width: "65%" }}></span></div>
+          </div>
+
+          <hr style={{ border: 'none', borderTop: '2px solid #000', margin: '0 0 20px 0' }} />
 
         {/* General Instructions */}
         {paperData.generalInstructions && paperData.generalInstructions.length > 0 && (
