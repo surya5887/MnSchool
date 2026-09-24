@@ -696,7 +696,8 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                         value={paperData.generalInstructions?.join('\n') || ''}
                         onChange={(e) => setPaperData({ ...paperData, generalInstructions: e.target.value.split('\n') })}
                       />
-                    </div>
+                    <button className="btn-danger" style={{ width: '100%', marginTop: '32px' }} onClick={() => { setPaperData({ ...paperData, generalInstructions: [] }); setSelectedItem(null); }}> <Trash2 size={16} /> Delete Instructions </button>
+</div>
                   )}
                   
                   {selectedItem.type === 'endText' && (
