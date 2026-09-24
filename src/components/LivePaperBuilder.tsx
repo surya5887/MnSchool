@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Settings, X, Trash2, Image as ImageIcon, LayoutTemplate, Grid, Shapes, Square, Lightbulb } from 'lucide-react';
 import type { QuestionPaperData } from '../services/examService';
 import QuestionPaperPrintView from './QuestionPaperPrintView';
