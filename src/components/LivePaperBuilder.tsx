@@ -194,7 +194,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Settings size={18} style={{ color: '#64748b' }} />
                 <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#334155' }}>
-                  {selectedItem.type === 'section' ? 'Section Inspector' : selectedItem.type === 'endText' ? 'Footer Inspector' : 'Question Inspector'}
+                  {selectedItem.type === 'section' ? 'Section Inspector' : selectedItem.type === 'endText' ? 'Footer Inspector' : selectedItem.type === 'instructions' ? 'Instructions Inspector' : 'Question Inspector'}
                 </h3>
               </div>
               <button className="icon-btn" onClick={() => setSelectedItem(null)}><X size={20} /></button>
@@ -732,8 +732,8 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                       </div>
                     </div>
                   </div>
-                )};
-            </div>
+                )}
+              </div>
           </div>
         )}
       </div>
