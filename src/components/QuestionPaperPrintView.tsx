@@ -280,46 +280,52 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                               <div style={{ width: '100%', marginTop: '12px', overflow: 'hidden' }}>
                                 {q.images?.map((img, iIdx) => {
                                     const isFull = img.width === 100;
-                                    const isCenter = (!img.align || img.align === 'center') || isFull;
-                                    const isRight = img.align === 'right' && !isFull;
+                                    const explicitAlign = img.align || 'center';
+                                    const isCenter = explicitAlign === 'center';
+                                    const isRight = explicitAlign === 'right';
+                                    
                                     return (
                                       <React.Fragment key={`img-${iIdx}`}>
                                         <div style={{ 
-                                          float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
-                                          margin: isCenter ? '0 auto' : '0',
+                                          float: (isFull || isCenter) ? 'none' : (isRight ? 'right' : 'left'),
+                                          margin: isCenter && !isFull ? '0 auto' : '0',
                                           marginBottom: `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
-                                          marginRight: (isCenter || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
+                                          marginRight: (isFull || isCenter || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
+                                          marginLeft: (isRight && !isFull) ? `${q.objectsGap !== undefined ? q.objectsGap : 12}px` : '0',
                                           width: isFull ? '100%' : `${img.width || 100}%`,
-                                          textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                          textAlign: explicitAlign,
                                           border: img.borderWidth ? `${img.borderWidth}px solid ${img.borderColor || '#000'}` : 'none',
                                           boxSizing: 'border-box'
                                         }}>
                                           <img src={img.url} alt="" style={{ width: isFull ? '100%' : 'auto', maxWidth: '100%', height: 'auto', display: 'inline-block', verticalAlign: 'middle' }} />
                                         </div>
-                                        {(img.newline || isCenter) && <div style={{ clear: 'both' }}></div>}
+                                        {(img.newline || (isCenter && !isFull)) && <div style={{ clear: 'both' }}></div>}
                                       </React.Fragment>
                                     );
                                   })}
                                 {q.shapes?.map((shape, sIdx) => {
                                     const isFull = shape.width === 100;
-                                    const isCenter = (!shape.align || shape.align === 'center') || isFull;
-                                    const isRight = shape.align === 'right' && !isFull;
+                                    const explicitAlign = shape.align || 'center';
+                                    const isCenter = explicitAlign === 'center';
+                                    const isRight = explicitAlign === 'right';
+                                    
                                     return (
                                       <React.Fragment key={`shape-${sIdx}`}>
                                         <div style={{ 
-                                          float: isCenter ? 'none' : (isRight ? 'right' : 'left'),
-                                          margin: isCenter ? '0 auto' : '0',
+                                          float: (isFull || isCenter) ? 'none' : (isRight ? 'right' : 'left'),
+                                          margin: isCenter && !isFull ? '0 auto' : '0',
                                           marginBottom: `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
-                                          marginRight: (isCenter || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
+                                          marginRight: (isFull || isCenter || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
+                                          marginLeft: (isRight && !isFull) ? `${q.objectsGap !== undefined ? q.objectsGap : 12}px` : '0',
                                           width: isFull ? '100%' : `${shape.width || 10}%`,
-                                          textAlign: isCenter ? 'center' : (isRight ? 'right' : 'left'),
+                                          textAlign: explicitAlign,
                                           boxSizing: 'border-box'
                                         }}>
                                           <div style={{ display: 'inline-block', width: '100%', aspectRatio: shape.type === 'line' ? 'auto' : '1 / 1' }}>
                                             {renderShape(shape)}
                                           </div>
                                         </div>
-                                        {(shape.newline || isCenter) && <div style={{ clear: 'both' }}></div>}
+                                        {(shape.newline || (isCenter && !isFull)) && <div style={{ clear: 'both' }}></div>}
                                       </React.Fragment>
                                     );
                                   })}
