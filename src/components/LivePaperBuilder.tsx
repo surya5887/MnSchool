@@ -589,7 +589,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                             </div>
                             <div style={{ flex: 1 }}>
                               <label style={{ fontSize: '10px', color: '#64748b' }}>Align</label>
-                              <select className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={img.align || 'center'} onChange={e => {
+                              <select className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={(img.align || 'center').toLowerCase()} onChange={e => {
                                 const newImages = [...q.images!]; newImages[iIdx].align = e.target.value as any;
                                 updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { images: newImages });
                               }}>
@@ -658,7 +658,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
                             <div style={{ flex: 1 }}>
                               <label style={{ fontSize: '10px', color: '#64748b' }}>Align</label>
-                              <select className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={shape.align || 'center'} onChange={e => {
+                              <select className="glass-input" style={{ marginBottom: 0, padding: '4px 8px', fontSize: '11px' }} value={(shape.align || 'center').toLowerCase()} onChange={e => {
                                 const newShapes = [...q.shapes!]; newShapes[sIdx].align = e.target.value as any;
                                 updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { shapes: newShapes });
                               }}>

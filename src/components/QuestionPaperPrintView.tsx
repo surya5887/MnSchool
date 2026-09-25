@@ -288,10 +288,9 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                       <React.Fragment key={`img-${iIdx}`}>
                                         <div style={{ 
                                           float: (isFull || isCenter) ? 'none' : (isRight ? 'right' : 'left'),
-                                          margin: isCenter && !isFull ? '0 auto' : '0',
                                           marginBottom: `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
-                                          marginRight: (isFull || isCenter || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
-                                          marginLeft: (isRight && !isFull) ? `${q.objectsGap !== undefined ? q.objectsGap : 12}px` : '0',
+                                          marginRight: (isCenter && !isFull) ? 'auto' : ((isFull || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`),
+                                          marginLeft: (isCenter && !isFull) ? 'auto' : ((isRight && !isFull) ? `${q.objectsGap !== undefined ? q.objectsGap : 12}px` : '0'),
                                           width: isFull ? '100%' : `${img.width || 100}%`,
                                           textAlign: explicitAlign,
                                           border: img.borderWidth ? `${img.borderWidth}px solid ${img.borderColor || '#000'}` : 'none',
@@ -313,10 +312,9 @@ const QuestionPaperPrintView: React.FC<QuestionPaperProps> = ({ paperData, onClo
                                       <React.Fragment key={`shape-${sIdx}`}>
                                         <div style={{ 
                                           float: (isFull || isCenter) ? 'none' : (isRight ? 'right' : 'left'),
-                                          margin: isCenter && !isFull ? '0 auto' : '0',
                                           marginBottom: `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
-                                          marginRight: (isFull || isCenter || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`,
-                                          marginLeft: (isRight && !isFull) ? `${q.objectsGap !== undefined ? q.objectsGap : 12}px` : '0',
+                                          marginRight: (isCenter && !isFull) ? 'auto' : ((isFull || isRight) ? '0' : `${q.objectsGap !== undefined ? q.objectsGap : 12}px`),
+                                          marginLeft: (isCenter && !isFull) ? 'auto' : ((isRight && !isFull) ? `${q.objectsGap !== undefined ? q.objectsGap : 12}px` : '0'),
                                           width: isFull ? '100%' : `${shape.width || 10}%`,
                                           textAlign: explicitAlign,
                                           boxSizing: 'border-box'
