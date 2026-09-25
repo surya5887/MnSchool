@@ -23,7 +23,7 @@ const Classes: React.FC = () => {
 
   const [newClassData, setNewClassData] = useState({
     className: '',
-    sections: '',
+    sections: [] as string[],
     subjects: '',
     classTeacher: '',
     feeName: 'Monthly Tuition',
@@ -70,7 +70,7 @@ const Classes: React.FC = () => {
     setEditingClassId(c.id || null);
     setNewClassData({
       className: c.className,
-      sections: c.sections[0] || '',
+      sections: c.sections || [],
       subjects: c.subjects.join(', '),
       classTeacher: c.classTeacher,
       feeName: c.fees && c.fees.length > 0 ? c.fees[0].feeName : 'Monthly Tuition',
@@ -82,12 +82,16 @@ const Classes: React.FC = () => {
 
   const handleSaveClass = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (newClassData.sections.length === 0) {
+      alert("Please select at least one section.");
+      return;
+    }
     try {
       const activeSession = localStorage.getItem('activeSession') || '2026-2027';
         const dataToSave = {
           className: newClassData.className.trim(),
           order: classes.length + 1,
-          sections: [newClassData.sections.trim()],
+          sections: newClassData.sections,
           subjects: newClassData.subjects.split(',').map(s => s.trim()).filter(s => s),
           classTeacher: newClassData.classTeacher,
           monthlyBaseFee: Number(newClassData.monthlyBaseFee) || 1000,
@@ -102,7 +106,7 @@ const Classes: React.FC = () => {
       }
       
       setClassModalOpen(false);
-      setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
+      setNewClassData({ className: '', sections: [], subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
       setEditingClassId(null);
       setSaved(true);
       fetchData();
@@ -147,7 +151,7 @@ const Classes: React.FC = () => {
           </div>
           <button className="btn-primary" onClick={() => {
             setEditingClassId(null);
-            setNewClassData({ className: '', sections: '', subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
+            setNewClassData({ className: '', sections: [], subjects: '', classTeacher: '', feeName: 'Monthly Tuition', feeAmount: '', monthlyBaseFee: 1000 });
             setClassModalOpen(true);
           }}>
             <Plus size={20} /> Add New Class
@@ -278,12 +282,23 @@ const Classes: React.FC = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Section</label>
-              <select required className="glass-input" value={newClassData.sections || ''} onChange={e => setNewClassData({...newClassData, sections: e.target.value})}>
-                <option value="">Select Section</option>
-                {['A','B','C','D','E','F','G','H','I','J'].map(sec => (
-                  <option key={sec} value={sec}>{sec}</option>
-                ))}
-              </select>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {['A','B','C','D','E','F','G','H','I','J'].map(sec => (
+                    <label key={sec} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: '20px', border: '1px solid var(--glass-border)' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={newClassData.sections.includes(sec)} 
+                        onChange={(e) => {
+                          const secs = newClassData.sections;
+                          if (e.target.checked) setNewClassData({...newClassData, sections: [...secs, sec]});
+                          else setNewClassData({...newClassData, sections: secs.filter(s => s !== sec)});
+                        }} 
+                      />
+                      {sec}
+                    </label>
+                  ))}
+                </div>
+                {newClassData.sections.length === 0 && <span style={{color: 'red', fontSize: '12px'}}>Select at least one section</span>}
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px' }}>Monthly Base Fee (₹)</label>
