@@ -278,7 +278,7 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     
-                    <div style={{ display: 'flex', gap: '16px', background: '#f1f5f9', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', background: '#f1f5f9', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                         <div style={{ flex: 1 }}>
                           <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Font Style</label>
                           <select className="glass-input" style={{ marginBottom: 0, background: 'white', fontFamily: q.fontFamily || 'inherit' }} value={q.fontFamily || ''} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { fontFamily: e.target.value })}>
