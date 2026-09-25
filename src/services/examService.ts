@@ -262,8 +262,9 @@ export interface QuestionPaperData {
       label?: string;
       fontFamily?: string;
       fontSize?: string;
-      images?: { url: string; width: number; align: 'left' | 'center' | 'right'; borderWidth?: number; borderColor?: string }[];
-      shapes?: { type: string; width: number; color: string; rotation: number; align: 'left' | 'center' | 'right' }[];
+        objectsGap?: number;
+      images?: { url: string; width: number; align: 'left' | 'center' | 'right'; borderWidth?: number; borderColor?: string; newline?: boolean }[];
+      shapes?: { type: string; width: number; color: string; rotation: number; align: 'left' | 'center' | 'right'; newline?: boolean }[];
     }[];
   }[];
   createdAt: string;

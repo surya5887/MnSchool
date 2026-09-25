@@ -292,7 +292,11 @@ const LivePaperBuilder: React.FC<Props> = ({ paperData, setPaperData }) => {
                         </div>
                       {q.type !== 'instruction' && (
                         <div style={{ width: '80px' }}>
-                          <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Marks</label>
+                          <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Obj. Gap (px)</label>
+                            <input type="number" min="0" max="100" className="glass-input" style={{ marginBottom: 0, background: 'white' }} value={q.objectsGap !== undefined ? q.objectsGap : 12} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { objectsGap: parseInt(e.target.value) || 0 })} />
+                          </div>
+                          <div style={{ width: '80px' }}>
+                            <label className="input-label" style={{ fontSize: '11px', marginBottom: '4px' }}>Marks</label>
                           <input type="number" className="glass-input" style={{ marginBottom: 0, background: 'white' }} value={q.marks} onChange={e => updateQuestion(selectedItem.sIdx, selectedItem.qIdx!, { marks: parseInt(e.target.value) || 0 })} />
                         </div>
                       )}
