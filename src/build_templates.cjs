@@ -1,4 +1,6 @@
-export interface KidsTemplateField {
+const fs = require('fs');
+
+const fileContent = `export interface KidsTemplateField {
   name: string;
   label: string;
   type: string;
@@ -79,3 +81,9 @@ export const KIDS_TEMPLATES: KidsTemplateConfig[] = [
   { id: 'community_helper', category: 'EVS, GK & Real-World Associations', title: 'Community Helper & Tool Pairing', description: 'Match helpers to their tools (e.g. Doctor -> Stethoscope).', icon: '??', layoutEngine: 'match_columns', editorFields: [] },
   { id: 'living_nonliving', category: 'EVS, GK & Real-World Associations', title: 'Living / Non-Living Sorting', description: 'Sort objects into living or non-living categories.', icon: '??', layoutEngine: 'grid', editorFields: [] }
 ];
+`;
+
+fs.writeFileSync('C:/Users/AneesChaudhary/Desktop/MN_Public_School/frontend/src/services/KidsTemplates.ts', fileContent);
+fs.writeFileSync('C:/Users/AneesChaudhary/Desktop/Rahimya_Model_School/frontend/src/services/KidsTemplates.ts', fileContent);
+
+console.log("Updated KidsTemplates.ts successfully!");
